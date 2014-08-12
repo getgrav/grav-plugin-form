@@ -70,7 +70,7 @@ class FormPlugin extends Plugin
     /**
      * Make form accessible from twig.
      */
-    public function onAfterSiteTwigVars()
+    public function onAfterTwigSiteVars()
     {
         if (!$this->active) {
             return;
