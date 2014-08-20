@@ -41,7 +41,7 @@ class FormPlugin extends Plugin
     public function onPageInitialized()
     {
         /** @var Page $page */
-        $page = $this->grav->page;
+        $page = $this->grav['page'];
         if (!$page) {
             return;
         }
@@ -58,8 +58,6 @@ class FormPlugin extends Plugin
             if (!empty($_POST)) {
                 $this->form->post();
             }
-
-            $grav['form'] = $this->form;
         }
     }
 
@@ -80,7 +78,7 @@ class FormPlugin extends Plugin
             return;
         }
 
-        $this->grav['twig']->twig_vars['form'] = $this->grav['form'];
+        $this->grav['twig']->twig_vars['form'] = $this->form;
     }
 
     /**
