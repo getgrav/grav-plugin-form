@@ -3,11 +3,13 @@ namespace Grav\Plugin;
 
 use \Grav\Common\Iterator;
 use \Grav\Common\Grav;
-use \Grav\Common\Registry;
+use \Grav\Common\GravTrait;
 use \Grav\Common\Page\Page;
 
 class Form extends Iterator
 {
+    use GravTrait;
+
     /**
      * @var array
      */
@@ -81,14 +83,12 @@ class Form extends Iterator
 
         $process = isset($this->items['process']) ? $this->items['process'] : array();
         if (is_array($process)) {
-            /** @var Grav $grav */
-            $grav = Registry::instance()->get('Grav');
             foreach ($process as $action => $data) {
                 if (is_numeric($action)) {
                     $action = \key($data);
                     $data = $data[$action];
                 }
-                $grav->fireEvent('onProcessForm', $this, $action, $data);
+                self::$grav->fireEvent('onFormProcessed', $this, $action, $data);
             }
         } else {
             // Default action.
