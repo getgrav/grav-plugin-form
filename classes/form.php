@@ -1,10 +1,10 @@
 <?php
 namespace Grav\Plugin;
 
-use \Grav\Common\Iterator;
-use \Grav\Common\Grav;
-use \Grav\Common\GravTrait;
-use \Grav\Common\Page\Page;
+use Grav\Common\Iterator;
+use Grav\Common\Grav;
+use Grav\Common\GravTrait;
+use Grav\Common\Page\Page;
 
 class Form extends Iterator
 {

@@ -1,14 +1,14 @@
 <?php
 namespace Grav\Plugin;
 
-use \Grav\Common\Plugin;
-use \Grav\Common\Page\Page;
-use \Grav\Common\Page\Pages;
-use \Grav\Common\Grav;
-use \Grav\Common\Uri;
-use \Grav\Common\Filesystem\File;
-use \Grav\Common\Twig;
-use \Grav\Plugin\Form;
+use Grav\Common\Plugin;
+use Grav\Common\Page\Page;
+use Grav\Common\Page\Pages;
+use Grav\Common\Grav;
+use Grav\Common\Uri;
+use Grav\Common\Twig;
+use Grav\Plugin\Form;
+use RocketTheme\Toolbox\File\File;
 
 class FormPlugin extends Plugin
 {
@@ -129,7 +129,7 @@ class FormPlugin extends Plugin
                     'form' => $this->form
                 );
 
-                $file = File\General::instance(DATA_DIR . $this->form->name . '/' . $filename);
+                $file = File::instance(DATA_DIR . $this->form->name . '/' . $filename);
                 $body = $twig->processString(
                     !empty($params['body']) ? $params['body'] : '{% include "forms/data.txt.twig" %}',
                     $vars
