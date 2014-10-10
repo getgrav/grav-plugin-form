@@ -8,9 +8,8 @@ author:
   url: http://getgrav.org
 keywords: plugin, form
 
-validation: strict
-
 form:
+  validation: strict
   fields:
     enabled:
       type: toggle
