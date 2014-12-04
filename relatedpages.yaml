@@ -1,5 +1,7 @@
 enabled: true
-limit: 0
+limit: 5
+show_score: true
+score_threshold: 20
 filter:
     items:
         @page: /blog

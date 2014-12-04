@@ -5,6 +5,7 @@ use \Grav\Common\Plugin;
 use \Grav\Common\Grav;
 use \Grav\Common\Cache;
 use \Grav\Common\Debugger;
+use \Grav\Common\Config\Config;
 use \Grav\Common\Page\Page;
 use \Grav\Common\Page\Pages;
 use RocketTheme\Toolbox\Event\Event;
@@ -12,6 +13,9 @@ use RocketTheme\Toolbox\Event\Event;
 class RelatedPagesPlugin extends Plugin
 {
     protected $related_pages = [];
+
+    /** @var Config $config */
+    protected $config;
 
     /**
      * @return array
@@ -32,6 +36,8 @@ class RelatedPagesPlugin extends Plugin
             $this->active = false;
             return;
         }
+
+        $this->config = $this->grav['config']->get('plugins.relatedpages');
 
         $this->enable([
             'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
@@ -62,7 +68,7 @@ class RelatedPagesPlugin extends Plugin
         /** @var Debugger $debugger */
         $debugger = $this->grav['debugger'];
 
-        $config = $this->grav['config']->get('plugins.relatedpages');
+        $config = $this->config;
 
         // get all the pages
         $collection = $page->collection($config['filter']);
@@ -205,16 +211,17 @@ class RelatedPagesPlugin extends Plugin
     {
         $count = 0;
         foreach ((array)$needle as $substring) {
-            $count += substr_count( strtolower($haystack), strtolower($substring));
+            $count += substr_count(strtolower($haystack), strtolower($substring));
         }
         return $count;
     }
 
     protected function mergeRelatedPages(array $pages)
     {
-        foreach((array) $pages as $path => $score) {
+        foreach ((array) $pages as $path => $score) {
             $page_exists = array_key_exists($path, $this->related_pages);
-            if (!$page_exists || ($page_exists && $score > $this->related_pages[$path])) {
+            if ($score > $this->config['score_threshold'] &&
+                (!$page_exists || ($page_exists && $score > $this->related_pages[$path]))) {
                 $this->related_pages[$path] = $score;
             }
         }
