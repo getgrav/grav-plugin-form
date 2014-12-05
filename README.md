@@ -7,7 +7,7 @@ It has 4 main calculation options that may be combined to produce very accurate 
 * Explicit page references in the header of a given page
 * Taxonomy to Taxonomy matching.  i.e. comparing the number of matching tags in other pages
 * Taxonomy to Content matching.  i.e counting the number of times a tag is in other page content
-* Content to Content matching.  A comparison of the content between current and other pages
+* Content to Content matching.  A comparison of the content between current and other pages (caution)
 
 You can configure which combination of methods to use, customize the scoring, adjust how many related pages to show, cut-off scores and more!
 
@@ -71,7 +71,7 @@ taxonomy_match:                 # taxonomy type matching
             6: 80
             7: 90
             8: 100
-content_match:
+content_match:                  # Disable this if you have lots of posts, performance implications...
     process: true               # true|false to enable content to content matching
 ```
 
@@ -83,7 +83,32 @@ explicit_pages:
     score: 75                   # score (0 - 100) to give explicit pages
 ```
 
+# Explicit Pages
+
+To use the explicit page match functionality, simply add a `related_posts` array with **slugs** to the posts you wish to be related:
+
+```
+related_pages:
+    - /blog/code-highlighting-post
+    - /blog/sample-link-post
+```
+
+# Taxonomy to Taxonomy Matching
+
+This should be used if you wish to match a taxonomy (for example `tag`) to other pages.  The more tags that match, the higher the score.  For example if your current page has `tags: [photography, city, new york, night]`, and another page had `tags: [photography, city, new york, day]`, there would be 3 matches, and according to the default scores, that would mean a match score of `100`.  You can of course configure the scoring to best suite your site.
+
+# Taxonomy to Content Matching
+
+This methodology takes the current pages taxonomy (for example `tag`), and counts the number of times these items are mentioned in the content of other pages.  The higher the number of matches to tags, the higher the score.
+
+# Content Matching
+
+Content Matching uses a string comparison function to calculate the overall similarity of the current page to the other pages in the collection.  A score of `100` means the content matches 100%, while a lower number means less similarity.  This is a very powerful mechanism, but because of the amount of work being done, and with a large amount of articles, this could cause a bit of a slowdown before the values are cached.
+
+
 # Display a List of Related Pages
+
+When all the enabled methodologies have been processed, a unique list in order of score (highest first) is created.  This array of page 'paths' is stored as a Twig variable `related_pages` that can be accessed in your Twig templates of your theme.
 
 To display a list of related pages, you need to reference the provided `relatedpages.html.twig` or provide your own modified version in your theme, and reference that.  For example:
 
@@ -96,3 +121,10 @@ To display a list of related pages, you need to reference the provided `relatedp
 
 This will ensure that the `relatedpages` plugin is installed and enabled, and also that there are some related pages before including the template to render them.
 
+# Note about Performance
+
+This plugin processes during the `onPageInitialized` event.  It first **checks cache** to see if this page has been processed before, and if not, it runs through the configured options to build the list of related pages.
+
+All of this is pretty fast except for `content_match` which performs a full comparison using the content of the current page and comparing it with every other page in the configured collection.  If you have lots of pages, this could get quite slow.
+
+This work is only performed the first time after a **clear-cache** event, after that it is cached for subsequent requests.  If you have the **debugger** enabled, you can see the state of **cache hits** and **cache missses** in the **messages** tab.
