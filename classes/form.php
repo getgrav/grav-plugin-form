@@ -88,7 +88,7 @@ class Form extends Iterator
                     $action = \key($data);
                     $data = $data[$action];
                 }
-                self::$grav->fireEvent('onFormProcessed', $this, $action, $data);
+                self::getGrav()->fireEvent('onFormProcessed', $this, $action, $data);
             }
         } else {
             // Default action.
