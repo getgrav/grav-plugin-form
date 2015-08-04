@@ -1,18 +1,18 @@
 <?php
 namespace Grav\Plugin;
 
-use \Grav\Common\Plugin;
-use \Grav\Common\Registry;
-use \Grav\Common\Page\Page;
-use \Grav\Common\Page\Pages;
-use \Grav\Common\Grav;
-use \Grav\Common\Uri;
-use \Grav\Common\Filesystem\File;
-use \Grav\Common\Twig;
-use \Grav\Plugin\Form;
+use Grav\Common\Plugin;
+use Grav\Common\Page\Page;
+use Grav\Common\Page\Pages;
+use Grav\Common\Grav;
+use Grav\Common\Uri;
+use Grav\Common\Twig;
+use Grav\Plugin\Form;
+use RocketTheme\Toolbox\File\File;
 
 class FormPlugin extends Plugin
 {
+
     /**
      * @var bool
      */
@@ -24,19 +24,25 @@ class FormPlugin extends Plugin
     protected $form;
 
     /**
-     * @var Grav
+     * @return array
      */
-    protected $grav;
+    public static function getSubscribedEvents()
+    {
+        return [
+            'onPageInitialized' => ['onPageInitialized', 0],
+            'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
+            'onTwigSiteVariables' => ['onTwigSiteVariables', 0],
+            'onFormProcessed' => ['onFormProcessed', 0]
+        ];
+    }
 
     /**
      * Initialize form if the page has one. Also catches form processing if user posts the form.
      */
-    public function onAfterGetPage()
+    public function onPageInitialized()
     {
-        $this->grav = Registry::get('Grav');
-
         /** @var Page $page */
-        $page = $this->grav->page;
+        $page = $this->grav['page'];
         if (!$page) {
             return;
         }
@@ -53,35 +59,27 @@ class FormPlugin extends Plugin
             if (!empty($_POST)) {
                 $this->form->post();
             }
-
-            $registry = Registry::instance();
-            $registry->store('Form', $this->form);
         }
     }
 
         /**
      * Add current directory to twig lookup paths.
      */
-    public function onAfterTwigTemplatesPaths()
+    public function onTwigTemplatePaths()
     {
-        Registry::get('Twig')->twig_paths[] = __DIR__ . '/templates';
+        $this->grav['twig']->twig_paths[] = __DIR__ . '/templates';
     }
 
     /**
      * Make form accessible from twig.
      */
-    public function onAfterSiteTwigVars()
+    public function onTwigSiteVariables()
     {
         if (!$this->active) {
             return;
         }
 
-        /** @var Twig $twig */
-        $twig = Registry::get('Twig');
-        /** @var Form $form */
-        $form = Registry::get('Form');
-
-        $twig->twig_vars['form'] = $form;
+        $this->grav['twig']->twig_vars['form'] = $this->form;
     }
 
     /**
@@ -91,7 +89,7 @@ class FormPlugin extends Plugin
      * @param string $task
      * @param string $params
      */
-    public function onProcessForm(Form $form, $task, $params)
+    public function onFormProcessed(Form $form, $task, $params)
     {
         if (!$this->active) {
             return;
@@ -113,11 +111,11 @@ class FormPlugin extends Plugin
                 $route = (string) $params;
                 if (!$route || $route[0] != '/') {
                     /** @var Uri $uri */
-                    $uri = Registry::get('Uri');
+                    $uri = $this->grav['uri'];
                     $route = $uri->route() . ($route ? '/' . $route : '');
                 }
                 /** @var Pages $pages */
-                $pages = Registry::get('Pages');
+                $pages = $this->grav['pages'];
                 $this->grav->page = $pages->dispatch($route, true);
                 break;
             case 'save':
@@ -127,12 +125,12 @@ class FormPlugin extends Plugin
                 $filename = $prefix . $this->udate($format) . $ext;
 
                 /** @var Twig $twig */
-                $twig = Registry::get('Twig');
+                $twig = $this->grav['twig'];
                 $vars = array(
                     'form' => $this->form
                 );
 
-                $file = File\General::instance(DATA_DIR . $this->form->name . '/' . $filename);
+                $file = File::instance(DATA_DIR . $this->form->name . '/' . $filename);
                 $body = $twig->processString(
                     !empty($params['body']) ? $params['body'] : '{% include "forms/data.txt.twig" %}',
                     $vars

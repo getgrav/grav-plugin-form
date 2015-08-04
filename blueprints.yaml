@@ -1,9 +1,18 @@
-name: Form Handling Plugin
+name: Form
 version: 1.0.0
-description: Enables forms.
-validation: strict
+description: Enables the forms handling
+icon: check-square
+author:
+  name: Team Grav
+  email: devs@getgrav.org
+  url: http://getgrav.org
+keywords: plugin, form
+homepage: https://github.com/getgrav/grav-plugin-form
+bugs: https://github.com/getgrav/grav-plugin-form/issues
+license: MIT
 
 form:
+  validation: strict
   fields:
     enabled:
       type: toggle
