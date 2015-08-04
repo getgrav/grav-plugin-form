@@ -7,6 +7,9 @@ author:
   email: devs@getgrav.org
   url: http://getgrav.org
 keywords: plugin, form
+homepage: https://github.com/getgrav/grav-plugin-form
+bugs: https://github.com/getgrav/grav-plugin-form/issues
+license: MIT
 
 form:
   validation: strict
