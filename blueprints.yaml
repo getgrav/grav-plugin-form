@@ -15,7 +15,7 @@ form:
   validation: strict
   fields:
     enabled:
-      type: toggle
+      type: hidden
       label: Plugin status
       highlight: 1
       default: 0
