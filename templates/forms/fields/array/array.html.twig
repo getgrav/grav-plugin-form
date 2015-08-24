@@ -5,7 +5,7 @@
         <span class="inline">
             <span>
                 {% if field.help %}
-                <span class="tooltip" data-asTooltip-position="w" title="{{ field.help|e }}">{{ field.label }}</span>
+                <span class="tooltip" data-asTooltip-position="w" title="{{ field.help|e|tu }}">{{ field.label|tu }}</span>
                 {% else %}
                 {{ field.label }}
                 {% endif %}
