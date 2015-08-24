@@ -1,3 +1,9 @@
+# v0.2.1
+## 08/24/2015
+
+1. [](#improved)
+    * Translated tooltips
+
 # v0.2.0
 ## 08/11/2015
 
