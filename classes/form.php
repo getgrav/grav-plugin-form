@@ -5,6 +5,7 @@ use Grav\Common\Iterator;
 use Grav\Common\Grav;
 use Grav\Common\GravTrait;
 use Grav\Common\Page\Page;
+use RocketTheme\Toolbox\Event\Event;
 
 class Form extends Iterator
 {
@@ -88,7 +89,7 @@ class Form extends Iterator
                     $action = \key($data);
                     $data = $data[$action];
                 }
-                self::getGrav()->fireEvent('onFormProcessed', $this, $action, $data);
+                self::getGrav()->fireEvent('onFormProcessed', new Event(['form' => $this, 'action' => $action, 'data' => $data]));
             }
         } else {
             // Default action.
