@@ -1,17 +1,21 @@
-{% set value = (value is null ? field.default : value) %}
+{% extends "forms/field.html.twig" %}
 
-<div class="form-field">
-    <label class="inline">
-        <span>
-            {% if field.help %}
-            <span class="tooltip" data-asTooltip-position="w" title="{{ field.help|e }}">{{ field.label }}</span>
-            {% else %}
-            {{ field.label }}
-            {% endif %}
-            {{ field.validate.required in ['on', 'true', 1] ? '<span class="required">*</span>' }}
-        </span>
-
-
-        <textarea class="input" name="{{ (scope ~ field.name)|fieldName }}">{{ value|join("\n") }}</textarea>
-    </label>
-</div>
+{% block input %}
+    <div class="form-textarea-wrapper {{ field.size }}">
+        <textarea class="input" name="{{ (scope ~ field.name)|fieldName }}"
+            {# required attribute structures #}
+            name="{{ (scope ~ field.name)|fieldName }}"
+            {# input attribute structures #}
+            {% block input_attributes %}
+                {% if field.placeholder %}placeholder="{{ field.placeholder }}"{% endif %}
+                {% if field.autofocus in ['on', 'true', 1] %}autofocus="autofocus"{% endif %}
+                {% if field.novalidate in ['on', 'true', 1] %}novalidate="novalidate"{% endif %}
+                {% if field.readonly in ['on', 'true', 1] %}readonly="readonly"{% endif %}
+                {% if field.autocomplete in ['on', 'off'] %}autocomplete="{{ field.autocomplete }}"{% endif %}
+                {% if field.validate.required in ['on', 'true', 1] %}required="required"{% endif %}
+                {% if field.validate.pattern %}pattern="{{ field.validate.pattern }}"{% endif %}
+                {% if field.validate.message %}title="{{ field.validate.message|tu }}"{% endif %}
+            {% endblock %}
+            >{{ value|trim|e('html') }}</textarea>
+    </div>
+{% endblock %}

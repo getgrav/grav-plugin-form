@@ -1,29 +1,33 @@
+{% extends "forms/field.html.twig" %}
+
+{% set originalValue = value %}
 {% set value = (value is null ? field.default : value) %}
+{% if field.use == 'keys' and field.default %}
+    {% set value = field.default|merge(value) %}
+{% endif %}
 
-<div class="form-field">
-    <label class="inline">
-        <span>
-            {% if field.help %}
-            <span class="tooltip" data-asTooltip-position="w" title="{{ field.help|e }}">{{ field.label }}</span>
-            {% else %}
-            {{ field.label }}
-            {% endif %}
-            {{ field.validate.required in ['on', 'true', 1] ? '<span class="required">*</span>' }}
-        </span>
+{% block global_attributes %}
+    {{ parent() }}
+    data-grav-keys="{{ field.use == 'keys' ? 'true' : 'false' }}"
+    data-grav-field-name="{{ field.name|fieldName }}"
+{% endblock %}
 
-
-        {% for key, text in field.options %}
+{% block input %}
+    {% for key, text in field.options %}
         {% set id = "radio_" ~ field.name ~ key %}
+        {% set name = field.use == 'keys' ? key : id %}
+        {% set val = field.use == 'keys' ? '1' : key %}
+        {% set checked = (field.use == 'keys' ? value[key] : key in value) %}
+
         <span class="radio">
             <input type="radio"
-                   value="{{ key }}"
-                   id="{{ id }}"
-                   name="{{ (scope ~ field.name)|fieldName }}"
+                   value="{{ val|e }}"
+                   id="{{ id|e }}"
+                   name="{{ field.name|fieldName ~ '[' ~ name ~ ']' }}"
                    {% if key == value %}checked="checked" {% endif %}
                    {% if field.validate.required in ['on', 'true', 1] %}required="required"{% endif %}
             />
-            <label for="{{ id }}">{{ text }}</label>
+            <label style="display: inline" for="{{ id|e }}">{{ text|e }}</label>
         </span>
-        {% endfor %}
-    </label>
-</div>
+    {% endfor %}
+{% endblock %}
