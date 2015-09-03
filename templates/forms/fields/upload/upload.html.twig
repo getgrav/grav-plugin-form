@@ -1,7 +1,0 @@
-{% extends "forms/field.html.twig" %}
-
-{% block input %}
-    <div class="switch-toggle switch-grav {{ field.size }} switch-{{ field.options|length }}">
-        <input type="file" class="input" name="{{ (scope ~ field.name)|fieldName }}" value="" />
-    </div>
-{% endblock %}
