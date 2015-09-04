@@ -117,9 +117,16 @@ class FormPlugin extends Plugin
                     $uri = $this->grav['uri'];
                     $route = $uri->route() . ($route ? '/' . $route : '');
                 }
+
+                /** @var Twig $twig */
+                $twig = $this->grav['twig'];
+                $twig->twig_vars['form'] = $form;
+
                 /** @var Pages $pages */
                 $pages = $this->grav['pages'];
-                $this->grav->page = $pages->dispatch($route, true);
+                $page = $pages->dispatch($route, true);
+                unset($this->grav['page']);
+                $this->grav['page'] = $page;
                 break;
             case 'save':
                 $prefix = !empty($params['fileprefix']) ? $params['fileprefix'] : '';
