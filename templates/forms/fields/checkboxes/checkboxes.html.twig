@@ -1,30 +1,34 @@
+{% extends "forms/field.html.twig" %}
+
+{% set originalValue = value %}
 {% set value = (value is null ? field.default : value) %}
+{% if field.use == 'keys' and field.default %}
+    {% set value = field.default|merge(value) %}
+{% endif %}
 
-<div class="form-field">
-    <label class="inline">
-        <span>
-            {% if field.help %}
-            <span class="tooltip" data-asTooltip-position="w" title="{{ field.help|e }}">{{ field.label|e }}</span>
-            {% else %}
-            {{ field.label|e }}
-            {% endif %}
-            {{ field.validate.required in ['on', 'true', 1] ? '<span class="required">*</span>' }}
-        </span>
+{% block global_attributes %}
+    {{ parent() }}
+    data-grav-keys="{{ field.use == 'keys' ? 'true' : 'false' }}"
+    data-grav-field-name="{{ field.name|fieldName }}"
+{% endblock %}
 
+{% block input %}
+    {% for key, text in field.options %}
 
-        {% for key, text in field.options %}
+        {% set id = field.name ~ '-' ~ key %}
+        {% set name = field.use == 'keys' ? key : id %}
+        {% set val = field.use == 'keys' ? '1' : key %}
         {% set checked = (field.use == 'keys' ? value[key] : key in value) %}
-        {% set name = field.name|fieldName ~ '[' ~ (field.use == 'keys' ? key : '') ~ ']' %}
-        {% set key = (field.use == 'keys' ? '1' : key) %}
+
         <span class="checkboxes">
             <input type="checkbox"
-                   value="{{ key|e }}"
-                   name="{{ (scope ~ name)|fieldName }}"
+                   id="{{ id|e }}"
+                   value="{{ val|e }}"
+                   name="{{ field.name|fieldName ~ '[' ~ name ~ ']' }}"
                    {% if checked %}checked="checked"{% endif %}
                    {% if field.validate.required %}required="required"{% endif %}
             >
-            {{ text|e }}
+            <label style="display: inline" for="{{ id|e }}">{{ text|e }}</label>
         </span>
-        {% endfor %}
-    </label>
-</div>
+    {% endfor %}
+{% endblock %}
