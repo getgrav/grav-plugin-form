@@ -1,3 +1,9 @@
+# v0.3.0
+## 9/11/2015
+
+1. [](#improved)
+    * Refactored all the forms fields
+
 # v0.2.1
 ## 08/24/2015
 
