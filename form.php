@@ -8,6 +8,7 @@ use Grav\Common\Grav;
 use Grav\Common\Uri;
 use Grav\Common\Twig;
 use Grav\Plugin\Form;
+use RocketTheme\Toolbox\Event\Event;
 use RocketTheme\Toolbox\File\File;
 
 class FormPlugin extends Plugin
@@ -85,17 +86,19 @@ class FormPlugin extends Plugin
     /**
      * Handle form processing instructions.
      *
-     * @param Form $form
-     * @param string $task
-     * @param string $params
+     * @param Event $event
      */
-    public function onFormProcessed(Form $form, $task, $params)
+    public function onFormProcessed(Event $event)
     {
+        $form = $event['form'];
+        $action = $event['action'];
+        $params = $event['params'];
+
         if (!$this->active) {
             return;
         }
 
-        switch ($task) {
+        switch ($action) {
             case 'message':
                 $this->form->message = (string) $params;
                 break;
@@ -114,9 +117,16 @@ class FormPlugin extends Plugin
                     $uri = $this->grav['uri'];
                     $route = $uri->route() . ($route ? '/' . $route : '');
                 }
+
+                /** @var Twig $twig */
+                $twig = $this->grav['twig'];
+                $twig->twig_vars['form'] = $form;
+
                 /** @var Pages $pages */
                 $pages = $this->grav['pages'];
-                $this->grav->page = $pages->dispatch($route, true);
+                $page = $pages->dispatch($route, true);
+                unset($this->grav['page']);
+                $this->grav['page'] = $page;
                 break;
             case 'save':
                 $prefix = !empty($params['fileprefix']) ? $params['fileprefix'] : '';
