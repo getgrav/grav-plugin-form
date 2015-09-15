@@ -98,6 +98,26 @@ class FormPlugin extends Plugin
             return;
         }
 
+        if (!$this->validate($form)) {
+            /** @var Language $l */
+            $l = $this->grav['language'];
+            $this->form->message = $l->translate('FORM_PLUGIN.NOT_VALIDATED');
+            $uri = $this->grav['uri'];
+            $route = $uri->route();
+
+            /** @var Twig $twig */
+            $twig = $this->grav['twig'];
+            $twig->twig_vars['form'] = $form;
+
+            /** @var Pages $pages */
+            $pages = $this->grav['pages'];
+            $page = $pages->dispatch($route, true);
+            unset($this->grav['page']);
+            $this->grav['page'] = $page;
+
+            return;
+        }
+
         switch ($action) {
             case 'message':
                 $this->form->message = (string) $params;
@@ -147,6 +167,24 @@ class FormPlugin extends Plugin
                 );
                 $file->save($body);
         }
+    }
+
+    /**
+     * Validate a form
+     *
+     * @param Form $form
+     * @return bool
+     */
+    protected function validate($form) {
+        foreach ($form->fields as $field) {
+            if (isset($field['validate']) && isset($field['validate']['required']) && $field['validate']['required']) {
+                if (!$form->value($field['name'])) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
