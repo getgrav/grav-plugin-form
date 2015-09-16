@@ -1,0 +1,37 @@
+{% extends "forms/field.html.twig" %}
+
+{% block input %}
+    <script src="https://www.google.com/recaptcha/api.js?onload=captchaOnloadCallback&render=explicit"
+        async defer>
+    </script>
+
+    <script>
+        var captchaOnloadCallback = function captchaOnloadCallback() {
+            grecaptcha.render('g-recaptcha', {
+                'sitekey': "{{field.recatpcha_site_key}}",
+                'callback': captchaValidatedCallback,
+                'expired-callback': captchaExpiredCallback
+            });
+        }
+
+        var captchaValidatedCallback = function captchaValidatedCallback() {
+
+        };
+
+        var captchaExpiredCallback = function captchaExpiredCallback() {
+            grecaptcha.reset();
+        };
+    </script>
+
+    <script>
+        $(document).on('submit', 'form', function(e) {
+            if (!grecaptcha.getResponse()) {
+                alert("{{field.recaptcha_not_validated}}");
+                e.preventDefault();
+                return;
+            }
+        });
+    </script>
+
+    <div class="g-recaptcha" id="g-recaptcha"></div>
+{% endblock %}
