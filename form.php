@@ -119,6 +119,17 @@ class FormPlugin extends Plugin
         }
 
         switch ($action) {
+            case 'captcha':
+                //Validate the captcha
+                $url = 'https://www.google.com/recaptcha/api/siteverify?secret=';
+                $url .= $params['recatpcha_secret'];
+                $url .= '&response=' . $this->form->value('g-recaptcha-response');
+                $response = json_decode(file_get_contents($url), true);
+
+                if ($response['success'] == false) {
+                    throw new \RuntimeException('Error validating the Captcha');
+                }
+                break;
             case 'message':
                 $this->form->message = (string) $params;
                 break;
