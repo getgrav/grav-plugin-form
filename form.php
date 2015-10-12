@@ -10,6 +10,7 @@ use Grav\Common\Twig;
 use Grav\Plugin\Form;
 use RocketTheme\Toolbox\Event\Event;
 use RocketTheme\Toolbox\File\File;
+use Symfony\Component\Yaml\Yaml;
 
 class FormPlugin extends Plugin
 {
@@ -176,12 +177,39 @@ class FormPlugin extends Plugin
                     'form' => $this->form
                 );
 
-                $file = File::instance(DATA_DIR . $this->form->name . '/' . $filename);
-                $body = $twig->processString(
-                    !empty($params['body']) ? $params['body'] : '{% include "forms/data.txt.twig" %}',
-                    $vars
-                );
-                $file->save($body);
+                $fullFileName = DATA_DIR . $this->form->name . '/' . $filename;
+
+                $file = File::instance($fullFileName);
+
+                if ($operation == 'create') {
+                    $body = $twig->processString(
+                        !empty($params['body']) ? $params['body'] : '{% include "forms/data.txt.twig" %}',
+                        $vars
+                    );
+                    $file->save($body);
+                } elseif ($operation == 'add') {
+                    $vars = $vars['form']->value();
+
+                    foreach ($form->fields as $field) {
+                        if (isset($field['process']) && isset($field['process']['ignore']) && $field['process']['ignore']) {
+                            unset($vars[$field['name']]);
+                        }
+                    }
+
+                    if (file_exists($fullFileName)) {
+                        $data = Yaml::parse($file->content());
+                        if (count($data) > 0) {
+                            array_unshift($data, $vars);
+                        } else {
+                            $data[] = $vars;
+                        }
+                    } else {
+                        $data[] = $vars;
+                    }
+
+                    $file->save(Yaml::dump($data));
+                }
+                break;
         }
     }
 
