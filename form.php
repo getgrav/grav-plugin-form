@@ -163,7 +163,11 @@ class FormPlugin extends Plugin
                 $prefix = !empty($params['fileprefix']) ? $params['fileprefix'] : '';
                 $format = !empty($params['dateformat']) ? $params['dateformat'] : 'Ymd-His-u';
                 $ext = !empty($params['extension']) ? '.' . trim($params['extension'], '.') : '.txt';
-                $filename = $prefix . $this->udate($format) . $ext;
+                $filename = !empty($params['filename']) ? $params['filename'] : '';
+
+                if (!$filename) {
+                    $filename = $prefix . $this->udate($format) . $ext;
+                }
 
                 /** @var Twig $twig */
                 $twig = $this->grav['twig'];
