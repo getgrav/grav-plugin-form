@@ -164,6 +164,7 @@ class FormPlugin extends Plugin
                 $format = !empty($params['dateformat']) ? $params['dateformat'] : 'Ymd-His-u';
                 $ext = !empty($params['extension']) ? '.' . trim($params['extension'], '.') : '.txt';
                 $filename = !empty($params['filename']) ? $params['filename'] : '';
+                $operation = !empty($params['operation']) ? $params['operation'] : 'create';
 
                 if (!$filename) {
                     $filename = $prefix . $this->udate($format) . $ext;
