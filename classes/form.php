@@ -66,6 +66,21 @@ class Form extends Iterator
     }
 
     /**
+     * Get value of given variable (or all values).
+     *
+     * @param string $name
+     * @return mixed
+     */
+    public function setValue($name = null, $value = '')
+    {
+        if (!$name) {
+            return;
+        }
+
+        $this->values[$name] = $value;
+    }
+
+    /**
      * Reset values.
      */
     public function reset()
