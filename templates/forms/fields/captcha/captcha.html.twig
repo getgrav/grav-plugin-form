@@ -23,15 +23,5 @@
         };
     </script>
 
-    <script>
-        $(document).on('submit', 'form', function(e) {
-            if (!grecaptcha.getResponse()) {
-                alert("{{field.recaptcha_not_validated}}");
-                e.preventDefault();
-                return;
-            }
-        });
-    </script>
-
     <div class="g-recaptcha" id="g-recaptcha"></div>
 {% endblock %}
