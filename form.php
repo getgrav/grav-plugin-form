@@ -119,6 +119,8 @@ class FormPlugin extends Plugin
             return;
         }
 
+        $this->process($form);
+
         switch ($action) {
             case 'captcha':
                 //Validate the captcha
@@ -229,6 +231,26 @@ class FormPlugin extends Plugin
         }
 
         return true;
+    }
+
+    /**
+     * Process a form
+     *
+     * Currently available processing tasks:
+     *
+     * - fillWithCurrentDateTime
+     *
+     * @param Form $form
+     * @return bool
+     */
+    protected function process($form) {
+        foreach ($form->fields as $field) {
+            if (isset($field['process'])) {
+                if (isset($field['process']['fillWithCurrentDateTime']) && $field['process']['fillWithCurrentDateTime']) {
+                    $form->setValue($field['name'], gmdate('D, d M Y H:i:s', time()));
+                }
+            }
+        }
     }
 
     /**
