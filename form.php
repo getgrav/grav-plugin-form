@@ -10,6 +10,7 @@ use Grav\Common\Twig;
 use Grav\Plugin\Form;
 use RocketTheme\Toolbox\Event\Event;
 use RocketTheme\Toolbox\File\File;
+use Symfony\Component\Yaml\Yaml;
 
 class FormPlugin extends Plugin
 {
@@ -118,7 +119,20 @@ class FormPlugin extends Plugin
             return;
         }
 
+        $this->process($form);
+
         switch ($action) {
+            case 'captcha':
+                //Validate the captcha
+                $url = 'https://www.google.com/recaptcha/api/siteverify?secret=';
+                $url .= $params['recatpcha_secret'];
+                $url .= '&response=' . $this->form->value('g-recaptcha-response');
+                $response = json_decode(file_get_contents($url), true);
+
+                if ($response['success'] == false) {
+                    throw new \RuntimeException('Error validating the Captcha');
+                }
+                break;
             case 'message':
                 $this->form->message = (string) $params;
                 break;
@@ -152,7 +166,12 @@ class FormPlugin extends Plugin
                 $prefix = !empty($params['fileprefix']) ? $params['fileprefix'] : '';
                 $format = !empty($params['dateformat']) ? $params['dateformat'] : 'Ymd-His-u';
                 $ext = !empty($params['extension']) ? '.' . trim($params['extension'], '.') : '.txt';
-                $filename = $prefix . $this->udate($format) . $ext;
+                $filename = !empty($params['filename']) ? $params['filename'] : '';
+                $operation = !empty($params['operation']) ? $params['operation'] : 'create';
+
+                if (!$filename) {
+                    $filename = $prefix . $this->udate($format) . $ext;
+                }
 
                 /** @var Twig $twig */
                 $twig = $this->grav['twig'];
@@ -160,12 +179,39 @@ class FormPlugin extends Plugin
                     'form' => $this->form
                 );
 
-                $file = File::instance(DATA_DIR . $this->form->name . '/' . $filename);
-                $body = $twig->processString(
-                    !empty($params['body']) ? $params['body'] : '{% include "forms/data.txt.twig" %}',
-                    $vars
-                );
-                $file->save($body);
+                $fullFileName = DATA_DIR . $this->form->name . '/' . $filename;
+
+                $file = File::instance($fullFileName);
+
+                if ($operation == 'create') {
+                    $body = $twig->processString(
+                        !empty($params['body']) ? $params['body'] : '{% include "forms/data.txt.twig" %}',
+                        $vars
+                    );
+                    $file->save($body);
+                } elseif ($operation == 'add') {
+                    $vars = $vars['form']->value();
+
+                    foreach ($form->fields as $field) {
+                        if (isset($field['process']) && isset($field['process']['ignore']) && $field['process']['ignore']) {
+                            unset($vars[$field['name']]);
+                        }
+                    }
+
+                    if (file_exists($fullFileName)) {
+                        $data = Yaml::parse($file->content());
+                        if (count($data) > 0) {
+                            array_unshift($data, $vars);
+                        } else {
+                            $data[] = $vars;
+                        }
+                    } else {
+                        $data[] = $vars;
+                    }
+
+                    $file->save(Yaml::dump($data));
+                }
+                break;
         }
     }
 
@@ -185,6 +231,26 @@ class FormPlugin extends Plugin
         }
 
         return true;
+    }
+
+    /**
+     * Process a form
+     *
+     * Currently available processing tasks:
+     *
+     * - fillWithCurrentDateTime
+     *
+     * @param Form $form
+     * @return bool
+     */
+    protected function process($form) {
+        foreach ($form->fields as $field) {
+            if (isset($field['process'])) {
+                if (isset($field['process']['fillWithCurrentDateTime']) && $field['process']['fillWithCurrentDateTime']) {
+                    $form->setValue($field['name'], gmdate('D, d M Y H:i:s', time()));
+                }
+            }
+        }
     }
 
     /**
