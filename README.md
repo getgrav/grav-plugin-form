@@ -19,3 +19,7 @@ Simply copy the `user/plugins/forms/forms.yaml` into `user/config/plugins/forms.
 ```
 enabled: true
 ```  
+
+# Using email
+
+Note: when using email functionality in your forms, make sure you have configured the Email plugin correctly. In particular, make sure you configured the "Email from" and "Email to" email addresses in the Email plugin with your email address
