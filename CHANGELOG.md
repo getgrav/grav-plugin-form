@@ -1,3 +1,16 @@
+# v0.5.0
+## 10/15/2015
+
+1. [](#new)
+	* New `operation` param to allow different file saving strategies
+	* Ability to add new file saving strategies
+	* Now calls a `process()` method during form processing
+1. [](#improved)
+    * Added server-side captcha validation and removed front-end validation
+    * Allow `filename` instead of `prefix`, `format` + `extension`
+1. [](#bugfix)
+	* Fixed radio inputs
+
 # v0.4.0
 ## 9/16/2015
 
