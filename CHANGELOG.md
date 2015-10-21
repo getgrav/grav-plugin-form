@@ -1,3 +1,12 @@
+# v0.6.0
+## 10/21/2015
+
+1. [](#improved)
+    * Added links to learn site for form examples
+1. [](#bugfix)
+    * Fixed for missing attributes in textarea field
+    * Fixed checkbox inputs
+
 # v0.5.0
 ## 10/15/2015
 
