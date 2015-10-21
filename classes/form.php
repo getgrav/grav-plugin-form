@@ -97,6 +97,16 @@ class Form extends Iterator
             $this->values = (array) $_POST;
         }
 
+        foreach($this->items['fields'] as $field) {
+            if ($field['type'] == 'checkbox') {
+                if (isset($this->values[$field['name']])) {
+                    $this->values[$field['name']] = true;
+                } else {
+                    $this->values[$field['name']] = false;
+                }
+            }
+        }
+
         $process = isset($this->items['process']) ? $this->items['process'] : array();
         if (is_array($process)) {
             foreach ($process as $action => $data) {

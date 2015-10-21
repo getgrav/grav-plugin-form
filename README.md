@@ -20,6 +20,12 @@ Simply copy the `user/plugins/forms/forms.yaml` into `user/config/plugins/forms.
 enabled: true
 ```  
 
+# How to use the Form Plugin
+
+The Learn site has two pages describing how to use the Form Plugin: 
+- [Forms](http://learn.getgrav.org/advanced/forms) 
+- [Add a contact form](http://learn.getgrav.org/advanced/contact-form)
+
 # Using email
 
 Note: when using email functionality in your forms, make sure you have configured the Email plugin correctly. In particular, make sure you configured the "Email from" and "Email to" email addresses in the Email plugin with your email address
