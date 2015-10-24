@@ -2,19 +2,12 @@
 namespace Grav\Plugin;
 
 use Grav\Common\Plugin;
-use Grav\Common\Page\Page;
-use Grav\Common\Page\Pages;
-use Grav\Common\Grav;
-use Grav\Common\Uri;
-use Grav\Common\Twig;
-use Grav\Plugin\Form;
-use RocketTheme\Toolbox\Event\Event;
-use RocketTheme\Toolbox\File\File;
 use Symfony\Component\Yaml\Yaml;
+use RocketTheme\Toolbox\File\File;
+use RocketTheme\Toolbox\Event\Event;
 
 class FormPlugin extends Plugin
 {
-
     /**
      * @var bool
      */
@@ -33,8 +26,7 @@ class FormPlugin extends Plugin
         return [
             'onPageInitialized' => ['onPageInitialized', 0],
             'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
-            'onTwigSiteVariables' => ['onTwigSiteVariables', 0],
-            'onFormProcessed' => ['onFormProcessed', 0]
+            'onTwigSiteVariables' => ['onTwigSiteVariables', 0]
         ];
     }
 
@@ -56,6 +48,10 @@ class FormPlugin extends Plugin
             // Create form.
             require_once __DIR__ . '/classes/form.php';
             $this->form = new Form($page);
+
+            $this->enable([
+                'onFormProcessed' => ['onFormProcessed', 0]
+            ]);
 
             // Handle posting if needed.
             if (!empty($_POST)) {
@@ -181,7 +177,9 @@ class FormPlugin extends Plugin
                     'form' => $this->form
                 );
 
-                $fullFileName = DATA_DIR . $this->form->name . '/' . $filename;
+                $locator = $this->grav['locator'];
+                $path = $locator->findResource('user://data', true);
+                $fullFileName = $path . DS . $this->form->name . DS . $filename;
 
                 $file = File::instance($fullFileName);
 

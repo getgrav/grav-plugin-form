@@ -14,6 +14,21 @@ class Form extends Iterator
     /**
      * @var array
      */
+    protected $data = array();
+
+    /**
+     * @var array
+     */
+    protected $rules = array();
+
+    /**
+     * @var array
+     */
+    protected $items = array();
+
+    /**
+     * @var array
+     */
     protected $values = array();
 
     /**
