@@ -148,10 +148,10 @@ class Form extends Iterator
             $this->values->validate();
             $this->values->filter();
 
-            self::getGrav()->fireEvent('onFormValidation', new Event(['form' => $this, 'data' => $this->values]));
+            self::getGrav()->fireEvent('onFormValidationProcessed', new Event(['form' => $this, 'data' => $this->values]));
         } catch (\RuntimeException $e) {
             $event = new Event(['form' => $this, 'message' => $e->getMessage()]);
-            self::getGrav()->fireEvent('onFormValidationFailed', $event);
+            self::getGrav()->fireEvent('onFormValidationError', $event);
             if ($event->isPropagationStopped()) {
                 return;
             }

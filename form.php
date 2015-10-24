@@ -51,7 +51,7 @@ class FormPlugin extends Plugin
 
             $this->enable([
                 'onFormProcessed' => ['onFormProcessed', 0],
-                'onFormValidationFailed' => ['onFormValidationFailed', 0]
+                'onFormValidationError' => ['onFormValidationError', 0]
             ]);
 
             // Handle posting if needed.
@@ -197,7 +197,7 @@ class FormPlugin extends Plugin
      *
      * @param  Event  $event An event object
      */
-    public function onFormValidationFailed(Event $event)
+    public function onFormValidationError(Event $event)
     {
         $form = $event['form'];
         $form->message = $event['message'];
