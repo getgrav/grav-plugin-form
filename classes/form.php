@@ -12,6 +12,11 @@ class Form extends Iterator
     use GravTrait;
 
     /**
+     * @var string
+     */
+    public $message;
+
+    /**
      * @var array
      */
     protected $data = array();
