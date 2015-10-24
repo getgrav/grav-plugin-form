@@ -50,7 +50,8 @@ class FormPlugin extends Plugin
             $this->form = new Form($page);
 
             $this->enable([
-                'onFormProcessed' => ['onFormProcessed', 0]
+                'onFormProcessed' => ['onFormProcessed', 0],
+                'onFormValidationFailed' => ['onFormValidationFailed', 0]
             ]);
 
             // Handle posting if needed.
@@ -90,30 +91,6 @@ class FormPlugin extends Plugin
         $form = $event['form'];
         $action = $event['action'];
         $params = $event['params'];
-
-        if (!$this->active) {
-            return;
-        }
-
-        if (!$this->validate($form)) {
-            /** @var Language $l */
-            $l = $this->grav['language'];
-            $this->form->message = $l->translate('FORM_PLUGIN.NOT_VALIDATED');
-            $uri = $this->grav['uri'];
-            $route = $uri->route();
-
-            /** @var Twig $twig */
-            $twig = $this->grav['twig'];
-            $twig->twig_vars['form'] = $form;
-
-            /** @var Pages $pages */
-            $pages = $this->grav['pages'];
-            $page = $pages->dispatch($route, true);
-            unset($this->grav['page']);
-            $this->grav['page'] = $page;
-
-            return;
-        }
 
         $this->process($form);
 
@@ -216,21 +193,30 @@ class FormPlugin extends Plugin
     }
 
     /**
-     * Validate a form
+     * Handle form validation error
      *
-     * @param Form $form
-     * @return bool
+     * @param  Event  $event An event object
      */
-    protected function validate($form) {
-        foreach ($form->fields as $field) {
-            if (isset($field['validate']) && isset($field['validate']['required']) && $field['validate']['required']) {
-                if (!$form->value($field['name'])) {
-                    return false;
-                }
-            }
-        }
+    public function onFormValidationFailed(Event $event)
+    {
+        $form = $event['form'];
+        $form->message = $event['message'];
 
-        return true;
+        $uri = $this->grav['uri'];
+        $route = $uri->route();
+
+        /** @var Twig $twig */
+        $twig = $this->grav['twig'];
+        $twig->twig_vars['form'] = $form;
+
+        /** @var Pages $pages */
+        $pages = $this->grav['pages'];
+        $page = $pages->dispatch($route, true);
+
+        unset($this->grav['page']);
+        $this->grav['page'] = $page;
+
+        $event->stopPropagation();
     }
 
     /**

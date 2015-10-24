@@ -2,9 +2,10 @@
 namespace Grav\Plugin;
 
 use Grav\Common\Iterator;
-use Grav\Common\Grav;
 use Grav\Common\GravTrait;
 use Grav\Common\Page\Page;
+use Grav\Common\Data\Data;
+use Grav\Common\Data\Blueprint;
 use RocketTheme\Toolbox\Event\Event;
 
 class Form extends Iterator
@@ -59,6 +60,8 @@ class Form extends Iterator
         if (empty($this->items['name'])) {
             $this->items['name'] = $page->slug();
         }
+
+        $this->reset();
     }
 
     /**
@@ -82,7 +85,7 @@ class Form extends Iterator
         if (!$name) {
             return $this->values;
         }
-        return $this->getField($name, 'values');
+        return $this->values->get($name);
     }
 
     /**
@@ -97,7 +100,7 @@ class Form extends Iterator
             return;
         }
 
-        $this->values[$name] = $value;
+        $this->values->set($name, $value);
     }
 
     /**
@@ -105,7 +108,20 @@ class Form extends Iterator
      */
     public function reset()
     {
-        $this->values = array();
+        $name = $this->items['name'];
+
+        // Fix naming for fields (presently only for toplevel fields)
+        foreach ($this->items['fields'] as $key => $field) {
+            if (is_numeric($key) && isset($field['name'])) {
+                unset($this->items['fields'][$key]);
+
+                $key = $field['name'];
+                $this->items['fields'][$key] = $field;
+            }
+        }
+
+        $blueprint = new Blueprint($name, ['form' => $this->items]);
+        $this->values = new Data($this->data, $blueprint);
     }
 
     /**
@@ -114,16 +130,30 @@ class Form extends Iterator
     public function post()
     {
         if (isset($_POST)) {
-            $this->values = (array) $_POST;
+            $values = (array) $_POST;
+
+            foreach($this->items['fields'] as $field) {
+                if ($field['type'] == 'checkbox') {
+                    $name = $field['name'];
+                    $values[$name] = isset($values[$name]) ? true : false;
+                }
+            }
+
+            // Add post values to form dataset
+            $this->values->merge($values);
         }
 
-        foreach($this->items['fields'] as $field) {
-            if ($field['type'] == 'checkbox') {
-                if (isset($this->values[$field['name']])) {
-                    $this->values[$field['name']] = true;
-                } else {
-                    $this->values[$field['name']] = false;
-                }
+        // Validate and filter data
+        try {
+            $this->values->validate();
+            $this->values->filter();
+
+            self::getGrav()->fireEvent('onFormValidation', new Event(['form' => $this, 'data' => $this->values]));
+        } catch (\RuntimeException $e) {
+            $event = new Event(['form' => $this, 'message' => $e->getMessage()]);
+            self::getGrav()->fireEvent('onFormValidationFailed', $event);
+            if ($event->isPropagationStopped()) {
+                return;
             }
         }
 
@@ -139,30 +169,5 @@ class Form extends Iterator
         } else {
             // Default action.
         }
-    }
-
-
-    /**
-     * @param string $name
-     * @param string $scope
-     * @return mixed|null
-     * @internal
-     */
-    protected function getField($name, $scope = 'value')
-    {
-        $path = explode('.', $name);
-
-        $current = $this->{$scope};
-        foreach ($path as $field) {
-            if (is_object($current) && isset($current->{$field})) {
-                $current = $current->{$field};
-            } elseif (is_array($current) && isset($current[$field])) {
-                $current = $current[$field];
-            } else {
-                return null;
-            }
-        }
-
-        return $current;
     }
 }
