@@ -46,7 +46,7 @@ class FormPlugin extends Plugin
             $this->active = true;
 
             // Create form.
-            require_once __DIR__ . '/classes/form.php';
+            require_once(__DIR__ . '/classes/form.php');
             $this->form = new Form($page);
 
             $this->enable([
@@ -200,7 +200,9 @@ class FormPlugin extends Plugin
     public function onFormValidationError(Event $event)
     {
         $form = $event['form'];
-        $form->message = $event['message'];
+        if (empty($form->message)) {
+            $form->message = $event['message'];
+        }
 
         $uri = $this->grav['uri'];
         $route = $uri->route();

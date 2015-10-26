@@ -62,6 +62,9 @@ class Form extends Iterator
         }
 
         $this->reset();
+
+        // Fire event
+        self::getGrav()->fireEvent('onFormInitialized', new Event(['form' => $this]));
     }
 
     /**
@@ -89,7 +92,7 @@ class Form extends Iterator
     }
 
     /**
-     * Get value of given variable (or all values).
+     * Set value of given variable.
      *
      * @param string $name
      * @return mixed
@@ -120,7 +123,7 @@ class Form extends Iterator
             }
         }
 
-        $blueprint = new Blueprint($name, ['form' => $this->items]);
+        $blueprint = new Blueprint($name, ['form' => $this->items, 'rules' => $this->rules]);
         $this->values = new Data($this->data, $blueprint);
     }
 
@@ -148,7 +151,7 @@ class Form extends Iterator
             $this->values->validate();
             $this->values->filter();
 
-            self::getGrav()->fireEvent('onFormValidationProcessed', new Event(['form' => $this, 'data' => $this->values]));
+            self::getGrav()->fireEvent('onFormValidationProcessed', new Event(['form' => $this]));
         } catch (\RuntimeException $e) {
             $event = new Event(['form' => $this, 'message' => $e->getMessage()]);
             self::getGrav()->fireEvent('onFormValidationError', $event);
