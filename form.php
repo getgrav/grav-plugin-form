@@ -142,7 +142,7 @@ class FormPlugin extends Plugin
                 $this->grav->redirect((string) $params);
                 break;
             case 'reset':
-                if (in_array($params, array(true, 1, '1', 'yes', 'on', 'true'), true)) {
+                if (Utils::isPositive($params)) {
                     $this->form->reset();
                 }
                 break;
