@@ -1,4 +1,4 @@
-<div class="alert">{{ form.message }}</div>
+{% if form.message %}<div class="alert">{{ form.message }}</div>{% endif %}
 
 <form name="{{ form.name }}"
       action="{{ uri.rootUrl ~ (form.action|default(page.route)) }}"
