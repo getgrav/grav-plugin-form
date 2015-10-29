@@ -172,7 +172,7 @@ class FormPlugin extends Plugin
                     );
                     $file->save($body);
                 } elseif ($operation == 'add') {
-                    $vars = $vars['form']->value();
+                    $vars = $vars['form']->value()->items()
 
                     foreach ($form->fields as $field) {
                         if (isset($field['process']) && isset($field['process']['ignore']) && $field['process']['ignore']) {
