@@ -134,6 +134,11 @@ class FormPlugin extends Plugin
                 /** @var Pages $pages */
                 $pages = $this->grav['pages'];
                 $page = $pages->dispatch($route, true);
+
+                if (!$page) {
+                    throw new \RuntimeException('Display page not found. Please check the page exists.', 400);
+                }
+
                 unset($this->grav['page']);
                 $this->grav['page'] = $page;
                 break;
