@@ -6,6 +6,7 @@ use Grav\Common\GravTrait;
 use Grav\Common\Page\Page;
 use Grav\Common\Data\Data;
 use Grav\Common\Data\Blueprint;
+use Grav\Common\Utils;
 use RocketTheme\Toolbox\Event\Event;
 
 class Form extends Iterator
@@ -134,6 +135,14 @@ class Form extends Iterator
     {
         if (isset($_POST)) {
             $values = (array) $_POST;
+
+            if (!isset($values['form-nonce']) || !Utils::verifyNonce($values['form-nonce'], 'form')) {
+                $event = new Event(['form' => $this, 'message' => 'Nonce validation failed']);
+                self::getGrav()->fireEvent('onFormValidationError', $event);
+                return;
+            } else {
+                unset($values['form-nonce']);
+            }
 
             foreach($this->items['fields'] as $field) {
                 if ($field['type'] == 'checkbox') {
