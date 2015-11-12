@@ -2,7 +2,9 @@
 
 {% block input %}
     <div class="form-textarea-wrapper {{ field.size }}">
-        <textarea class="input"
+        <textarea
+            class="{{ field.classes|default('input') }}"
+
             {# required attribute structures #}
             name="{{ (scope ~ field.name)|fieldName }}"
             {# input attribute structures #}
