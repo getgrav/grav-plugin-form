@@ -6,7 +6,7 @@
 {% for field in form.fields %}
     {% set value = form.value(field.name) %}
     <div>
-        {% include "forms/fields/#{field.type}/#{field.type}.html.twig" %}
+        {% include "forms/fields/#{field.type|default('text')}/#{field.type|default('text')}.html.twig" %}
     </div>
 {% endfor %}
 
