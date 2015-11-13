@@ -61,7 +61,7 @@ class FormPlugin extends Plugin
         }
     }
 
-        /**
+    /**
      * Add current directory to twig lookup paths.
      */
     public function onTwigTemplatePaths()
