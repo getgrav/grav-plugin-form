@@ -1,7 +1,7 @@
 {% if form.message %}<div class="alert">{{ form.message }}</div>{% endif %}
 
 <form name="{{ form.name }}"
-      action="{{ uri.rootUrl ~ (form.action|default(page.route)) }}"
+      action="{{ form.action ? base_url ~ form.action : page.url }}"
       method="{{ form.method|upper|default('POST') }}">
 {% for field in form.fields %}
     {% set value = form.value(field.name) %}
