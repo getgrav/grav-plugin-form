@@ -136,7 +136,7 @@ class Form extends Iterator
         if (isset($_POST)) {
             $values = (array) $_POST;
 
-            if (method_exists('Utils', 'getNonce')) {
+            if (method_exists('Grav\Common\Utils', 'getNonce')) {
                 if (!isset($values['form-nonce']) || !Utils::verifyNonce($values['form-nonce'], 'form')) {
                     $event = new Event(['form' => $this, 'message' => self::getGrav()['language']->translate('PLUGIN_FORM.NONCE_NOT_VALIDATED')]);
                     self::getGrav()->fireEvent('onFormValidationError', $event);
