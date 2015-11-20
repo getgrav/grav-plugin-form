@@ -2,7 +2,7 @@
 ## 11/21/2015
 
 1. [](#new)
-    * Server-side validation #11
+    * Server-side validation of forms #11
     * Added french translation
     * Added **nonce** form security
 1. [](#improved)
