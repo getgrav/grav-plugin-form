@@ -5,4 +5,5 @@ en:
 
 fr:
   PLUGIN_FORM:
-    NOT_VALIDATED: Formulaire non validé. Un ou plusieurs chanps obligatoires sont manquants.
+    NOT_VALIDATED: "Formulaire non validé. Un ou plusieurs champs obligatoires sont manquants."
+    NONCE_NOT_VALIDATED: "Oops, il y a un problème. Vérifiez s'il vous plait votre saisie et soumettez de nouveau le formulaire."
