@@ -7,8 +7,13 @@ fr:
   PLUGIN_FORM:
     NOT_VALIDATED: "Formulaire non validé. Un ou plusieurs champs obligatoires sont manquants."
     NONCE_NOT_VALIDATED: "Oops, il y a un problème. Vérifiez s'il vous plait votre saisie et soumettez de nouveau le formulaire."
-    
+
 es:
   PLUGIN_FORM:
     NOT_VALIDATED: "Falló la validación del formulario. Uno o más campos obligatorios no fueron capturados."
     NONCE_NOT_VALIDATED: "Oops, hay un problema, por favor revice la información capturada e intente enviar el formulario otra vez."
+
+hu:
+  PLUGIN_FORM:
+    NOT_VALIDATED: "Érvénytelen az űrlap. Egy vagy több kötelező mező nincs kitöltve."
+    NONCE_NOT_VALIDATED: "Upsz, van egy kis probléma, kérlek nézd át az űrlapot, majd küld el újra."
