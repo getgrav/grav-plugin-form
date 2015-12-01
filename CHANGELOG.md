@@ -1,3 +1,12 @@
+# v1.0.1
+## 12/01/2015
+
+1. [](#new)
+    * New **file upload** field
+    * Added modular form template
+    * Spanish translation
+    * Hungarian translation
+
 # v1.0.0
 ## 11/21/2015
 
