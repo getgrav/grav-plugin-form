@@ -201,9 +201,13 @@ class Form extends Iterator
 
     private function cleanFilesData($key, $file)
     {
+        $config  = self::getGrav()['config'];
+        $default = $config->get('plugins.form.files');
+        $settings = isset($this->items['fields'][$key]['files']) ? $this->items['fields'][$key]['files'] : [];
+
         /** @var Page $page */
         $page             = null;
-        $blueprint        = $this->items['fields'][$key]['files'];
+        $blueprint        = array_merge_recursive($default, $settings);
         $cleanFiles[$key] = [];
         if (!isset($blueprint)) {
             return false;
