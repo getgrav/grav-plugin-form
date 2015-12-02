@@ -3,6 +3,7 @@
 1. [](#bugfix)
     * Fixed merge of defaults settings
     * Support for arrays in `data.txt.twig`
+    * Fixed blueprint for admin
     
 # v1.0.1
 ## 12/01/2015
