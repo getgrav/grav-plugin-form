@@ -1,5 +1,5 @@
 # v1.0.2
-## XX/XX/2015
+## 12/01/2015
 1. [](#bugfix)
     * Fixed merge of defaults settings
     * Support for arrays in `data.txt.twig`
