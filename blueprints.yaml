@@ -1,5 +1,5 @@
 name: Form
-version: 1.0.1
+version: 1.0.2
 description: Enables the forms handling
 icon: check-square
 author:
@@ -29,7 +29,7 @@ form:
       title: PLUGIN_FORM.FILES
 
       fields:
-        multiple:
+        files.multiple:
           type: toggle
           label: PLUGIN_FORM.ALLOW_MULTIPLE
           help: PLUGIN_FORM.ALLOW_MULTIPLE_HELP
@@ -40,12 +40,12 @@ form:
             0: PLUGIN_ADMIN.DISABLED
           validate:
             type: bool
-        desination:
+        files.destination:
           type: text
           label: PLUGIN_FORM.DESTINATION
           help: PLUGIN_FORM.DESTINATION_HELP
           default: '@self'
-        accept:
+        files.accept:
           type: selectize
           size: large
           label: PLUGIN_FORM.ACCEPT

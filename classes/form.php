@@ -201,15 +201,19 @@ class Form extends Iterator
 
     private function cleanFilesData($key, $file)
     {
+        $config  = self::getGrav()['config'];
+        $default = $config->get('plugins.form.files');
+        $settings = isset($this->items['fields'][$key]['files']) ? $this->items['fields'][$key]['files'] : [];
+
         /** @var Page $page */
         $page             = null;
-        $blueprint        = $this->items['fields'][$key]['files'];
+        $blueprint        = array_merge_recursive($default, $settings);
         $cleanFiles[$key] = [];
         if (!isset($blueprint)) {
             return false;
         }
 
-        $cleanFiles = [ $key => []];
+        $cleanFiles = [$key => []];
         foreach ((array)$file['error'] as $index => $error) {
             if ($error == UPLOAD_ERR_OK) {
                 $tmp_name    = $file['tmp_name'][$index];
@@ -232,14 +236,14 @@ class Form extends Iterator
 
                     $destination = $page->relativePagePath();
                 } else if ($destination == '@self') {
-                    $page  = self::getGrav()['page'];
+                    $page        = self::getGrav()['page'];
                     $destination = $page->relativePagePath();
                 } else {
                     Folder::mkdir($destination);
                 }
 
                 if (move_uploaded_file($tmp_name, "$destination/$name")) {
-                    $path = $page ? self::getGrav()['uri']->convertUrl($page, $page->route() . '/' . $name) : $destination . '/' . $name;
+                    $path                    = $page ? self::getGrav()['uri']->convertUrl($page, $page->route() . '/' . $name) : $destination . '/' . $name;
                     $cleanFiles[$key][$path] = [
                         'name'  => $file['name'][$index],
                         'type'  => $file['type'][$index],
@@ -258,9 +262,8 @@ class Form extends Iterator
 
     private function match_in_array($needle, $haystack)
     {
-        foreach((array) $haystack as $item) {
-            if (true == preg_match("#^".strtr(preg_quote($item, '#'), array('\*' => '.*', '\?' => '.'))."$#i", $needle))
-            {
+        foreach ((array)$haystack as $item) {
+            if (true == preg_match("#^" . strtr(preg_quote($item, '#'), array('\*' => '.*', '\?' => '.')) . "$#i", $needle)) {
                 return true;
             }
         }
