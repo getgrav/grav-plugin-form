@@ -9,6 +9,7 @@ en:
     DESTINATION_HELP: "The location where the files should be uploaded to"
     ACCEPT: "Allowed MIME Types"
     ACCEPT_HELP: "A list of MIME Types that are allowed for upload"
+    ERROR_VALIDATING_CAPTCHA: "Error validating the Captcha"
 
 it:
   PLUGIN_FORM:
@@ -21,6 +22,7 @@ it:
     DESTINATION_HELP: "La destinazione dove i files vengono uploadati"
     ACCEPT: "Tipi di MIME Concessi"
     ACCEPT_HELP: "Una lista di tipi di MIME che sono permessi per l'upload"
+    ERROR_VALIDATING_CAPTCHA: "Errore durante la validazione del Captcha"
 
 fr:
   PLUGIN_FORM:

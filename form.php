@@ -105,7 +105,9 @@ class FormPlugin extends Plugin
                 $response = json_decode(file_get_contents($url), true);
 
                 if (!isset($response['success']) || $response['success'] !== true) {
-                    throw new \RuntimeException('Error validating the Captcha');
+                    $this->grav->fireEvent('onFormValidationError', new Event(['form' => $form, 'message' => $this->grav['language']->translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA')]));
+                    $event->stopPropagation();
+                    return;
                 }
                 break;
             case 'message':
