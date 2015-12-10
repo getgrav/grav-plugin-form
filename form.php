@@ -222,8 +222,10 @@ class FormPlugin extends Plugin
         $pages = $this->grav['pages'];
         $page = $pages->dispatch($route, true);
 
-        unset($this->grav['page']);
-        $this->grav['page'] = $page;
+        if ($page) {
+            unset($this->grav['page']);
+            $this->grav['page'] = $page;
+        }
 
         $event->stopPropagation();
     }
