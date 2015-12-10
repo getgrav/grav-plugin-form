@@ -45,3 +45,4 @@ hu:
     DESTINATION_HELP: "Ide lesznek feltöltve az állományok"
     ACCEPT: "Engedélyezett MIME-típusok"
     ACCEPT_HELP: "A feltölthető állományok MIME-típusainak listája"
+    ERROR_VALIDATING_CAPTCHA: "Hiba lépett fel a Captcha validálása során"
