@@ -10,9 +10,9 @@
                 <label class="inline">
                 {% block label %}
                     {% if field.help %}
-                    <span class="tooltip" data-asTooltip-position="w" title="{{ field.help|e }}">{{ field.label|default(field.name|capitalize) }}</span>
+                    <span class="tooltip" data-asTooltip-position="w" title="{{ field.help|e|t }}">{{ field.label|default(field.name|capitalize)|t }}</span>
                     {% else %}
-                    {{ field.label|default(field.name|capitalize) }}
+                    {{ field.label|default(field.name|capitalize)|t }}
                     {% endif %}
                     {{ field.validate.required in ['on', 'true', 1] ? '<span class="required">*</span>' }}
                 {% endblock %}
