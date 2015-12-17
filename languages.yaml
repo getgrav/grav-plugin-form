@@ -19,7 +19,15 @@ es:
 fr:
   PLUGIN_FORM:
     NOT_VALIDATED: "Formulaire non validé. Un ou plusieurs champs obligatoires sont manquants."
-    NONCE_NOT_VALIDATED: "Oups, un problème est survenu. Veuillez vérifier votre saisie et soumettez à nouveau le formulaire."
+    NONCE_NOT_VALIDATED: "Oups, un problème est survenu. Veuillez vérifier votre saisie et soumettre à nouveau le formulaire."
+    FILES: "Fichiers chargés"
+    ALLOW_MULTIPLE: "Autoriser plus d'un fichier"
+    ALLOW_MULTIPLE_HELP: "Permet la sélection de plusieurs fichiers pour chargement."
+    DESTINATION: "Destination"
+    DESTINATION_HELP: "L'emplacement où les fichiers doivent être chargés."
+    ACCEPT: "Autoriser les Types MIME"
+    ACCEPT_HELP: "Liste des Types MIME autorisés au chargement"
+    ERROR_VALIDATING_CAPTCHA: "Erreur lors de la validation du Captcha"
 
 hr:
   PLUGIN_FORM:
