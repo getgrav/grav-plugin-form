@@ -3,11 +3,11 @@
 
 1. [](#new)
     * Croatian translation
+    * Added id, style, and disabled options to select fields
 1. [](#improved)
     * Allow adding form labels and help text as lang strings
     * Allow translating field content
     * Allow translating button and checkbox labels
-    * Added id, style, and disabled options to select fields
     * Allow adding classes to the form field container with `field.outerclasses`
     * Updated French translation
 1. [](#bugfix)
