@@ -214,11 +214,12 @@ class Form extends Iterator
     {
         $config  = self::getGrav()['config'];
         $default = $config->get('plugins.form.files');
-        $settings = isset($this->items['fields'][$key]['files']) ? $this->items['fields'][$key]['files'] : [];
+        $settings = isset($this->items['fields'][$key]) ? $this->items['fields'][$key] : [];
 
         /** @var Page $page */
-        $page             = null;
-        $blueprint        = array_merge_recursive($default, $settings);
+        $page = null;
+        $blueprint = array_replace($default, $settings);
+
         $cleanFiles[$key] = [];
         if (!isset($blueprint)) {
             return false;
@@ -254,14 +255,8 @@ class Form extends Iterator
                 }
 
                 if (move_uploaded_file($tmp_name, "$destination/$name")) {
-                    $path                    = $page ? self::getGrav()['uri']->convertUrl($page, $page->route() . '/' . $name) : $destination . '/' . $name;
-                    $cleanFiles[$key][$path] = [
-                        'name'  => $file['name'][$index],
-                        'type'  => $file['type'][$index],
-                        'size'  => $file['size'][$index],
-                        'file'  => $destination . '/' . $name,
-                        'route' => $page ? $path : null
-                    ];
+                    $path = $page ? self::getGrav()['uri']->convertUrl($page, $page->route() . '/' . $name) : $destination . '/' . $name;
+                    $cleanFiles[$key][] = $path;
                 } else {
                     throw new \RuntimeException("Unable to upload file(s) to $destination/$name");
                 }
