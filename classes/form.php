@@ -255,8 +255,14 @@ class Form extends Iterator
                 }
 
                 if (move_uploaded_file($tmp_name, "$destination/$name")) {
-                    $path = $page ? self::getGrav()['uri']->convertUrl($page, $page->route() . '/' . $name) : $destination . '/' . $name;
-                    $cleanFiles[$key][] = $path;
+                    $path                    = $page ? self::getGrav()['uri']->convertUrl($page, $page->route() . '/' . $name) : $destination . '/' . $name;
+                    $cleanFiles[$key][$path] = [
+                        'name'  => $file['name'][$index],
+                        'type'  => $file['type'][$index],
+                        'size'  => $file['size'][$index],
+                        'file'  => $destination . '/' . $name,
+                        'route' => $page ? $path : null
+                    ];
                 } else {
                     throw new \RuntimeException("Unable to upload file(s) to $destination/$name");
                 }
