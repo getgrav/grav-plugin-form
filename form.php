@@ -98,8 +98,9 @@ class FormPlugin extends Plugin
             case 'captcha':
                 // Validate the captcha
                 $secret = $params['recatpcha_secret'];
-                if (empty($secret))
+                if (empty($secret)) {
                     $secret = $this->config->get('plugins.form.recaptcha.secret');
+                }
                 $query = http_build_query([
                     'secret' => $secret,
                     'response' => $this->form->value('g-recaptcha-response')
