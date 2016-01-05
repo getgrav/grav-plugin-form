@@ -97,8 +97,12 @@ class FormPlugin extends Plugin
         switch ($action) {
             case 'captcha':
                 // Validate the captcha
+                $secret = $params['recatpcha_secret'];
+                if (empty($secret)) {
+                    $secret = $this->config->get('plugins.form.recaptcha.secret');
+                }
                 $query = http_build_query([
-                    'secret' => $params['recatpcha_secret'],
+                    'secret' => $secret,
                     'response' => $this->form->value('g-recaptcha-response')
                 ]);
                 $url = 'https://www.google.com/recaptcha/api/siteverify?'.$query;

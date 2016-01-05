@@ -10,11 +10,29 @@ en:
     ACCEPT: "Allowed MIME Types"
     ACCEPT_HELP: "A list of MIME Types that are allowed for upload"
     ERROR_VALIDATING_CAPTCHA: "Error validating the Captcha"
+    RECAPTCHA: "ReCaptcha"
+    RECAPTCHA_SITE_KEY: "Site key"
+    RECAPTCHA_SITE_KEY_HELP: "For more info visit https://developers.google.com/recaptcha/intro"
+    RECAPTCHA_SECRET_KEY: "Secret key"
+    RECAPTCHA_SECRET_KEY_HELP: "For more info visit https://developers.google.com/recaptcha/intro"
 
 es:
   PLUGIN_FORM:
-    NOT_VALIDATED: "Falló la validación del formulario. Uno o más campos obligatorios no fueron capturados."
-    NONCE_NOT_VALIDATED: "Oops, hay un problema, por favor revice la información capturada e intente enviar el formulario otra vez."
+    NOT_VALIDATED: "Falló la validación del formulario. Uno o más campos obligatorios no fueron cubiertos."
+    NONCE_NOT_VALIDATED: "Oops, hay un problema, por favor revise la información e intente enviar el formulario otra vez."
+    FILES: "Subida de Ficheros"
+    ALLOW_MULTIPLE: "Permitir más de un fichero"
+    ALLOW_MULTIPLE_HELP: "Permitir seleccionar más de un fichero para subir."
+    DESTINATION: "Destino"
+    DESTINATION_HELP: "El lugar de destino al que subir los ficheros"
+    ACCEPT: "MIME Types permitidos"
+    ACCEPT_HELP: "Una lista de  MIME Types que se permiten subir."
+    ERROR_VALIDATING_CAPTCHA: "Error al comrobar el Captcha"
+    RECAPTCHA: "ReCaptcha"
+    RECAPTCHA_SITE_KEY: "Site key"
+    RECAPTCHA_SITE_KEY_HELP: "Para más información visita https://developers.google.com/recaptcha/intro"
+    RECAPTCHA_SECRET_KEY: "Secret key"
+    RECAPTCHA_SECRET_KEY_HELP: "Para más información visita https://developers.google.com/recaptcha/intro"
 
 fr:
   PLUGIN_FORM:
