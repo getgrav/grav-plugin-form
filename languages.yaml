@@ -10,6 +10,11 @@ en:
     ACCEPT: "Allowed MIME Types"
     ACCEPT_HELP: "A list of MIME Types that are allowed for upload"
     ERROR_VALIDATING_CAPTCHA: "Error validating the Captcha"
+    RECAPTCHA: "ReCaptcha"
+    RECAPTCHA_SITE_KEY: "Site key"
+    RECAPTCHA_SITE_KEY_HELP: "For more info visit https://developers.google.com/recaptcha/intro"
+    RECAPTCHA_SECRET_KEY: "Secret key"
+    RECAPTCHA_SECRET_KEY_HELP: "For more info visit https://developers.google.com/recaptcha/intro"
 
 es:
   PLUGIN_FORM:
