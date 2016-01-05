@@ -64,9 +64,9 @@ form:
           type: text
           label: PLUGIN_FORM.RECAPTCHA_SITE_KEY
           help: PLUGIN_FORM.RECAPTCHA_SITE_KEY_HELP
-          default: '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI'
+          default: ''
         recaptcha.secret_key:
           type: text
           label: PLUGIN_FORM.RECAPTCHA_SECRET_KEY
           help: PLUGIN_FORM.RECAPTCHA_SECRET_KEY_HELP
-          default: '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
+          default: ''
