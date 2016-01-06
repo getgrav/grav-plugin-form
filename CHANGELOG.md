@@ -1,3 +1,10 @@
+# v1.2.0
+## 01/06/2015
+
+1. [](#bugfix)
+    * Correctly merge the file field configuration
+    * restore full file information save
+
 # v1.1.0
 ## 12/18/2015
 
