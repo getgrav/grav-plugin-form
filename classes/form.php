@@ -214,11 +214,12 @@ class Form extends Iterator
     {
         $config  = self::getGrav()['config'];
         $default = $config->get('plugins.form.files');
-        $settings = isset($this->items['fields'][$key]['files']) ? $this->items['fields'][$key]['files'] : [];
+        $settings = isset($this->items['fields'][$key]) ? $this->items['fields'][$key] : [];
 
         /** @var Page $page */
-        $page             = null;
-        $blueprint        = array_merge_recursive($default, $settings);
+        $page = null;
+        $blueprint = array_replace($default, $settings);
+
         $cleanFiles[$key] = [];
         if (!isset($blueprint)) {
             return false;
