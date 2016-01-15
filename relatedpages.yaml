@@ -32,4 +32,4 @@ taxonomy_match:                 # taxonomy type matching
             7: 90
             8: 100
 content_match:                  # Disable this if you have lots of posts, performance implications...
-    process: true               # true|false to enable content to content matching
+    process: false              # true|false to enable content to content matching

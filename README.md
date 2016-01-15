@@ -1,6 +1,6 @@
-# Grav RelatedPages Plugin
+# Grav Related Pages Plugin
 
-`RelatedPages` is a [Grav](http://github.com/getgrav/grav) plugin that calculates related pages for the current page. It uses a highly configurable set of options to determine a **score** for each page you configure it to look at and compare.
+`Related Pages` is a [Grav](http://github.com/getgrav/grav) plugin that calculates related pages for the current page. It uses a highly configurable set of options to determine a **score** for each page you configure it to look at and compare.
 
 It has 4 main calculation options that may be combined to produce very accurate results:
 
@@ -11,11 +11,11 @@ It has 4 main calculation options that may be combined to produce very accurate 
 
 You can configure which combination of methods to use, customize the scoring, adjust how many related pages to show, cut-off scores and more!
 
-![RelatedPages](assets/readme_1.png)
+![Related Pages](assets/readme_1.png)
 
 # Installation
 
-Installing the RelatedPages plugin can be done in one of two ways. Our GPM (Grav Package Manager) installation method enables you to quickly and easily install the plugin with a simple terminal command, while the manual method enables you to do so via a zip file.
+Installing the Related Pages plugin can be done in one of two ways. Our GPM (Grav Package Manager) installation method enables you to quickly and easily install the plugin with a simple terminal command, while the manual method enables you to do so via a zip file.
 
 ## GPM Installation (Preferred)
 
@@ -23,7 +23,7 @@ The simplest way to install this plugin is via the [Grav Package Manager (GPM)](
 
     bin/gpm install relatedpages
 
-This will install the RelatedPages plugin into your `/user/plugins` directory within Grav. Its files can be found under `/your/site/grav/user/plugins/relatedpages`.
+This will install the Related Pages plugin into your `/user/plugins` directory within Grav. Its files can be found under `/your/site/grav/user/plugins/relatedpages`.
 
 ## Manual Installation
 

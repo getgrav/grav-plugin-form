@@ -70,13 +70,7 @@ class RelatedPagesPlugin extends Plugin
 
         $config = $this->config;
 
-        // get all the pages
-        $collection = $page->collection($config['filter']);
 
-        // perform check if page must be in filter values
-        if ($config['page_in_filter'] && !in_array($page, iterator_to_array($collection))) {
-            return;
-        }
 
         $this->enable([
             'onTwigSiteVariables' => ['onTwigSiteVariables', 0]
@@ -86,6 +80,15 @@ class RelatedPagesPlugin extends Plugin
         $this->related_pages = $cache->fetch($cache_id);
 
         if ($this->related_pages === false) {
+
+            // get all the pages
+            $collection = $page->collection($config['filter']);
+
+            // perform check if page must be in filter values
+            if ($config['page_in_filter'] && !in_array($page, iterator_to_array($collection))) {
+                return;
+            }
+
             // reset array
             $this->related_pages = [];
             $debugger->addMessage("RelatedPages Plugin cache miss. Rebuilding...");
