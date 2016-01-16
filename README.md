@@ -12,7 +12,7 @@ $ bin/gpm install form
 
 # Configuration
 
-Simply copy the `user/plugins/forms/forms.yaml` into `user/config/plugins/forms.yaml` and make your modifications.
+Simply copy the `user/plugins/form/form.yaml` into `user/config/plugins/form.yaml` and make your modifications.
 
 ```
 enabled: true
@@ -20,8 +20,8 @@ enabled: true
 
 # How to use the Form Plugin
 
-The Learn site has two pages describing how to use the Form Plugin: 
-- [Forms](http://learn.getgrav.org/advanced/forms) 
+The Learn site has two pages describing how to use the Form Plugin:
+- [Forms](http://learn.getgrav.org/advanced/forms)
 - [Add a contact form](http://learn.getgrav.org/advanced/contact-form)
 
 # Using email
