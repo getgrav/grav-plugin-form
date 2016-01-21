@@ -1,6 +1,5 @@
 en:
   PLUGIN_REL_PAGES:
-    PLUGIN_STATUS: Plugin status
     BASICS: Basic Settings
     LIMIT: Limit
     LIMIT_HELP: The number of related pages to display
