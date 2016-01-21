@@ -16,7 +16,7 @@ form:
   fields:
     enabled:
       type: hidden
-      label: Plugin status
+      label: PLUGIN_ADMIN.PLUGIN_STATUS
       highlight: 1
       default: 0
       options:
