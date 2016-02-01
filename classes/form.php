@@ -200,6 +200,8 @@ class Form extends Iterator
                 if ($previousEvent) {
                     if (!$previousEvent->isPropagationStopped()) {
                         self::getGrav()->fireEvent('onFormProcessed', $event);
+                    } else {
+                        break;
                     }
                 } else {
                     self::getGrav()->fireEvent('onFormProcessed', $event);
