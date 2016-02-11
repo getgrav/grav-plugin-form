@@ -50,7 +50,7 @@ class FormPlugin extends Plugin
             $this->active = true;
 
             // Create form.
-            require_once(__DIR__ . '/classes/Form.php');
+            require_once(__DIR__ . '/classes/form.php');
             $this->form = new Form($page);
 
             $this->enable([
