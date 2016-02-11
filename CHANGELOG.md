@@ -1,3 +1,16 @@
+# v1.2.1
+## 02/11/2015
+
+1. [](#new)
+    * Allow placeholder for **select** field
+1. [](#improved)
+    * Use common language strings in blueprints
+    * Use `for` attribute in labels
+    * Improved `README.md`
+    * Code lint
+1. [](#bugfix)
+    * Moved `nl2br` to correct place or will break for arrays
+
 # v1.2.0
 ## 01/06/2015
 
