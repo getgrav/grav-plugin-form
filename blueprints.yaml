@@ -1,5 +1,5 @@
 name: Form
-version: 1.2.0
+version: 1.2.1
 description: Enables the forms handling
 icon: check-square
 author:
@@ -16,7 +16,7 @@ form:
   fields:
     enabled:
       type: hidden
-      label: Plugin status
+      label: PLUGIN_ADMIN.PLUGIN_STATUS
       highlight: 1
       default: 0
       options:

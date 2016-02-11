@@ -18,6 +18,8 @@
                 {% if field.multiple in ['on', 'true', 1] %}multiple="multiple"{% endif %}
                 {% if field.form %}form="{{ field.form }}"{% endif %}
                 >
+            {% if field.placeholder %}<option value="" disabled selected>{{ field.placeholder}}</option>{% endif %}
+
             {% for key, text in field.options %}
             <option {% if key == value or (field.multiple and text in value) %}selected="selected"{% endif %} value="{{ field.multiple ? text : key }}">{% if grav.twig.twig.filters['tu'] is defined %}{{ text|tu }}{% else %}{{ text|t }}{% endif %}</option>
             {% endfor %}
