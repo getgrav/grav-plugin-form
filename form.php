@@ -6,6 +6,10 @@ use Symfony\Component\Yaml\Yaml;
 use RocketTheme\Toolbox\File\File;
 use RocketTheme\Toolbox\Event\Event;
 
+/**
+ * Class FormPlugin
+ * @package Grav\Plugin
+ */
 class FormPlugin extends Plugin
 {
     /**
@@ -46,7 +50,7 @@ class FormPlugin extends Plugin
             $this->active = true;
 
             // Create form.
-            require_once(__DIR__ . '/classes/form.php');
+            require_once(__DIR__ . '/classes/Form.php');
             $this->form = new Form($page);
 
             $this->enable([
