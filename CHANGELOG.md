@@ -1,11 +1,11 @@
 # v1.2.2
-## 02/11/2015
+## 02/11/2016
 
 1. [](#bugfix)
     * Fixed case issue when including form file.
     
 # v1.2.1
-## 02/11/2015
+## 02/11/2016
 
 1. [](#new)
     * Allow placeholder for **select** field
@@ -18,7 +18,7 @@
     * Moved `nl2br` to correct place or will break for arrays
 
 # v1.2.0
-## 01/06/2015
+## 01/06/2016
 
 1. [](#bugfix)
     * Correctly merge the file field configuration
