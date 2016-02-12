@@ -3,7 +3,7 @@
 
 1. [](#bugfix)
     * Fixed case issue when including form file.
-    
+
 # v1.2.1
 ## 02/11/2016
 
