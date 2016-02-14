@@ -14,8 +14,10 @@
 {% endif %}
 
 <form name="{{ form.name }}"
-      method="{{ method }}"{{ multipart }}>
       action="{{ action }}"
+      method="{{ method }}"{{ multipart }}
+      {% if form.classes %}class="{{ form.classes }}"{% endif %}
+>
 
 {% for field in form.fields %}
     {% set value = form.value(field.name) %}
