@@ -16,7 +16,9 @@
 <form name="{{ form.name }}"
       action="{{ action }}"
       method="{{ method }}"{{ multipart }}
+      {% block form_classes %}
       {% if form.classes %}class="{{ form.classes }}"{% endif %}
+      {% endblock %}
 >
 
 {% for field in form.fields %}
@@ -28,7 +30,14 @@
 
 	<div class="buttons">
 	{% for button in form.buttons %}
-	    <button class="{{ button.classes|default('button') }}" type="{{ button.type|default('submit') }}">{{ button.value|t|default('Submit') }}</button>
+	    <button
+            {% block button_classes %}
+            class="{{ button.classes|default('button') }}"
+            {% endblock %}
+            type="{{ button.type|default('submit') }}"
+        >
+            {{ button.value|t|default('Submit') }}
+        </button>
 	{% endfor %}
 	</div>
 
