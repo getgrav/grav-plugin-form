@@ -8,9 +8,14 @@
     {% endif %}
 {% endfor %}
 
+{% set action = form.action ? base_url ~ form.action : page.url %}
+{% if (action == base_url_relative) %}
+    {% set action = base_url_relative ~ '/' ~ page.slug %}
+{% endif %}
+
 <form name="{{ form.name }}"
-      action="{{ form.action ? base_url ~ form.action : page.url }}"
       method="{{ method }}"{{ multipart }}>
+      action="{{ action }}"
 
 {% for field in form.fields %}
     {% set value = form.value(field.name) %}
