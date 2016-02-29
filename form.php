@@ -12,6 +12,10 @@ use RocketTheme\Toolbox\Event\Event;
  */
 class FormPlugin extends Plugin
 {
+    public $features = [
+        'blueprints' => 1000
+    ];
+
     /**
      * @var bool
      */
@@ -30,7 +34,8 @@ class FormPlugin extends Plugin
         return [
             'onPageInitialized' => ['onPageInitialized', 0],
             'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
-            'onTwigSiteVariables' => ['onTwigSiteVariables', 0]
+            'onTwigSiteVariables' => ['onTwigSiteVariables', 0],
+            'onFormFieldTypes' => ['onFormFieldTypes', 0]
         ];
     }
 
@@ -232,6 +237,23 @@ class FormPlugin extends Plugin
         }
 
         $event->stopPropagation();
+    }
+
+    /**
+     * Get list of form field types specified in this plugin. Only special types needs to be listed.
+     *
+     * @return array
+     */
+    public function getFormFieldTypes()
+    {
+        return [
+            'display' => [
+                'form_field' => false
+            ],
+            'spacer' => [
+                'form_field' => false
+            ]
+        ];
     }
 
     /**
