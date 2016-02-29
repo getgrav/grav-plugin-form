@@ -8,7 +8,7 @@
     <script>
         var captchaOnloadCallback = function captchaOnloadCallback() {
             grecaptcha.render('g-recaptcha', {
-                'sitekey': "{{field.recatpcha_site_key}}",
+                'sitekey': "{{field.recaptcha_site_key ?: field.recatpcha_site_key}}",
                 'callback': captchaValidatedCallback,
                 'expired-callback': captchaExpiredCallback
             });
