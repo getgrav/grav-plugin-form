@@ -248,10 +248,10 @@ class FormPlugin extends Plugin
     {
         return [
             'display' => [
-                'form_field' => false
+                'input@' => false
             ],
             'spacer' => [
-                'form_field' => false
+                'input@' => false
             ]
         ];
     }
