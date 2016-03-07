@@ -26,6 +26,7 @@
                    value="{{ val|e }}"
                    name="{{ field.name|fieldName ~ '[' ~ name ~ ']' }}"
                    {% if checked %}checked="checked"{% endif %}
+                   {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
                    {% if field.validate.required %}required="required"{% endif %}
             >
             <label style="display: inline" for="{{ id|e }}">{{ text|t|e }}</label>

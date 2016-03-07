@@ -1,4 +1,6 @@
 {% set originalValue = originalValue is defined ? originalValue : value %}
+{% set toggleableChecked = field.toggleable and (originalValue is not null and originalValue is not empty) %}
+{% set isDisabledToggleable = field.toggleable and not toggleableChecked %}
 {% set value = (value is null ? field.default : value) %}
 {# {% set vertical = field.style == 'vertical' %} #}
 {% set vertical = true %}
@@ -37,7 +39,7 @@
                                     {% if field.classes is defined %}class="{{ field.classes }}" {% endif %}
                                     {% if field.id is defined %}id="{{ field.id|e }}" {% endif %}
                                     {% if field.style is defined %}style="{{ field.style|e }}" {% endif %}
-                                    {% if field.disabled %}disabled="disabled"{% endif %}
+                                    {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
                                     {% if field.placeholder %}placeholder="{{ field.placeholder }}"{% endif %}
                                     {% if field.autofocus in ['on', 'true', 1] %}autofocus="autofocus"{% endif %}
                                     {% if field.novalidate in ['on', 'true', 1] %}novalidate="novalidate"{% endif %}

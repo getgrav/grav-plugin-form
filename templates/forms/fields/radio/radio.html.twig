@@ -13,6 +13,7 @@
                    id="{{ id|e }}"
                    name="{{ field.name|fieldName }}"
                    {% if key == value %}checked="checked" {% endif %}
+                   {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
                    {% if field.validate.required in ['on', 'true', 1] %}required="required"{% endif %}
             />
             <label style="display: inline" for="{{ id|e }}">{{ text|e }}</label>
