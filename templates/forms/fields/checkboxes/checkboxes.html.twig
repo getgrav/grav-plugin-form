@@ -9,7 +9,7 @@
 {% block global_attributes %}
     {{ parent() }}
     data-grav-keys="{{ field.use == 'keys' ? 'true' : 'false' }}"
-    data-grav-field-name="{{ field.name|fieldName }}"
+    data-grav-field-name="{{ (scope ~ field.name)|fieldName }}"
 {% endblock %}
 
 {% block input %}
@@ -24,7 +24,7 @@
             <input type="checkbox"
                    id="{{ id|e }}"
                    value="{{ val|e }}"
-                   name="{{ field.name|fieldName ~ '[' ~ name ~ ']' }}"
+                   name="{{ (scope ~ field.name)|fieldName ~ '[' ~ name ~ ']' }}"
                    {% if checked %}checked="checked"{% endif %}
                    {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
                    {% if field.validate.required %}required="required"{% endif %}
