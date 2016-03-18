@@ -1,10 +1,6 @@
 {% extends "forms/field.html.twig" %}
 
 {% block input %}
-    <script src="https://www.google.com/recaptcha/api.js?onload=captchaOnloadCallback&render=explicit"
-        async defer>
-    </script>
-
     <script>
         var captchaOnloadCallback = function captchaOnloadCallback() {
             grecaptcha.render('g-recaptcha', {
@@ -22,6 +18,8 @@
             grecaptcha.reset();
         };
     </script>
-
+    <script src="https://www.google.com/recaptcha/api.js?onload=captchaOnloadCallback&render=explicit"
+        async defer>
+    </script>
     <div class="g-recaptcha" id="g-recaptcha"></div>
 {% endblock %}
