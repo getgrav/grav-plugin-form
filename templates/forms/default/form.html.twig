@@ -23,9 +23,7 @@
 
 {% for field in form.fields %}
     {% set value = form.value(field.name) %}
-    <div>
         {% include "forms/fields/#{field.type}/#{field.type}.html.twig" %}
-    </div>
 {% endfor %}
 
 	<div class="buttons">
