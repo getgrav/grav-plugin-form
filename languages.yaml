@@ -66,3 +66,16 @@ it:
     ACCEPT: "Tipi di MIME Concessi"
     ACCEPT_HELP: "Una lista di tipi di MIME che sono permessi per l'upload"
     ERROR_VALIDATING_CAPTCHA: "Errore durante la validazione del Captcha"
+
+de:
+  PLUGIN_FORM:
+    NOT_VALIDATED: "Formularwerte nicht gültig. Für ein oder mehrere erforderliche Felder fehlen Werte."
+    NONCE_NOT_VALIDATED: "Ups, es gibt da ein Problem. Eingabewerte bitte noch mal prüfen und das Formular erneut absenden."
+    FILES: "Dateien hochladen"
+    ALLOW_MULTIPLE: "Erlaube mehr als eine Datei"
+    ALLOW_MULTIPLE_HELP: "Erlaubt es, mehr als eine Datei zum Hochladen auszuwählen."
+    DESTINATION: "Ziel"
+    DESTINATION_HELP: "Das Ziel, wohin die Dateien hochgeladen werden sollen."
+    ACCEPT: "Erlaube MIME-Typen"
+    ACCEPT_HELP: "Eine Liste von MIME-Typen, die hochgeladen werden dürfen."
+    ERROR_VALIDATING_CAPTCHA: "Die Überprüfung des Captcha ist fehlgeschlagen."
