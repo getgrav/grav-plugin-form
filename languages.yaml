@@ -59,3 +59,33 @@ de:
     ADVANCED: Erweitert
     TAXONOMY_SCORE_SCALE: Taxonomie-Taxonomie Bewertungsskala
     CONTENT_SCORE_SCALE: Taxonomie-Inhalt Bewertungsskala
+ro:
+ PLUGIN_REL_PAGES:
+    BASICS: Setări de bază
+    LIMIT: Limită
+    LIMIT_HELP: Numărul afișat al paginilor legate
+    ORDER: Ordinea
+    ORDER_BY: Ordonează după
+    SHOW_SCORE: Arată scorul
+    SHOW_SCORE_HELP: Comutați pentru afișarea scorurilor
+    ITEMS: Articole
+    ITEMS_HELP: Acceptă colecții bazate pe `@self`, `@page` și `@taxonomy` 
+    PAGE_IN_FILTER: Filtru 'in' pagină
+    PAGE_IN_FILTER_HELP: Activează dacă pagina curentă trebuie să fie în colecția filtrată
+    EXPLICIT_PROCESS: Procesează anumite pagini specifice
+    EXPLICIT_PROCESS_HELP: Activează pentru procesarea anumitor pagini specifice
+    EXPLICIT_SCORE: Scorul paginilor specifice 
+    EXPLICIT_SCORE_HELP: Un scor între (0 - 100) pentru a da unor pagini specifice greutate
+    TAXONOMY_MATCH: Potrivire după Taxonomie 
+    TAXONOMY: Taxonomie
+    TAXONOMY_HELP: Ce fel de taxonomie să fie folosită la potrivirea paginilor 
+    TAXONOMY_TAXONOMY_PROCESS: Taxonomie-taxonomie
+    TAXONOMY_TAXONOMY_PROCESS_HELP: Activeazā potrivirea între taxonomii
+    TAXONOMY_CONTENT_PROCESS: Taxonomie-conținut
+    TAXONOMY_CONTENT_PROCESS_HELP: Activează potrivirea după taxonomie - conținut 
+    CONTENT_MATCH: Potrivirea după conținut 
+    CONTENT_PROCESS: Conținut-conținut
+    CONTENT_PROCESS_HELP: Activează pentru potrivire după conținut (Notă: dezactivați dacă aveți conținut mult)
+    ADVANCED: Avansat
+    TAXONOMY_SCORE_SCALE: Scorul scalei Taxonomie-taxonomie
+    CONTENT_SCORE_SCALE: Scorul scalei Taxonomie-conținut
