@@ -19,10 +19,10 @@
                 {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
                 {% if field.form %}form="{{ field.form }}"{% endif %}
                 >
-            {% if field.placeholder %}<option value="" disabled selected>{{ field.placeholder|tu }}</option>{% endif %}
+            {% if field.placeholder %}<option value="" disabled selected>{{ field.placeholder|t }}</option>{% endif %}
 
             {% for key, text in field.options %}
-            <option {% if key == value or (field.multiple and text in value) %}selected="selected"{% endif %} value="{{ field.multiple ? text : key }}">{% if grav.twig.twig.filters['tu'] is defined %}{{ text|tu }}{% else %}{{ text|t }}{% endif %}</option>
+            <option {% if key == value or (field.multiple and text in value) %}selected="selected"{% endif %} value="{{ field.multiple ? text : key }}">{% if grav.twig.twig.filters['tu'] is defined %}{{ text|t }}{% else %}{{ text|t }}{% endif %}</option>
             {% endfor %}
         </select>
     </div>
