@@ -120,7 +120,7 @@ class FormPlugin extends Plugin
                 }
                 break;
             case 'message':
-                $this->form->message = (string) $params;
+                $this->form->message = $this->grav['language']->translate($params);
                 break;
             case 'redirect':
                 $this->grav->redirect((string) $params);
