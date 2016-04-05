@@ -22,22 +22,22 @@ class Form extends Iterator
     /**
      * @var array
      */
-    protected $data = array();
+    protected $data = [];
 
     /**
      * @var array
      */
-    protected $rules = array();
+    protected $rules = [];
 
     /**
      * @var array
      */
-    protected $items = array();
+    protected $items = [];
 
     /**
      * @var array
      */
-    protected $values = array();
+    protected $values = [];
 
     /**
      * @var Page $page
@@ -53,9 +53,9 @@ class Form extends Iterator
     {
         $this->page = $page;
 
-        $header      = $page->header();
-        $this->rules = isset($header->rules) ? $header->rules : array();
-        $this->data  = isset($header->data) ? $header->data : array();
+        $header = $page->header();
+        $this->rules = isset($header->rules) ? $header->rules : [];
+        $this->data = isset($header->data) ? $header->data : [];
         $this->items = $header->form;
 
         // Set form name if not set.
@@ -81,12 +81,12 @@ class Form extends Iterator
             if (is_numeric($key) && isset($field['name'])) {
                 unset($this->items['fields'][$key]);
 
-                $key                         = $field['name'];
+                $key = $field['name'];
                 $this->items['fields'][$key] = $field;
             }
         }
 
-        $blueprint    = new Blueprint($name, ['form' => $this->items, 'rules' => $this->rules]);
+        $blueprint = new Blueprint($name, ['form' => $this->items, 'rules' => $this->rules]);
         $this->values = new Data($this->data, $blueprint);
     }
 
@@ -112,6 +112,7 @@ class Form extends Iterator
         if (!$name) {
             return $this->values;
         }
+
         return $this->values->get($name);
     }
 
@@ -139,12 +140,15 @@ class Form extends Iterator
         $files = [];
         if (isset($_POST)) {
             $values = (array)$_POST;
-            $files  = (array)$_FILES;
+            $files = (array)$_FILES;
 
             if (method_exists('Grav\Common\Utils', 'getNonce')) {
                 if (!isset($values['form-nonce']) || !Utils::verifyNonce($values['form-nonce'], 'form')) {
-                    $event = new Event(['form' => $this, 'message' => self::getGrav()['language']->translate('PLUGIN_FORM.NONCE_NOT_VALIDATED')]);
+                    $event = new Event(['form'    => $this,
+                                        'message' => self::getGrav()['language']->translate('PLUGIN_FORM.NONCE_NOT_VALIDATED')
+                    ]);
                     self::getGrav()->fireEvent('onFormValidationError', $event);
+
                     return;
                 }
             }
@@ -185,13 +189,13 @@ class Form extends Iterator
             }
         }
 
-        $process = isset($this->items['process']) ? $this->items['process'] : array();
+        $process = isset($this->items['process']) ? $this->items['process'] : [];
         if (is_array($process)) {
             $event = null;
             foreach ($process as $action => $data) {
                 if (is_numeric($action)) {
                     $action = \key($data);
-                    $data   = $data[$action];
+                    $data = $data[$action];
                 }
 
                 $previousEvent = $event;
@@ -214,7 +218,7 @@ class Form extends Iterator
 
     private function cleanFilesData($key, $file)
     {
-        $config  = self::getGrav()['config'];
+        $config = self::getGrav()['config'];
         $default = $config->get('plugins.form.files');
         $settings = isset($this->items['fields'][$key]) ? $this->items['fields'][$key] : [];
 
@@ -230,9 +234,9 @@ class Form extends Iterator
         $cleanFiles = [$key => []];
         foreach ((array)$file['error'] as $index => $error) {
             if ($error == UPLOAD_ERR_OK) {
-                $tmp_name    = $file['tmp_name'][$index];
-                $name        = $file['name'][$index];
-                $type        = $file['type'][$index];
+                $tmp_name = $file['tmp_name'][$index];
+                $name = $file['name'][$index];
+                $type = $file['type'][$index];
                 $destination = Folder::getRelativePath(rtrim($blueprint['destination'], '/'));
 
                 if (!$this->match_in_array($type, $blueprint['accept'])) {
@@ -242,22 +246,25 @@ class Form extends Iterator
                 if (Utils::startsWith($destination, '@page:')) {
                     $parts = explode(':', $destination);
                     $route = $parts[1];
-                    $page  = self::getGrav()['page']->find($route);
+                    $page = self::getGrav()['page']->find($route);
 
                     if (!$page) {
                         throw new \RuntimeException('Unable to upload file to destination. Page route not found.');
                     }
 
                     $destination = $page->relativePagePath();
-                } else if ($destination == '@self') {
-                    $page        = self::getGrav()['page'];
-                    $destination = $page->relativePagePath();
                 } else {
-                    Folder::mkdir($destination);
+                    if ($destination == '@self') {
+                        $page = self::getGrav()['page'];
+                        $destination = $page->relativePagePath();
+                    } else {
+                        Folder::mkdir($destination);
+                    }
                 }
 
                 if (move_uploaded_file($tmp_name, "$destination/$name")) {
-                    $path                    = $page ? self::getGrav()['uri']->convertUrl($page, $page->route() . '/' . $name) : $destination . '/' . $name;
+                    $path = $page ? self::getGrav()['uri']->convertUrl($page,
+                        $page->route() . '/' . $name) : $destination . '/' . $name;
                     $cleanFiles[$key][$path] = [
                         'name'  => $file['name'][$index],
                         'type'  => $file['type'][$index],
@@ -277,7 +284,9 @@ class Form extends Iterator
     private function match_in_array($needle, $haystack)
     {
         foreach ((array)$haystack as $item) {
-            if (true == preg_match("#^" . strtr(preg_quote($item, '#'), array('\*' => '.*', '\?' => '.')) . "$#i", $needle)) {
+            if (true == preg_match("#^" . strtr(preg_quote($item, '#'), ['\*' => '.*', '\?' => '.']) . "$#i",
+                    $needle)
+            ) {
                 return true;
             }
         }
