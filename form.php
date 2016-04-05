@@ -32,10 +32,10 @@ class FormPlugin extends Plugin
     public static function getSubscribedEvents()
     {
         return [
-            'onPageInitialized' => ['onPageInitialized', 0],
+            'onPageInitialized'   => ['onPageInitialized', 0],
             'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
             'onTwigSiteVariables' => ['onTwigSiteVariables', 0],
-            'onFormFieldTypes' => ['onFormFieldTypes', 0]
+            'onFormFieldTypes'    => ['onFormFieldTypes', 0]
         ];
     }
 
