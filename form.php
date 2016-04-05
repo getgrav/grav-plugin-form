@@ -275,7 +275,7 @@ class FormPlugin extends Plugin
         foreach ($form->fields as $field) {
             if (isset($field['process'])) {
                 if (isset($field['process']['fillWithCurrentDateTime']) && $field['process']['fillWithCurrentDateTime']) {
-                    $form->setValue($field['name'], gmdate('D, d M Y H:i:s', time()));
+                    $form->setData($field['name'], gmdate('D, d M Y H:i:s', time()));
                 }
             }
         }
