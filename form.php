@@ -125,7 +125,16 @@ class FormPlugin extends Plugin
                 }
                 break;
             case 'message':
-                $this->form->message = $this->grav['language']->translate($params);
+                $translated_string = $this->grav['language']->translate($params);
+                $vars = array(
+                    'form' => $form
+                );
+
+                /** @var Twig $twig */
+                $twig = $this->grav['twig'];
+                $processed_string = $twig->processString($translated_string, $vars);
+
+                $this->form->message = $processed_string;
                 break;
             case 'redirect':
                 $this->grav->redirect((string)$params);
