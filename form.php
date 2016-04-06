@@ -32,10 +32,10 @@ class FormPlugin extends Plugin
     public static function getSubscribedEvents()
     {
         return [
-            'onPageInitialized' => ['onPageInitialized', 0],
+            'onPageInitialized'   => ['onPageInitialized', 0],
             'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
             'onTwigSiteVariables' => ['onTwigSiteVariables', 0],
-            'onFormFieldTypes' => ['onFormFieldTypes', 0]
+            'onFormFieldTypes'    => ['onFormFieldTypes', 0]
         ];
     }
 
@@ -59,7 +59,7 @@ class FormPlugin extends Plugin
             $this->form = new Form($page);
 
             $this->enable([
-                'onFormProcessed' => ['onFormProcessed', 0],
+                'onFormProcessed'       => ['onFormProcessed', 0],
                 'onFormValidationError' => ['onFormValidationError', 0]
             ]);
 
@@ -107,15 +107,20 @@ class FormPlugin extends Plugin
             case 'captcha':
                 // Validate the captcha
                 $query = http_build_query([
-                    'secret' => isset($params['recaptcha_secret']) ? $params['recaptcha_secret'] : $params['recatpcha_secret'], //Allow value with typo for BC
+                    'secret'   => isset($params['recaptcha_secret']) ? $params['recaptcha_secret'] : $params['recatpcha_secret'],
+                    //Allow value with typo for BC
                     'response' => $this->form->value('g-recaptcha-response')
                 ]);
-                $url = 'https://www.google.com/recaptcha/api/siteverify?'.$query;
+                $url = 'https://www.google.com/recaptcha/api/siteverify?' . $query;
                 $response = json_decode(file_get_contents($url), true);
 
                 if (!isset($response['success']) || $response['success'] !== true) {
-                    $this->grav->fireEvent('onFormValidationError', new Event(['form' => $form, 'message' => $this->grav['language']->translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA')]));
+                    $this->grav->fireEvent('onFormValidationError', new Event([
+                        'form'    => $form,
+                        'message' => $this->grav['language']->translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA')
+                    ]));
                     $event->stopPropagation();
+
                     return;
                 }
                 break;
@@ -123,7 +128,7 @@ class FormPlugin extends Plugin
                 $this->form->message = $this->grav['language']->translate($params);
                 break;
             case 'redirect':
-                $this->grav->redirect((string) $params);
+                $this->grav->redirect((string)$params);
                 break;
             case 'reset':
                 if (Utils::isPositive($params)) {
@@ -131,7 +136,7 @@ class FormPlugin extends Plugin
                 }
                 break;
             case 'display':
-                $route = (string) $params;
+                $route = (string)$params;
                 if (!$route || $route[0] != '/') {
                     /** @var Uri $uri */
                     $uri = $this->grav['uri'];
@@ -166,9 +171,9 @@ class FormPlugin extends Plugin
 
                 /** @var Twig $twig */
                 $twig = $this->grav['twig'];
-                $vars = array(
+                $vars = [
                     'form' => $this->form
-                );
+                ];
 
                 $locator = $this->grav['locator'];
                 $path = $locator->findResource('user://data', true);
@@ -177,10 +182,8 @@ class FormPlugin extends Plugin
                 $file = File::instance($fullFileName);
 
                 if ($operation == 'create') {
-                    $body = $twig->processString(
-                        !empty($params['body']) ? $params['body'] : '{% include "forms/data.txt.twig" %}',
-                        $vars
-                    );
+                    $body = $twig->processString(!empty($params['body']) ? $params['body'] : '{% include "forms/data.txt.twig" %}',
+                        $vars);
                     $file->save($body);
                 } elseif ($operation == 'add') {
                     $vars = $vars['form']->value()->toArray();
@@ -211,7 +214,7 @@ class FormPlugin extends Plugin
     /**
      * Handle form validation error
      *
-     * @param  Event  $event An event object
+     * @param  Event $event An event object
      */
     public function onFormValidationError(Event $event)
     {
@@ -250,7 +253,7 @@ class FormPlugin extends Plugin
             'display' => [
                 'input@' => false
             ],
-            'spacer' => [
+            'spacer'  => [
                 'input@' => false
             ]
         ];
@@ -264,13 +267,15 @@ class FormPlugin extends Plugin
      * - fillWithCurrentDateTime
      *
      * @param Form $form
+     *
      * @return bool
      */
-    protected function process($form) {
+    protected function process($form)
+    {
         foreach ($form->fields as $field) {
             if (isset($field['process'])) {
                 if (isset($field['process']['fillWithCurrentDateTime']) && $field['process']['fillWithCurrentDateTime']) {
-                    $form->setValue($field['name'], gmdate('D, d M Y H:i:s', time()));
+                    $form->setData($field['name'], gmdate('D, d M Y H:i:s', time()));
                 }
             }
         }
@@ -280,7 +285,8 @@ class FormPlugin extends Plugin
      * Create unix timestamp for storing the data into the filesystem.
      *
      * @param string $format
-     * @param int $utimestamp
+     * @param int    $utimestamp
+     *
      * @return string
      */
     private function udate($format = 'u', $utimestamp = null)
