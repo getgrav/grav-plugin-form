@@ -129,7 +129,7 @@ class Form extends Iterator
     public function value($name = null, $fallback = false)
     {
         if (!$name) {
-            return $this->values;
+            return $this->data;
         }
 
         if ($this->data->get($name)) {
@@ -184,7 +184,6 @@ class Form extends Iterator
             $data = $this->values->get('data');
             $files = (array)$_FILES;
 
-            // @todo move away from here
             if (method_exists('Grav\Common\Utils', 'getNonce')) {
                 if (!$this->values->get('form-nonce') || !Utils::verifyNonce($this->values->get('form-nonce'), 'form')) {
                     $event = new Event(['form'    => $this,
@@ -203,8 +202,11 @@ class Form extends Iterator
                 }
             }
 
-
             // Add post data to form dataset
+            if (!$data) {
+                $data = $this->values->toArray();
+            }
+
             $this->data->merge($data);
             $this->data->merge($files);
         }
