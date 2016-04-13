@@ -18,7 +18,7 @@
             grecaptcha.reset();
         };
     </script>
-    <script src="https://www.google.com/recaptcha/api.js?onload=captchaOnloadCallback&render=explicit"
+    <script src="https://www.google.com/recaptcha/api.js?onload=captchaOnloadCallback&render=explicit{% if field.language %}&hl={{ field.language }}{% endif %}"
         async defer>
     </script>
     <div class="g-recaptcha" id="g-recaptcha"></div>
