@@ -1,3 +1,9 @@
+# v1.3.0
+## xx/xx/2016
+
+1. [](#bugfix)
+    * Fixed select options escaping with autoescape on - [#502](https://github.com/getgrav/grav-plugin-admin/issues/502)
+
 # v1.2.2
 ## 02/11/2016
 
