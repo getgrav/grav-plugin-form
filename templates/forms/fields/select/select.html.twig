@@ -22,7 +22,9 @@
             {% if field.placeholder %}<option value="" disabled selected>{{ field.placeholder|t }}</option>{% endif %}
 
             {% for key, text in field.options %}
-            <option {% if key == value or (field.multiple and key in value) %}selected="selected"{% endif %} value="{{ key }}">{% if grav.twig.twig.filters['tu'] is defined %}{{ text|tu|raw }}{% else %}{{ text|t|raw }}{% endif %}</option>
+                {% set selected = field.selectize ? text : key %}
+                {% set item_value = field.selectize and field.multiple ? text : key %}
+                <option {% if key == value or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ item_value }}">{% if grav.twig.twig.filters['tu'] is defined %}{{ text|tu|raw }}{% else %}{{ text|t|raw }}{% endif %}</option>
             {% endfor %}
         </select>
     </div>
