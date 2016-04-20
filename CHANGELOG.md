@@ -1,7 +1,22 @@
-# v1.3.0
-## xx/xx/2016
+# v1.3.0-beta.1
+## 04/20/2016
 
+1. [](#new)
+    * Added the HTML5 `range` input field with `min` and `max` parameters
+1. [](#improved)
+    * Allow to override classes in Form definition for the form element
+    * Add more blocks in the Form twig template, so classes can be overridden more easily in themes
+    * Reworked some fields to fit the new Admin
+    * Use `scope` for form fields to allow fields to be excluded from the data by adding `input@: false` to their definition
+    * Added german translation
+    * Allow to add inline Twig to the form message definition
 1. [](#bugfix)
+    * Fixed the form action URL for home page forms
+    * Fix stopping form events propagation, correctly stop when one event is stopped
+    * Allow to translate the fields placeholders and the form message
+    * Fix captcha javascript function ordering. Also, render it in the site active language
+    * Support attribute `for="id"` on label for checkbox
+    * Fix select fields with the multiple option enabled
     * Fixed select options escaping with autoescape on - [#502](https://github.com/getgrav/grav-plugin-admin/issues/502)
 
 # v1.2.2
@@ -102,20 +117,20 @@
 ## 10/15/2015
 
 1. [](#new)
-	* New `operation` param to allow different file saving strategies
-	* Ability to add new file saving strategies
-	* Now calls a `process()` method during form processing
+    * New `operation` param to allow different file saving strategies
+    * Ability to add new file saving strategies
+    * Now calls a `process()` method during form processing
 1. [](#improved)
     * Added server-side captcha validation and removed front-end validation
     * Allow `filename` instead of `prefix`, `format` + `extension`
 1. [](#bugfix)
-	* Fixed radio inputs
+    * Fixed radio inputs
 
 # v0.4.0
 ## 9/16/2015
 
 1. [](#new)
-	* PHP server-side form validation
+    * PHP server-side form validation
     * Added new Google Catpcha field with front-end validation
 1. [](#improved)
     * Add defaults for forms, moved from the themes to the Form plugin
