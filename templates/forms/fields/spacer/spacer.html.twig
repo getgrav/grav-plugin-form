@@ -1,10 +1,10 @@
 <div class="form-spacer">
     {% if field.title %}
-    <h3>{{ field.title }}</h3>
+    <h3>{{ field.title|raw }}</h3>
     {% endif %}
 
     {% if field.text %}
-    <p>{{ field.text }}</p>
+    <p>{{ field.text|raw }}</p>
     {% endif %}
 
     {% if field.underline %}

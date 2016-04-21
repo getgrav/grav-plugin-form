@@ -3,9 +3,9 @@
 {% block input %}
     <div class="form-display-wrapper {{ field.size }}">
         {% if field.markdown %}
-            {{ field.content|t|markdown }}
+            {{ field.content|t|markdown|raw }}
         {% else %}
-            {{ field.content|t }}
+            {{ field.content|t|raw }}
         {% endif %}
     </div>
 {% endblock %}
