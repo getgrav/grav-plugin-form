@@ -1,3 +1,10 @@
+# v1.3.0-beta.2
+## 04/27/2016
+
+1. [](#bugfix)
+    * Fix for autoescape in spacer and display form fields
+    * Fix issue with form reset action [#66](https://github.com/getgrav/grav-plugin-form/pull/66)
+
 # v1.3.0-beta.1
 ## 04/20/2016
 
