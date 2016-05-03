@@ -1,3 +1,9 @@
+# v1.3.0-beta.3
+## xx/xx/2016
+
+1. [](#bugfix)
+    * Fix for select field admin translation
+
 # v1.3.0-beta.2
 ## 04/27/2016
 
