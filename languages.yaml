@@ -1,6 +1,5 @@
 en:
   PLUGIN_REL_PAGES:
-    PLUGIN_STATUS: Plugin status
     BASICS: Basic Settings
     LIMIT: Limit
     LIMIT_HELP: The number of related pages to display
@@ -29,3 +28,64 @@ en:
     ADVANCED: Advanced
     TAXONOMY_SCORE_SCALE: Taxonomy-taxonomy score scale
     CONTENT_SCORE_SCALE: Taxonomy-content score scale
+de:
+  PLUGIN_REL_PAGES:
+    PLUGIN_STATUS: Plugin-Status
+    BASICS: Grundeinstellungen
+    LIMIT: Angezeigt
+    LIMIT_HELP: Die Anzahl der angezeigten verwandten Seiten
+    ORDER: Reihenfolge
+    ORDER_BY: Sortiert nach
+    SHOW_SCORE: Zeige Bewertung
+    SHOW_SCORE_HELP: Umschalter, ob die Bewertung in der Ausgabe angezeigt werden soll
+    ITEMS: Elemente
+    ITEMS_HELP: Unterstützt `@self`, `@page`, und `@taxonomy` basierte Sammlungen (collections)
+    PAGE_IN_FILTER: Seite 'drin' Filter
+    PAGE_IN_FILTER_HELP: Aktiviert, wenn die aktuelle Seite in der gefilterten Sammlung (collection) enthalten sein muss
+    EXPLICIT_PROCESS: Verarbeite explizite Seiten
+    EXPLICIT_PROCESS_HELP: Aktiviere diesen Abgleich der expliziten Seiten
+    EXPLICIT_SCORE: Bewertung der expliziten Seiten
+    EXPLICIT_SCORE_HELP: Eine Bewertung von (0 - 100) um expliziten Seiten eine Gewichtung zu geben
+    TAXONOMY_MATCH: Abgleich der Taxonomie-Typen
+    TAXONOMY: Taxonomie
+    TAXONOMY_HELP: Welcher Taxonomie-Typ soll für den Seiten-Abgleich genutzt werden
+    TAXONOMY_TAXONOMY_PROCESS: Taxonomie-Taxonomie
+    TAXONOMY_TAXONOMY_PROCESS_HELP: Aktiviere die Taxonomie für den Taxonomie-Abgleich
+    TAXONOMY_CONTENT_PROCESS: Taxonomie-Inhalt
+    TAXONOMY_CONTENT_PROCESS_HELP: Aktiviere die Taxonomie für den Inhalts-Abgleich
+    CONTENT_MATCH: Abgleich der Inhalts-Typen
+    CONTENT_PROCESS: Inhalt-Inhalt
+    CONTENT_PROCESS_HELP: Aktiviere den Inhalt-zu-Inhalt-Abgleich (Beachte: Deaktivieren bei viel Inhalt)
+    ADVANCED: Erweitert
+    TAXONOMY_SCORE_SCALE: Taxonomie-Taxonomie Bewertungsskala
+    CONTENT_SCORE_SCALE: Taxonomie-Inhalt Bewertungsskala
+ro:
+ PLUGIN_REL_PAGES:
+    BASICS: Setări de bază
+    LIMIT: Limită
+    LIMIT_HELP: Numărul afișat al paginilor legate
+    ORDER: Ordinea
+    ORDER_BY: Ordonează după
+    SHOW_SCORE: Arată scorul
+    SHOW_SCORE_HELP: Comutați pentru afișarea scorurilor
+    ITEMS: Articole
+    ITEMS_HELP: Acceptă colecții bazate pe `@self`, `@page` și `@taxonomy` 
+    PAGE_IN_FILTER: Filtru 'in' pagină
+    PAGE_IN_FILTER_HELP: Activează dacă pagina curentă trebuie să fie în colecția filtrată
+    EXPLICIT_PROCESS: Procesează anumite pagini specifice
+    EXPLICIT_PROCESS_HELP: Activează pentru procesarea anumitor pagini specifice
+    EXPLICIT_SCORE: Scorul paginilor specifice 
+    EXPLICIT_SCORE_HELP: Un scor între (0 - 100) pentru a da unor pagini specifice greutate
+    TAXONOMY_MATCH: Potrivire după Taxonomie 
+    TAXONOMY: Taxonomie
+    TAXONOMY_HELP: Ce fel de taxonomie să fie folosită la potrivirea paginilor 
+    TAXONOMY_TAXONOMY_PROCESS: Taxonomie-taxonomie
+    TAXONOMY_TAXONOMY_PROCESS_HELP: Activeazā potrivirea între taxonomii
+    TAXONOMY_CONTENT_PROCESS: Taxonomie-conținut
+    TAXONOMY_CONTENT_PROCESS_HELP: Activează potrivirea după taxonomie - conținut 
+    CONTENT_MATCH: Potrivirea după conținut 
+    CONTENT_PROCESS: Conținut-conținut
+    CONTENT_PROCESS_HELP: Activează pentru potrivire după conținut (Notă: dezactivați dacă aveți conținut mult)
+    ADVANCED: Avansat
+    TAXONOMY_SCORE_SCALE: Scorul scalei Taxonomie-taxonomie
+    CONTENT_SCORE_SCALE: Scorul scalei Taxonomie-conținut
