@@ -2,7 +2,7 @@
 ## 05/04/2016
 
 1. [](#new)
-    * Added support for 'prepend' and 'append' field attributes for Text input
+    * Added support for `prepend` and `append` field attributes for Text input
     
 # v1.3.0-beta.3
 ## 05/03/2016
