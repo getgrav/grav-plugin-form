@@ -28,6 +28,7 @@ en:
     ADVANCED: Advanced
     TAXONOMY_SCORE_SCALE: Taxonomy-taxonomy score scale
     CONTENT_SCORE_SCALE: Taxonomy-content score scale
+    
 de:
   PLUGIN_REL_PAGES:
     PLUGIN_STATUS: Plugin-Status
@@ -59,6 +60,38 @@ de:
     ADVANCED: Erweitert
     TAXONOMY_SCORE_SCALE: Taxonomie-Taxonomie Bewertungsskala
     CONTENT_SCORE_SCALE: Taxonomie-Inhalt Bewertungsskala
+    
+fr:
+  PLUGIN_REL_PAGES:
+    BASICS: Réglages de base
+    LIMIT: Limite
+    LIMIT_HELP: Le nombre de pages en relation à afficher
+    ORDER: Classement
+    ORDER_BY: Classement par
+    SHOW_SCORE: Afficher le score
+    SHOW_SCORE_HELP: Activer/désactiver afin de déterminer si les scores doivent être affichés en sortie
+    ITEMS: Éléments
+    ITEMS_HELP: Prise en charge des collections basées sur `@self`, `@page` et `@taxonomy`
+    PAGE_IN_FILTER: Page 'dans' le filtre
+    PAGE_IN_FILTER_HELP: Activer si la page actuelle doit être présente dans la collection filtrée
+    EXPLICIT_PROCESS: Traiter les pages explicites
+    EXPLICIT_PROCESS_HELP: Activer la correspondance explicite pour cette page
+    EXPLICIT_SCORE: Score explicite de la page
+    EXPLICIT_SCORE_HELP: Un score compris entre (0 - 100) pour rendre une page explicite
+    TAXONOMY_MATCH: Correspondance par type de taxonomie
+    TAXONOMY: Taxonomie
+    TAXONOMY_HELP: Quel type de taxonomie utiliser pour la correspondance des pages
+    TAXONOMY_TAXONOMY_PROCESS: Taxonomie-taxonomie
+    TAXONOMY_TAXONOMY_PROCESS_HELP: Activer la taxonomie pour la correspondance de taxonomie
+    TAXONOMY_CONTENT_PROCESS: Taxonomie-contenu
+    TAXONOMY_CONTENT_PROCESS_HELP: Activer la taxonomie pour la correspondance de contenu
+    CONTENT_MATCH: Correspondance par type de contenu
+    CONTENT_PROCESS: Contenu-contenu
+    CONTENT_PROCESS_HELP: Activer la correspondance de contenu (NOTE : désactivez si vous avez beaucoup de contenu)
+    ADVANCED: Avancés
+    TAXONOMY_SCORE_SCALE: Taxonomie-niveau de score de taxonomie
+    CONTENT_SCORE_SCALE: Taxonomie-niveau de score de contenu
+    
 ro:
  PLUGIN_REL_PAGES:
     BASICS: Setări de bază
