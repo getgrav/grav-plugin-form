@@ -1,9 +1,15 @@
+# v1.3.0-beta.5
+## 05/12/2016
+
+1. [](#improved)
+    * Moved form/field.html.twig file to the default folder, to be more easily extended in themes
+
 # v1.3.0-beta.4
 ## 05/04/2016
 
 1. [](#new)
     * Added support for `prepend` and `append` field attributes for Text input
-    
+
 # v1.3.0-beta.3
 ## 05/03/2016
 
@@ -89,7 +95,7 @@
 1. [](#bugfix)
     * Fix captcha validation
     * Fix issue where Form was unsetting valid page
-        
+
 # v1.0.2
 ## 12/01/2015
 
@@ -97,7 +103,7 @@
     * Fixed merge of defaults settings
     * Support for arrays in `data.txt.twig`
     * Fixed blueprint for admin
-    
+
 # v1.0.1
 ## 12/01/2015
 
