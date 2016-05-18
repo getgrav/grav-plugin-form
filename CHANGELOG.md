@@ -1,3 +1,9 @@
+# v1.3.0-beta.6
+## XX/XX/2016
+
+1. [](#bugfix)
+    * Refactored the files upload logic 
+    
 # v1.3.0-beta.5
 ## 05/12/2016
 
