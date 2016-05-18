@@ -195,11 +195,19 @@ class Form extends Iterator
                 }
             }
 
-            foreach ($this->items['fields'] as $field) {
-                $name = $field['name'];
+            $i = 0;
+            foreach ($this->items['fields'] as $index => $field) {
+                $name = isset($field['name']) ? $field['name'] : $index;
+                if (!isset($field['name'])) {
+                    if (isset($data[$i])) { //Handle input@ false fields
+                        $data[$name] = $data[$i];
+                        unset($data[$i]);
+                    }
+                }
                 if ($field['type'] == 'checkbox') {
                     $data[$name] = isset($data[$name]) ? true : false;
                 }
+                $i++;
             }
 
             // Add post data to form dataset
