@@ -214,10 +214,12 @@ class Form extends Iterator
             $this->data->validate();
             $this->data->filter();
 
-            $cleanFiles = $this->cleanFilesData($files['data']);
+            if (isset($files['data'])) {
+                $cleanFiles = $this->cleanFilesData($files['data']);
 
-            foreach ($cleanFiles as $key => $data) {
-                $this->data->set($key, $data);
+                foreach ($cleanFiles as $key => $data) {
+                    $this->data->set($key, $data);
+                }
             }
 
             $this->grav->fireEvent('onFormValidationProcessed', new Event(['form' => $this]));
