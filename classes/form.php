@@ -207,6 +207,12 @@ class Form extends Iterator
                 $data = $this->values->toArray();
             }
 
+            // Add recaptcha to dataset if exists in form
+            $recaptcha = $this->values->get('g-recaptcha-response');
+            if ($recaptcha) {
+                $data['g-recaptcha-response'] = $recaptcha;
+            }
+
             $this->data->merge($data);
             $this->data->merge($files);
         }
