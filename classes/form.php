@@ -193,22 +193,24 @@ class Form extends Iterator
                 }
             }
 
+            $i = 0;
             foreach ($this->items['fields'] as $key => $field) {
                 $name = isset($field['name']) ? $field['name'] : $key;
+                if (!isset($field['name'])) {
+                    if (isset($data[$i])) { //Handle input@ false fields
+                        $data[$name] = $data[$i];
+                        unset($data[$i]);
+                    }
+                }
                 if ($field['type'] == 'checkbox') {
                     $data[$name] = isset($data[$name]) ? true : false;
                 }
+                $i++;
             }
 
             // Add post data to form dataset
             if (!$data) {
                 $data = $this->values->toArray();
-            }
-
-            // Add recaptcha to dataset if exists in form
-            $recaptcha = $this->values->get('g-recaptcha-response');
-            if ($recaptcha) {
-                $data['g-recaptcha-response'] = $recaptcha;
             }
 
             $this->data->merge($data);

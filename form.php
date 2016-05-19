@@ -108,9 +108,8 @@ class FormPlugin extends Plugin
             case 'captcha':
                 // Validate the captcha
                 $query = http_build_query([
-                    'secret'   => isset($params['recaptcha_secret']) ? $params['recaptcha_secret'] : $params['recatpcha_secret'],
-                    //Allow value with typo for BC
-                    'response' => $this->form->value('g-recaptcha-response')
+                    'secret'   => isset($params['recaptcha_secret']) ? $params['recaptcha_secret'] : $params['recatpcha_secret'], //Allow value with typo for BC
+                    'response' => $this->form->value('g-recaptcha-response', true)
                 ]);
                 $url = 'https://www.google.com/recaptcha/api/siteverify?' . $query;
                 $response = json_decode(file_get_contents($url), true);
