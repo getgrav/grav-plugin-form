@@ -96,7 +96,11 @@ class Form extends Iterator
             if (is_numeric($key) && isset($field['name'])) {
                 unset($this->items['fields'][$key]);
 
-                $key                         = $field['name'];
+                if ($field['type'] === 'captcha') {
+                    $field['input@'] = false;
+                }
+
+                $key = $field['name'];
                 $this->items['fields'][$key] = $field;
             }
         }
