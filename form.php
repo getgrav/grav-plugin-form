@@ -228,7 +228,7 @@ class FormPlugin extends Plugin
     public function onFormValidationError(Event $event)
     {
         $form = $event['form'];
-        if (empty($form->message)) {
+        if (isset($event['message'])) {
             $form->message = $event['message'];
         }
 
