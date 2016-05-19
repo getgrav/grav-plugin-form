@@ -93,16 +93,30 @@ class Form extends Iterator
 
         // Fix naming for fields (presently only for toplevel fields)
         foreach ($this->items['fields'] as $key => $field) {
+            // default to text if not set
+            if (!isset($field['type'])) {
+                $field['type'] = 'text';
+            }
+
+            // handle BC for captcha
+            if ($field['type'] === 'captcha') {
+                $field['input@'] = false;
+            }
+
+            // BC for old style of array style field definitions
             if (is_numeric($key) && isset($field['name'])) {
                 unset($this->items['fields'][$key]);
-
-                if ($field['type'] === 'captcha') {
-                    $field['input@'] = false;
-                }
-
                 $key = $field['name'];
-                $this->items['fields'][$key] = $field;
             }
+
+            // Add name based on key if not already set
+            if (!isset($field['name'])) {
+                $field['name'] = $key;
+            }
+
+            // set any modifications back on the fields array
+            $this->items['fields'][$key] = $field;
+
         }
 
         $blueprint    = new Blueprint($name, ['form' => $this->items, 'rules' => $this->rules]);
