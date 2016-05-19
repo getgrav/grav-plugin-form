@@ -1,4 +1,4 @@
-{% if form.message %}<div class="alert">{{ form.message }}</div>{% endif %}
+{% if form.message %}<div class="alert notices red"><p>{{ form.message }}</p></div>{% endif %}
 {% set scope = scope ?: 'data.' %}
 {% set multipart = '' %}
 {% set method = form.method|upper|default('POST') %}
