@@ -5,7 +5,7 @@
     {{ content }}
 
     {% if form.message %}
-    <div class="alert notices red">{{ form.message }}</div>
+    <div class="alert notices {{ form.message_color ?: 'green' }}"><p>{{ form.message }}</p></div>
     {% endif %}
     <p>{{ 'PLUGIN_FORM.DATA_SUMAMRY'|t }}</p>
 

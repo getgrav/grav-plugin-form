@@ -229,6 +229,7 @@ class FormPlugin extends Plugin
     {
         $form = $event['form'];
         if (isset($event['message'])) {
+            $form->message_color = 'red';
             $form->message = $event['message'];
         }
 
