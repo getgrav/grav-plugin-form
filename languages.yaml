@@ -10,6 +10,7 @@ en:
     ACCEPT: "Allowed MIME Types"
     ACCEPT_HELP: "A list of MIME Types that are allowed for upload"
     ERROR_VALIDATING_CAPTCHA: "Error validating the Captcha"
+    DATA_SUMAMRY: "Here is the summary of what you wrote to us:"
 
 es:
   PLUGIN_FORM:
