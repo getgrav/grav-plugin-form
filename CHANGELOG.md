@@ -1,8 +1,14 @@
 # v1.3.0-beta.6
 ## XX/XX/2016
 
+1. [](#improved)
+    * Support `keyname` form format like admin forms
+    * Added backwards compatibility for Captcha field
+    * Added 'markdown-notices' style output for better errors
 1. [](#bugfix)
     * Refactored the files upload logic 
+    * Missing Language string
+    * Fixed errors not getting output    
     
 # v1.3.0-beta.5
 ## 05/12/2016
