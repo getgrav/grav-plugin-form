@@ -7,7 +7,7 @@
                     <strong>{{ field.label }}</strong>:
                 {% endblock %}
                 {% block field_value %}
-                    {{ string(form.value(field.name ?? index)|e)|nl2br }}
+                    {{ string(form.value(field.name ?? index))|nl2br }}
                 {% endblock %}
             </div>
         {% endblock %}
