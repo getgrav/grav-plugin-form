@@ -5,6 +5,7 @@
     * Support `keyname` form format like admin forms
     * Added backwards compatibility for Captcha field
     * Added 'markdown-notices' style output for better errors
+    * Added `Forms::getValue()` method to retrieve values programatically
 1. [](#bugfix)
     * Refactored the files upload logic 
     * Missing Language string
