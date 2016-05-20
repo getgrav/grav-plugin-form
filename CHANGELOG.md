@@ -6,6 +6,7 @@
     * Added backwards compatibility for Captcha field
     * Added 'markdown-notices' style output for better errors
     * Added `Forms::getValue()` method to retrieve values programatically
+    * Changed `datetime` form field to simply extend `text` until implemented
 1. [](#bugfix)
     * Refactored the files upload logic 
     * Missing Language string
