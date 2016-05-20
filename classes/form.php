@@ -16,6 +16,12 @@ class Form extends Iterator
      * @var string
      */
     public $message;
+
+    /**
+     * @var string
+     */
+    public $message_color;
+    
     /**
      * @var Grav $grav
      */

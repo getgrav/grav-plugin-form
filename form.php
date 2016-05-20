@@ -34,6 +34,7 @@ class FormPlugin extends Plugin
     public static function getSubscribedEvents()
     {
         return [
+            'onPluginsInitialized' => ['onPluginsInitialized', 0],
             'onPageInitialized'   => ['onPageInitialized', 0],
             'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
             'onTwigSiteVariables' => ['onTwigSiteVariables', 0],
@@ -41,11 +42,19 @@ class FormPlugin extends Plugin
         ];
     }
 
+    public function onPluginsInitialized()
+    {
+        require_once(__DIR__ . '/classes/form.php');
+        require_once(__DIR__ . '/classes/form_serializable.php');
+    }
+
     /**
      * Initialize form if the page has one. Also catches form processing if user posts the form.
      */
     public function onPageInitialized()
     {
+
+
         /** @var Page $page */
         $page = $this->grav['page'];
         if (!$page) {
@@ -56,8 +65,7 @@ class FormPlugin extends Plugin
         if (isset($header->form) && is_array($header->form)) {
             $this->active = true;
 
-            // Create form.
-            require_once(__DIR__ . '/classes/form.php');
+            // Create form
             $this->form = new Form($page);
 
             $this->enable([
@@ -145,6 +153,12 @@ class FormPlugin extends Plugin
                 $this->form->message = $processed_string;
                 break;
             case 'redirect':
+                $form = new FormSerializable();
+                $form->message = $this->form->message;
+                $form->message_color = $this->form->message_color;
+                $form->fields = $this->form->fields;
+                $form->data = $this->form->value();
+                $this->grav['session']->setFlashObject('form', $form);
                 $this->grav->redirect((string)$params);
                 break;
             case 'reset':

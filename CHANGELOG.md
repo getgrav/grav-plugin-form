@@ -3,6 +3,7 @@
 
 1. [](#new)
     * Added support for advanced blueprint functionality in forms
+    * Session-based 'flash' storage of form for redirects [#48](https://github.com/getgrav/grav-plugin-form/issues/48)
 1. [](#improved)
     * Support `keyname` form format like admin forms
     * Added backwards compatibility for Captcha field
