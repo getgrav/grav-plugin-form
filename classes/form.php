@@ -174,6 +174,17 @@ class Form extends Iterator
     }
 
     /**
+     * Get a value from the form
+     *
+     * @param $name
+     * @return mixed
+     */
+    public function getValue($name)
+    {
+        return $this->values->get($name);
+    }
+
+    /**
      * Set value of given variable in the data array
      *
      * @param string $name
