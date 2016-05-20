@@ -1,6 +1,8 @@
 # v1.3.0-beta.6
 ## XX/XX/2016
 
+1. [](#new)
+    * Added support for advanced blueprint functionality in forms
 1. [](#improved)
     * Support `keyname` form format like admin forms
     * Added backwards compatibility for Captcha field

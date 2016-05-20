@@ -120,6 +120,12 @@ class Form extends Iterator
         }
 
         $blueprint    = new Blueprint($name, ['form' => $this->items, 'rules' => $this->rules]);
+        // init the form to process directives
+        $blueprint->load()->init();
+
+        // fields set to processed blueprint fields
+        $this->fields = $blueprint->fields();
+        
         $this->data   = new Data($this->header_data, $blueprint);
         $this->values = new Data();
     }
