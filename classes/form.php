@@ -84,6 +84,11 @@ class Form extends Iterator
         $this->grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
     }
 
+    public function setFields($fields)
+    {
+        $this->fields = $fields;
+    }
+
     /**
      * Reset data.
      */
@@ -98,9 +103,11 @@ class Form extends Iterator
                 $field['type'] = 'text';
             }
 
-            // handle BC for captcha
-            if ($field['type'] === 'captcha') {
-                $field['input@'] = false;
+            $types = Grav::instance()['plugins']->formFieldTypes;
+
+            // manually merging the field types
+            if (key_exists($field['type'], $types)) {
+                $field += $types[$field['type']];
             }
 
             // BC for old style of array style field definitions

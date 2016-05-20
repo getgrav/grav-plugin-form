@@ -3,6 +3,7 @@ namespace Grav\Plugin;
 
 use Grav\Common\Plugin;
 use Grav\Common\Utils;
+use Grav\Common\Uri;
 use Symfony\Component\Yaml\Yaml;
 use RocketTheme\Toolbox\File\File;
 use RocketTheme\Toolbox\Event\Event;
@@ -123,6 +124,13 @@ class FormPlugin extends Plugin
 
                     return;
                 }
+                break;
+            case 'ip':
+                $label = isset($params['label']) ? $params['label'] : 'User IP';
+                $blueprint = $this->form->value()->blueprints();
+                $blueprint->set('form/fields/ip', ['name'=>'ip', 'label'=> $label]);
+                $this->form->setFields($blueprint->fields());
+                $this->form->setData('ip', Uri::ip());
                 break;
             case 'message':
                 $translated_string = $this->grav['language']->translate($params);
@@ -264,6 +272,9 @@ class FormPlugin extends Plugin
                 'input@' => false
             ],
             'spacer'  => [
+                'input@' => false
+            ],
+            'captcha' => [
                 'input@' => false
             ]
         ];
