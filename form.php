@@ -208,7 +208,8 @@ class FormPlugin extends Plugin
 
                 $locator = $this->grav['locator'];
                 $path = $locator->findResource('user://data', true);
-                $fullFileName = $path . DS . $this->form->name . DS . $filename;
+                $dir = $path . DS . $this->form->name;
+                $fullFileName = $dir. DS . $filename;
 
                 $file = File::instance($fullFileName);
 
@@ -217,26 +218,41 @@ class FormPlugin extends Plugin
                         $vars);
                     $file->save($body);
                 } elseif ($operation == 'add') {
-                    $vars = $vars['form']->value()->toArray();
+                    if (!empty($params['body'])) {
+                        // use body similar to 'create' action and append to file as a log
+                        $body = $twig->processString($params['body'], $vars);
 
-                    foreach ($form->fields as $field) {
-                        if (isset($field['process']) && isset($field['process']['ignore']) && $field['process']['ignore']) {
-                            unset($vars[$field['name']]);
+                        // create folder if it doesn't exist
+                        if (!file_exists($dir)) {
+                            mkdir($dir);
                         }
-                    }
 
-                    if (file_exists($fullFileName)) {
-                        $data = Yaml::parse($file->content());
-                        if (count($data) > 0) {
-                            array_unshift($data, $vars);
+                        // append data to existing file
+                        file_put_contents($fullFileName, $body, FILE_APPEND | LOCK_EX);
+                    } else {
+                        // serialize YAML out to file for easier parsing as data sets
+                        $vars = $vars['form']->value()->toArray();
+
+                        foreach ($form->fields as $field) {
+                            if (isset($field['process']) && isset($field['process']['ignore']) && $field['process']['ignore']) {
+                                unset($vars[$field['name']]);
+                            }
+                        }
+
+                        if (file_exists($fullFileName)) {
+                            $data = Yaml::parse($file->content());
+                            if (count($data) > 0) {
+                                array_unshift($data, $vars);
+                            } else {
+                                $data[] = $vars;
+                            }
                         } else {
                             $data[] = $vars;
                         }
-                    } else {
-                        $data[] = $vars;
+
+                        $file->save(Yaml::dump($data));
                     }
 
-                    $file->save(Yaml::dump($data));
                 }
                 break;
         }
