@@ -1,5 +1,5 @@
 # v1.3.0-beta.6
-## XX/XX/2016
+## 05/23/2016
 
 1. [](#new)
     * Added support for advanced blueprint functionality in forms
@@ -11,6 +11,7 @@
     * Added 'markdown-notices' style output for better errors
     * Added `Forms::getValue()` method to retrieve values programatically
     * Changed `datetime` form field to simply extend `text` until implemented
+    * Updated french language
 1. [](#bugfix)
     * Refactored the files upload logic 
     * Missing Language string
