@@ -10,14 +10,14 @@ en:
     ACCEPT: "Allowed MIME Types"
     ACCEPT_HELP: "A list of MIME Types that are allowed for upload"
     ERROR_VALIDATING_CAPTCHA: "Error validating the Captcha"
-    DATA_SUMAMRY: "Here is the summary of what you wrote to us:"
+    DATA_SUMMARY: "Here is the summary of what you wrote to us:"
     NO_FORM_DATA: "No form data available"
     RECAPTCHA: "ReCaptcha"
     RECAPTCHA_SITE_KEY: "Site key"
     RECAPTCHA_SITE_KEY_HELP: "For more info visit https://developers.google.com/recaptcha"
     RECAPTCHA_SECRET_KEY: "Secret key"
     RECAPTCHA_SECRET_KEY_HELP: "For more info visit https://developers.google.com/recaptcha"
-    
+
 de:
   PLUGIN_FORM:
     NOT_VALIDATED: "Formularwerte nicht gültig. Für ein oder mehrere erforderliche Felder fehlen Werte."
@@ -61,7 +61,7 @@ fr:
     ACCEPT: "Autoriser les Types MIME"
     ACCEPT_HELP: "Liste des Types MIME autorisés au chargement"
     ERROR_VALIDATING_CAPTCHA: "Erreur lors de la validation du Captcha"
-    DATA_SUMAMRY: "Voici le résumé de ce que vous nous avez écrit :"
+    DATA_SUMMARY: "Voici le résumé de ce que vous nous avez écrit :"
     NO_FORM_DATA: "Aucune donnée de formulaire disponible"
     RECAPTCHA: "ReCaptcha"
     RECAPTCHA_SITE_KEY: "Clé du site"
@@ -93,7 +93,7 @@ hu:
     ACCEPT: "Engedélyezett MIME-típusok"
     ACCEPT_HELP: "A feltölthető állományok MIME-típusainak listája"
     ERROR_VALIDATING_CAPTCHA: "Hiba lépett fel a Captcha validálása során"
-    
+
 it:
   PLUGIN_FORM:
     NOT_VALIDATED: "Il Form risulta invalido. Uno o più campi risultano omessi."
