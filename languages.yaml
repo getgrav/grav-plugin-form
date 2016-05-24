@@ -63,6 +63,11 @@ fr:
     ERROR_VALIDATING_CAPTCHA: "Erreur lors de la validation du Captcha"
     DATA_SUMAMRY: "Voici le résumé de ce que vous nous avez écrit :"
     NO_FORM_DATA: "Aucune donnée de formulaire disponible"
+    RECAPTCHA: "ReCaptcha"
+    RECAPTCHA_SITE_KEY: "Clé du site"
+    RECAPTCHA_SITE_KEY_HELP: "Pour plus d'informations veuillez vous rendre sur https://developers.google.com/recaptcha"
+    RECAPTCHA_SECRET_KEY: "Clé secrète"
+    RECAPTCHA_SECRET_KEY_HELP: "Pour plus d'informations veuillez vous rendre sur https://developers.google.com/recaptcha"
 
 hr:
   PLUGIN_FORM:
