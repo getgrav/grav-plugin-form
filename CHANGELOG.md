@@ -1,3 +1,9 @@
+# v1.3.0-rc.1
+## 06/01/2016
+
+1. [](#improved)
+    * French updated
+
 # v1.3.0-beta.6
 ## 05/23/2016
 
@@ -14,10 +20,10 @@
     * Changed `datetime` form field to simply extend `text` until implemented
     * Updated french language
 1. [](#bugfix)
-    * Refactored the files upload logic 
+    * Refactored the files upload logic
     * Missing Language string
-    * Fixed errors not getting output    
-    
+    * Fixed errors not getting output
+
 # v1.3.0-beta.5
 ## 05/12/2016
 
