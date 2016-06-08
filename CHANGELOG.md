@@ -1,3 +1,9 @@
+# v1.3.0-rc.2
+## 06/08/2016
+
+1. [](#new)
+    * Allow to process Twig in a hidden field, by setting `evaluate: true`
+
 # v1.3.0-rc.1
 ## 06/01/2016
 
