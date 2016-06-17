@@ -1,3 +1,9 @@
+# v1.3.0-rc.3
+## 06/17/2016
+
+1. [](#new)
+    *  Set hints for checkboxes options and allow field descriptions
+
 # v1.3.0-rc.2
 ## 06/08/2016
 
