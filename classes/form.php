@@ -343,6 +343,11 @@ class Form extends Iterator
                     }
                     $settings    = isset($this->items['fields'][$index]) ? $this->items['fields'][$index] : [];
                     $blueprint   = array_replace($default, $settings);
+
+                    /** @var Twig $twig */
+                    $twig = $this->grav['twig'];
+                    $blueprint['destination'] = $twig->processString($blueprint['destination']);
+                    
                     $destination = Folder::getRelativePath(rtrim($blueprint['destination'], '/'));
                     $page        = null;
 
