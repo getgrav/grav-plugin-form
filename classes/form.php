@@ -112,7 +112,7 @@ class Form extends Iterator
             $types = Grav::instance()['plugins']->formFieldTypes;
 
             // manually merging the field types
-            if (key_exists($field['type'], $types)) {
+            if ($types !== null && key_exists($field['type'], $types)) {
                 $field += $types[$field['type']];
             }
 
@@ -133,11 +133,14 @@ class Form extends Iterator
         }
 
         $blueprint    = new Blueprint($name, ['form' => $this->items, 'rules' => $this->rules]);
-        // init the form to process directives
-        $blueprint->load()->init();
 
-        // fields set to processed blueprint fields
-        $this->fields = $blueprint->fields();
+        if (method_exists($blueprint, 'load')) {
+            // init the form to process directives
+            $blueprint->load()->init();
+
+            // fields set to processed blueprint fields
+            $this->fields = $blueprint->fields();            
+        }
         
         $this->data   = new Data($this->header_data, $blueprint);
         $this->values = new Data();
