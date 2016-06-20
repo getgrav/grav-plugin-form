@@ -1,8 +1,14 @@
+# v1.3.0-rc.4
+## 06/xx/2016
+
+1. [](#bugfix)
+    * Fixed running on Grav 1.0.x
+
 # v1.3.0-rc.3
 ## 06/17/2016
 
 1. [](#new)
-    *  Set hints for checkboxes options and allow field descriptions
+    * Set hints for checkboxes options and allow field descriptions
 
 # v1.3.0-rc.2
 ## 06/08/2016
