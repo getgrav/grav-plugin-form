@@ -1,5 +1,5 @@
 # v1.3.0-rc.4
-## 06/xx/2016
+## 06/21/2016
 
 1. [](#bugfix)
     * Fixed running on Grav 1.0.x
