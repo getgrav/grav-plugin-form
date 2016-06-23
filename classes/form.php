@@ -378,6 +378,10 @@ class Form extends Iterator
                         }
                     }
 
+                    if (file_exists("$destination/$name")) {
+                        $name = date('YmdHis') . '-' . $name;
+                    }
+
                     if (move_uploaded_file($tmp_name, "$destination/$name")) {
                         $path     = $page ? $this->grav['uri']->convertUrl($page, $page->route() . '/' . $name) : $destination . '/' . $name;
                         $fileData = [

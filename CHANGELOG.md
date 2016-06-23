@@ -1,3 +1,9 @@
+# v1.3.0-rc.5
+## 06/xx/2016
+
+1. [](#improved)
+    * When uploading a file through a form, if the file is already existing prepend the current day and time to the filename instead of overwriting it.
+
 # v1.3.0-rc.4
 ## 06/21/2016
 
