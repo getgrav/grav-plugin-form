@@ -22,7 +22,7 @@ enabled: true
 
 The Learn site has two pages describing how to use the Form Plugin:
 - [Forms](http://learn.getgrav.org/advanced/forms)
-- [Add a contact form](http://learn.getgrav.org/advanced/contact-form)
+- [Add a contact form](http://learn.getgrav.org/forms/forms/example-form)
 
 # Using email
 

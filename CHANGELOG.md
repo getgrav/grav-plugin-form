@@ -1,11 +1,107 @@
+# v1.3.0
+## 07/14/2016
+
+1. [](#improved)
+    * When uploading a file through a form, if the file is already existing prepend the current day and time to the filename instead of overwriting it.
+
+# v1.3.0-rc.4
+## 06/21/2016
+
+1. [](#bugfix)
+    * Fixed running on Grav 1.0.x
+
+# v1.3.0-rc.3
+## 06/17/2016
+
+1. [](#new)
+    * Set hints for checkboxes options and allow field descriptions
+
+# v1.3.0-rc.2
+## 06/08/2016
+
+1. [](#new)
+    * Allow to process Twig in a hidden field, by setting `evaluate: true`
+
+# v1.3.0-rc.1
+## 06/01/2016
+
+1. [](#improved)
+    * French updated
+
+# v1.3.0-beta.6
+## 05/23/2016
+
+1. [](#new)
+    * Added support for advanced blueprint functionality in forms
+    * Added site-wide form options to set Google Captcha site + secret keys [#34](https://github.com/getgrav/grav-plugin-form/pull/34)
+    * Session-based 'flash' storage of form for redirects [#48](https://github.com/getgrav/grav-plugin-form/issues/48)
+    * Added ability to **append** to file if you include a `process: save: body:` template attribute [#65](https://github.com/getgrav/grav-plugin-form/issues/65)
+1. [](#improved)
+    * Support `keyname` form format like admin forms
+    * Added backwards compatibility for Captcha field
+    * Added 'markdown-notices' style output for better errors
+    * Added `Forms::getValue()` method to retrieve values programatically
+    * Changed `datetime` form field to simply extend `text` until implemented
+    * Updated french language
+1. [](#bugfix)
+    * Refactored the files upload logic
+    * Missing Language string
+    * Fixed errors not getting output
+
+# v1.3.0-beta.5
+## 05/12/2016
+
+1. [](#improved)
+    * Moved form/field.html.twig file to the default folder, to be more easily extended in themes
+
+# v1.3.0-beta.4
+## 05/04/2016
+
+1. [](#new)
+    * Added support for `prepend` and `append` field attributes for Text input
+
+# v1.3.0-beta.3
+## 05/03/2016
+
+1. [](#bugfix)
+    * Fix for select field admin translation
+
+# v1.3.0-beta.2
+## 04/27/2016
+
+1. [](#bugfix)
+    * Fix for autoescape in spacer and display form fields
+    * Fix issue with form reset action [#66](https://github.com/getgrav/grav-plugin-form/pull/66)
+
+# v1.3.0-beta.1
+## 04/20/2016
+
+1. [](#new)
+    * Added the HTML5 `range` input field with `min` and `max` parameters
+1. [](#improved)
+    * Allow to override classes in Form definition for the form element
+    * Add more blocks in the Form twig template, so classes can be overridden more easily in themes
+    * Reworked some fields to fit the new Admin
+    * Use `scope` for form fields to allow fields to be excluded from the data by adding `input@: false` to their definition
+    * Added german translation
+    * Allow to add inline Twig to the form message definition
+1. [](#bugfix)
+    * Fixed the form action URL for home page forms
+    * Fix stopping form events propagation, correctly stop when one event is stopped
+    * Allow to translate the fields placeholders and the form message
+    * Fix captcha javascript function ordering. Also, render it in the site active language
+    * Support attribute `for="id"` on label for checkbox
+    * Fix select fields with the multiple option enabled
+    * Fixed select options escaping with autoescape on - [#502](https://github.com/getgrav/grav-plugin-admin/issues/502)
+
 # v1.2.2
-## 02/11/2015
+## 02/11/2016
 
 1. [](#bugfix)
     * Fixed case issue when including form file.
-    
+
 # v1.2.1
-## 02/11/2015
+## 02/11/2016
 
 1. [](#new)
     * Allow placeholder for **select** field
@@ -49,7 +145,7 @@
 1. [](#bugfix)
     * Fix captcha validation
     * Fix issue where Form was unsetting valid page
-        
+
 # v1.0.2
 ## 12/01/2015
 
@@ -57,7 +153,7 @@
     * Fixed merge of defaults settings
     * Support for arrays in `data.txt.twig`
     * Fixed blueprint for admin
-    
+
 # v1.0.1
 ## 12/01/2015
 
@@ -96,20 +192,20 @@
 ## 10/15/2015
 
 1. [](#new)
-	* New `operation` param to allow different file saving strategies
-	* Ability to add new file saving strategies
-	* Now calls a `process()` method during form processing
+    * New `operation` param to allow different file saving strategies
+    * Ability to add new file saving strategies
+    * Now calls a `process()` method during form processing
 1. [](#improved)
     * Added server-side captcha validation and removed front-end validation
     * Allow `filename` instead of `prefix`, `format` + `extension`
 1. [](#bugfix)
-	* Fixed radio inputs
+    * Fixed radio inputs
 
 # v0.4.0
 ## 9/16/2015
 
 1. [](#new)
-	* PHP server-side form validation
+    * PHP server-side form validation
     * Added new Google Catpcha field with front-end validation
 1. [](#improved)
     * Add defaults for forms, moved from the themes to the Form plugin

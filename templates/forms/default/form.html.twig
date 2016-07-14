@@ -1,4 +1,5 @@
-{% if form.message %}<div class="alert">{{ form.message }}</div>{% endif %}
+{% if form.message %}<div class="alert notices {{ form.message_color ?: 'green' }}"><p>{{ form.message }}</p></div>{% endif %}
+{% set scope = scope ?: 'data.' %}
 {% set multipart = '' %}
 {% set method = form.method|upper|default('POST') %}
 
@@ -8,20 +9,34 @@
     {% endif %}
 {% endfor %}
 
+{% set action = form.action ? base_url ~ form.action : page.url %}
+{% if (action == base_url_relative) %}
+    {% set action = base_url_relative ~ '/' ~ page.slug %}
+{% endif %}
+
 <form name="{{ form.name }}"
-      action="{{ form.action ? base_url ~ form.action : page.url }}"
-      method="{{ method }}"{{ multipart }}>
+      action="{{ action }}"
+      method="{{ method }}"{{ multipart }}
+      {% block form_classes %}
+      {% if form.classes %}class="{{ form.classes }}"{% endif %}
+      {% endblock %}
+>
 
 {% for field in form.fields %}
     {% set value = form.value(field.name) %}
-    <div>
-        {% include "forms/fields/#{field.type}/#{field.type}.html.twig" %}
-    </div>
+        {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
 {% endfor %}
 
 	<div class="buttons">
 	{% for button in form.buttons %}
-	    <button class="{{ button.classes|default('button') }}" type="{{ button.type|default('submit') }}">{{ button.value|t|default('Submit') }}</button>
+	    <button
+            {% block button_classes %}
+            class="{{ button.classes|default('button') }}"
+            {% endblock %}
+            type="{{ button.type|default('submit') }}"
+        >
+            {{ button.value|t|default('Submit') }}
+        </button>
 	{% endfor %}
 	</div>
 
