@@ -233,6 +233,11 @@ class Form extends Iterator
             $data         = $this->values->get('data');
             $files        = (array)$_FILES;
 
+            // Add post data to form dataset
+            if (!$data) {
+                $data = $this->values->toArray();
+            }
+
             if (method_exists('Grav\Common\Utils', 'getNonce')) {
                 if (!$this->values->get('form-nonce') || !Utils::verifyNonce($this->values->get('form-nonce'), 'form')) {
                     $event = new Event(['form'    => $this,
@@ -257,11 +262,6 @@ class Form extends Iterator
                     $data[$name] = isset($data[$name]) ? true : false;
                 }
                 $i++;
-            }
-
-            // Add post data to form dataset
-            if (!$data) {
-                $data = $this->values->toArray();
             }
 
             $this->data->merge($data);
