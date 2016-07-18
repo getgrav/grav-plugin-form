@@ -1,3 +1,11 @@
+# v1.1.4
+## 07/18/2016
+
+1. [](#improved)
+    * Switched to `Page::rawMarkdown()` rather than `Page::content()` for increased performance.
+1. [](#bugfix)    
+    * Changed from `array_intersect_assoc` to `array_intersect` for broken tag-tag matching.
+
 # v1.1.3
 ## 07/14/2016
 
