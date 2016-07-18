@@ -139,7 +139,7 @@ class RelatedPagesPlugin extends Plugin
 
                             if (isset($item_taxonomies[$taxonomy])) {
                                 $item_taxonomy = $item_taxonomies[$taxonomy];
-                                $count = count(array_intersect_assoc($page_taxonomy, $item_taxonomy));
+                                $count = count(array_intersect($page_taxonomy, $item_taxonomy));
 
                                 if ($count > 0) {
                                     if (array_key_exists($count, $score_scale)) {
@@ -162,7 +162,7 @@ class RelatedPagesPlugin extends Plugin
 
                         if (isset($page_taxonomies[$taxonomy])) {
                             $page_taxonomy = $page_taxonomies[$taxonomy];
-                            $count = $this->substringCountArray($item->title().' '.$item->content(), $page_taxonomy);
+                            $count = $this->substringCountArray($item->title().' '.$item->rawMarkdown(), $page_taxonomy);
 
                             if ($count > 0) {
                                 if (array_key_exists($count, $score_scale)) {
@@ -177,7 +177,7 @@ class RelatedPagesPlugin extends Plugin
 
                     // compute score of content to content matches
                     if ($config['content_match']['process']) {
-                        similar_text($page->content(), $item->content(), $score);
+                        similar_text($page->rawMarkdown(), $item->rawMarkdown(), $score);
                         $content_matches[$item->path()] = intval($score);
                     }
                 }
