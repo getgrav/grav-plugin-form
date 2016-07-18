@@ -139,7 +139,7 @@ class RelatedPagesPlugin extends Plugin
 
                             if (isset($item_taxonomies[$taxonomy])) {
                                 $item_taxonomy = $item_taxonomies[$taxonomy];
-                                $count = count(array_intersect_assoc($page_taxonomy, $item_taxonomy));
+                                $count = count(array_intersect($page_taxonomy, $item_taxonomy));
 
                                 if ($count > 0) {
                                     if (array_key_exists($count, $score_scale)) {
