@@ -1,3 +1,11 @@
+# v1.3.1
+## 07/27/2016
+
+1. [](#improved)
+    * Added support for multiple emails in `email` field (add `multiple: true` to enable)
+1. [](#bugfix)
+    * Fixed backward incompatibility with forms submission and data retrieval [getgrav/grav#933](https://github.com/getgrav/grav/issues/933)
+    
 # v1.3.0
 ## 07/14/2016
 
