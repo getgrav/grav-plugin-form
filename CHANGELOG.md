@@ -1,5 +1,5 @@
 # v1.3.1
-## 07/XX/2016
+## 07/27/2016
 
 1. [](#improved)
     * Added support for multiple emails in `email` field (add `multiple: true` to enable)
