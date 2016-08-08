@@ -115,9 +115,18 @@ class FormPlugin extends Plugin
 
         switch ($action) {
             case 'captcha':
+                if (isset($params['recaptcha_secret'])) {
+                    $recaptchaSecret = $params['recaptcha_secret'];
+                } else if (isset($params['recatpcha_secret'])) {
+                    // Included for backwards compatibility with typo (issue #51)
+                    $recaptchaSecret = $params['recatpcha_secret'];
+                } else {
+                    $recaptchaSecret = $this->config->get('plugins.form.recaptcha.secret_key');
+                }
+
                 // Validate the captcha
                 $query = http_build_query([
-                    'secret'   => isset($params['recaptcha_secret']) ? $params['recaptcha_secret'] : isset($params['recatpcha_secret']) ? $params['recatpcha_secret'] : $this->config->get('plugins.form.recaptcha.secret_key'),
+                    'secret'   => $recaptchaSecret,
                     'response' => $this->form->value('g-recaptcha-response', true)
                 ]);
                 $url = 'https://www.google.com/recaptcha/api/siteverify?' . $query;
