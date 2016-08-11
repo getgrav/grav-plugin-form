@@ -1,3 +1,11 @@
+# v1.3.2
+## 08/10/2016
+
+1. [](#improved)
+    * Added Romanian translation
+1. [](#bugfix)
+    * Fixed an issue with Recaptcha secret throwing errors [#84](https://github.com/getgrav/grav-plugin-form/pull/84)
+
 # v1.3.1
 ## 07/27/2016
 
