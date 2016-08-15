@@ -122,7 +122,7 @@ class FormPlugin extends Plugin
             // Handle posting if needed.
             if (!empty($_POST)) {
 
-                $form_name = filter_input(INPUT_POST, '_form-name');
+                $form_name = filter_input(INPUT_POST, '__form-name__');
 
                 if (array_key_exists($form_name, $this->forms_flat)) {
                     $form = $this->forms_flat[$form_name];

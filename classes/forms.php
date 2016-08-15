@@ -21,8 +21,8 @@ class Forms
             $page_forms[] = $header->form;
         }
 
-        foreach ($page_forms as $page_form) {
-            $form = new Form($page, $page_form);
+        foreach ($page_forms as $name => $page_form) {
+            $form = new Form($page, $name, $page_form);
             $this->forms[$form['name']] = $form;
         }
     }

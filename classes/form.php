@@ -70,7 +70,7 @@ class Form extends Iterator
      *
      * @param Page $page
      */
-    public function __construct(Page $page, $form = null)
+    public function __construct(Page $page, $name = null, $form = null)
     {
         $this->grav = Grav::instance();
         $this->page = $page;
@@ -86,7 +86,9 @@ class Form extends Iterator
         }
 
         // Set form name if not set.
-        if (empty($this->items['name'])) {
+        if ($name) {
+            $this->items['name'] = $name;
+        } elseif (empty($this->items['name'])) {
             $this->items['name'] = $page->slug();
         }
 
