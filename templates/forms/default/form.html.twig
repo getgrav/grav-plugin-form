@@ -17,6 +17,7 @@
 <form name="{{ form.name }}"
       action="{{ action }}"
       method="{{ method }}"{{ multipart }}
+      {% if form.id %}id="{{ form.id }}"{% endif %}
       {% block form_classes %}
       {% if form.classes %}class="{{ form.classes }}"{% endif %}
       {% endblock %}
