@@ -149,10 +149,15 @@ class FormPlugin extends Plugin
             return;
         }
 
-        $form = count($this->forms_flat) > 0 ? array_shift($this->forms_flat) : null;
-
-        $this->grav['twig']->twig_vars['form'] = $form;
+        // set all the forms in the twig vars
         $this->grav['twig']->twig_vars['forms'] = $this->forms_flat;
+
+        // get first item for Twig 'form' variable
+        reset($this->forms_flat);
+        $key = key($this->forms_flat);
+        $form = $key ? $this->forms_flat[$key] : null;
+        $this->grav['twig']->twig_vars['form'] = $form;
+
     }
 
     /**
