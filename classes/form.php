@@ -5,6 +5,7 @@ use Grav\Common\Data\Data;
 use Grav\Common\Data\Blueprint;
 use Grav\Common\Filesystem\Folder;
 use Grav\Common\Grav;
+use Grav\Common\Inflector;
 use Grav\Common\Iterator;
 use Grav\Common\Page\Page;
 use Grav\Common\Utils;
@@ -69,7 +70,7 @@ class Form extends Iterator
      *
      * @param Page $page
      */
-    public function __construct(Page $page)
+    public function __construct(Page $page, $form = null)
     {
         $this->grav = Grav::instance();
         $this->page = $page;
@@ -77,11 +78,22 @@ class Form extends Iterator
         $header            = $page->header();
         $this->rules       = isset($header->rules) ? $header->rules : [];
         $this->header_data = isset($header->data) ? $header->data : [];
-        $this->items       = $header->form;
+
+        if ($form) {
+            $this->items = $form;
+        } else {
+            $this->items = $header->form; // should not be needed going forward
+        }
 
         // Set form name if not set.
         if (empty($this->items['name'])) {
             $this->items['name'] = $page->slug();
+        }
+
+        // Set form id if not set.
+        if (empty($this->items['id'])) {
+            $inflector = new Inflector();
+            $this->items['id'] = $inflector->hyphenize($this->items['name']);
         }
 
         $this->reset();
@@ -93,6 +105,11 @@ class Form extends Iterator
     public function setFields($fields)
     {
         $this->fields = $fields;
+    }
+
+    public function name()
+    {
+        return $this->items['name'];
     }
 
     /**

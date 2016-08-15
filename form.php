@@ -28,17 +28,23 @@ class FormPlugin extends Plugin
      */
     protected $form;
 
+    protected $forms = [];
+
+    protected $forms_flat = [];
+
     /**
      * @return array
      */
     public static function getSubscribedEvents()
     {
         return [
-            'onPluginsInitialized' => ['onPluginsInitialized', 0],
-            'onPageInitialized'   => ['onPageInitialized', 0],
-            'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
-            'onTwigSiteVariables' => ['onTwigSiteVariables', 0],
-            'onFormFieldTypes'    => ['onFormFieldTypes', 0]
+            'onPluginsInitialized'   => ['onPluginsInitialized', 0],
+            'onPageInitialized'      => ['onPageInitialized', 0],
+            'onPageContentProcessed' => ['onPageContentProcessed', 0],
+            'onPageContentFinished'  => ['onPageContentFinished', 0],
+            'onTwigTemplatePaths'    => ['onTwigTemplatePaths', 0],
+            'onTwigSiteVariables'    => ['onTwigSiteVariables', 0],
+            'onFormFieldTypes'       => ['onFormFieldTypes', 0]
         ];
     }
 
@@ -46,6 +52,48 @@ class FormPlugin extends Plugin
     {
         require_once(__DIR__ . '/classes/form.php');
         require_once(__DIR__ . '/classes/form_serializable.php');
+        require_once(__DIR__ . '/classes/forms.php');
+    }
+
+    /**
+     * Process forms after Grav's processing, but before caching
+     *
+     * @param Event $e
+     */
+    public function onPageContentProcessed(Event $e)
+    {
+        /** @var Page $page */
+        $page = $e['page'];
+
+        $header = $page->header();
+        if ((isset($header->forms) && is_array($header->forms)) ||
+            (isset($header->form) && is_array($header->form))) {
+
+            // Create forms from page
+            $forms = new Forms($page);
+            $meta = $forms->getForms();
+
+            // If this page contains forms
+            if (count($meta) > 0) {
+                $page->addContentMeta('formMeta', $meta);
+            }
+        }
+    }
+
+    public function onPageContentFinished(Event $e)
+    {
+        /** @var Page $page */
+        $page = $e['page'];
+
+        if (!array_key_exists($page->route(), $this->forms)) {
+            $forms = $page->getContentMeta('formMeta');
+
+            if ($forms) {
+                $this->forms[$page->route()] = $forms;
+            }
+        }
+
+
     }
 
     /**
@@ -53,20 +101,18 @@ class FormPlugin extends Plugin
      */
     public function onPageInitialized()
     {
-
-
         /** @var Page $page */
         $page = $this->grav['page'];
+
         if (!$page) {
             return;
         }
 
-        $header = $page->header();
-        if (isset($header->form) && is_array($header->form)) {
+        if ($this->forms) {
             $this->active = true;
 
-            // Create form
-            $this->form = new Form($page);
+            // flatten arrays to make stuff easier
+            $this->forms_flat = Utils::arrayFlatten($this->forms);
 
             $this->enable([
                 'onFormProcessed'       => ['onFormProcessed', 0],
@@ -75,7 +121,13 @@ class FormPlugin extends Plugin
 
             // Handle posting if needed.
             if (!empty($_POST)) {
-                $this->form->post();
+
+                $form_name = filter_input(INPUT_POST, '_form-name');
+
+                if (array_key_exists($form_name, $this->forms_flat)) {
+                    $form = $this->forms_flat[$form_name];
+                    $form->post();
+                }
             }
         }
     }
@@ -97,7 +149,10 @@ class FormPlugin extends Plugin
             return;
         }
 
-        $this->grav['twig']->twig_vars['form'] = $this->form;
+        $form = count($this->forms_flat) > 0 ? array_shift($this->forms_flat) : null;
+
+        $this->grav['twig']->twig_vars['form'] = $form;
+        $this->grav['twig']->twig_vars['forms'] = $this->forms_flat;
     }
 
     /**
@@ -127,7 +182,7 @@ class FormPlugin extends Plugin
                 // Validate the captcha
                 $query = http_build_query([
                     'secret'   => $recaptchaSecret,
-                    'response' => $this->form->value('g-recaptcha-response', true)
+                    'response' => $form->value('g-recaptcha-response', true)
                 ]);
                 $url = 'https://www.google.com/recaptcha/api/siteverify?' . $query;
                 $response = json_decode(file_get_contents($url), true);
@@ -144,10 +199,10 @@ class FormPlugin extends Plugin
                 break;
             case 'ip':
                 $label = isset($params['label']) ? $params['label'] : 'User IP';
-                $blueprint = $this->form->value()->blueprints();
+                $blueprint = $form->value()->blueprints();
                 $blueprint->set('form/fields/ip', ['name'=>'ip', 'label'=> $label]);
-                $this->form->setFields($blueprint->fields());
-                $this->form->setData('ip', Uri::ip());
+                $form->setFields($blueprint->fields());
+                $form->setData('ip', Uri::ip());
                 break;
             case 'message':
                 $translated_string = $this->grav['language']->translate($params);
@@ -159,20 +214,20 @@ class FormPlugin extends Plugin
                 $twig = $this->grav['twig'];
                 $processed_string = $twig->processString($translated_string, $vars);
 
-                $this->form->message = $processed_string;
+                $form->message = $processed_string;
                 break;
             case 'redirect':
-                $form = new FormSerializable();
-                $form->message = $this->form->message;
-                $form->message_color = $this->form->message_color;
-                $form->fields = $this->form->fields;
-                $form->data = $this->form->value();
-                $this->grav['session']->setFlashObject('form', $form);
+                $sform = new FormSerializable();
+                $sform->message = $form->message;
+                $sform->message_color = $form->message_color;
+                $sform->fields = $form->fields;
+                $sform->data = $form->value();
+                $this->grav['session']->setFlashObject('form', $sform);
                 $this->grav->redirect((string)$params);
                 break;
             case 'reset':
                 if (Utils::isPositive($params)) {
-                    $this->form->reset();
+                    $form->reset();
                 }
                 break;
             case 'display':
@@ -212,12 +267,12 @@ class FormPlugin extends Plugin
                 /** @var Twig $twig */
                 $twig = $this->grav['twig'];
                 $vars = [
-                    'form' => $this->form
+                    'form' => $form
                 ];
 
                 $locator = $this->grav['locator'];
                 $path = $locator->findResource('user://data', true);
-                $dir = $path . DS . $this->form->name;
+                $dir = $path . DS . $form->name();
                 $fullFileName = $dir. DS . $filename;
 
                 $file = File::instance($fullFileName);
@@ -360,4 +415,5 @@ class FormPlugin extends Plugin
 
         return date(preg_replace('`(?<!\\\\)u`', \sprintf('%06d', $milliseconds), $format), $timestamp);
     }
+
 }
