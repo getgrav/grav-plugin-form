@@ -73,7 +73,7 @@ class Form extends Iterator implements \Serializable
     public function __construct(Page $page, $name = null, $form = null)
     {
         $this->grav = Grav::instance();
-        $this->page = $page;
+        $this->page = $page->route();
 
         $header            = $page->header();
         $this->rules       = isset($header->rules) ? $header->rules : [];
@@ -82,7 +82,7 @@ class Form extends Iterator implements \Serializable
         if ($form) {
             $this->items = $form;
         } else {
-            $this->items = $header->form; // should not be needed going forward
+            $this->items = $header->form; // for backwards compatibility
         }
 
         // Set form name if not set.
@@ -102,6 +102,11 @@ class Form extends Iterator implements \Serializable
         $this->reset();
     }
 
+    /**
+     * Custom serializer for this complex object
+     *
+     * @return string
+     */
     public function serialize()
     {
         $data = [
@@ -112,11 +117,16 @@ class Form extends Iterator implements \Serializable
             'rules' => $this->rules,
             'data' => $this->data->toArray(),
             'values' => $this->values->toArray(),
-
+            'page' => $this->page
         ];
         return serialize($data);
     }
 
+    /**
+     * Custom unserializer for this complex object
+     *
+     * @param string $data
+     */
     public function unserialize($data)
     {
         $data = unserialize($data);
@@ -138,13 +148,24 @@ class Form extends Iterator implements \Serializable
         $this->data = new Data($data['data'], $blueprint);
         $this->values = new Data($data['values']);
         $this->grav = Grav::instance();
+        $this->page = $data['page'];
     }
 
+    /**
+     * Allow overriding of fields
+     *
+     * @param $fields
+     */
     public function setFields($fields)
     {
         $this->fields = $fields;
     }
 
+    /**
+     * Get the name of this form
+     *
+     * @return String
+     */
     public function name()
     {
         return $this->items['name'];
@@ -233,7 +254,7 @@ class Form extends Iterator implements \Serializable
      */
     public function page()
     {
-        return $this->page;
+        return $this->grav['pages']->dispatch($this->page);
     }
 
     /**
@@ -484,6 +505,13 @@ class Form extends Iterator implements \Serializable
         return $cleanFiles;
     }
 
+    /**
+     * Utility function
+     *
+     * @param $needle
+     * @param $haystack
+     * @return bool
+     */
     private function match_in_array($needle, $haystack)
     {
         foreach ((array)$haystack as $item) {

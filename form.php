@@ -44,9 +44,6 @@ class FormPlugin extends Plugin
             'onPluginsInitialized'   => ['onPluginsInitialized', 0],
             'onPageProcessed'        => ['onPageProcessed', 0],
             'onPagesInitialized'     => ['onPagesInitialized', 0],
-
-//            'onPageContentProcessed' => ['onPageContentProcessed', 0],
-//            'onPageContentFinished'  => ['onPageContentFinished', 0],
             'onTwigInitialized'      => ['onTwigInitialized', 0],
             'onTwigTemplatePaths'    => ['onTwigTemplatePaths', 0],
             'onTwigPageVariables'    => ['onTwigVariables', 0],
@@ -55,6 +52,9 @@ class FormPlugin extends Plugin
         ];
     }
 
+    /**
+     * Initialize forms from cache if possible
+     */
     public function onPluginsInitialized()
     {
         require_once(__DIR__ . '/classes/form.php');
@@ -107,22 +107,6 @@ class FormPlugin extends Plugin
         }
     }
 
-//    public function onPageContentFinished(Event $e)
-//    {
-//        /** @var Page $page */
-//        $page = $e['page'];
-//
-//        if (!array_key_exists($page->route(), $this->forms)) {
-//            $forms = $page->getContentMeta('formMeta');
-//
-//            if ($forms) {
-//                $this->forms[$page->route()] = $forms;
-//            }
-//        }
-//
-//
-//    }
-
     /**
      * Initialize form if the page has one. Also catches form processing if user posts the form.
      */
@@ -158,7 +142,7 @@ class FormPlugin extends Plugin
     }
 
     /**
-     * Add simple `stars()` Twig function
+     * Add simple `forms()` Twig function
      */
     public function onTwigInitialized()
     {
@@ -177,16 +161,14 @@ class FormPlugin extends Plugin
 
     /**
      * Make form accessible from twig.
-     * @param Event $e
+     *
+     * @param Event $event
      */
     public function onTwigVariables(Event $event =  null)
     {
         if (!$this->active) {
             return;
         }
-
-        // set all the forms in the twig vars
-//        $this->grav['twig']->twig_vars['forms'] = $this->forms;
 
         if ($event && isset($event['page'])) {
             $page = $event['page'];
@@ -459,6 +441,13 @@ class FormPlugin extends Plugin
         return date(preg_replace('`(?<!\\\\)u`', \sprintf('%06d', $milliseconds), $format), $timestamp);
     }
 
+    /**
+     * Twig function to get the correct form
+     *
+     * @param null $page_route
+     * @param null $form_name
+     * @return null|Form
+     */
     public function twigForms($page_route = null, $form_name = null)
     {
         if (!$page_route) {

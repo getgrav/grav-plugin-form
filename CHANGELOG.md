@@ -1,3 +1,12 @@
+# v2.0.0-beta.1
+## 08/xx/2016
+
+1. [](#new)
+    * Forms now supports multiple forms per page!
+    * Access forms from any other page within the current page
+    * Instantiate forms directly in page content with Twig processing enabled
+    * New Twig function to get forms data from any other page
+
 # v1.3.3
 ## 08/xx/2016
 
