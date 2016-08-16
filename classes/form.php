@@ -11,7 +11,7 @@ use Grav\Common\Page\Page;
 use Grav\Common\Utils;
 use RocketTheme\Toolbox\Event\Event;
 
-class Form extends Iterator
+class Form extends Iterator implements \Serializable
 {
     /**
      * @var string
@@ -102,9 +102,42 @@ class Form extends Iterator
         $this->reset();
     }
 
-    public function __wakeup() {
-        // Reset and initialize the form
-        $this->reset();
+    public function serialize()
+    {
+        $data = [
+            'items' => $this->items,
+            'message' => $this->message,
+            'message_color' => $this->message_color,
+            'header_data' => $this->header_data,
+            'rules' => $this->rules,
+            'data' => $this->data->toArray(),
+            'values' => $this->values->toArray(),
+
+        ];
+        return serialize($data);
+    }
+
+    public function unserialize($data)
+    {
+        $data = unserialize($data);
+
+        $this->items = $data['items'];
+        $this->message = $data['message'];
+        $this->message_color = $data['message_color'];
+        $this->header_data = $data['header_data'];
+        $this->rules = $data['rules'];
+
+        $name = $this->items['name'];
+        $items = $this->items;
+        $rules = $this->rules;
+
+        $blueprint  = function() use ($name, $items, $rules) {
+            return new Blueprint($name, ['form' => $items, 'rules' => $rules]);
+        };
+
+        $this->data = new Data($data['data'], $blueprint);
+        $this->values = new Data($data['values']);
+        $this->grav = Grav::instance();
     }
 
     public function setFields($fields)
@@ -131,7 +164,7 @@ class Form extends Iterator
                 $field['type'] = 'text';
             }
 
-            $types = Grav::instance()['plugins']->formFieldTypes;
+            $types = $this->grav['plugins']->formFieldTypes;
 
             // manually merging the field types
             if ($types !== null && key_exists($field['type'], $types)) {
@@ -154,7 +187,11 @@ class Form extends Iterator
 
         }
 
-        $blueprint    = new Blueprint($name, ['form' => $this->items, 'rules' => $this->rules]);
+        $items = $this->items;
+        $rules = $this->rules;
+        $blueprint  = function() use ($name, $items, $rules) {
+            return new Blueprint($name, ['form' => $items, 'rules' => $rules]);
+        };
 
         if (method_exists($blueprint, 'load')) {
             // init the form to process directives
@@ -170,6 +207,23 @@ class Form extends Iterator
         // Fire event
         $this->grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
 
+    }
+
+    public function fields() {
+
+        if (is_null($this->fields)) {
+            $blueprint = $this->data->blueprints();
+
+            if (method_exists($blueprint, 'load')) {
+                // init the form to process directives
+                $blueprint->load()->init();
+
+                // fields set to processed blueprint fields
+                $this->fields = $blueprint->fields();
+            }
+        }
+
+        return $this->fields;
     }
 
     /**
