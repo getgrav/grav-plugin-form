@@ -43,7 +43,8 @@ class FormPlugin extends Plugin
         return [
             'onPluginsInitialized'   => ['onPluginsInitialized', 0],
             'onPageProcessed'        => ['onPageProcessed', 0],
-            'onPageInitialized'      => ['onPageInitialized', 0],
+            'onPagesInitialized'     => ['onPagesInitialized', 0],
+
 //            'onPageContentProcessed' => ['onPageContentProcessed', 0],
 //            'onPageContentFinished'  => ['onPageContentFinished', 0],
             'onTwigInitialized'      => ['onTwigInitialized', 0],
@@ -57,8 +58,6 @@ class FormPlugin extends Plugin
     public function onPluginsInitialized()
     {
         require_once(__DIR__ . '/classes/form.php');
-        require_once(__DIR__ . '/classes/form_serializable.php');
-        require_once(__DIR__ . '/classes/forms.php');
 
         // Get and set the cache of forms if it exists
         $forms = $this->grav['cache']->fetch($this->cache_id);
@@ -127,15 +126,8 @@ class FormPlugin extends Plugin
     /**
      * Initialize form if the page has one. Also catches form processing if user posts the form.
      */
-    public function onPageInitialized()
+    public function onPagesInitialized()
     {
-        /** @var Page $page */
-        $page = $this->grav['page'];
-
-        if (!$page) {
-            return;
-        }
-
         if ($this->forms) {
 
             // Save the current state of the forms to cache
@@ -143,17 +135,15 @@ class FormPlugin extends Plugin
                 $this->grav['cache']->save($this->cache_id, $this->forms);
             }
 
-
             $this->active = true;
-
-
-            $this->enable([
-                'onFormProcessed'       => ['onFormProcessed', 0],
-                'onFormValidationError' => ['onFormValidationError', 0]
-            ]);
 
             // Handle posting if needed.
             if (!empty($_POST)) {
+
+                $this->enable([
+                    'onFormProcessed'       => ['onFormProcessed', 0],
+                    'onFormValidationError' => ['onFormValidationError', 0]
+                ]);
 
                 $flat_forms = Utils::arrayFlatten($this->forms);
 
@@ -275,12 +265,7 @@ class FormPlugin extends Plugin
                 $form->message = $processed_string;
                 break;
             case 'redirect':
-                $sform = new FormSerializable();
-                $sform->message = $form->message;
-                $sform->message_color = $form->message_color;
-                $sform->fields = $form->fields;
-                $sform->data = $form->value();
-                $this->grav['session']->setFlashObject('form', $sform);
+                $this->grav['session']->setFlashObject('form', $form);
                 $this->grav->redirect((string)$params);
                 break;
             case 'reset':
