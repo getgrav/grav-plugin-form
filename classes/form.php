@@ -86,7 +86,7 @@ class Form extends Iterator
         }
 
         // Set form name if not set.
-        if ($name) {
+        if ($name && !is_int($name)) {
             $this->items['name'] = $name;
         } elseif (empty($this->items['name'])) {
             $this->items['name'] = $page->slug();
@@ -98,10 +98,13 @@ class Form extends Iterator
             $this->items['id'] = $inflector->hyphenize($this->items['name']);
         }
 
+        // Reset and initialize the form
         $this->reset();
+    }
 
-        // Fire event
-        $this->grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
+    public function __wakeup() {
+        // Reset and initialize the form
+        $this->reset();
     }
 
     public function setFields($fields)
@@ -158,11 +161,15 @@ class Form extends Iterator
             $blueprint->load()->init();
 
             // fields set to processed blueprint fields
-            $this->fields = $blueprint->fields();            
+            $this->fields = $blueprint->fields();
         }
-        
+
         $this->data   = new Data($this->header_data, $blueprint);
         $this->values = new Data();
+
+        // Fire event
+        $this->grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
+
     }
 
     /**
