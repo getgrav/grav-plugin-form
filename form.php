@@ -42,13 +42,7 @@ class FormPlugin extends Plugin
     {
         return [
             'onPluginsInitialized'   => ['onPluginsInitialized', 0],
-            'onPageProcessed'        => ['onPageProcessed', 0],
-            'onPagesInitialized'     => ['onPagesInitialized', 0],
-            'onTwigInitialized'      => ['onTwigInitialized', 0],
-            'onTwigTemplatePaths'    => ['onTwigTemplatePaths', 0],
-            'onTwigPageVariables'    => ['onTwigVariables', 0],
-            'onTwigSiteVariables'    => ['onTwigVariables', 0],
-            'onFormFieldTypes'       => ['onFormFieldTypes', 0]
+            'onTwigTemplatePaths'    => ['onTwigTemplatePaths', 0]
         ];
     }
 
@@ -59,10 +53,22 @@ class FormPlugin extends Plugin
     {
         require_once(__DIR__ . '/classes/form.php');
 
+        if ($this->isAdmin()) {
+            return;
+        }
+
+        $this->enable([
+            'onPageProcessed'        => ['onPageProcessed', 0],
+            'onPagesInitialized'     => ['onPagesInitialized', 0],
+            'onTwigInitialized'      => ['onTwigInitialized', 0],
+        ]);
+
         // Get and set the cache of forms if it exists
         $forms = $this->grav['cache']->fetch($this->cache_id);
         if (is_array($forms)) {
             $this->forms = $forms;
+
+
         }
 
     }
@@ -113,6 +119,12 @@ class FormPlugin extends Plugin
     public function onPagesInitialized()
     {
         if ($this->forms) {
+
+            $this->enable([
+                'onTwigPageVariables'    => ['onTwigVariables', 0],
+                'onTwigSiteVariables'    => ['onTwigVariables', 0],
+                'onFormFieldTypes'       => ['onFormFieldTypes', 0]
+            ]);
 
             // Save the current state of the forms to cache
             if ($this->recache_forms) {
