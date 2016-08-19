@@ -456,16 +456,37 @@ class FormPlugin extends Plugin
     /**
      * function to get a specific form
      *
-     * @param null $page_route the page route where the form is defined (optional defaults to current page)
-     * @param null $form_name  the name of the form (optional for multiple forms, defaults to first form)
+     * @param null|array $data optional page `route` and form `name` in the format ['route' => '/some/page', 'name' => 'form-a']
+     *
      * @return null|Form
      */
-    public function getForm($page_route = null, $form_name = null)
+    public function getForm($data = null)
     {
-        if (!$page_route) {
-            $page_route = $this->grav['page']->route();
+        $page_route = null;
+        $form_name = null;
+
+        if (is_array($data)) {
+            if (isset($data['route'])) {
+                $page_route = $data['route'];
+            }
+            if (isset($data['name'])) {
+                $form_name = $data['name'];
+            }
         }
 
+        // Accept no page route, or @self, or self@, or '' for current page
+        if (!$page_route || $page_route == '@self' || $page_route == 'self@' || $page_route == '') {
+            $page_route = $this->grav['page']->route();
+
+            // fallback using current URI if page not initialized yet
+            if (!$page_route) {
+                $path = $this->grav['uri']->path(); // Don't trim to support trailing slash default routes
+                $path = $path ?: '/';
+                $page_route = $this->grav['pages']->dispatch($path)->route();
+            }
+        }
+
+        // if no form name, use the first firm found
         if (!$form_name) {
             if (isset($this->forms[$page_route])) {
                 $forms = $this->forms[$page_route];
@@ -474,6 +495,7 @@ class FormPlugin extends Plugin
             }
         }
 
+        // return the form you are looking for if available
         if (isset($this->forms[$page_route][$form_name])) {
             return $this->forms[$page_route][$form_name];
         }
