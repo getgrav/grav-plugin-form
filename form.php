@@ -159,7 +159,7 @@ class FormPlugin extends Plugin
     public function onTwigInitialized()
     {
         $this->grav['twig']->twig()->addFunction(
-            new \Twig_SimpleFunction('forms', [$this, 'twigForms'])
+            new \Twig_SimpleFunction('forms', [$this, 'getForm'])
         );
     }
 
@@ -454,13 +454,13 @@ class FormPlugin extends Plugin
     }
 
     /**
-     * Twig function to get the correct form
+     * function to get a specific form
      *
-     * @param null $page_route
-     * @param null $form_name
+     * @param null $page_route the page route where the form is defined (optional defaults to current page)
+     * @param null $form_name  the name of the form (optional for multiple forms, defaults to first form)
      * @return null|Form
      */
-    public function twigForms($page_route = null, $form_name = null)
+    public function getForm($page_route = null, $form_name = null)
     {
         if (!$page_route) {
             $page_route = $this->grav['page']->route();
