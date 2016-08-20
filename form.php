@@ -78,6 +78,8 @@ class FormPlugin extends Plugin
 
         // Create forms
         foreach ($forms as $name => $form) {
+            $name = array_key_exists('name', $form) ? $form['name'] : $name;
+
             $this->forms[$name] = new Form($page, $form);
         }
 
