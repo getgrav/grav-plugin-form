@@ -1,9 +1,3 @@
-# v1.3.3
-## 08/xx/2016
-
-1. [](#improved)
-    * Added Support for CSS id in form definition
-
 # v1.3.2
 ## 08/10/2016
 

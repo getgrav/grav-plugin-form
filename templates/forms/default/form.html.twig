@@ -17,11 +17,14 @@
 <form name="{{ form.name }}"
       action="{{ action }}"
       method="{{ method }}"{{ multipart }}
-      {% if form.id %}id="{{ form.id }}"{% endif %}
       {% block form_classes %}
       {% if form.classes %}class="{{ form.classes }}"{% endif %}
       {% endblock %}
 >
+
+{% set value = form.name %}
+{% set field = {name: '_form_name_'} %}
+{% include "forms/fields/hidden/hidden.html.twig" ignore missing %}
 
 {% for field in form.fields %}
     {% set value = form.value(field.name) %}
