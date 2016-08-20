@@ -1,8 +1,8 @@
 <?php
 namespace Grav\Plugin;
 
-use Grav\Common\Data\Data;
 use Grav\Common\Data\Blueprint;
+use Grav\Common\Data\Data;
 use Grav\Common\Filesystem\Folder;
 use Grav\Common\Grav;
 use Grav\Common\Iterator;
@@ -21,7 +21,7 @@ class Form extends Iterator
      * @var string
      */
     public $message_color;
-    
+
     /**
      * @var Grav $grav
      */
@@ -67,9 +67,10 @@ class Form extends Iterator
     /**
      * Create form for the given page.
      *
-     * @param Page $page
+     * @param Page  $page
+     * @param array $items
      */
-    public function __construct(Page $page)
+    public function __construct(Page $page, $items)
     {
         $this->grav = Grav::instance();
         $this->page = $page;
@@ -77,7 +78,7 @@ class Form extends Iterator
         $header            = $page->header();
         $this->rules       = isset($header->rules) ? $header->rules : [];
         $this->header_data = isset($header->data) ? $header->data : [];
-        $this->items       = $header->form;
+        $this->items       = $items;
 
         // Set form name if not set.
         if (empty($this->items['name'])) {
@@ -90,9 +91,9 @@ class Form extends Iterator
         $this->grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
     }
 
-    public function setFields($fields)
+    public function name()
     {
-        $this->fields = $fields;
+        return $this->items['name'];
     }
 
     /**
@@ -132,18 +133,23 @@ class Form extends Iterator
 
         }
 
-        $blueprint    = new Blueprint($name, ['form' => $this->items, 'rules' => $this->rules]);
+        $blueprint = new Blueprint($name, ['form' => $this->items, 'rules' => $this->rules]);
 
         if (method_exists($blueprint, 'load')) {
             // init the form to process directives
             $blueprint->load()->init();
 
             // fields set to processed blueprint fields
-            $this->fields = $blueprint->fields();            
+            $this->fields = $blueprint->fields();
         }
-        
+
         $this->data   = new Data($this->header_data, $blueprint);
         $this->values = new Data();
+    }
+
+    public function setFields($fields)
+    {
+        $this->fields = $fields;
     }
 
     /**
@@ -199,6 +205,7 @@ class Form extends Iterator
      * Get a value from the form
      *
      * @param $name
+     *
      * @return mixed
      */
     public function getValue($name)
@@ -224,49 +231,51 @@ class Form extends Iterator
 
     /**
      * Handle form processing on POST action.
+     *
+     * @param array $values
      */
-    public function post()
+    public function post($values = [])
     {
-        $files = [];
-        if (isset($_POST)) {
-            $this->values = new Data(isset($_POST) ? (array)$_POST : []);
-            $data         = $this->values->get('data');
-            $files        = (array)$_FILES;
+        $this->values = new Data($values);
+        $data         = $this->values->get('data');
+        $files        = (array)$_FILES;
 
-            // Add post data to form dataset
-            if (!$data) {
-                $data = $this->values->toArray();
-            }
-
-            if (method_exists('Grav\Common\Utils', 'getNonce')) {
-                if (!$this->values->get('form-nonce') || !Utils::verifyNonce($this->values->get('form-nonce'), 'form')) {
-                    $event = new Event(['form'    => $this,
-                                        'message' => $this->grav['language']->translate('PLUGIN_FORM.NONCE_NOT_VALIDATED')
-                    ]);
-                    $this->grav->fireEvent('onFormValidationError', $event);
-
-                    return;
-                }
-            }
-
-            $i = 0;
-            foreach ($this->items['fields'] as $key => $field) {
-                $name = isset($field['name']) ? $field['name'] : $key;
-                if (!isset($field['name'])) {
-                    if (isset($data[$i])) { //Handle input@ false fields
-                        $data[$name] = $data[$i];
-                        unset($data[$i]);
-                    }
-                }
-                if ($field['type'] == 'checkbox') {
-                    $data[$name] = isset($data[$name]) ? true : false;
-                }
-                $i++;
-            }
-
-            $this->data->merge($data);
-            $this->data->merge($files);
+        // Add post data to form dataset
+        if (!$data) {
+            $data = $this->values->toArray();
         }
+
+        if (method_exists('Grav\Common\Utils', 'getNonce')) {
+            if (!$this->values->get('form-nonce') || !Utils::verifyNonce($this->values->get('form-nonce'),
+                    'form')
+            ) {
+                $event = new Event([
+                    'form'    => $this,
+                    'message' => $this->grav['language']->translate('PLUGIN_FORM.NONCE_NOT_VALIDATED')
+                ]);
+                $this->grav->fireEvent('onFormValidationError', $event);
+
+                return;
+            }
+        }
+
+        $i = 0;
+        foreach ($this->items['fields'] as $key => $field) {
+            $name = isset($field['name']) ? $field['name'] : $key;
+            if (!isset($field['name'])) {
+                if (isset($data[$i])) { //Handle input@ false fields
+                    $data[$name] = $data[$i];
+                    unset($data[$i]);
+                }
+            }
+            if ($field['type'] == 'checkbox') {
+                $data[$name] = isset($data[$name]) ? true : false;
+            }
+            $i++;
+        }
+
+        $this->data->merge($data);
+        $this->data->merge($files);
 
         // Validate and filter data
         try {
@@ -341,13 +350,13 @@ class Form extends Iterator
                         $type     = $file['type'][$index];
                         $size     = $file['size'][$index];
                     }
-                    $settings    = isset($this->items['fields'][$index]) ? $this->items['fields'][$index] : [];
-                    $blueprint   = array_replace($default, $settings);
+                    $settings  = isset($this->items['fields'][$index]) ? $this->items['fields'][$index] : [];
+                    $blueprint = array_replace($default, $settings);
 
                     /** @var Twig $twig */
-                    $twig = $this->grav['twig'];
+                    $twig                     = $this->grav['twig'];
                     $blueprint['destination'] = $twig->processString($blueprint['destination']);
-                    
+
                     $destination = Folder::getRelativePath(rtrim($blueprint['destination'], '/'));
                     $page        = null;
 
@@ -383,7 +392,8 @@ class Form extends Iterator
                     }
 
                     if (move_uploaded_file($tmp_name, "$destination/$name")) {
-                        $path     = $page ? $this->grav['uri']->convertUrl($page, $page->route() . '/' . $name) : $destination . '/' . $name;
+                        $path     = $page ? $this->grav['uri']->convertUrl($page,
+                            $page->route() . '/' . $name) : $destination . '/' . $name;
                         $fileData = [
                             'name'  => $name,
                             'path'  => $path,

@@ -3,6 +3,9 @@
 {% block content %}
 
     {{ content }}
-    {% include "forms/form.html.twig" %}
+
+    {% for form in forms %}
+        {% include "forms/form.html.twig" {form: form} %}
+    {% endfor %}
 
 {% endblock %}
