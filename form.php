@@ -188,18 +188,19 @@ class FormPlugin extends Plugin
             $page = $this->grav['page'];
         }
 
+        // get route to calculated page
         $page_route = $page->route();
+        // get route to current page
+        $current_page_route = $this->getCurrentPageRoute();
+        $found_forms = [];
 
-
-        // get first item for Twig 'form' variable for this page
         if (isset($this->forms[$page_route])) {
-            $forms = $this->forms[$page_route];
-            $this->grav['twig']->twig_vars['form'] = array_shift($forms);
-        // else look in the parent (useful for modular backwards compatibility
-        } elseif (isset($this->forms[dirname($page_route)])) {
-            $forms = $this->forms[dirname($page_route)];
-            $this->grav['twig']->twig_vars['form'] = array_shift($forms);
+            $found_forms = $this->forms[$page_route];
+        } elseif (isset($this->forms[$current_page_route])) {
+            $found_forms = $this->forms[$current_page_route];
         }
+
+        $this->grav['twig']->twig_vars['form'] = array_shift($found_forms);
     }
 
     /**
@@ -488,9 +489,7 @@ class FormPlugin extends Plugin
 
             // fallback using current URI if page not initialized yet
             if (!$page_route) {
-                $path = $this->grav['uri']->path(); // Don't trim to support trailing slash default routes
-                $path = $path ?: '/';
-                $page_route = $this->grav['pages']->dispatch($path)->route();
+                $page_route = $this->getCurrentPageRoute();
             }
         }
 
@@ -509,6 +508,18 @@ class FormPlugin extends Plugin
         }
 
         return null;
+    }
+
+    /**
+     * Get current page's route
+     *
+     * @return mixed
+     */
+    protected function getCurrentPageRoute()
+    {
+        $path = $this->grav['uri']->route();
+        $path = $path ?: '/';
+        return $path;
     }
 
 }
