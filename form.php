@@ -190,9 +190,14 @@ class FormPlugin extends Plugin
 
         $page_route = $page->route();
 
+
         // get first item for Twig 'form' variable for this page
         if (isset($this->forms[$page_route])) {
             $forms = $this->forms[$page_route];
+            $this->grav['twig']->twig_vars['form'] = array_shift($forms);
+        // else look in the parent (useful for modular backwards compatibility
+        } elseif (isset($this->forms[dirname($page_route)])) {
+            $forms = $this->forms[dirname($page_route)];
             $this->grav['twig']->twig_vars['form'] = array_shift($forms);
         }
     }
