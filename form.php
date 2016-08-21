@@ -307,6 +307,9 @@ class FormPlugin extends Plugin
                     'form' => $form
                 ];
 
+                // Process with Twig
+                $filename = $twig->processString($filename, $vars);
+
                 $locator = $this->grav['locator'];
                 $path = $locator->findResource('user://data', true);
                 $dir = $path . DS . $form->name();
