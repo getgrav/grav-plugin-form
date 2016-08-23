@@ -10,7 +10,7 @@
                 <label class="inline" {% if field.id is defined %}for="{{ field.id|e }}" {% endif %} >
                 {% block label %}
                     {% if field.help %}
-                    <span class="tooltip" data-asTooltip-position="w" title="{{ field.help|e|t }}">{{ field.label|default(field.name|capitalize)|t }}</span>
+                    <span class="tooltip" data-asTooltip-position="w" title="{{ field.help|t|e }}">{{ field.label|default(field.name|capitalize)|t }}</span>
                     {% else %}
                     {{ field.label|default(field.name|capitalize)|t }}
                     {% endif %}
@@ -32,7 +32,7 @@
                             <input
                                 {# required attribute structures #}
                                 name="{{ (scope ~ field.name)|fieldName }}"
-                                value="{{ value|e('html_attr')|join(', ') }}"
+                                value="{{ value|join(', ')|e('html_attr') }}"
                                 {# input attribute structures #}
                                 {% block input_attributes %}
                                     {% if field.classes is defined %}class="{{ field.classes }}" {% endif %}
@@ -45,9 +45,9 @@
                                     {% if field.readonly in ['on', 'true', 1] %}readonly="readonly"{% endif %}
                                     {% if field.autocomplete in ['on', 'off'] %}autocomplete="{{ field.autocomplete }}"{% endif %}
                                     {% if field.validate.required in ['on', 'true', 1] %}required="required"{% endif %}
-                                    {% if field.validate.pattern %}pattern="{{ field.validate.pattern }}"{% endif %}
-                                    {% if field.validate.message %}title="{{ field.validate.message|e|t }}"
-                                    {% elseif field.title is defined %}title="{{ field.title|e|t }}" {% endif %}
+                                    {% if field.validate.pattern %}pattern="{{ field.validate.pattern|e }}"{% endif %}
+                                    {% if field.validate.message %}title="{{ field.validate.message|t|e }}"
+                                    {% elseif field.title is defined %}title="{{ field.title|t|e }}" {% endif %}
                                 {% endblock %}
                             />
                             {% block append %}{% endblock append %}
@@ -55,7 +55,7 @@
                     {% endblock %}
                 {% endblock %}
                 {% if field.description %}
-                    <div class="form-extra-wrapper {{ field.size }} {{ field.wrapper_classes }}">
+                    <div class="form-extra-wrapper {{ field.size|e }} {{ field.wrapper_classes }}">
                         <span class="form-description">{{ field.description|raw }}</span>
                     </div>
                 {% endif %}
