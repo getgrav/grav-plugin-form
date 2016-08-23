@@ -8,10 +8,11 @@
 
 .form-errors p {
     margin: 0;
+    line-height: 2;
 }
 
 .form-field.has-errors .form-errors {
-    margin-top: -10px;
+    margin-top: -5px;
 }
 
 .form-field.has-errors label {
