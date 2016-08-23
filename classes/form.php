@@ -394,7 +394,7 @@ class Form extends Iterator implements \Serializable
 
             $this->grav->fireEvent('onFormValidationProcessed', new Event(['form' => $this]));
         } catch (\RuntimeException $e) {
-            $event = new Event(['form' => $this, 'message' => $e->getMessage()]);
+            $event = new Event(['form' => $this, 'message' => $e->getMessage(), 'messages' => $e->getMessages()]);
             $this->grav->fireEvent('onFormValidationError', $event);
             if ($event->isPropagationStopped()) {
                 return;

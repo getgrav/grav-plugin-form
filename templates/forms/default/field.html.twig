@@ -2,9 +2,10 @@
 {% set toggleableChecked = field.toggleable and (originalValue is not null and originalValue is not empty) %}
 {% set isDisabledToggleable = field.toggleable and not toggleableChecked %}
 {% set value = (is_object(value) or value is null ? field.default : value) %}
+{% set errors = attribute(form.messages, field.name) %}
 
 {% block field %}
-    <div class="form-field {% if field.outerclasses is defined %} {{ field.outerclasses }}{% endif %}">
+    <div class="form-field {% if field.outerclasses is defined %} {{ field.outerclasses }}{% endif %}{% if errors %} has-errors{% endif %}">
         {% block contents %}
             <div class="form-label">
                 <label class="inline" {% if field.id is defined %}for="{{ field.id|e }}" {% endif %} >
@@ -57,6 +58,13 @@
                 {% if field.description %}
                     <div class="form-extra-wrapper {{ field.size|e }} {{ field.wrapper_classes }}">
                         <span class="form-description">{{ field.description|raw }}</span>
+                    </div>
+                {% endif %}
+                {% if form.inline_errors and errors %}
+                    <div class="form-errors">
+                        {% for error in errors %}
+                        <p class="form-message"><i class="fa fa-exclamation-circle"></i> {{ error }}</p>
+                        {% endfor %}
                     </div>
                 {% endif %}
             </div>

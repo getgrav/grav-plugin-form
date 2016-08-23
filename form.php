@@ -383,6 +383,7 @@ class FormPlugin extends Plugin
         if (isset($event['message'])) {
             $form->message_color = 'red';
             $form->message = $event['message'];
+            $form->messages = $event['messages'];
         }
 
         $uri = $this->grav['uri'];
