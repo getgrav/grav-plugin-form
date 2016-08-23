@@ -33,7 +33,7 @@
     {% set value = form.value(field.name) %}
         {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
 {% endfor %}
-    <input type="hidden" name="__form-name__" value="{{ form.name }}" />
+    {% include "forms/fields/formname/formname.html.twig" %}
 	<div class="buttons">
 	{% for button in form.buttons %}
 	    <button
