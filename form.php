@@ -1,7 +1,10 @@
 <?php
 namespace Grav\Plugin;
 
+use Grav\Common\Page\Page;
+use Grav\Common\Page\Pages;
 use Grav\Common\Plugin;
+use Grav\Common\Twig\Twig;
 use Grav\Common\Utils;
 use Grav\Common\Uri;
 use Symfony\Component\Yaml\Yaml;

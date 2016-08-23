@@ -8,6 +8,7 @@ use Grav\Common\Grav;
 use Grav\Common\Inflector;
 use Grav\Common\Iterator;
 use Grav\Common\Page\Page;
+use Grav\Common\Twig\Twig;
 use Grav\Common\Utils;
 use RocketTheme\Toolbox\Event\Event;
 
@@ -72,6 +73,8 @@ class Form extends Iterator implements \Serializable
      */
     public function __construct(Page $page, $name = null, $form = null)
     {
+        parent::__construct();
+
         $this->grav = Grav::instance();
         $this->page = $page->route();
 
@@ -83,6 +86,11 @@ class Form extends Iterator implements \Serializable
             $this->items = $form;
         } else {
             $this->items = $header->form; // for backwards compatibility
+        }
+
+        // Add form specific rules.
+        if (!empty($this->items['rules']) && is_array($this->items['rules'])) {
+            $this->rules += $this->items['rules'];
         }
 
         // Set form name if not set.
@@ -278,6 +286,8 @@ class Form extends Iterator implements \Serializable
         if ($fallback) {
             return $this->values->get($name);
         }
+
+        return null;
     }
 
     /**
