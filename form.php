@@ -70,8 +70,6 @@ class FormPlugin extends Plugin
         $forms = $this->grav['cache']->fetch($this->cache_id);
         if (is_array($forms)) {
             $this->forms = $forms;
-
-
         }
 
     }
@@ -291,7 +289,7 @@ class FormPlugin extends Plugin
                 if (!$route || $route[0] != '/') {
                     /** @var Uri $uri */
                     $uri = $this->grav['uri'];
-                    $route = $uri->route() . ($route ? '/' . $route : '');
+                    $route = trim($uri->route(), '/'). '/' . ($route ?: '');
                 }
 
                 /** @var Twig $twig */
