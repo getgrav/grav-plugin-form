@@ -211,7 +211,9 @@ class FormPlugin extends Plugin
             $this->grav['twig']->twig_vars['form'] = array_shift($found_forms);
         }
 
-        $this->grav['assets']->addCss('plugin://form/assets/form-styles.css');
+        if ($this->config->get('plugins.form.built_in_css')) {
+            $this->grav['assets']->addCss('plugin://form/assets/form-styles.css');
+        }
     }
 
     /**

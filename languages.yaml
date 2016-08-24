@@ -17,6 +17,8 @@ en:
     RECAPTCHA_SITE_KEY_HELP: "For more info visit https://developers.google.com/recaptcha"
     RECAPTCHA_SECRET_KEY: "Secret key"
     RECAPTCHA_SECRET_KEY_HELP: "For more info visit https://developers.google.com/recaptcha"
+    GENERAL: "General"
+    USE_BUILT_IN_CSS: "Use built-in CSS"
 
 de:
   PLUGIN_FORM:
