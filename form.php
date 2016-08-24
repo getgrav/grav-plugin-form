@@ -197,13 +197,16 @@ class FormPlugin extends Plugin
         $current_page_route = $this->getCurrentPageRoute();
         $found_forms = [];
 
-        if (isset($this->forms[$page_route])) {
-            $found_forms = $this->forms[$page_route];
-        } elseif (isset($this->forms[$current_page_route])) {
-            $found_forms = $this->forms[$current_page_route];
+        if (!isset($this->grav['twig']->twig_vars['form'])) {
+            if (isset($this->forms[$page_route])) {
+                $found_forms = $this->forms[$page_route];
+            } elseif (isset($this->forms[$current_page_route])) {
+                $found_forms = $this->forms[$current_page_route];
+            }
+
+            $this->grav['twig']->twig_vars['form'] = array_shift($found_forms);
         }
 
-        $this->grav['twig']->twig_vars['form'] = array_shift($found_forms);
         $this->grav['assets']->addCss('plugin://form/assets/form-styles.css');
     }
 
