@@ -25,10 +25,6 @@ class Form extends Iterator implements \Serializable
     public $message_color;
     
     /**
-     * @var Grav $grav
-     */
-    protected $grav;
-    /**
      * @var array
      */
     protected $header_data = [];
@@ -75,7 +71,6 @@ class Form extends Iterator implements \Serializable
     {
         parent::__construct();
 
-        $this->grav = Grav::instance();
         $this->page = $page->route();
 
         $header            = $page->header();
@@ -155,7 +150,6 @@ class Form extends Iterator implements \Serializable
 
         $this->data = new Data($data['data'], $blueprint);
         $this->values = new Data($data['values']);
-        $this->grav = Grav::instance();
         $this->page = $data['page'];
     }
 
@@ -185,6 +179,7 @@ class Form extends Iterator implements \Serializable
     public function reset()
     {
         $name = $this->items['name'];
+        $grav = Grav::instance();
 
         // Fix naming for fields (presently only for toplevel fields)
         foreach ($this->items['fields'] as $key => $field) {
@@ -193,7 +188,7 @@ class Form extends Iterator implements \Serializable
                 $field['type'] = 'text';
             }
 
-            $types = $this->grav['plugins']->formFieldTypes;
+            $types = $grav['plugins']->formFieldTypes;
 
             // manually merging the field types
             if ($types !== null && key_exists($field['type'], $types)) {
@@ -234,7 +229,7 @@ class Form extends Iterator implements \Serializable
         $this->values = new Data();
 
         // Fire event
-        $this->grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
+        $grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
 
     }
 
@@ -262,7 +257,7 @@ class Form extends Iterator implements \Serializable
      */
     public function page()
     {
-        return $this->grav['pages']->dispatch($this->page);
+        return Grav::instance()['pages']->dispatch($this->page);
     }
 
     /**
@@ -339,6 +334,8 @@ class Form extends Iterator implements \Serializable
     public function post()
     {
         $files = [];
+        $grav = Grav::instance();
+
         if (isset($_POST)) {
             $this->values = new Data(isset($_POST) ? (array)$_POST : []);
             $data         = $this->values->get('data');
@@ -352,9 +349,9 @@ class Form extends Iterator implements \Serializable
             if (method_exists('Grav\Common\Utils', 'getNonce')) {
                 if (!$this->values->get('form-nonce') || !Utils::verifyNonce($this->values->get('form-nonce'), 'form')) {
                     $event = new Event(['form'    => $this,
-                                        'message' => $this->grav['language']->translate('PLUGIN_FORM.NONCE_NOT_VALIDATED')
+                                        'message' => $grav['language']->translate('PLUGIN_FORM.NONCE_NOT_VALIDATED')
                     ]);
-                    $this->grav->fireEvent('onFormValidationError', $event);
+                    $grav->fireEvent('onFormValidationError', $event);
 
                     return;
                 }
@@ -392,10 +389,10 @@ class Form extends Iterator implements \Serializable
                 }
             }
 
-            $this->grav->fireEvent('onFormValidationProcessed', new Event(['form' => $this]));
+            $grav->fireEvent('onFormValidationProcessed', new Event(['form' => $this]));
         } catch (\RuntimeException $e) {
             $event = new Event(['form' => $this, 'message' => $e->getMessage(), 'messages' => $e->getMessages()]);
-            $this->grav->fireEvent('onFormValidationError', $event);
+            $grav->fireEvent('onFormValidationError', $event);
             if ($event->isPropagationStopped()) {
                 return;
             }
@@ -415,12 +412,12 @@ class Form extends Iterator implements \Serializable
 
                 if ($previousEvent) {
                     if (!$previousEvent->isPropagationStopped()) {
-                        $this->grav->fireEvent('onFormProcessed', $event);
+                        $grav->fireEvent('onFormProcessed', $event);
                     } else {
                         break;
                     }
                 } else {
-                    $this->grav->fireEvent('onFormProcessed', $event);
+                    $grav->fireEvent('onFormProcessed', $event);
                 }
             }
         } else {
@@ -433,7 +430,8 @@ class Form extends Iterator implements \Serializable
         /** @var Page $page */
         $page       = null;
         $cleanFiles = [];
-        $config     = $this->grav['config'];
+        $grav       = Grav::instance();
+        $config     = $grav['config'];
         $default    = $config->get('plugins.form.files');
 
         foreach ((array)$file['error'] as $index => $errors) {
@@ -456,7 +454,7 @@ class Form extends Iterator implements \Serializable
                     $blueprint   = array_replace($default, $settings);
 
                     /** @var Twig $twig */
-                    $twig = $this->grav['twig'];
+                    $twig = $grav['twig'];
                     $blueprint['destination'] = $twig->processString($blueprint['destination']);
                     
                     $destination = Folder::getRelativePath(rtrim($blueprint['destination'], '/'));
@@ -473,7 +471,7 @@ class Form extends Iterator implements \Serializable
                     if (Utils::startsWith($destination, '@page:')) {
                         $parts = explode(':', $destination);
                         $route = $parts[1];
-                        $page  = $this->grav['page']->find($route);
+                        $page  = $grav['page']->find($route);
 
                         if (!$page) {
                             throw new \RuntimeException('Unable to upload file to destination. Page route not found.');
@@ -482,7 +480,7 @@ class Form extends Iterator implements \Serializable
                         $destination = $page->relativePagePath();
                     } else {
                         if ($destination == '@self') {
-                            $page        = $this->grav['page'];
+                            $page        = $grav['page'];
                             $destination = $page->relativePagePath();
                         } else {
                             Folder::mkdir($destination);
@@ -494,7 +492,7 @@ class Form extends Iterator implements \Serializable
                     }
 
                     if (move_uploaded_file($tmp_name, "$destination/$name")) {
-                        $path     = $page ? $this->grav['uri']->convertUrl($page, $page->route() . '/' . $name) : $destination . '/' . $name;
+                        $path     = $page ? $grav['uri']->convertUrl($page, $page->route() . '/' . $name) : $destination . '/' . $name;
                         $fileData = [
                             'name'  => $name,
                             'path'  => $path,
