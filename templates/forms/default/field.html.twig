@@ -52,6 +52,13 @@
                                 {% endblock %}
                             />
                             {% block append %}{% endblock append %}
+                            {% if form.inline_errors and errors %}
+                                <div class="form-errors">
+                                    {% for error in errors %}
+                                        <p class="form-message"><i class="fa fa-exclamation-circle"></i> {{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
                         </div>
                     {% endblock %}
                 {% endblock %}
@@ -60,13 +67,7 @@
                         <span class="form-description">{{ field.description|raw }}</span>
                     </div>
                 {% endif %}
-                {% if form.inline_errors and errors %}
-                    <div class="form-errors">
-                        {% for error in errors %}
-                        <p class="form-message"><i class="fa fa-exclamation-circle"></i> {{ error }}</p>
-                        {% endfor %}
-                    </div>
-                {% endif %}
+
             </div>
         {% endblock %}
     </div>
