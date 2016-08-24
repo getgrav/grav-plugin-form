@@ -15,7 +15,8 @@
     {% endif %}
 {% endfor %}
 
-{% set action = form.action ? base_url ~ form.action : page.url %}
+{% set action = form.action ? base_url ~ form.action : uri.url() %}
+
 {% if (action == base_url_relative) %}
     {% set action = base_url_relative ~ '/' ~ page.slug %}
 {% endif %}

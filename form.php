@@ -87,6 +87,10 @@ class FormPlugin extends Plugin
         $page = $e['page'];
         $page_route = $page->route();
 
+        if ($page->home()) {
+            $page_route = '/';
+        }
+
         $header = $page->header();
         if ((isset($header->forms) && is_array($header->forms)) ||
             (isset($header->form) && is_array($header->form))) {
