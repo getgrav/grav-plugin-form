@@ -33,6 +33,8 @@ class FormPlugin extends Plugin
 
     protected $forms = [];
 
+    protected $flat_forms = [];
+
     protected $cache_id = 'plugin-form';
 
     protected $recache_forms = false;
@@ -67,11 +69,17 @@ class FormPlugin extends Plugin
         ]);
 
         // Get and set the cache of forms if it exists
-        $forms = $this->grav['cache']->fetch($this->cache_id);
+        list($forms, $flat_forms) = $this->grav['cache']->fetch($this->cache_id);
+
+        // Only store the forms if they are an array
         if (is_array($forms)) {
             $this->forms = $forms;
         }
 
+        // Only store the flat_forms if they are an array
+        if (is_array($flat_forms)) {
+            $this->flat_forms = $flat_forms;
+        }
     }
 
     /**
@@ -131,9 +139,14 @@ class FormPlugin extends Plugin
                 'onFormFieldTypes'       => ['onFormFieldTypes', 0]
             ]);
 
+            // Regenerate list of flat_forms if not already populated
+            if (empty($this->flat_forms)) {
+                $this->flat_forms = Utils::arrayFlatten($this->forms);
+            }
+
             // Save the current state of the forms to cache
             if ($this->recache_forms) {
-                $this->grav['cache']->save($this->cache_id, $this->forms);
+                $this->grav['cache']->save($this->cache_id, [$this->forms, $this->flat_forms]);
             }
 
             $this->active = true;
@@ -146,12 +159,9 @@ class FormPlugin extends Plugin
                     'onFormValidationError' => ['onFormValidationError', 0]
                 ]);
 
-                $flat_forms = Utils::arrayFlatten($this->forms);
+                $current_form_name = filter_input(INPUT_POST, '__form-name__');
 
-                $form_name = filter_input(INPUT_POST, '__form-name__');
-
-                if (array_key_exists($form_name, $flat_forms)) {
-                    $form = $flat_forms[$form_name];
+                if ($form = $this->getFormByName($current_form_name)) {
                     $form->post();
                 }
             }
@@ -477,7 +487,7 @@ class FormPlugin extends Plugin
     /**
      * function to get a specific form
      *
-     * @param null|array $data optional page `route` and form `name` in the format ['route' => '/some/page', 'name' => 'form-a']
+     * @param null|array $data optional form `name`
      *
      * @return null|Form
      */
@@ -487,26 +497,30 @@ class FormPlugin extends Plugin
         $form_name = null;
 
         if (is_array($data)) {
-            if (isset($data['route'])) {
-                $page_route = $data['route'];
-            }
             if (isset($data['name'])) {
                 $form_name = $data['name'];
             }
-        }
-
-        // Accept no page route, or @self, or self@, or '' for current page
-        if (!$page_route || $page_route == '@self' || $page_route == 'self@' || $page_route == '') {
-            $page_route = $this->grav['page']->route();
-
-            // fallback using current URI if page not initialized yet
-            if (!$page_route) {
-                $page_route = $this->getCurrentPageRoute();
+            if (isset($data['route'])) {
+                $page_route = $data['route'];
             }
+        } elseif (is_string($data)) {
+            $form_name = $data;
         }
 
-        // if no form name, use the first firm found
+        // if no form name, use the first form found in the page
         if (!$form_name) {
+
+            // If page route not provided, use the current page
+            if (!$page_route) {
+                // Get page route
+                $page_route = $this->grav['page']->route();
+
+                // fallback using current URI if page not initialized yet
+                if (!$page_route) {
+                    $page_route = $this->getCurrentPageRoute();
+                }
+            }
+
             if (isset($this->forms[$page_route])) {
                 $forms = $this->forms[$page_route];
                 $first_form = array_shift($forms);
@@ -515,11 +529,9 @@ class FormPlugin extends Plugin
         }
 
         // return the form you are looking for if available
-        if (isset($this->forms[$page_route][$form_name])) {
-            return $this->forms[$page_route][$form_name];
-        }
+        $form = $this->getFormByName($form_name);
 
-        return null;
+        return $form;
     }
 
     /**
@@ -532,6 +544,21 @@ class FormPlugin extends Plugin
         $path = $this->grav['uri']->route();
         $path = $path ?: '/';
         return $path;
+    }
+
+    /**
+     * Retrieve a form based on the form name
+     *
+     * @param $form_name
+     * @return mixed
+     */
+    protected function getFormByName($form_name)
+    {
+        if (array_key_exists($form_name, $this->flat_forms)) {
+            $form = $this->flat_forms[$form_name];
+            return $form;
+        }
+        return null;
     }
 
 }
