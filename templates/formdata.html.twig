@@ -5,7 +5,7 @@
 {% endif  %}
 
 {% block content %}
-    {{ content }}
+    {{ content|raw }}
 
     {% if form %}
         {% if form.message %}

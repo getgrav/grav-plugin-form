@@ -20,7 +20,7 @@
                 {% if field.autocomplete in ['on', 'off'] %}autocomplete="{{ field.autocomplete }}"{% endif %}
                 {% if field.validate.required in ['on', 'true', 1] %}required="required"{% endif %}
                 {% if field.validate.pattern %}pattern="{{ field.validate.pattern }}"{% endif %}
-                {% if field.validate.message %}title="{% if grav.twig.twig.filters['tu'] is defined %}{{ field.validate.message|e|tu }}{% else %}{{ field.validate.message|e|t }}{% endif %}"{% endif %}
+                {% if field.validate.message %}title="{% if grav.twig.twig.filters['tu'] is defined %}{{ field.validate.message|tu|e }}{% else %}{{ field.validate.message|t|e }}{% endif %}"{% endif %}
                 {% if field.rows is defined %}rows="{{ field.rows }}"{% endif %}
                 {% if field.cols is defined %}cols="{{ field.cols }}"{% endif %}
             {% endblock %}

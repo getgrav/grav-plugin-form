@@ -1,3 +1,5 @@
+{% autoescape false %}
+
 {% for index, field in form.fields %}
 {% set input = attribute(field, "input@") %}
 {% if input is null or input == true %}
@@ -5,3 +7,5 @@
 {{ field.name ?? index }}: {{ string((value is iterable ? value|json_encode : value)|nl2br)|replace({"\n":' ', "\r":' '}) }}
 {% endif %}
 {% endfor %}
+
+{% endautoescape %}

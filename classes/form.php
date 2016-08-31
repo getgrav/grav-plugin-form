@@ -5,12 +5,14 @@ use Grav\Common\Data\Data;
 use Grav\Common\Data\Blueprint;
 use Grav\Common\Filesystem\Folder;
 use Grav\Common\Grav;
+use Grav\Common\Inflector;
 use Grav\Common\Iterator;
 use Grav\Common\Page\Page;
+use Grav\Common\Twig\Twig;
 use Grav\Common\Utils;
 use RocketTheme\Toolbox\Event\Event;
 
-class Form extends Iterator
+class Form extends Iterator implements \Serializable
 {
     /**
      * @var string
@@ -22,10 +24,6 @@ class Form extends Iterator
      */
     public $message_color;
     
-    /**
-     * @var Grav $grav
-     */
-    protected $grav;
     /**
      * @var array
      */
@@ -69,30 +67,110 @@ class Form extends Iterator
      *
      * @param Page $page
      */
-    public function __construct(Page $page)
+    public function __construct(Page $page, $name = null, $form = null)
     {
-        $this->grav = Grav::instance();
-        $this->page = $page;
+        parent::__construct();
+
+        $this->page = $page->route();
 
         $header            = $page->header();
         $this->rules       = isset($header->rules) ? $header->rules : [];
         $this->header_data = isset($header->data) ? $header->data : [];
-        $this->items       = $header->form;
+
+        if ($form) {
+            $this->items = $form;
+        } else {
+            $this->items = $header->form; // for backwards compatibility
+        }
+
+        // Add form specific rules.
+        if (!empty($this->items['rules']) && is_array($this->items['rules'])) {
+            $this->rules += $this->items['rules'];
+        }
 
         // Set form name if not set.
-        if (empty($this->items['name'])) {
+        if ($name && !is_int($name)) {
+            $this->items['name'] = $name;
+        } elseif (empty($this->items['name'])) {
             $this->items['name'] = $page->slug();
         }
 
-        $this->reset();
+        // Set form id if not set.
+        if (empty($this->items['id'])) {
+            $inflector = new Inflector();
+            $this->items['id'] = $inflector->hyphenize($this->items['name']);
+        }
 
-        // Fire event
-        $this->grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
+        // Reset and initialize the form
+        $this->reset();
     }
 
+    /**
+     * Custom serializer for this complex object
+     *
+     * @return string
+     */
+    public function serialize()
+    {
+        $data = [
+            'items' => $this->items,
+            'message' => $this->message,
+            'message_color' => $this->message_color,
+            'header_data' => $this->header_data,
+            'rules' => $this->rules,
+            'data' => $this->data->toArray(),
+            'values' => $this->values->toArray(),
+            'page' => $this->page
+        ];
+        return serialize($data);
+    }
+
+    /**
+     * Custom unserializer for this complex object
+     *
+     * @param string $data
+     */
+    public function unserialize($data)
+    {
+        $data = unserialize($data);
+
+        $this->items = $data['items'];
+        $this->message = $data['message'];
+        $this->message_color = $data['message_color'];
+        $this->header_data = $data['header_data'];
+        $this->rules = $data['rules'];
+
+        $name = $this->items['name'];
+        $items = $this->items;
+        $rules = $this->rules;
+
+        $blueprint  = function() use ($name, $items, $rules) {
+            return new Blueprint($name, ['form' => $items, 'rules' => $rules]);
+        };
+
+        $this->data = new Data($data['data'], $blueprint);
+        $this->values = new Data($data['values']);
+        $this->page = $data['page'];
+    }
+
+    /**
+     * Allow overriding of fields
+     *
+     * @param $fields
+     */
     public function setFields($fields)
     {
         $this->fields = $fields;
+    }
+
+    /**
+     * Get the name of this form
+     *
+     * @return String
+     */
+    public function name()
+    {
+        return $this->items['name'];
     }
 
     /**
@@ -101,6 +179,7 @@ class Form extends Iterator
     public function reset()
     {
         $name = $this->items['name'];
+        $grav = Grav::instance();
 
         // Fix naming for fields (presently only for toplevel fields)
         foreach ($this->items['fields'] as $key => $field) {
@@ -109,7 +188,7 @@ class Form extends Iterator
                 $field['type'] = 'text';
             }
 
-            $types = Grav::instance()['plugins']->formFieldTypes;
+            $types = $grav['plugins']->formFieldTypes;
 
             // manually merging the field types
             if ($types !== null && key_exists($field['type'], $types)) {
@@ -132,18 +211,43 @@ class Form extends Iterator
 
         }
 
-        $blueprint    = new Blueprint($name, ['form' => $this->items, 'rules' => $this->rules]);
+        $items = $this->items;
+        $rules = $this->rules;
+        $blueprint  = function() use ($name, $items, $rules) {
+            return new Blueprint($name, ['form' => $items, 'rules' => $rules]);
+        };
 
         if (method_exists($blueprint, 'load')) {
             // init the form to process directives
             $blueprint->load()->init();
 
             // fields set to processed blueprint fields
-            $this->fields = $blueprint->fields();            
+            $this->fields = $blueprint->fields();
         }
-        
+
         $this->data   = new Data($this->header_data, $blueprint);
         $this->values = new Data();
+
+        // Fire event
+        $grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
+
+    }
+
+    public function fields() {
+
+        if (is_null($this->fields)) {
+            $blueprint = $this->data->blueprints();
+
+            if (method_exists($blueprint, 'load')) {
+                // init the form to process directives
+                $blueprint->load()->init();
+
+                // fields set to processed blueprint fields
+                $this->fields = $blueprint->fields();
+            }
+        }
+
+        return $this->fields;
     }
 
     /**
@@ -153,7 +257,7 @@ class Form extends Iterator
      */
     public function page()
     {
-        return $this->page;
+        return Grav::instance()['pages']->dispatch($this->page);
     }
 
     /**
@@ -177,6 +281,8 @@ class Form extends Iterator
         if ($fallback) {
             return $this->values->get($name);
         }
+
+        return null;
     }
 
     /**
@@ -228,6 +334,8 @@ class Form extends Iterator
     public function post()
     {
         $files = [];
+        $grav = Grav::instance();
+
         if (isset($_POST)) {
             $this->values = new Data(isset($_POST) ? (array)$_POST : []);
             $data         = $this->values->get('data');
@@ -241,9 +349,9 @@ class Form extends Iterator
             if (method_exists('Grav\Common\Utils', 'getNonce')) {
                 if (!$this->values->get('form-nonce') || !Utils::verifyNonce($this->values->get('form-nonce'), 'form')) {
                     $event = new Event(['form'    => $this,
-                                        'message' => $this->grav['language']->translate('PLUGIN_FORM.NONCE_NOT_VALIDATED')
+                                        'message' => $grav['language']->translate('PLUGIN_FORM.NONCE_NOT_VALIDATED')
                     ]);
-                    $this->grav->fireEvent('onFormValidationError', $event);
+                    $grav->fireEvent('onFormValidationError', $event);
 
                     return;
                 }
@@ -281,10 +389,10 @@ class Form extends Iterator
                 }
             }
 
-            $this->grav->fireEvent('onFormValidationProcessed', new Event(['form' => $this]));
+            $grav->fireEvent('onFormValidationProcessed', new Event(['form' => $this]));
         } catch (\RuntimeException $e) {
-            $event = new Event(['form' => $this, 'message' => $e->getMessage()]);
-            $this->grav->fireEvent('onFormValidationError', $event);
+            $event = new Event(['form' => $this, 'message' => $e->getMessage(), 'messages' => $e->getMessages()]);
+            $grav->fireEvent('onFormValidationError', $event);
             if ($event->isPropagationStopped()) {
                 return;
             }
@@ -304,12 +412,12 @@ class Form extends Iterator
 
                 if ($previousEvent) {
                     if (!$previousEvent->isPropagationStopped()) {
-                        $this->grav->fireEvent('onFormProcessed', $event);
+                        $grav->fireEvent('onFormProcessed', $event);
                     } else {
                         break;
                     }
                 } else {
-                    $this->grav->fireEvent('onFormProcessed', $event);
+                    $grav->fireEvent('onFormProcessed', $event);
                 }
             }
         } else {
@@ -322,7 +430,8 @@ class Form extends Iterator
         /** @var Page $page */
         $page       = null;
         $cleanFiles = [];
-        $config     = $this->grav['config'];
+        $grav       = Grav::instance();
+        $config     = $grav['config'];
         $default    = $config->get('plugins.form.files');
 
         foreach ((array)$file['error'] as $index => $errors) {
@@ -345,7 +454,7 @@ class Form extends Iterator
                     $blueprint   = array_replace($default, $settings);
 
                     /** @var Twig $twig */
-                    $twig = $this->grav['twig'];
+                    $twig = $grav['twig'];
                     $blueprint['destination'] = $twig->processString($blueprint['destination']);
                     
                     $destination = Folder::getRelativePath(rtrim($blueprint['destination'], '/'));
@@ -362,7 +471,7 @@ class Form extends Iterator
                     if (Utils::startsWith($destination, '@page:')) {
                         $parts = explode(':', $destination);
                         $route = $parts[1];
-                        $page  = $this->grav['page']->find($route);
+                        $page  = $grav['page']->find($route);
 
                         if (!$page) {
                             throw new \RuntimeException('Unable to upload file to destination. Page route not found.');
@@ -371,7 +480,7 @@ class Form extends Iterator
                         $destination = $page->relativePagePath();
                     } else {
                         if ($destination == '@self') {
-                            $page        = $this->grav['page'];
+                            $page        = $grav['page'];
                             $destination = $page->relativePagePath();
                         } else {
                             Folder::mkdir($destination);
@@ -383,7 +492,7 @@ class Form extends Iterator
                     }
 
                     if (move_uploaded_file($tmp_name, "$destination/$name")) {
-                        $path     = $page ? $this->grav['uri']->convertUrl($page, $page->route() . '/' . $name) : $destination . '/' . $name;
+                        $path     = $page ? $grav['uri']->convertUrl($page, $page->route() . '/' . $name) : $destination . '/' . $name;
                         $fileData = [
                             'name'  => $name,
                             'path'  => $path,
@@ -404,6 +513,13 @@ class Form extends Iterator
         return $cleanFiles;
     }
 
+    /**
+     * Utility function
+     *
+     * @param $needle
+     * @param $haystack
+     * @return bool
+     */
     private function match_in_array($needle, $haystack)
     {
         foreach ((array)$haystack as $item) {
