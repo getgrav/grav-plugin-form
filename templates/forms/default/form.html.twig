@@ -31,8 +31,11 @@
 >
 
 {% for field in form.fields %}
+    {% if field.type == 'file' %}
+        {% do assets.addJs('plugin://form/assets/form.min.js') %}
+    {% endif %}
     {% set value = form.value(field.name) %}
-        {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
+    {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
 {% endfor %}
     {% include "forms/fields/formname/formname.html.twig" %}
 	<div class="buttons">

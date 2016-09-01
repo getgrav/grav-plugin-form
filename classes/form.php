@@ -8,7 +8,6 @@ use Grav\Common\Grav;
 use Grav\Common\Inflector;
 use Grav\Common\Iterator;
 use Grav\Common\Page\Page;
-use Grav\Common\Twig\Twig;
 use Grav\Common\Utils;
 use RocketTheme\Toolbox\Event\Event;
 
@@ -23,7 +22,7 @@ class Form extends Iterator implements \Serializable
      * @var string
      */
     public $message_color;
-    
+
     /**
      * @var array
      */
@@ -322,10 +321,167 @@ class Form extends Iterator implements \Serializable
     public function setData($name = null, $value = '')
     {
         if (!$name) {
-            return;
+            return false;
         }
 
         $this->data->set($name, $value);
+
+        return true;
+    }
+
+    /**
+     * Handles ajax upload for files.
+     * Stores in a flash object the temporary file and deals with potential file errors.
+     *
+     * @return mixed True if the action was performed.
+     */
+    public function uploadFiles()
+    {
+        $post = $_POST;
+        $grav = Grav::instance();
+        $uri = $grav['uri']->url;
+        $config = $grav['config'];
+        $session = $grav['session'];
+
+        $settings = $this->data->blueprints()->schema()->getProperty($post['name']);
+        $settings = (object) array_merge(
+            ['destination' => $config->get('plugins.form.files.destination', 'self@'),
+             'avoid_overwriting' => $config->get('plugins.form.files.avoid_overwriting', false),
+             'random_name' => $config->get('plugins.form.files.random_name', false),
+             'accept' => $config->get('plugins.form.files.accept', ['image/*']),
+             'limit' => $config->get('plugins.form.files.limit', 10),
+             'filesize' => $config->get('plugins.form.files.filesize', 5242880) // 5MB
+            ],
+            (array) $settings,
+            ['name' => $post['name']]
+        );
+
+        $upload = $this->normalizeFiles($_FILES['data'], $settings->name);
+
+        // Handle errors and breaks without proceeding further
+        if ($upload->file->error != UPLOAD_ERR_OK) {
+            // json_response
+            return [
+                'status' => 'error',
+                'message' => sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_UPLOAD', null, true), $upload->file->name, $this->upload_errors[$upload->file->error])
+            ];
+        } else {
+            // Remove the error object to avoid storing it
+            unset($upload->file->error);
+
+            // we need to move the file at this stage or else
+            // it won't be available upon save later on
+            // since php removes it from the upload location
+            $tmp_dir = Grav::instance()['locator']->findResource('tmp://', true, true);
+            $tmp_file = $upload->file->tmp_name;
+            $tmp = $tmp_dir . '/uploaded-files/' . basename($tmp_file);
+
+            Folder::create(dirname($tmp));
+            if (!move_uploaded_file($tmp_file, $tmp)) {
+                // json_response
+                return [
+                    'status' => 'error',
+                    'message' => sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '', $tmp)
+                ];
+            }
+
+            $upload->file->tmp_name = $tmp;
+        }
+
+        // Handle file size limits
+        $settings->filesize *= 1048576; // 2^20 [MB in Bytes]
+        if ($settings->filesize > 0 && $upload->file->size > $settings->filesize) {
+            // json_response
+            return [
+                'status'  => 'error',
+                'message' => $grav['language']->translate('PLUGIN_FORM.EXCEEDED_GRAV_FILESIZE_LIMIT')
+            ];
+        }
+
+
+        // Handle Accepted file types
+        // Accept can only be mime types (image/png | image/*) or file extensions (.pdf|.jpg)
+        $accepted = false;
+        $errors = [];
+        foreach ((array) $settings->accept as $type) {
+            // Force acceptance of any file when star notation
+            if ($type == '*') {
+                $accepted = true;
+                break;
+            }
+
+            $isMime = strstr($type, '/');
+            $find = str_replace('*', '.*', $type);
+
+            $match = preg_match('#'. $find .'$#', $isMime ? $upload->file->type : $upload->file->name);
+            if (!$match) {
+                $message = $isMime ? 'The MIME type "' . $upload->file->type . '"' : 'The File Extension';
+                $errors[] = $message . ' for the file "' . $upload->file->name . '" is not an accepted.';
+                $accepted |= false;
+            }  else {
+                $accepted |= true;
+            }
+        }
+
+        if (!$accepted) {
+            // json_response
+            return [
+                'status' => 'error',
+                'message' => implode('<br />', $errors)
+            ];
+        }
+
+        // Retrieve the current session of the uploaded files for the field
+        // and initialize it if it doesn't exist
+        $sessionField = base64_encode($uri);
+        $flash = $session->getFlashObject('files-upload');
+        if (!$flash) { $flash = []; }
+        if (!isset($flash[$sessionField])) { $flash[$sessionField] = []; }
+        if (!isset($flash[$sessionField][$upload->field])) { $flash[$sessionField][$upload->field] = []; }
+
+        // Set destination
+        $destination = Folder::getRelativePath(rtrim($settings->destination, '/'));
+        $destination = $this->getPagePathFromToken($destination);
+
+        // Create destination if needed
+        if (!is_dir($destination)) {
+            Folder::mkdir($destination);
+        }
+
+        // Generate random name if required
+        if ($settings->random_name) {
+            $extension = pathinfo($upload->file->name)['extension'];
+            $upload->file->name = Utils::generateRandomString(15) . '.' . $extension;
+        }
+
+        // Handle conflicting name if needed
+        if ($settings->avoid_overwriting) {
+            if (file_exists($destination . '/' . $upload->file->name)) {
+                $upload->file->name = date('YmdHis') . '-' . $upload->file->name;
+            }
+        }
+
+        // Prepare object for later save
+        $path = $destination . '/' . $upload->file->name;
+        $upload->file->path = $path;
+        // $upload->file->route = $page ? $path : null;
+
+        // Prepare data to be saved later
+        $flash[$sessionField][$upload->field][$path] = (array) $upload->file;
+
+        // Finally store the new uploaded file in the field session
+        $session->setFlashObject('files-upload', $flash);
+
+
+        // json_response
+        return [
+            'status' => 'success',
+            'session' => \json_encode([
+                'sessionField' => base64_encode($uri),
+                'path' => $upload->file->path,
+                'field' => $settings->name
+            ])
+        ];
     }
 
     /**
@@ -333,13 +489,13 @@ class Form extends Iterator implements \Serializable
      */
     public function post()
     {
-        $files = [];
         $grav = Grav::instance();
+        $uri = $grav['uri']->url;
+        $session = $grav['session'];
 
         if (isset($_POST)) {
             $this->values = new Data(isset($_POST) ? (array)$_POST : []);
             $data         = $this->values->get('data');
-            $files        = (array)$_FILES;
 
             // Add post data to form dataset
             if (!$data) {
@@ -373,7 +529,6 @@ class Form extends Iterator implements \Serializable
             }
 
             $this->data->merge($data);
-            $this->data->merge($files);
         }
 
         // Validate and filter data
@@ -381,20 +536,31 @@ class Form extends Iterator implements \Serializable
             $this->data->validate();
             $this->data->filter();
 
-            if (isset($files['data'])) {
-                $cleanFiles = $this->cleanFilesData($files['data']);
-
-                foreach ($cleanFiles as $key => $data) {
-                    $this->data->set($key, $data);
-                }
-            }
-
             $grav->fireEvent('onFormValidationProcessed', new Event(['form' => $this]));
         } catch (\RuntimeException $e) {
             $event = new Event(['form' => $this, 'message' => $e->getMessage(), 'messages' => $e->getMessages()]);
             $grav->fireEvent('onFormValidationError', $event);
             if ($event->isPropagationStopped()) {
                 return;
+            }
+        }
+
+        // Process previously uploaded files for the current URI
+        // and finally store them. Everything else will get discarded
+        $queue = $session->getFlashObject('files-upload');
+        $queue = $queue[base64_encode($uri)];
+        if (is_array($queue)) {
+            foreach ($queue as $key => $files) {
+                foreach ($files as $destination => $file) {
+                    if (!rename($file['tmp_name'], $destination)) {
+                        throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $file['tmp_name'] . '"', $destination));
+                    }
+
+                    unset($files[$destination]['tmp_name']);
+                }
+
+                $this->data->merge([$key => $files]);
+
             }
         }
 
@@ -425,111 +591,77 @@ class Form extends Iterator implements \Serializable
         }
     }
 
-    private function cleanFilesData($file)
+    public function getPagePathFromToken($path)
     {
-        /** @var Page $page */
-        $page       = null;
-        $cleanFiles = [];
-        $grav       = Grav::instance();
-        $config     = $grav['config'];
-        $default    = $config->get('plugins.form.files');
+        $path_parts = pathinfo($path);
 
-        foreach ((array)$file['error'] as $index => $errors) {
-            $errors = !is_array($errors) ? [$errors] : $errors;
-
-            foreach ($errors as $multiple_index => $error) {
-                if ($error == UPLOAD_ERR_OK) {
-                    if (is_array($file['name'][$index])) {
-                        $tmp_name = $file['tmp_name'][$index][$multiple_index];
-                        $name     = $file['name'][$index][$multiple_index];
-                        $type     = $file['type'][$index][$multiple_index];
-                        $size     = $file['size'][$index][$multiple_index];
-                    } else {
-                        $tmp_name = $file['tmp_name'][$index];
-                        $name     = $file['name'][$index];
-                        $type     = $file['type'][$index];
-                        $size     = $file['size'][$index];
-                    }
-                    $settings    = isset($this->items['fields'][$index]) ? $this->items['fields'][$index] : [];
-                    $blueprint   = array_replace($default, $settings);
-
-                    /** @var Twig $twig */
-                    $twig = $grav['twig'];
-                    $blueprint['destination'] = $twig->processString($blueprint['destination']);
-                    
-                    $destination = Folder::getRelativePath(rtrim($blueprint['destination'], '/'));
-                    $page        = null;
-
-                    if (!isset($blueprint)) {
-                        return false;
-                    }
-
-                    if (!$this->match_in_array($type, $blueprint['accept'])) {
-                        throw new \RuntimeException('File "' . $name . '" is not an accepted MIME type.');
-                    }
-
-                    if (Utils::startsWith($destination, '@page:')) {
-                        $parts = explode(':', $destination);
-                        $route = $parts[1];
-                        $page  = $grav['page']->find($route);
-
-                        if (!$page) {
-                            throw new \RuntimeException('Unable to upload file to destination. Page route not found.');
-                        }
-
-                        $destination = $page->relativePagePath();
-                    } else {
-                        if ($destination == '@self') {
-                            $page        = $grav['page'];
-                            $destination = $page->relativePagePath();
-                        } else {
-                            Folder::mkdir($destination);
-                        }
-                    }
-
-                    if (file_exists("$destination/$name")) {
-                        $name = date('YmdHis') . '-' . $name;
-                    }
-
-                    if (move_uploaded_file($tmp_name, "$destination/$name")) {
-                        $path     = $page ? $grav['uri']->convertUrl($page, $page->route() . '/' . $name) : $destination . '/' . $name;
-                        $fileData = [
-                            'name'  => $name,
-                            'path'  => $path,
-                            'type'  => $type,
-                            'size'  => $size,
-                            'file'  => $destination . '/' . $name,
-                            'route' => $page ? $path : null
-                        ];
-
-                        $cleanFiles[$index][$path] = $fileData;
-                    } else {
-                        throw new \RuntimeException("Unable to upload file(s) to $destination/$name");
-                    }
-                }
-            }
+        $basename = '';
+        if (isset($path_parts['extension'])) {
+            $basename = '/' . $path_parts['basename'];
+            $path = $path_parts['dirname'];
         }
 
-        return $cleanFiles;
+        $regex = '/(@self|self@)|((?:@page|page@):(?:.*))|((?:@theme|theme@):(?:.*))/';
+        preg_match($regex, $path, $matches);
+
+        if ($matches) {
+            if ($matches[1]) {
+                // self@
+                $page = $this->page(true);
+            } elseif ($matches[2]) {
+                // page@
+                $parts = explode(':', $path);
+                $route = $parts[1];
+                $page = $this->grav['page']->find($route);
+            } elseif ($matches[3]) {
+                // theme@
+                $parts = explode(':', $path);
+                $route = $parts[1];
+                $theme = str_replace(ROOT_DIR, '', $this->grav['locator']->findResource("theme://"));
+
+                return $theme . $route . $basename;
+            }
+        } else {
+            return $path . $basename;
+        }
+
+        if (!$page) {
+            throw new \RuntimeException('Page route not found: ' . $path);
+        }
+
+        $path = str_replace($matches[0], rtrim($page->relativePagePath(), '/'), $path);
+
+        return $path . $basename;
     }
 
     /**
-     * Utility function
+     * Internal method to normalize the $_FILES array
      *
-     * @param $needle
-     * @param $haystack
-     * @return bool
+     * @param array  $data $_FILES starting point data
+     * @param string $key
+     * @return object a new Object with a normalized list of files
      */
-    private function match_in_array($needle, $haystack)
-    {
-        foreach ((array)$haystack as $item) {
-            if (true == preg_match("#^" . strtr(preg_quote($item, '#'), ['\*' => '.*', '\?' => '.']) . "$#i",
-                    $needle)
-            ) {
-                return true;
-            }
+    protected function normalizeFiles($data, $key = '') {
+        $files = new \stdClass();
+        $files->field = $key;
+        $files->file = new \stdClass();
+
+        foreach($data as $fieldName => $fieldValue) {
+            // Since Files Upload are always happening via Ajax
+            // we are not interested in handling `multiple="true"`
+            // because they are always handled one at a time.
+            // For this reason we normalize the value to string,
+            // in case it is arriving as an array.
+            $value = (array) Utils::getDotNotation($fieldValue, $key);
+            $files->file->{$fieldName} = array_shift($value);
         }
 
-        return false;
+        return $files;
+    }
+
+    public static function getNonce()
+    {
+        $action = 'form-plugin';
+        return Utils::getNonce($action);
     }
 }

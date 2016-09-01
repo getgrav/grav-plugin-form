@@ -35,6 +35,8 @@ class FormPlugin extends Plugin
 
     protected $flat_forms = [];
 
+    protected $json_response = [];
+
     protected $cache_id = 'plugin-form';
 
     protected $recache_forms = false;
@@ -131,6 +133,7 @@ class FormPlugin extends Plugin
      */
     public function onPagesInitialized()
     {
+        $submitted = false;
         if ($this->forms) {
 
             $this->enable([
@@ -160,9 +163,32 @@ class FormPlugin extends Plugin
                 ]);
 
                 $current_form_name = filter_input(INPUT_POST, '__form-name__');
+                $this->json_response = [];
 
                 if ($form = $this->getFormByName($current_form_name)) {
-                    $form->post();
+                    if ($this->grav['uri']->extension() === 'json') {
+                        $this->json_response = $form->uploadFiles();
+                    } else {
+                        $form->post();
+                        $submitted = true;
+                    }
+                }
+            }
+        }
+
+        // Clear flash objects for previously uploaded files
+        // whenever the user switches page / reloads
+        // ignoring any JSON / extension call
+        if (is_null($this->grav['uri']->extension()) && !$submitted) {
+            // Discard any previously uploaded files session.
+            // and if there were any uploaded file, remove them from the filesystem
+            if ($flash = $this->grav['session']->getFlashObject('files-upload')) {
+                $flash = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($flash));
+                foreach ($flash as $key => $value) {
+                    if ($key !== 'tmp_name') {
+                        continue;
+                    }
+                    @unlink($value);
                 }
             }
         }
@@ -222,6 +248,8 @@ class FormPlugin extends Plugin
         if ($this->config->get('plugins.form.built_in_css')) {
             $this->grav['assets']->addCss('plugin://form/assets/form-styles.css');
         }
+
+        $this->grav['twig']->twig_vars['form_json_response'] = $this->json_response;
     }
 
     /**
