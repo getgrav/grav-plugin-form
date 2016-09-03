@@ -327,7 +327,7 @@ class FormPlugin extends Plugin
                 if (!$route || $route[0] != '/') {
                     /** @var Uri $uri */
                     $uri = $this->grav['uri'];
-                    $route = trim($uri->route(), '/'). '/' . ($route ?: '');
+                    $route = rtrim($uri->route(), '/'). '/' . ($route ?: '');
                 }
 
                 /** @var Twig $twig */
