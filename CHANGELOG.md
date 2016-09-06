@@ -1,5 +1,5 @@
-# v2.0.0-beta.1
-## 08/xx/2016
+# v2.0.0-rc.1
+## 09/06/2016
 
 1. [](#new)
     * Forms now supports multiple forms per page!
