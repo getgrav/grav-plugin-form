@@ -1,4 +1,10 @@
-{% if form.message %}<div class="alert notices {{ form.message_color ?: 'green' }}"><p>{{ form.message }}</p></div>{% endif %}
+{% if form.message %}
+    {% if form.inline_errors and form.messages %}
+        <div class="alert notices {{ form.message_color ?: 'green' }}"><p>{{ "FORM.VALIDATION_FAIL"|t|raw }}</p></div>
+    {% else %}
+        <div class="alert notices {{ form.message_color ?: 'green' }}"><p>{{ form.message|raw }}</p></div>
+    {% endif %}
+{% endif %}
 {% set scope = scope ?: 'data.' %}
 {% set multipart = '' %}
 {% set method = form.method|upper|default('POST') %}
@@ -9,7 +15,8 @@
     {% endif %}
 {% endfor %}
 
-{% set action = form.action ? base_url ~ form.action : page.url %}
+{% set action = form.action ? base_url ~ form.action : uri.url() %}
+
 {% if (action == base_url_relative) %}
     {% set action = base_url_relative ~ '/' ~ page.slug %}
 {% endif %}
@@ -17,16 +24,20 @@
 <form name="{{ form.name }}"
       action="{{ action }}"
       method="{{ method }}"{{ multipart }}
+      {% if form.id %}id="{{ form.id }}"{% endif %}
       {% block form_classes %}
       {% if form.classes %}class="{{ form.classes }}"{% endif %}
       {% endblock %}
 >
 
 {% for field in form.fields %}
+    {% if field.type == 'file' %}
+        {% do assets.addJs('plugin://form/assets/form.min.js') %}
+    {% endif %}
     {% set value = form.value(field.name) %}
-        {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
+    {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
 {% endfor %}
-
+    {% include "forms/fields/formname/formname.html.twig" %}
 	<div class="buttons">
 	{% for button in form.buttons %}
 	    <button
@@ -40,5 +51,5 @@
 	{% endfor %}
 	</div>
 
-  {{ nonce_field('form', 'form-nonce') }}
+  {{ nonce_field('form', 'form-nonce')|raw }}
 </form>
