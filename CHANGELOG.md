@@ -9,6 +9,8 @@
     * Ability to use Twig in saved filename
 1. [](#improved)
     * Added several missing HTML5 form input field types [#87](https://github.com/getgrav/grav-plugin-form/issues/87)
+    * Added support for Grav's autoescape twig setting
+
 # v1.3.3
 ## 08/xx/2016
 

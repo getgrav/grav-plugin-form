@@ -35,9 +35,9 @@
         {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
 {% endfor %}
     {% include "forms/fields/formname/formname.html.twig" %}
-	<div class="buttons">
-	{% for button in form.buttons %}
-	    <button
+    <div class="buttons">
+        {% for button in form.buttons %}
+        <button
             {% block button_classes %}
             class="{{ button.classes|default('button') }}"
             {% endblock %}
@@ -45,8 +45,8 @@
         >
             {{ button.value|t|default('Submit') }}
         </button>
-	{% endfor %}
-	</div>
+    {% endfor %}
+    </div>
 
   {{ nonce_field('form', 'form-nonce')|raw }}
 </form>
