@@ -61,6 +61,9 @@ class FormPlugin extends Plugin
         require_once(__DIR__ . '/classes/form.php');
 
         if ($this->isAdmin()) {
+            $this->enable([
+                'onPagesInitialized'     => ['onPagesInitialized', 0]
+            ]);
             return;
         }
 
@@ -134,7 +137,28 @@ class FormPlugin extends Plugin
     public function onPagesInitialized()
     {
         $submitted = false;
-        if ($this->forms) {
+
+        if ($this->isAdmin() && !empty($_POST)) {
+
+            $page = $this->grav['page'];
+            if (!$page) {
+                return;
+            }
+
+            $header = $page->header();
+
+            if (isset($header->form) && is_array($header->form)) {
+                $this->active = true;
+                // Create form
+                $this->form = new Form($page);
+                $this->enable([
+                    'onFormProcessed'       => ['onFormProcessed', 0],
+                    'onFormValidationError' => ['onFormValidationError', 0]
+                ]);
+                $this->form->post();
+            }
+
+        } elseif ($this->forms) {
 
             $this->enable([
                 'onTwigPageVariables'    => ['onTwigVariables', 0],

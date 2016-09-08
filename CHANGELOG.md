@@ -1,3 +1,9 @@
+# v2.0.1
+## 09/07/2016
+
+1. [](#bugfix)
+    * Fixed a backwards compatibility issue with Admin forms
+
 # v2.0.0
 ## 09/07/2016
 
