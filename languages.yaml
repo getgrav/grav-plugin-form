@@ -84,6 +84,22 @@ fr:
     RECAPTCHA_SITE_KEY_HELP: "Pour plus d'informations veuillez vous rendre sur https://developers.google.com/recaptcha"
     RECAPTCHA_SECRET_KEY: "Clé secrète"
     RECAPTCHA_SECRET_KEY_HELP: "Pour plus d'informations veuillez vous rendre sur https://developers.google.com/recaptcha"
+    GENERAL: "Général"
+    USE_BUILT_IN_CSS: "Utiliser les CSS natifs"
+    FILEUPLOAD_PREVENT_SELF: 'Impossible d'utiliser "%s" en dehors des pages.'
+    FILEUPLOAD_UNABLE_TO_UPLOAD: 'Impossible de charger le fichier %s: %s'
+    FILEUPLOAD_UNABLE_TO_MOVE: 'Impossible de déplacer le fichier %s vers "%s"'
+    DROPZONE_CANCEL_UPLOAD: 'Annuler le chargement'
+    DROPZONE_CANCEL_UPLOAD_CONFIRMATION: 'Are you sure you want to cancel this upload?'
+    DROPZONE_DEFAULT_MESSAGE: 'Drop your files here or <strong>click in this area</strong>'
+    DROPZONE_FALLBACK_MESSAGE: 'Your browser does not support drag and drop file uploads.'
+    DROPZONE_FALLBACK_TEXT: 'Please use the fallback form below to upload your files like in the olden days.'
+    DROPZONE_FILE_TOO_BIG: 'File is too big ({{filesize}}MiB). Max filesize: {{maxFilesize}}MiB.'
+    DROPZONE_INVALID_FILE_TYPE: "You can't upload files of this type."
+    DROPZONE_MAX_FILES_EXCEEDED: "You can not upload any more files."
+    DROPZONE_REMOVE_FILE: "Remove file"
+    DROPZONE_REMOVE_FILE_CONFIRMATION: 'Are you sure you want to delete this file?'
+    DROPZONE_RESPONSE_ERROR: "Server responded with {{statusCode}} code."
 
 hr:
   PLUGIN_FORM:
