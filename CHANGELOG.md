@@ -16,11 +16,6 @@
     * Reworked the `file` field. All files get uploaded via Ajax and are stored upon Submit. Fully backward compatible, `file` field now includes also a `limit` and `filesize` option. The former determines how many files are allowed to be uploaded when in combination with `multiple: true` (default: 10), the latter determines the file size limit (in MB) allowed for each file (default: 5MB)
 1. [](#improved)
     * Added several missing HTML5 form input field types [#87](https://github.com/getgrav/grav-plugin-form/issues/87)
-    
-# v1.3.3
-## 08/xx/2016
-
-1. [](#improved)
     * Added Support for CSS id in form definition
 
 # v1.3.2
