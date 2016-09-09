@@ -86,7 +86,7 @@ fr:
     RECAPTCHA_SECRET_KEY_HELP: "Pour plus d'informations veuillez vous rendre sur https://developers.google.com/recaptcha"
     GENERAL: "Général"
     USE_BUILT_IN_CSS: "Utiliser les CSS natifs"
-    FILEUPLOAD_PREVENT_SELF: "Impossible d'utiliser "%s" en dehors des pages."
+    FILEUPLOAD_PREVENT_SELF: "Impossible d'utiliser '%s' en dehors des pages."
     FILEUPLOAD_UNABLE_TO_UPLOAD: "Impossible de charger le fichier %s: %s"
     FILEUPLOAD_UNABLE_TO_MOVE: 'Impossible de déplacer le fichier %s vers "%s"'
     DROPZONE_CANCEL_UPLOAD: "Annuler le chargement"
