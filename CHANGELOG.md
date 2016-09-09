@@ -1,5 +1,5 @@
 # v2.0.2
-## XX/XX/2016
+## 09/08/2016
 
 1. [](#improved)
     * Added support for Grav's autoescape twig setting
