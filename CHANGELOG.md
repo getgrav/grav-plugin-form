@@ -1,3 +1,11 @@
+# v2.0.2
+## 09/08/2016
+
+1. [](#improved)
+    * Added support for Grav's autoescape twig setting
+    * Allow to add additional markup fields in form and field twig overrides
+    * Updated the french language translation
+
 # v2.0.1
 ## 09/07/2016
 
@@ -33,7 +41,7 @@
     * Added support for multiple emails in `email` field (add `multiple: true` to enable)
 1. [](#bugfix)
     * Fixed backward incompatibility with forms submission and data retrieval [getgrav/grav#933](https://github.com/getgrav/grav/issues/933)
-    
+
 # v1.3.0
 ## 07/14/2016
 
