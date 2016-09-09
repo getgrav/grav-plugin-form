@@ -3,7 +3,7 @@
 
 1. [](#improved)
     * Added support for Grav's autoescape twig setting
-    * Allow to add additional markup fields in a form twig override
+    * Allow to add additional markup fields in form and field twig overrides
     * Updated the french language translation
 
 # v2.0.1
