@@ -30,17 +30,26 @@
       {% endblock %}
 >
 
-{% for field in form.fields %}
+  {% block inner_markup_fields_start %}{% endblock %}
+
+  {% for field in form.fields %}
     {% if field.type == 'file' %}
         {% do assets.addJs('plugin://form/assets/form.min.js') %}
     {% endif %}
     {% set value = form.value(field.name) %}
     {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
-{% endfor %}
-    {% include "forms/fields/formname/formname.html.twig" %}
-	<div class="buttons">
-	{% for button in form.buttons %}
-	    <button
+  {% endfor %}
+
+  {% include "forms/fields/formname/formname.html.twig" %}
+
+  {% block inner_markup_fields_end %}{% endblock %}
+
+  {% block inner_markup_buttons_start %}
+  <div class="buttons">
+  {% endblock %}
+
+  {% for button in form.buttons %}
+      <button
             {% block button_classes %}
             class="{{ button.classes|default('button') }}"
             {% endblock %}
@@ -48,8 +57,11 @@
         >
             {{ button.value|t|default('Submit') }}
         </button>
-	{% endfor %}
-	</div>
+  {% endfor %}
+
+  {% block inner_markup_buttons_end %}
+  </div>
+  {% endblock %}
 
   {{ nonce_field('form', 'form-nonce')|raw }}
 </form>
