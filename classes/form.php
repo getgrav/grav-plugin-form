@@ -65,6 +65,8 @@ class Form extends Iterator implements \Serializable
      * Create form for the given page.
      *
      * @param Page $page
+     * @param null $name
+     * @param null $form
      */
     public function __construct(Page $page, $name = null, $form = null)
     {
