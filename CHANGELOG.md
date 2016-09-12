@@ -1,3 +1,9 @@
+# v2.0.3
+## 09/12/2016
+
+1. [](#improved)
+    * Use `Page::slug()` for form name if not set in the form itself (better backwards compatibility)
+
 # v2.0.2
 ## 09/08/2016
 
