@@ -1,3 +1,9 @@
+# v2.0.x
+## 09/15/2016
+
+1. [](#improved)
+    * Allow filling the page header form dynamically (e.g. use case: Comments plugin)
+
 # v2.0.3
 ## 09/12/2016
 

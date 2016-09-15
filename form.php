@@ -103,6 +103,11 @@ class FormPlugin extends Plugin
         }
 
         $header = $page->header();
+
+        //call event to allow filling the page header form dynamically (e.g. use case: Comments plugin)
+        $event = $this->grav->fireEvent('onFormPageHeaderProcessed', new Event(['header' => $header]));
+        $header = $event->header;
+
         if ((isset($header->forms) && is_array($header->forms)) ||
             (isset($header->form) && is_array($header->form))) {
 
