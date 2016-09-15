@@ -1,3 +1,9 @@
+# v2.0.x
+## 09/15/2016
+
+1. [](#bugfix)
+    * Fix passing updating the header through event, no need for return value
+
 # v2.0.4
 ## 09/15/2016
 
