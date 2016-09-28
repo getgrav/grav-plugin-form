@@ -1,3 +1,9 @@
+# v2.0.6
+## XX/XX/2016
+
+1. [](#bugfix)
+    * Fixed translations for `display` field
+    
 # v2.0.5
 ## 09/15/2016
 
