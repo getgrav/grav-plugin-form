@@ -3,13 +3,11 @@
 {% block input %}
     <div class="form-textarea-wrapper {{ field.size }}">
         <textarea
-            class="{{ field.classes|default('input') }}"
-
             {# required attribute structures #}
             name="{{ (scope ~ field.name)|fieldName }}"
             {# input attribute structures #}
             {% block input_attributes %}
-                {% if field.classes is defined %}class="{{ field.classes }}" {% endif %}
+                {% if field.classes is defined %}class="{{ field.classes }}" {% else %}class="{{ field.classes|default('input') }}" {% endif %}
                 {% if field.id is defined %}id="{{ field.id|e }}" {% endif %}
                 {% if field.style is defined %}style="{{ field.style|e }}" {% endif %}
                 {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
