@@ -1,5 +1,5 @@
 # v2.0.6
-## XX/XX/2016
+## 10/19/2016
 
 1. [](#bugfix)
     * Fixed translations for `display` field
