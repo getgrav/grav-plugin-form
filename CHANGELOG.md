@@ -1,3 +1,9 @@
+# v2.0.7
+## XX/XX/2016
+
+1. [](#bugfix)
+    * Moved Files Upload GC logic to function in front-end only
+
 # v2.0.6
 ## 10/19/2016
 
