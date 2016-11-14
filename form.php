@@ -200,6 +200,10 @@ class FormPlugin extends Plugin
                         $form->post();
                         $submitted = true;
                     }
+                } elseif (isset($this->grav['page']->header()->form)) {
+                    $form = new Form($this->grav['page']);
+                    $form->post();
+                    $submitted = true;
                 }
             }
 
@@ -596,6 +600,9 @@ class FormPlugin extends Plugin
                 $forms = $this->forms[$page_route];
                 $first_form = array_shift($forms);
                 $form_name = $first_form['name'];
+            } else {
+                //No form on this route. Try looking up in the current page first
+                return new Form($this->grav['page']);
             }
         }
 
