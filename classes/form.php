@@ -331,6 +331,11 @@ class Form extends Iterator implements \Serializable
         return true;
     }
 
+    public function setAllData($array)
+    {
+        $this->data = new Data($array);
+    }
+
     /**
      * Handles ajax upload for files.
      * Stores in a flash object the temporary file and deals with potential file errors.
