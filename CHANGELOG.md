@@ -3,6 +3,7 @@
 
 1. [](#bugfix)
     * Moved Files Upload GC logic to function in front-end only
+    * Added ability to add ids to buttons and to set them disabled 
 
 # v2.0.6
 ## 10/19/2016
