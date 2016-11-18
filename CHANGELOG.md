@@ -1,10 +1,16 @@
+# v2.0.x
+## 11/xx/2016
+
+1. [](#bugfix)
+    * Fix Forms 2.0 changes for registration form #101
+
 # v2.0.7
 ## 11/17/2016
 
 1. [](#improved)
     * Added method to set all data in a form
     * Added params to form action URL
-    * Added ability to add ids to buttons and to set them disabled 
+    * Added ability to add ids to buttons and to set them disabled
 1. [](#bugfix)
     * Moved Files Upload GC logic to function in front-end only
 
