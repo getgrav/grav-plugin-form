@@ -202,21 +202,21 @@ class FormPlugin extends Plugin
                     }
                 }
             }
-        }
 
-        // Clear flash objects for previously uploaded files
-        // whenever the user switches page / reloads
-        // ignoring any JSON / extension call
-        if (is_null($this->grav['uri']->extension()) && !$submitted) {
-            // Discard any previously uploaded files session.
-            // and if there were any uploaded file, remove them from the filesystem
-            if ($flash = $this->grav['session']->getFlashObject('files-upload')) {
-                $flash = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($flash));
-                foreach ($flash as $key => $value) {
-                    if ($key !== 'tmp_name') {
-                        continue;
+            // Clear flash objects for previously uploaded files
+            // whenever the user switches page / reloads
+            // ignoring any JSON / extension call
+            if (is_null($this->grav['uri']->extension()) && !$submitted) {
+                // Discard any previously uploaded files session.
+                // and if there were any uploaded file, remove them from the filesystem
+                if ($flash = $this->grav['session']->getFlashObject('files-upload')) {
+                    $flash = new \RecursiveIteratorIterator(new \RecursiveArrayIterator($flash));
+                    foreach ($flash as $key => $value) {
+                        if ($key !== 'tmp_name') {
+                            continue;
+                        }
+                        @unlink($value);
                     }
-                    @unlink($value);
                 }
             }
         }

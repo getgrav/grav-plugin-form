@@ -15,7 +15,7 @@
     {% endif %}
 {% endfor %}
 
-{% set action = form.action ? base_url ~ form.action : base_url ~ page.route %}
+{% set action = form.action ? base_url ~ form.action : base_url ~ page.route ~ uri.params %}
 
 {% if (action == base_url_relative) %}
     {% set action = base_url_relative ~ '/' ~ page.slug %}
@@ -50,9 +50,11 @@
 
   {% for button in form.buttons %}
       <button
+            {% if button.id %}id="{{ button.id }}"{% endif %}
             {% block button_classes %}
             class="{{ button.classes|default('button') }}"
             {% endblock %}
+            {% if button.disabled %}disabled="disabled"{% endif %}
             type="{{ button.type|default('submit') }}"
         >
             {{ button.value|t|default('Submit') }}

@@ -1,3 +1,13 @@
+# v2.0.7
+## 11/17/2016
+
+1. [](#improved)
+    * Added method to set all data in a form
+    * Added params to form action URL
+    * Added ability to add ids to buttons and to set them disabled 
+1. [](#bugfix)
+    * Moved Files Upload GC logic to function in front-end only
+
 # v2.0.6
 ## 10/19/2016
 
