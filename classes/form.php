@@ -604,6 +604,7 @@ class Form extends Iterator implements \Serializable
 
     public function getPagePathFromToken($path)
     {
+        $grav = Grav::instance();
         $path_parts = pathinfo($path);
 
         $basename = '';
@@ -623,12 +624,12 @@ class Form extends Iterator implements \Serializable
                 // page@
                 $parts = explode(':', $path);
                 $route = $parts[1];
-                $page = $this->grav['page']->find($route);
+                $page = $grav['page']->find($route);
             } elseif ($matches[3]) {
                 // theme@
                 $parts = explode(':', $path);
                 $route = $parts[1];
-                $theme = str_replace(ROOT_DIR, '', $this->grav['locator']->findResource("theme://"));
+                $theme = str_replace(ROOT_DIR, '', $grav['locator']->findResource("theme://"));
 
                 return $theme . $route . $basename;
             }
