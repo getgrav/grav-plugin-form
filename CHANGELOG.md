@@ -2,7 +2,8 @@
 ## 11/xx/2016
 
 1. [](#bugfix)
-    * Fix Forms 2.0 changes for registration form #101
+    * Fix Forms 2.0 changes for registration form [#101](https://github.com/getgrav/grav-plugin-form/issues/101)
+    * Fixed errant reference to Grav DI container in Form#getPagePathFromToken [#105](https://github.com/getgrav/grav-plugin-form/issues/105)
 
 # v2.0.7
 ## 11/17/2016
