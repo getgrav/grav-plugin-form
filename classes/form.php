@@ -201,7 +201,7 @@ class Form extends Iterator implements \Serializable
 
                 // BC for old style of array style field definitions
                 if (is_numeric($key) && isset($field['name'])) {
-                    unset($this->items['fields'][$key]);
+                    array_splice($this->items['fields'], $key);
                     $key = $field['name'];
                 }
 

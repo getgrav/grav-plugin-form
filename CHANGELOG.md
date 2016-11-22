@@ -2,8 +2,9 @@
 ## 11/xx/2016
 
 1. [](#bugfix)
-    * Fix Forms 2.0 changes for registration form [#101](https://github.com/getgrav/grav-plugin-form/issues/101)
+    * Fixed Forms 2.0 changes for registration form [#101](https://github.com/getgrav/grav-plugin-form/issues/101)
     * Fixed errant reference to Grav DI container in Form#getPagePathFromToken [#105](https://github.com/getgrav/grav-plugin-form/issues/105)
+    * Fixed issue with spacer fields being displayed first, not in order [#104](https://github.com/getgrav/grav-plugin-form/issues/104)
 
 # v2.0.7
 ## 11/17/2016
