@@ -1,5 +1,5 @@
-# v2.0.x
-## 11/xx/2016
+# v2.0.8-rc.1
+## 11/26/2016
 
 1. [](#bugfix)
     * Fixed Forms 2.0 changes for registration form [#101](https://github.com/getgrav/grav-plugin-form/issues/101)
