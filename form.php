@@ -1,6 +1,7 @@
 <?php
 namespace Grav\Plugin;
 
+use Grav\Common\Data\ValidationException;
 use Grav\Common\Page\Page;
 use Grav\Common\Page\Pages;
 use Grav\Common\Plugin;
@@ -68,9 +69,10 @@ class FormPlugin extends Plugin
         }
 
         $this->enable([
-            'onPageProcessed'        => ['onPageProcessed', 0],
-            'onPagesInitialized'     => ['onPagesInitialized', 0],
-            'onTwigInitialized'      => ['onTwigInitialized', 0],
+            'onPageProcessed'           => ['onPageProcessed', 0],
+            'onPagesInitialized'        => ['onPagesInitialized', 0],
+            'onTwigInitialized'         => ['onTwigInitialized', 0],
+            'onFormValidationProcessed' => ['onFormValidationProcessed', 0],
         ]);
 
         // Get and set the cache of forms if it exists
@@ -156,8 +158,8 @@ class FormPlugin extends Plugin
                 // Create form
                 $this->form = new Form($page);
                 $this->enable([
-                    'onFormProcessed'       => ['onFormProcessed', 0],
-                    'onFormValidationError' => ['onFormValidationError', 0]
+                    'onFormProcessed'           => ['onFormProcessed', 0],
+                    'onFormValidationError'     => ['onFormValidationError', 0]
                 ]);
                 $this->form->post();
             }
@@ -446,6 +448,24 @@ class FormPlugin extends Plugin
 
                 }
                 break;
+        }
+    }
+
+    /**
+     * Custom field logic can go in here
+     *
+     * @param Event $event
+     */
+    public function onFormValidationProcessed(Event $event)
+    {
+        $form = $event['form'];
+
+        foreach ($form->fields as $key => $field) {
+            if ($field['type'] == 'honeypot') {
+                if (!empty($field['value'])) {
+                    throw new ValidationException('Are you a bot?');
+                }
+            }
         }
     }
 

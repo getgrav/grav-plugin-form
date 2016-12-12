@@ -1,3 +1,9 @@
+# v2.0.8-rc.2
+## ##/##/2016
+
+1. [](#new)
+    * Added a new `honeypot` field for form anti-spam protection
+
 # v2.0.8-rc.1
 ## 11/26/2016
 
