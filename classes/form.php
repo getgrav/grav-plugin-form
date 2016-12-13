@@ -81,7 +81,9 @@ class Form extends Iterator implements \Serializable
         if ($form) {
             $this->items = $form;
         } else {
-            $this->items = $header->form; // for backwards compatibility
+            if (isset($header->form)) {
+                $this->items = $header->form; // for backwards compatibility
+            }
         }
 
         // Add form specific rules.
@@ -183,33 +185,35 @@ class Form extends Iterator implements \Serializable
         $grav = Grav::instance();
 
         // Fix naming for fields (presently only for toplevel fields)
-        foreach ($this->items['fields'] as $key => $field) {
-            // default to text if not set
-            if (!isset($field['type'])) {
-                $field['type'] = 'text';
+        if (isset($this->items['fields'])) {
+            foreach ($this->items['fields'] as $key => $field) {
+                // default to text if not set
+                if (!isset($field['type'])) {
+                    $field['type'] = 'text';
+                }
+
+                $types = $grav['plugins']->formFieldTypes;
+
+                // manually merging the field types
+                if ($types !== null && key_exists($field['type'], $types)) {
+                    $field += $types[$field['type']];
+                }
+
+                // BC for old style of array style field definitions
+                if (is_numeric($key) && isset($field['name'])) {
+                    array_splice($this->items['fields'], $key);
+                    $key = $field['name'];
+                }
+
+                // Add name based on key if not already set
+                if (!isset($field['name'])) {
+                    $field['name'] = $key;
+                }
+
+                // set any modifications back on the fields array
+                $this->items['fields'][$key] = $field;
+
             }
-
-            $types = $grav['plugins']->formFieldTypes;
-
-            // manually merging the field types
-            if ($types !== null && key_exists($field['type'], $types)) {
-                $field += $types[$field['type']];
-            }
-
-            // BC for old style of array style field definitions
-            if (is_numeric($key) && isset($field['name'])) {
-                unset($this->items['fields'][$key]);
-                $key = $field['name'];
-            }
-
-            // Add name based on key if not already set
-            if (!isset($field['name'])) {
-                $field['name'] = $key;
-            }
-
-            // set any modifications back on the fields array
-            $this->items['fields'][$key] = $field;
-
         }
 
         $items = $this->items;
@@ -600,6 +604,7 @@ class Form extends Iterator implements \Serializable
 
     public function getPagePathFromToken($path)
     {
+        $grav = Grav::instance();
         $path_parts = pathinfo($path);
 
         $basename = '';
@@ -619,12 +624,12 @@ class Form extends Iterator implements \Serializable
                 // page@
                 $parts = explode(':', $path);
                 $route = $parts[1];
-                $page = $this->grav['page']->find($route);
+                $page = $grav['page']->find($route);
             } elseif ($matches[3]) {
                 // theme@
                 $parts = explode(':', $path);
                 $route = $parts[1];
-                $theme = str_replace(ROOT_DIR, '', $this->grav['locator']->findResource("theme://"));
+                $theme = str_replace(ROOT_DIR, '', $grav['locator']->findResource("theme://"));
 
                 return $theme . $route . $basename;
             }
