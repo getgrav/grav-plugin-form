@@ -1,7 +1,8 @@
-# v2.0.8-rc.2
-## ##/##/2016
+# v2.0.8
+## 12/13/2016
 
 1. [](#new)
+    * RC released as stable
     * Added a new `honeypot` field for form anti-spam protection
 
 # v2.0.8-rc.1
