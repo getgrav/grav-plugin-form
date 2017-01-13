@@ -1,3 +1,10 @@
+# v2.0.x
+## xx/xx/2017
+
+1. [](#bugfix)
+    * Translate the labels in data.html.twig [https://github.com/getgrav/grav-plugin-comments/issues/38](https://github.com/getgrav/grav-plugin-comments/issues/38)
+
+
 # v2.0.8
 ## 12/13/2016
 
