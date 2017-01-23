@@ -3,7 +3,7 @@
 
 1. [](#bugfix)
     * Translate the labels in data.html.twig [https://github.com/getgrav/grav-plugin-comments/issues/38](https://github.com/getgrav/grav-plugin-comments/issues/38)
-    * Fixed file input when `System` > `Twig` > `Autoescape` is `On`
+    * Fixed file input when `System` > `Twig` > `Autoescape` is set to `Yes`
 
 
 # v2.0.8
