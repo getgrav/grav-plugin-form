@@ -77,7 +77,7 @@
 
     {% do assets.addJs('plugin://form/assets/form.min.js', { 'group': 'bottom', 'loading': 'defer' }) %}
     {% do assets.addCss('plugin://form/assets/dropzone.min.css', { 'group': 'form' }) %}
-    {{ assets.css('form') }}
+    {{ assets.css('form')|raw }}
     {% do assets.addInlineJs("
     window.GravForm = window.GravForm || {};
     window.GravForm.config = {
