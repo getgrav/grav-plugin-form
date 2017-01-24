@@ -4,7 +4,7 @@
         {% block field %}
             <div>
                 {% block field_label %}
-                    <strong>{{ field.label }}</strong>:
+                    <strong>{{ field.label|t }}</strong>:
                 {% endblock %}
                 {% block field_value %}
                     {{ string(form.value(field.name ?? index))|nl2br }}
