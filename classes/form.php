@@ -24,6 +24,11 @@ class Form extends Iterator implements \Serializable
     public $message_color;
 
     /**
+     * @var string
+     */
+    public $status = 'success';
+
+    /**
      * @var array
      */
     protected $header_data = [];
@@ -119,6 +124,7 @@ class Form extends Iterator implements \Serializable
             'items' => $this->items,
             'message' => $this->message,
             'message_color' => $this->message_color,
+            'status' => $this->status,
             'header_data' => $this->header_data,
             'rules' => $this->rules,
             'data' => $this->data->toArray(),
@@ -140,6 +146,7 @@ class Form extends Iterator implements \Serializable
         $this->items = $data['items'];
         $this->message = $data['message'];
         $this->message_color = $data['message_color'];
+        $this->status = $data['status'];
         $this->header_data = $data['header_data'];
         $this->rules = $data['rules'];
 

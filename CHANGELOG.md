@@ -1,3 +1,11 @@
+# v2.0.10
+## XX/XX/2017
+
+1. [](#improved)
+    * Optimistically set 'status' to `success` when requesting a form via Ajax. Form processing listeners should take care of setting status to something else
+1. [](#bugfix)
+    * File uploads are now adding a `__form-file-uploader__` POST field to better allow identifying them with Ajax
+    
 # v2.0.9
 ## 01/24/2017
 
