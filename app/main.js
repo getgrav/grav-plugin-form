@@ -118,6 +118,7 @@ export default class FilesField {
 
     onDropzoneSending(file, xhr, formData) {
         formData.append('__form-name__', this.container.closest('form').find('[name="__form-name__"]').val());
+        formData.append('__form-file-uploader__', 1);
         formData.append('name', this.options.dotNotation);
         formData.append('form-nonce', config.form_nonce);
         formData.append('task', 'filesupload');

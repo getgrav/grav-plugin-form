@@ -75,6 +75,7 @@
         {% include 'forms/fields/hidden/hidden.html.twig' with {field: {name: '_json.' ~ field.name}, value:value|raw|json_encode} %}
     </div>
 
+    {% do assets.addJs('jquery', 101) %}
     {% do assets.addJs('plugin://form/assets/form.min.js', { 'group': 'bottom', 'loading': 'defer' }) %}
     {% do assets.addCss('plugin://form/assets/dropzone.min.css', { 'group': 'form' }) %}
     {{ assets.css('form')|raw }}

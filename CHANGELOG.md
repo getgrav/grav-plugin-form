@@ -1,3 +1,12 @@
+# v2.0.10
+## 02/08/2017
+
+1. [](#improved)
+    * Optimistically set 'status' to `success` when requesting a form via Ajax. Form processing listeners should take care of setting status to something else
+1. [](#bugfix)
+    * File uploads are now adding a `__form-file-uploader__` POST field to better allow identifying them with Ajax
+    * Require jQuery when using the File field, as it's needed by the form.min.js file required in the file upload functionality
+
 # v2.0.9
 ## 01/24/2017
 
