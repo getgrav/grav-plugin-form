@@ -1,3 +1,11 @@
+# v2.1.0
+## xx/xx/2017
+
+1. [](#improved)
+    * Reworked logic so form caching is based on `Pages::getPagesCacheId()`
+1. [](#bugfix)
+    * Fixed issue with `honeypot` field not throwing exception properly
+
 # v2.0.10
 ## 02/08/2017
 
