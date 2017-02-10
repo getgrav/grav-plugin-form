@@ -49,6 +49,9 @@
   {% endblock %}
 
   {% for button in form.buttons %}
+      {% if button.url %}
+          <a href="{{ button.url starts with 'http' ? button.url : url(button.url) }}">
+      {% endif %}
       <button
             {% if button.id %}id="{{ button.id }}"{% endif %}
             {% block button_classes %}
@@ -58,7 +61,10 @@
             type="{{ button.type|default('submit') }}"
         >
             {{ button.value|t|default('Submit') }}
-        </button>
+      </button>
+      {% if button.url %}
+          </a>
+      {% endif %}
   {% endfor %}
 
   {% block inner_markup_buttons_end %}
