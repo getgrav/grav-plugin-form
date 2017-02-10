@@ -1,8 +1,9 @@
 # v2.1.0
-## xx/xx/2017
+## 02/10/2017
 
 1. [](#improved)
     * Reworked logic so form caching is based on `Pages::getPagesCacheId()`
+    * Added `url` option for button field
 1. [](#bugfix)
     * Fixed issue with `honeypot` field not throwing exception properly
 
