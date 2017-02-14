@@ -33,6 +33,8 @@ en:
     DROPZONE_REMOVE_FILE: "Remove file"
     DROPZONE_REMOVE_FILE_CONFIRMATION: 'Are you sure you want to delete this file?'
     DROPZONE_RESPONSE_ERROR: "Server responded with {{statusCode}} code."
+    YES: "Yes"
+    NO: "No"
 
 de:
   PLUGIN_FORM:
@@ -138,6 +140,9 @@ it:
     ACCEPT: "Tipi di MIME Concessi"
     ACCEPT_HELP: "Una lista di tipi di MIME che sono permessi per l'upload"
     ERROR_VALIDATING_CAPTCHA: "Errore durante la validazione del Captcha"
+    YES: "Si"
+    NO: "No"
+
 ro:
   PLUGIN_FORM:
     NOT_VALIDATED: "Formularul nu a fost validat. Unul sau mai multe câmpuri sunt goale."
