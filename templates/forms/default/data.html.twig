@@ -4,12 +4,26 @@
         {% block field %}
             <div>
                 {% block field_label %}
-                    <strong>{{ field.label|t }}</strong>:
+                    <strong>{{ field.label|t|e }}</strong>:
                 {% endblock %}
+
                 {% block field_value %}
-                    {{ string(form.value(field.name ?? index))|nl2br }}
+                    {% if field.type == 'checkboxes' %}
+                        <ul>
+                            {% for value in form.value(field.name) %}
+                                <li>{{ field.options[value]|e }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% elseif field.type == 'checkbox' %}
+                        {{ (form.value(field.name) == 1) ? "PLUGIN_FORM.YES"|t|e : "PLUGIN_FORM.NO"|t|e }}
+                    {% elseif field.type == 'select' %}
+                        {{ field.options[form.value(field.name)]|e }}
+                    {% else %}
+                        {{ string(form.value(field.name)|e)|nl2br }}
+                    {% endif %}
                 {% endblock %}
             </div>
         {% endblock %}
+
     {% endif %}
 {% endfor %}
