@@ -1,5 +1,5 @@
 # v2.1.1
-## 02/xx/2017
+## 02/17/2017
 
 1. [](#improved)
     * Better default output for select, checkbox and checkboxes fields in the form destination page and in the emails sent via form submit [#121](https://github.com/getgrav/grav-plugin-form/issues/121)
