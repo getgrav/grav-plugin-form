@@ -3,6 +3,7 @@
 
 1. [](#improved)
     * Better default output for select, checkbox and checkboxes fields in the form destination page and in the emails sent via form submit [#121](https://github.com/getgrav/grav-plugin-form/issues/121)
+    * Added the option to have outerclasses on buttons [#124](https://github.com/getgrav/grav-plugin-form/issues/124)
 
 # v2.1.0
 ## 02/10/2017
