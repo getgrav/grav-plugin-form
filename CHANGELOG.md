@@ -1,3 +1,9 @@
+# v2.2.0
+## 03/xx/2017
+
+1. [](#new)
+    * Added new `fieldset` form field [#125](https://github.com/getgrav/grav-plugin-form/issues/125)
+
 # v2.1.1
 ## 02/17/2017
 
