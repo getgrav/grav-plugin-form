@@ -3,6 +3,7 @@
 
 1. [](#new)
     * Added new `fieldset` form field [#125](https://github.com/getgrav/grav-plugin-form/issues/125)
+    * Added new `conditional form field` to show fields only if some `condition` is set
 
 # v2.1.1
 ## 02/17/2017
