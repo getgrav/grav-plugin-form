@@ -1,3 +1,9 @@
+# v2.2.1
+## 03/xx/2017
+
+![](#bugfix)
+    * Fix `number` field so it works with min value `0` [#130](https://github.com/getgrav/grav-plugin-form/issues/130)
+
 # v2.2.0
 ## 03/13/2017
 
