@@ -7,18 +7,20 @@
 {% block field %}
     <div class="form-field {% if field.outerclasses is defined %} {{ field.outerclasses }}{% endif %}{% if errors %} has-errors{% endif %} {% block outer_field_classes %}{% endblock %}">
         {% block contents %}
-            <div class="form-label">
-                <label class="inline" {% if field.id is defined %}for="{{ field.id|e }}" {% endif %} >
-                {% block label %}
-                    {% if field.help %}
-                    <span class="tooltip" data-asTooltip-position="w" title="{{ field.help|t|e }}">{{ field.label|default(field.name|capitalize)|t }}</span>
-                    {% else %}
-                    {{ field.label|default(field.name|capitalize)|t }}
-                    {% endif %}
-                    {{ field.validate.required in ['on', 'true', 1] ? '<span class="required">*</span>' }}
-                {% endblock %}
-                </label>
-            </div>
+            {% if field.label is not same as(false) %}
+                <div class="form-label">
+                    <label class="inline" {% if field.id is defined %}for="{{ field.id|e }}" {% endif %} >
+                    {% block label %}
+                        {% if field.help %}
+                        <span class="tooltip" data-asTooltip-position="w" title="{{ field.help|t|e }}">{{ field.label|default(field.name|capitalize)|t }}</span>
+                        {% else %}
+                        {{ field.label|default(field.name|capitalize)|t }}
+                        {% endif %}
+                        {{ field.validate.required in ['on', 'true', 1] ? '<span class="required">*</span>' }}
+                    {% endblock %}
+                    </label>
+                </div>
+            {% endif %}
             <div class="form-data"
                 {% block global_attributes %}
                 data-grav-field="{{ field.type }}"

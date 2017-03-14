@@ -1,8 +1,19 @@
+# v2.2.0
+## 03/13/2017
+
+1. [](#new)
+    * Added new `fieldset` form field [#125](https://github.com/getgrav/grav-plugin-form/issues/125)
+    * Added new `conditional form field` to show fields only if some `condition` is set
+1. [](#improved)
+    * Added the option to have outerclasses on buttons [#124](https://github.com/getgrav/grav-plugin-form/issues/124)
+    * Added the option to disable fields label if not defined [#126](https://github.com/getgrav/grav-plugin-form/issues/126)
+
 # v2.1.1
 ## 02/17/2017
 
 1. [](#improved)
     * Better default output for select, checkbox and checkboxes fields in the form destination page and in the emails sent via form submit [#121](https://github.com/getgrav/grav-plugin-form/issues/121)
+
 
 # v2.1.0
 ## 02/10/2017

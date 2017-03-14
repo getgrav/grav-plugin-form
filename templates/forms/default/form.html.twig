@@ -49,22 +49,24 @@
   {% endblock %}
 
   {% for button in form.buttons %}
-      {% if button.url %}
-          <a href="{{ button.url starts with 'http' ? button.url : url(button.url) }}">
-      {% endif %}
-      <button
-            {% if button.id %}id="{{ button.id }}"{% endif %}
-            {% block button_classes %}
-            class="{{ button.classes|default('button') }}"
-            {% endblock %}
-            {% if button.disabled %}disabled="disabled"{% endif %}
-            type="{{ button.type|default('submit') }}"
-        >
-            {{ button.value|t|default('Submit') }}
-      </button>
-      {% if button.url %}
-          </a>
-      {% endif %}
+      <div class="{% if button.outerclasses is defined %} {{ button.outerclasses }}{% endif %}">
+          {% if button.url %}
+              <a href="{{ button.url starts with 'http' ? button.url : url(button.url) }}">
+          {% endif %}
+          <button
+                {% if button.id %}id="{{ button.id }}"{% endif %}
+                {% block button_classes %}
+                class="{{ button.classes|default('button') }}"
+                {% endblock %}
+                {% if button.disabled %}disabled="disabled"{% endif %}
+                type="{{ button.type|default('submit') }}"
+            >
+                {{ button.value|t|default('Submit') }}
+          </button>
+          {% if button.url %}
+              </a>
+          {% endif %}
+      </div>
   {% endfor %}
 
   {% block inner_markup_buttons_end %}
