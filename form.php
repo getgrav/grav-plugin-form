@@ -529,6 +529,11 @@ class FormPlugin extends Plugin
                 }
             }
         }
+
+        // Set page template if passed by form
+        if (isset($form->template)) {
+            $this->grav['page']->template($form->template);
+        }
     }
 
     /**
