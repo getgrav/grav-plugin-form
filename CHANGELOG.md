@@ -1,5 +1,5 @@
 # v2.3.0
-## 03/xx/2017
+## 03/17/2017
 
 1. [](#new)
     * Ability to process any form on any page via `action:`.  Super useful if you want to handle form processing on some other non-form page (or Ajax)
