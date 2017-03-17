@@ -1,7 +1,10 @@
-# v2.2.1
-## 03/xx/2017
+# v2.3.0
+## 03/17/2017
 
-![](#bugfix)
+1. [](#new)
+    * Ability to process any form on any page via `action:`.  Super useful if you want to handle form processing on some other non-form page (or Ajax)
+    * Added the ability for the form to set the `template:` to use to render the form processing response.
+1. [](#bugfix)
     * Fix `number` field so it works with min value `0` [#130](https://github.com/getgrav/grav-plugin-form/issues/130)
 
 # v2.2.0
@@ -11,7 +14,7 @@
     * Added new `fieldset` form field [#125](https://github.com/getgrav/grav-plugin-form/issues/125)
     * Added new `conditional form field` to show fields only if some `condition` is set
 1. [](#improved)
-    * Added the option to have outerclasses on buttons [#124](https://github.com/getgrav/grav-plugin-form/issues/124)
+    * Added the option to have outer-classes on buttons [#124](https://github.com/getgrav/grav-plugin-form/issues/124)
     * Added the option to disable fields label if not defined [#126](https://github.com/getgrav/grav-plugin-form/issues/126)
 
 # v2.1.1
