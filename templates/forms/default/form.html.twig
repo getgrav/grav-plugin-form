@@ -49,7 +49,7 @@
   {% endblock %}
 
   {% for button in form.buttons %}
-      <div class="{% if button.outerclasses is defined %} {{ button.outerclasses }}{% endif %}">
+      {% if button.outerclasses is defined %}<div class="{{ button.outerclasses }}">{% endif %}
           {% if button.url %}
               <a href="{{ button.url starts with 'http' ? button.url : url(button.url) }}">
           {% endif %}
@@ -66,7 +66,7 @@
           {% if button.url %}
               </a>
           {% endif %}
-      </div>
+      {% if button.outerclasses is defined %}</div>{% endif %}
   {% endfor %}
 
   {% block inner_markup_buttons_end %}

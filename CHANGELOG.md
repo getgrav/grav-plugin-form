@@ -1,3 +1,9 @@
+# v2.3.1
+## 03/23/2017
+
+1. [](#bugfix)
+    * Only include `outerclasses` DIV if defined [#135](https://github.com/getgrav/grav-plugin-form/issues/135)
+
 # v2.3.0
 ## 03/17/2017
 
