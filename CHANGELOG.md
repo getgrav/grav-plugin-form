@@ -1,3 +1,9 @@
+# v2.3.2
+## 03/xx/2017
+
+1. [](#improved)
+    * Added `step` to range field [#136](https://github.com/getgrav/grav-plugin-form/issues/136)
+
 # v2.3.1
 ## 03/23/2017
 
