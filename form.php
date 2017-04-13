@@ -165,7 +165,7 @@ class FormPlugin extends Plugin
             $this->enable([
                 'onTwigPageVariables'    => ['onTwigVariables', 0],
                 'onTwigSiteVariables'    => ['onTwigVariables', 0],
-                'onFormFieldTypes'       => ['onFormFieldTypes', 0]
+                'onFormFieldTypes'       => ['onFormFieldTypes', 0],
             ]);
 
             // Regenerate list of flat_forms if not already populated
@@ -253,6 +253,8 @@ class FormPlugin extends Plugin
             $page = $this->grav['page'];
         }
 
+        $header = $page->header();
+
         // get route to calculated page
         $page_route = $page->route();
         // get route to current page
@@ -266,6 +268,8 @@ class FormPlugin extends Plugin
                 $found_forms = $this->forms[$page_route];
             } elseif (isset($this->forms[$current_page_route])) {
                 $found_forms = $this->forms[$current_page_route];
+            } elseif (isset($header->form)) {
+                $found_forms = [new Form($page)];
             }
 
             $this->grav['twig']->twig_vars['form'] = array_shift($found_forms);
