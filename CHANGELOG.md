@@ -1,3 +1,10 @@
+# v2.4.0
+## 04/13/2017
+
+1. [](#new)
+    * Added the ability for front-end forms to use advanced blueprint features such as `data-*@` and `config-*@`
+    * Added support for dynamically added pages to process forms properly
+
 # v2.3.1
 ## 03/23/2017
 
