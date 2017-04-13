@@ -155,7 +155,8 @@ class Form extends Iterator implements \Serializable
         $rules = $this->rules;
 
         $blueprint  = function() use ($name, $items, $rules) {
-            return new Blueprint($name, ['form' => $items, 'rules' => $rules]);
+            $blueprint = new Blueprint($name, ['form' => $items, 'rules' => $rules]);
+            return $blueprint->load()->init();
         };
 
         $this->data = new Data($data['data'], $blueprint);
@@ -225,20 +226,16 @@ class Form extends Iterator implements \Serializable
 
         $items = $this->items;
         $rules = $this->rules;
+
         $blueprint  = function() use ($name, $items, $rules) {
-            return new Blueprint($name, ['form' => $items, 'rules' => $rules]);
+            $blueprint = new Blueprint($name, ['form' => $items, 'rules' => $rules]);
+            return $blueprint->load()->init();
         };
-
-        if (method_exists($blueprint, 'load')) {
-            // init the form to process directives
-            $blueprint->load()->init();
-
-            // fields set to processed blueprint fields
-            $this->fields = $blueprint->fields();
-        }
 
         $this->data   = new Data($this->header_data, $blueprint);
         $this->values = new Data();
+        $this->fields = null;
+        $this->fields = $this->fields();
 
         // Fire event
         $grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
