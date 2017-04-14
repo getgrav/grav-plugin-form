@@ -4,6 +4,8 @@
 1. [](#new)
     * Added the ability for front-end forms to use advanced blueprint features such as `data-*@` and `config-*@`
     * Added support for dynamically added pages to process forms properly
+1. [](#bugfix)
+    * Always process form events as long as a `$_POST` exists [login #101](https://github.com/getgrav/grav-plugin-login/issues/101)
 
 # v2.3.1
 ## 03/23/2017

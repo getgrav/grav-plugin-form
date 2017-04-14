@@ -141,6 +141,14 @@ class FormPlugin extends Plugin
             $this->flat_forms = $flat_forms;
         }
 
+        // Enable form events if there's a POST
+        if (!empty($_POST)) {
+            $this->enable([
+                'onFormProcessed' => ['onFormProcessed', 0],
+                'onFormValidationError' => ['onFormValidationError', 0]
+            ]);
+        }
+
         if ($this->isAdmin() && !empty($_POST)) {
 
             $page = $this->grav['page'];
@@ -153,10 +161,6 @@ class FormPlugin extends Plugin
             if (isset($header->form) && is_array($header->form)) {
                 // Create form
                 $this->form = new Form($page);
-                $this->enable([
-                    'onFormProcessed'           => ['onFormProcessed', 0],
-                    'onFormValidationError'     => ['onFormValidationError', 0]
-                ]);
                 $this->form->post();
             }
 
@@ -180,11 +184,6 @@ class FormPlugin extends Plugin
 
             // Handle posting if needed.
             if (!empty($_POST)) {
-
-                $this->enable([
-                    'onFormProcessed'       => ['onFormProcessed', 0],
-                    'onFormValidationError' => ['onFormValidationError', 0]
-                ]);
 
                 $current_form_name = $this->getFormName($this->grav['page']);
                 $this->json_response = [];
