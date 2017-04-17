@@ -397,7 +397,7 @@ class Form extends Iterator implements \Serializable
             // we need to move the file at this stage or else
             // it won't be available upon save later on
             // since php removes it from the upload location
-            $tmp_dir = Grav::instance()['locator']->findResource('tmp://', true, true);
+            $tmp_dir = $grav['locator']->findResource('tmp://', true, true);
             $tmp_file = $upload->file->tmp_name;
             $tmp = $tmp_dir . '/uploaded-files/' . basename($tmp_file);
 
@@ -619,6 +619,7 @@ class Form extends Iterator implements \Serializable
     public function getPagePathFromToken($path)
     {
         $grav = Grav::instance();
+
         $path_parts = pathinfo($path);
 
         $basename = '';
