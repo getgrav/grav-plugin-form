@@ -322,6 +322,16 @@ class Form extends Iterator implements \Serializable
     }
 
     /**
+     * Get all data
+     * 
+     * @return Data
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    /**
      * Set value of given variable in the data array
      *
      * @param string $name
