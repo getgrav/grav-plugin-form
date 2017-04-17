@@ -54,8 +54,6 @@ class FormPlugin extends Plugin
     {
         require_once(__DIR__ . '/classes/form.php');
 
-
-
         if ($this->isAdmin()) {
             $this->enable([
                 'onPagesInitialized'     => ['onPagesInitialized', 0]
@@ -67,6 +65,8 @@ class FormPlugin extends Plugin
             'onPageProcessed'           => ['onPageProcessed', 0],
             'onPagesInitialized'        => ['onPagesInitialized', 0],
             'onTwigInitialized'         => ['onTwigInitialized', 0],
+            'onTwigPageVariables'       => ['onTwigVariables', 0],
+            'onTwigSiteVariables'       => ['onTwigVariables', 0],
             'onFormValidationProcessed' => ['onFormValidationProcessed', 0],
         ]);
     }
@@ -167,8 +167,6 @@ class FormPlugin extends Plugin
         } elseif ($this->forms) {
 
             $this->enable([
-                'onTwigPageVariables'    => ['onTwigVariables', 0],
-                'onTwigSiteVariables'    => ['onTwigVariables', 0],
                 'onFormFieldTypes'       => ['onFormFieldTypes', 0],
             ]);
 
