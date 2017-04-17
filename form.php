@@ -185,16 +185,15 @@ class FormPlugin extends Plugin
 
                 $current_form_name = $this->getFormName($this->grav['page']);
                 $this->json_response = [];
+                $this->form = $this->getFormByName($current_form_name);
 
-                if ($this->form = $this->getFormByName($current_form_name)) {
-                    if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
-                        $this->json_response = $this->form->uploadFiles();
-                    } else {
-                        $this->form->post();
-                        $submitted = true;
-                    }
-                } elseif (isset($this->grav['page']->header()->form)) {
+                if (!$this->form && isset($this->grav['page']->header()->form)) {
                     $this->form = new Form($this->grav['page']);
+                }
+
+                if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
+                    $this->json_response = $this->form->uploadFiles();
+                } else {
                     $this->form->post();
                     $submitted = true;
                 }
