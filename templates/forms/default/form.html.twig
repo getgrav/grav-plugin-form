@@ -63,7 +63,12 @@
                 class="{{ button.classes|default('button') }}"
                 {% endblock %}
                 {% if button.disabled %}disabled="disabled"{% endif %}
+
                 type="{{ button.type|default('submit') }}"
+
+                {% if button.task %}
+                    name="task" value="{{ button.task }}"
+                {% endif %}
             >
                 {{ button.value|t|default('Submit') }}
           </button>
