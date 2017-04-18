@@ -1,11 +1,23 @@
 # v2.4.0
-## 04/13/2017
+## 04/xx/2017
 
 1. [](#new)
     * Added the ability for front-end forms to use advanced blueprint features such as `data-*@` and `config-*@`
     * Added support for dynamically added pages to process forms properly
+    * Added a new avatar field for displaying account avatar
+    * Added method to get all `data` from a form
+    * Support `task` in button types
+1. [](#improved)
+    * Added a new default ajax handler twig template
+    * Moved twig events to always process even if forms are not defined
+    * Some code cleanup
+    * Handle `null` with session-based form
+    * Added support for append/prepend to number field
 1. [](#bugfix)
     * Always process form events as long as a `$_POST` exists [login #101](https://github.com/getgrav/grav-plugin-login/issues/101)
+    * Various fixes for `file` field
+    * Allow manually added pages to process forms and upload files
+    * Fixed issue with nested fileds not showing up in `data.*.twig` templates
 
 # v2.3.1
 ## 03/23/2017
