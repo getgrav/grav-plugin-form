@@ -54,8 +54,6 @@ class FormPlugin extends Plugin
     {
         require_once(__DIR__ . '/classes/form.php');
 
-
-
         if ($this->isAdmin()) {
             $this->enable([
                 'onPagesInitialized'     => ['onPagesInitialized', 0]
@@ -67,6 +65,8 @@ class FormPlugin extends Plugin
             'onPageProcessed'           => ['onPageProcessed', 0],
             'onPagesInitialized'        => ['onPagesInitialized', 0],
             'onTwigInitialized'         => ['onTwigInitialized', 0],
+            'onTwigPageVariables'       => ['onTwigVariables', 0],
+            'onTwigSiteVariables'       => ['onTwigVariables', 0],
             'onFormValidationProcessed' => ['onFormValidationProcessed', 0],
         ]);
     }
@@ -141,6 +141,14 @@ class FormPlugin extends Plugin
             $this->flat_forms = $flat_forms;
         }
 
+        // Enable form events if there's a POST
+        if (!empty($_POST)) {
+            $this->enable([
+                'onFormProcessed' => ['onFormProcessed', 0],
+                'onFormValidationError' => ['onFormValidationError', 0]
+            ]);
+        }
+
         if ($this->isAdmin() && !empty($_POST)) {
 
             $page = $this->grav['page'];
@@ -153,19 +161,13 @@ class FormPlugin extends Plugin
             if (isset($header->form) && is_array($header->form)) {
                 // Create form
                 $this->form = new Form($page);
-                $this->enable([
-                    'onFormProcessed'           => ['onFormProcessed', 0],
-                    'onFormValidationError'     => ['onFormValidationError', 0]
-                ]);
                 $this->form->post();
             }
 
         } elseif ($this->forms) {
 
             $this->enable([
-                'onTwigPageVariables'    => ['onTwigVariables', 0],
-                'onTwigSiteVariables'    => ['onTwigVariables', 0],
-                'onFormFieldTypes'       => ['onFormFieldTypes', 0]
+                'onFormFieldTypes'       => ['onFormFieldTypes', 0],
             ]);
 
             // Regenerate list of flat_forms if not already populated
@@ -181,23 +183,17 @@ class FormPlugin extends Plugin
             // Handle posting if needed.
             if (!empty($_POST)) {
 
-                $this->enable([
-                    'onFormProcessed'       => ['onFormProcessed', 0],
-                    'onFormValidationError' => ['onFormValidationError', 0]
-                ]);
-
                 $current_form_name = $this->getFormName($this->grav['page']);
                 $this->json_response = [];
+                $this->form = $this->getFormByName($current_form_name);
 
-                if ($this->form = $this->getFormByName($current_form_name)) {
-                    if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
-                        $this->json_response = $this->form->uploadFiles();
-                    } else {
-                        $this->form->post();
-                        $submitted = true;
-                    }
-                } elseif (isset($this->grav['page']->header()->form)) {
+                if (!$this->form && isset($this->grav['page']->header()->form)) {
                     $this->form = new Form($this->grav['page']);
+                }
+
+                if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
+                    $this->json_response = $this->form->uploadFiles();
+                } else {
                     $this->form->post();
                     $submitted = true;
                 }
@@ -253,6 +249,8 @@ class FormPlugin extends Plugin
             $page = $this->grav['page'];
         }
 
+        $header = $page->header();
+
         // get route to calculated page
         $page_route = $page->route();
         // get route to current page
@@ -266,6 +264,8 @@ class FormPlugin extends Plugin
                 $found_forms = $this->forms[$page_route];
             } elseif (isset($this->forms[$current_page_route])) {
                 $found_forms = $this->forms[$current_page_route];
+            } elseif (isset($header->form)) {
+                $found_forms = [new Form($page)];
             }
 
             $this->grav['twig']->twig_vars['form'] = array_shift($found_forms);
