@@ -1,5 +1,5 @@
 # v2.4.0
-## 04/xx/2017
+## 04/19/2017
 
 1. [](#new)
     * Added the ability for front-end forms to use advanced blueprint features such as `data-*@` and `config-*@`
