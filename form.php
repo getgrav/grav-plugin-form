@@ -181,7 +181,7 @@ class FormPlugin extends Plugin
             }
 
             // Handle posting if needed.
-            if (!empty($_POST)) {
+            if (!empty($_POST) && isset($_POST['data'])) {
 
                 $current_form_name = $this->getFormName($this->grav['page']);
                 $this->json_response = [];
