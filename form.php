@@ -191,11 +191,13 @@ class FormPlugin extends Plugin
                     $this->form = new Form($this->grav['page']);
                 }
 
-                if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
-                    $this->json_response = $this->form->uploadFiles();
-                } else {
-                    $this->form->post();
-                    $submitted = true;
+                if ($this->form) {
+                    if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
+                        $this->json_response = $this->form->uploadFiles();
+                    } else {
+                        $this->form->post();
+                        $submitted = true;
+                    }
                 }
             }
 
