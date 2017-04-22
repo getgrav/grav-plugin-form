@@ -28,7 +28,7 @@
                 {% endblock %}
             {% endif %}
         {% else %}
-            {% if field.fields is iterable %}
+            {% if field.fields %}
                 {{ _self.render_field(form, field.fields) }}
             {% endif %}
         {% endif %}
