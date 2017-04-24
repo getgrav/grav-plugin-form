@@ -181,7 +181,7 @@ class FormPlugin extends Plugin
             }
 
             // Handle posting if needed.
-            if (!empty($_POST)) {
+            if (!empty($_POST) && isset($_POST['data'])) {
 
                 $current_form_name = $this->getFormName($this->grav['page']);
                 $this->json_response = [];
@@ -191,11 +191,13 @@ class FormPlugin extends Plugin
                     $this->form = new Form($this->grav['page']);
                 }
 
-                if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
-                    $this->json_response = $this->form->uploadFiles();
-                } else {
-                    $this->form->post();
-                    $submitted = true;
+                if ($this->form) {
+                    if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
+                        $this->json_response = $this->form->uploadFiles();
+                    } else {
+                        $this->form->post();
+                        $submitted = true;
+                    }
                 }
             }
 

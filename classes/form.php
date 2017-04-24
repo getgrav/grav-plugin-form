@@ -192,36 +192,9 @@ class Form extends Iterator implements \Serializable
         $name = $this->items['name'];
         $grav = Grav::instance();
 
-        // Fix naming for fields (presently only for toplevel fields)
+        // Fix naming for fields (supports nested fields now!)
         if (isset($this->items['fields'])) {
-            foreach ($this->items['fields'] as $key => $field) {
-                // default to text if not set
-                if (!isset($field['type'])) {
-                    $field['type'] = 'text';
-                }
-
-                $types = $grav['plugins']->formFieldTypes;
-
-                // manually merging the field types
-                if ($types !== null && key_exists($field['type'], $types)) {
-                    $field += $types[$field['type']];
-                }
-
-                // BC for old style of array style field definitions
-                if (is_numeric($key) && isset($field['name'])) {
-                    array_splice($this->items['fields'], $key);
-                    $key = $field['name'];
-                }
-
-                // Add name based on key if not already set
-                if (!isset($field['name'])) {
-                    $field['name'] = $key;
-                }
-
-                // set any modifications back on the fields array
-                $this->items['fields'][$key] = $field;
-
-            }
+            $this->items['fields'] = $this->processFields($this->items['fields']);
         }
 
         $items = $this->items;
@@ -240,6 +213,35 @@ class Form extends Iterator implements \Serializable
         // Fire event
         $grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
 
+    }
+
+    protected function processFields($fields)
+    {
+        $types = Grav::instance()['plugins']->formFieldTypes;
+
+        $return = array();
+        foreach ($fields as $key => $value) {
+
+            // default to text if not set
+            if (!isset($value['type'])) {
+                $value['type'] = 'text';
+            }
+
+            // manually merging the field types
+            if ($types !== null && key_exists($value['type'], $types)) {
+                $value += $types[$value['type']];
+            }
+
+            // Fix numeric indexes
+            if (is_numeric($key) && isset($value['name'])) {
+                $key = $value['name'];
+            }
+            if (isset($value['fields']) && is_array($value['fields'])) {
+                $value['fields'] = $this->processFields($value['fields']);
+            }
+            $return[$key] = $value;
+        }
+        return $return;
     }
 
     public function fields() {

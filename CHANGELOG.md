@@ -1,3 +1,11 @@
+# v2.5.0
+## 04/24/2017
+
+1. [](#new)
+    * Support proper form handling with nested fields [#141](https://github.com/getgrav/grav-plugin-form/issues/141)
+1. [](#bugfix)
+    * Added check for valid Grav forms before trying to create a form object
+
 # v2.4.0
 ## 04/19/2017
 
