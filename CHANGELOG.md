@@ -16,6 +16,7 @@
     * Added method to get all `data` from a form
     * Support `task` in button types
 1. [](#improved)
+    * Added `step` to range field [#136](https://github.com/getgrav/grav-plugin-form/issues/136)
     * Added a new default ajax handler twig template
     * Moved twig events to always process even if forms are not defined
     * Some code cleanup
