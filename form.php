@@ -343,7 +343,14 @@ class FormPlugin extends Plugin
                 break;
             case 'redirect':
                 $this->grav['session']->setFlashObject('form', $form);
-                $this->grav->redirect((string)$params);
+                $url = ((string)$params);
+                $vars = array(
+                    'form' => $form
+                );
+                /** @var Twig $twig */
+                $twig = $this->grav['twig'];
+                $url = $twig->processString($url, $vars);
+                $this->grav->redirect($url);
                 break;
             case 'reset':
                 if (Utils::isPositive($params)) {
