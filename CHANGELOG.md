@@ -1,3 +1,11 @@
+# v2.6.0
+## 05/04/2017
+
+1. [](#new)
+    * Allow form item replacement in redirect location [#144](https://github.com/getgrav/grav-plugin-form/issues/144)
+1. [](#bugfix)
+    * Fix regression with file uploads introduced in 2.5.0
+
 # v2.5.0
 ## 04/24/2017
 
