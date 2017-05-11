@@ -164,7 +164,7 @@ class FormPlugin extends Plugin
                 $this->form->post();
             }
 
-        } elseif ($this->forms) {
+        } else {
 
             $this->enable([
                 'onFormFieldTypes'       => ['onFormFieldTypes', 0],
