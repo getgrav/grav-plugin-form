@@ -157,12 +157,10 @@ class FormPlugin extends Plugin
                     return;
                 }
 
+                // Create form from page
                 $header = $page->header();
-
                 if (isset($header->form) && is_array($header->form)) {
-                    // Create form
                     $this->form = new Form($page);
-//                    $this->form->post();
                 }
 
             } else {
