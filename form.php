@@ -141,6 +141,32 @@ class FormPlugin extends Plugin
             $this->flat_forms = $flat_forms;
         }
 
+        // No forms in pages, try the current one in the page
+        if (empty($this->forms)) {
+
+            $page = $this->grav['page'];
+            if (!$page) {
+                return;
+            }
+
+            // Create form from page
+            $header = $page->header();
+            if (isset($header->form) && is_array($header->form)) {
+                $this->form = new Form($page);
+            }
+
+        } else {
+            // Regenerate list of flat_forms if not already populated
+            if (empty($this->flat_forms)) {
+                $this->flat_forms = Utils::arrayFlatten($this->forms);
+            }
+
+            // Save the current state of the forms to cache
+            if ($this->recache_forms) {
+                $this->grav['cache']->save($cache_id, [$this->forms, $this->flat_forms]);
+            }
+        }
+
         // Enable form events if there's a POST
         if (isset($_POST) && isset($_POST['form-nonce'])) {
             $this->enable([
@@ -149,40 +175,13 @@ class FormPlugin extends Plugin
                 'onFormFieldTypes'       => ['onFormFieldTypes', 0],
             ]);
 
-            // No forms in pages, try the current one in the page
-            if (empty($this->forms)) {
-
-                $page = $this->grav['page'];
-                if (!$page) {
-                    return;
-                }
-
-                // Create form from page
-                $header = $page->header();
-                if (isset($header->form) && is_array($header->form)) {
-                    $this->form = new Form($page);
-                }
-
-            } else {
-                // Regenerate list of flat_forms if not already populated
-                if (empty($this->flat_forms)) {
-                    $this->flat_forms = Utils::arrayFlatten($this->forms);
-                }
-
-                // Save the current state of the forms to cache
-                if ($this->recache_forms) {
-                    $this->grav['cache']->save($cache_id, [$this->forms, $this->flat_forms]);
-                }
-            }
-
-
-
             // Retrieve the form if it's not already set
             if (!isset($this->form)) {
                 $current_form_name = $this->getFormName($this->grav['page']);
                 $this->form = $this->getFormByName($current_form_name);
             }
 
+            // Post the form
             if ($this->form) {
                 if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
                     $this->json_response = $this->form->uploadFiles();
