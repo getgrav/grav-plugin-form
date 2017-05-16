@@ -1,5 +1,5 @@
-# v2.6.1
-## 05/xx/2017
+# v2.7.0
+## 05/16/2017
 
 1. [](#bugfix)
     * Fix issue with dynamically added forms (Registration, Profile, Comments, etc) not processed [#149](https://github.com/getgrav/grav-plugin-form/issues/149)
