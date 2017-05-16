@@ -125,7 +125,7 @@ class FormPlugin extends Plugin
     public function onPagesInitialized()
     {
         $submitted = false;
-
+        $this->json_response = [];
         $cache_id = $this->grav['pages']->getPagesCacheId() . '-form-plugin';
 
         // Get and set the cache of forms if it exists
@@ -141,35 +141,21 @@ class FormPlugin extends Plugin
             $this->flat_forms = $flat_forms;
         }
 
-        // Enable form events if there's a POST
-        if (!empty($_POST)) {
-            $this->enable([
-                'onFormProcessed' => ['onFormProcessed', 0],
-                'onFormValidationError' => ['onFormValidationError', 0]
-            ]);
-        }
-
-        if ($this->isAdmin() && !empty($_POST)) {
+        // No forms in pages, try the current one in the page
+        if (empty($this->forms)) {
 
             $page = $this->grav['page'];
             if (!$page) {
                 return;
             }
 
+            // Create form from page
             $header = $page->header();
-
             if (isset($header->form) && is_array($header->form)) {
-                // Create form
                 $this->form = new Form($page);
-                $this->form->post();
             }
 
-        } elseif ($this->forms) {
-
-            $this->enable([
-                'onFormFieldTypes'       => ['onFormFieldTypes', 0],
-            ]);
-
+        } else {
             // Regenerate list of flat_forms if not already populated
             if (empty($this->flat_forms)) {
                 $this->flat_forms = Utils::arrayFlatten($this->forms);
@@ -179,27 +165,32 @@ class FormPlugin extends Plugin
             if ($this->recache_forms) {
                 $this->grav['cache']->save($cache_id, [$this->forms, $this->flat_forms]);
             }
+        }
 
-            // Handle posting if needed.
-            if (!empty($_POST) && (isset($_POST['data']) || isset($_POST['__form-file-uploader__']))) {
+        // Enable form events if there's a POST
+        if (isset($_POST) && isset($_POST['form-nonce'])) {
+            $this->enable([
+                'onFormProcessed' => ['onFormProcessed', 0],
+                'onFormValidationError' => ['onFormValidationError', 0],
+                'onFormFieldTypes'       => ['onFormFieldTypes', 0],
+            ]);
 
+            // Retrieve the form if it's not already set
+            if (!isset($this->form)) {
                 $current_form_name = $this->getFormName($this->grav['page']);
-                $this->json_response = [];
                 $this->form = $this->getFormByName($current_form_name);
+            }
 
-                if (!$this->form && isset($this->grav['page']->header()->form)) {
-                    $this->form = new Form($this->grav['page']);
-                }
-
-                if ($this->form) {
-                    if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
-                        $this->json_response = $this->form->uploadFiles();
-                    } else {
-                        $this->form->post();
-                        $submitted = true;
-                    }
+            // Post the form
+            if ($this->form) {
+                if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
+                    $this->json_response = $this->form->uploadFiles();
+                } else {
+                    $this->form->post();
+                    $submitted = true;
                 }
             }
+
 
             // Clear flash objects for previously uploaded files
             // whenever the user switches page / reloads
