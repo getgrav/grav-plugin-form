@@ -620,47 +620,7 @@ class Form extends Iterator implements \Serializable
 
     public function getPagePathFromToken($path)
     {
-        $grav = Grav::instance();
-
-        $path_parts = pathinfo($path);
-
-        $basename = '';
-        if (isset($path_parts['extension'])) {
-            $basename = '/' . $path_parts['basename'];
-            $path = $path_parts['dirname'];
-        }
-
-        $regex = '/(@self|self@)|((?:@page|page@):(?:.*))|((?:@theme|theme@):(?:.*))/';
-        preg_match($regex, $path, $matches);
-
-        if ($matches) {
-            if ($matches[1]) {
-                // self@
-                $page = $this->page(true);
-            } elseif ($matches[2]) {
-                // page@
-                $parts = explode(':', $path);
-                $route = $parts[1];
-                $page = $grav['page']->find($route);
-            } elseif ($matches[3]) {
-                // theme@
-                $parts = explode(':', $path);
-                $route = $parts[1];
-                $theme = str_replace(ROOT_DIR, '', $grav['locator']->findResource("theme://"));
-
-                return $theme . $route . $basename;
-            }
-        } else {
-            return $path . $basename;
-        }
-
-        if (!$page) {
-            throw new \RuntimeException('Page route not found: ' . $path);
-        }
-
-        $path = str_replace($matches[0], rtrim($page->relativePagePath(), '/'), $path);
-
-        return $path . $basename;
+        return Utils::getPagePathFromToken($path, $this->page());
     }
 
     /**
