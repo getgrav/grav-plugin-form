@@ -1,9 +1,3 @@
-# v2.8.0-rc.1
-## 05/22/2017
-
-1. [](#new)
-    * Bundled as RC release for Grav/Admin RC releases
-
 # v2.7.1
 ## 05/22/2017
 
