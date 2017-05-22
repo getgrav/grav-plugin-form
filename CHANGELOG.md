@@ -1,5 +1,5 @@
 # v2.7.1
-## 05/xx/2017
+## 05/22/2017
 
 1. [](#improved)
     * Force modular sub-pages with forms to set `$never_cache_twig = true` to improve form processing reliability [#153](https://github.com/getgrav/grav-plugin-form/issues/153)
