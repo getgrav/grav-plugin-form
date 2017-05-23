@@ -18,6 +18,9 @@
                 {% if field.multiple in ['on', 'true', 1] %}multiple="multiple"{% endif %}
                 {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
                 {% if field.form %}form="{{ field.form }}"{% endif %}
+                {% if field.key %}
+                    data-key-observe="{{ (scope ~ field.name)|fieldName }}"
+                {% endif %}
                 >
             {% if field.placeholder %}<option value="" disabled selected>{% if grav.twig.twig.filters['tu'] is defined %}{{ field.placeholder|tu|raw }}{% else %}{{ field.placeholder|t|raw }}{% endif %}</option>{% endif %}
 
