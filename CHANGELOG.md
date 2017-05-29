@@ -1,3 +1,11 @@
+# v2.x.x
+## 05/xx/2017
+
+1. [](#improved)
+    * Added key observe for select
+1. [](#bugfix)
+    * Bug fix for radio type form field [#154](https://github.com/getgrav/grav-plugin-form/pull/154)
+
 # v2.8.0-rc.1
 ## 05/22/2017
 
@@ -10,7 +18,7 @@
 1. [](#improved)
     * Force modular sub-pages with forms to set `$never_cache_twig = true` to improve form processing reliability [#153](https://github.com/getgrav/grav-plugin-form/issues/153)
     * Use new `Utils::getPagePathFromToken()` method
-    
+
 # v2.7.0
 ## 05/16/2017
 
