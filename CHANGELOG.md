@@ -5,6 +5,7 @@
     * Added key observe for select
 1. [](#bugfix)
     * Bug fix for radio type form field [#154](https://github.com/getgrav/grav-plugin-form/pull/154)
+    * Remove double escaping [#155](https://github.com/getgrav/grav-plugin-form/issues/154)
 
 # v2.8.0-rc.1
 ## 05/22/2017
