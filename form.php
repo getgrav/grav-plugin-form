@@ -88,21 +88,20 @@ class FormPlugin extends Plugin
 
         $header = $page->header();
 
-        //call event to allow filling the page header form dynamically (e.g. use case: Comments plugin)
+        // Call event to allow filling the page header form dynamically (e.g. use case: Comments plugin)
         $this->grav->fireEvent('onFormPageHeaderProcessed', new Event(['header' => $header]));
+
+        // Force never_cache_twig if modular form
+        if ($page->template() === 'modular/form') {
+            $header->never_cache_twig = true;
+        }
 
         if ((isset($header->forms) && is_array($header->forms)) ||
             (isset($header->form) && is_array($header->form))) {
 
             $page_forms = [];
 
-            // Force never_cache_twig if modular form
-            if ($page->modular()) {
-                $header = $page->header();
-                $header->never_cache_twig = true;
-            }
-
-            // get the forms from the page headers
+            // Get the forms from the page headers
             if (isset($header->forms)) {
                 $page_forms = $header->forms;
             } elseif (isset($header->form)) {
