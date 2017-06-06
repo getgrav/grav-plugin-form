@@ -3,6 +3,7 @@
 
 1. [](#improved)
     * Added key observe for select
+    * Added Czech translation
 1. [](#bugfix)
     * Bug fix for radio type form field [#154](https://github.com/getgrav/grav-plugin-form/pull/154)
     * Remove double escaping [#155](https://github.com/getgrav/grav-plugin-form/issues/154)
