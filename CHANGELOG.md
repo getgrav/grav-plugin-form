@@ -1,7 +1,8 @@
-# v2.x.x
-## 05/xx/2017
+# v2.8.0-rc.2
+## xx/xx/2017
 
 1. [](#improved)
+    * Add default client-side validation for captcha, with error popup [#139](https://github.com/getgrav/grav-plugin-form/issues/139)
     * Added key observe for select
     * Added Czech translation
 1. [](#bugfix)
