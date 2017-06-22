@@ -1,5 +1,5 @@
 # v2.8.0-rc.2
-## xx/xx/2017
+## 06/22/2017
 
 1. [](#improved)
     * Add default client-side validation for captcha, with error popup [#139](https://github.com/getgrav/grav-plugin-form/issues/139)
