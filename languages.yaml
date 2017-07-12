@@ -60,7 +60,7 @@ es:
     DESTINATION_HELP: "El lugar de destino al que subir los ficheros"
     ACCEPT: "MIME Types permitidos"
     ACCEPT_HELP: "Una lista de  MIME Types que se permiten subir."
-    ERROR_VALIDATING_CAPTCHA: "Error al comrobar el Captcha"
+    ERROR_VALIDATING_CAPTCHA: "Error al comprobar el Captcha"
     RECAPTCHA: "ReCaptcha"
     RECAPTCHA_SITE_KEY: "Site key"
     RECAPTCHA_SITE_KEY_HELP: "Para más información visita https://developers.google.com/recaptcha"
