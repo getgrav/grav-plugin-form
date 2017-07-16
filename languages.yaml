@@ -60,7 +60,7 @@ es:
     DESTINATION_HELP: "El lugar de destino al que subir los ficheros"
     ACCEPT: "MIME Types permitidos"
     ACCEPT_HELP: "Una lista de  MIME Types que se permiten subir."
-    ERROR_VALIDATING_CAPTCHA: "Error al comrobar el Captcha"
+    ERROR_VALIDATING_CAPTCHA: "Error al comprobar el Captcha"
     RECAPTCHA: "ReCaptcha"
     RECAPTCHA_SITE_KEY: "Site key"
     RECAPTCHA_SITE_KEY_HELP: "Para más información visita https://developers.google.com/recaptcha"
@@ -162,3 +162,41 @@ ro:
     RECAPTCHA_SITE_KEY_HELP: "Pentru mai multe detalii vă rugăm vizitați https://developers.google.com/recaptcha"
     RECAPTCHA_SECRET_KEY: "Cheia secretă pentru Site"
     RECAPTCHA_SECRET_KEY_HELP: "Pentru mai multe detalii vă rugăm vizitați  https://developers.google.com/recaptcha"
+
+cs:
+  PLUGIN_FORM:
+    NOT_VALIDATED: "Formulář nebyl ověřen. Chybí jedno nebo více povinných polí."
+    NONCE_NOT_VALIDATED: "Jejda, došlo k problému, zkontrolujte vstupní stránku a znovu odešlete formulář."
+    FILES: "Nahrávání souborů"
+    ALLOW_MULTIPLE: "Povolit více než jeden soubor"
+    ALLOW_MULTIPLE_HELP: "Umožňuje vybrat více než jeden soubor pro nahrání."
+    DESTINATION: "Cílové umístění"
+    DESTINATION_HELP: "Místo, kam mají být soubory nahrány"
+    ACCEPT: "Povolené MIME typy"
+    ACCEPT_HELP: "Seznam MIME typů souborů povolených pro upload"
+    ERROR_VALIDATING_CAPTCHA: "Nepodařilo se ověřit CAPTCHA (kontrola proti spamu)"
+    DATA_SUMMARY: "Shrnutí toho, co jste nám napsali:"
+    NO_FORM_DATA: "Formulář neobsahuje žádná data"
+    RECAPTCHA: "ReCaptcha"
+    RECAPTCHA_SITE_KEY: "Site key"
+    RECAPTCHA_SITE_KEY_HELP: "Více informací https://developers.google.com/recaptcha"
+    RECAPTCHA_SECRET_KEY: "Secret key"
+    RECAPTCHA_SECRET_KEY_HELP: "Více informací https://developers.google.com/recaptcha"
+    GENERAL: "Všeobecné"
+    USE_BUILT_IN_CSS: "Použít built-in CSS"
+    FILEUPLOAD_PREVENT_SELF: 'Nelze použít "% s" mimo stránky.'
+    FILEUPLOAD_UNABLE_TO_UPLOAD: 'Nelze nahrát soubor %s: %s'
+    FILEUPLOAD_UNABLE_TO_MOVE: 'Nelze přesunout soubor %s do "%s"'
+    DROPZONE_CANCEL_UPLOAD: 'Zrušit upload'
+    DROPZONE_CANCEL_UPLOAD_CONFIRMATION: 'Opravdu chcete zrušit nahrávání souboru?'
+    DROPZONE_DEFAULT_MESSAGE: 'Přetáhněte sem soubory nebo <strong>klikněte v tomto prostoru</strong>'
+    DROPZONE_FALLBACK_MESSAGE: 'Váš prohlížeč nepodporuje nahrávání souborů táhni a pusť.'
+    DROPZONE_FALLBACK_TEXT: 'Použijte níže uvedený formulář pro nahrání souborů, jako v minulých dnech.'
+    DROPZONE_FILE_TOO_BIG: 'Soubor je příliš velký ({{filesize}}MiB). Max. velikost souboru: {{maxFilesize}}MiB.'
+    DROPZONE_INVALID_FILE_TYPE: "Nelze nahrát soubory tohoto typu."
+    DROPZONE_MAX_FILES_EXCEEDED: "Nelze nahrát další soubory."
+    DROPZONE_REMOVE_FILE: "Odstranit soubor"
+    DROPZONE_REMOVE_FILE_CONFIRMATION: 'Opravdu chcete tento soubor smazat?'
+    DROPZONE_RESPONSE_ERROR: "Server vrátil chybový kód: {{statusCode}}."
+    YES: "Ano"
+    NO: "Ne"

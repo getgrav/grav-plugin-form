@@ -21,7 +21,7 @@
                             {% elseif field.type == 'select' %}
                                 {{ field.options[form.value(field.name)]|e }}
                             {% else %}
-                                {{ string(form.value(field.name)|e)|nl2br }}
+                                {{ string(form.value(field.name))|nl2br }}
                             {% endif %}
                         {% endblock %}
                     </div>

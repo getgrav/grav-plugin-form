@@ -17,6 +17,13 @@
         var captchaExpiredCallback = function captchaExpiredCallback() {
             grecaptcha.reset();
         };
+
+        $('form').submit(function(event) {
+            if ($("#g-recaptcha-response").val() === '') {
+                event.preventDefault();
+                alert("{{grav.language.translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA')}}");
+            }
+        });
     </script>
     <script src="https://www.google.com/recaptcha/api.js?onload=captchaOnloadCallback&render=explicit&hl={{ grav.language.language }}"
         async defer>
