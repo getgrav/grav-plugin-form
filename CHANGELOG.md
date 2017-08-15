@@ -1,8 +1,8 @@
 # v2.8.1
-## 08/xx/2017
+## 08/15/2017
 
 1. [](#improved)
-    * Added extra class support to the default field
+    * Added extra class support to the default field for more flexible styling 
 
 # v2.8.0
 ## 07/16/2017
