@@ -5,10 +5,10 @@
 {% set errors = attribute(form.messages, field.name) %}
 
 {% block field %}
-    <div class="form-field {% if field.outerclasses is defined %} {{ field.outerclasses }}{% endif %}{% if errors %} has-errors{% endif %} {% block outer_field_classes %}{% endblock %}">
+    <div class="form-field {{ field.outerclasses }} {% if errors %} has-errors{% endif %} {% block outer_field_classes %}{% endblock %}">
         {% block contents %}
             {% if field.label is not same as(false) %}
-                <div class="form-label">
+                <div class="form-label {{ field.labelclasses }}">
                     <label class="inline" {% if field.id is defined %}for="{{ field.id|e }}" {% endif %} >
                     {% block label %}
                         {% if field.help %}
@@ -21,7 +21,7 @@
                     </label>
                 </div>
             {% endif %}
-            <div class="form-data"
+            <div class="form-data {{ field.dataclasses }}"
                 {% block global_attributes %}
                 data-grav-field="{{ field.type }}"
                 data-grav-disabled="{{ originalValue is null ? 'true' : 'false' }}"
