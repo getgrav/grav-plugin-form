@@ -1,3 +1,9 @@
+# v2.8.2
+## 08/18/2017
+
+1. [](#new)
+    * Added new `columns` and `column` fields for controlled form layout
+
 # v2.8.1
 ## 08/15/2017
 
