@@ -49,7 +49,11 @@
                                     {% if field.autocomplete in ['on', 'off'] %}autocomplete="{{ field.autocomplete }}"{% endif %}
                                     {% if field.validate.required in ['on', 'true', 1] %}required="required"{% endif %}
                                     {% if field.validate.pattern %}pattern="{{ field.validate.pattern|e }}"{% endif %}
-                                    {% if field.validate.message %}title="{{ field.validate.message|t|e }}"
+                                    {% if field.validate.message %}title="{{ field.validate.message|t|e }}"{% endif %}
+                                    {% if field.attributes is defined %}
+                                      {% for attribute in field.attributes %}
+                                          {{ attribute.name }}="{{ attribute.value|e }}"
+                                      {% endfor %}
                                     {% elseif field.title is defined %}title="{{ field.title|t|e }}" {% endif %}
                                 {% endblock %}
                             />
