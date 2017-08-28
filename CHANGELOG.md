@@ -1,3 +1,11 @@
+# v2.8.3
+## xx/xx/2017
+
+1. [](#new)
+    * Added support for field `attributes` [#176](https://github.com/getgrav/grav-plugin-form/pull/176)
+1. [](#bugfix)
+    * Fixed an issue with conditionals
+
 # v2.8.2
 ## 08/18/2017
 
