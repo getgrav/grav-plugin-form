@@ -103,6 +103,44 @@ fr:
     DROPZONE_REMOVE_FILE_CONFIRMATION: "Êtes-vous sûr de vouloir supprimer ce fichier ?"
     DROPZONE_RESPONSE_ERROR: "Le serveur a répondu avec le code {{statusCode}}."
 
+ru:
+  PLUGIN_FORM:
+    NOT_VALIDATED: "Форма не подтверждена. Отсутствует одно или несколько обязательных полей."
+    NONCE_NOT_VALIDATED: "Упс, у вас возникла проблема, проверьте свои данные и отправьте форму еще раз."
+    FILES: "Загрузка файлов"
+    ALLOW_MULTIPLE: "Разрешить несколько файлов"
+    ALLOW_MULTIPLE_HELP: "Позволяет выбрать более одного файла для загрузки."
+    DESTINATION: "Место назначения"
+    DESTINATION_HELP: "Место, куда файлы должны быть загружены в"
+    ACCEPT: "Разрешенные MIME типы"
+    ACCEPT_HELP: "Список MIME типов, разрешенных для загрузки"
+    ERROR_VALIDATING_CAPTCHA: "Ошибка проверки Captcha"
+    DATA_SUMMARY: "Вот краткое изложение того, что вы нам написали:"
+    NO_FORM_DATA: "Данные формы отсутствуют"
+    RECAPTCHA: "ReCaptcha"
+    RECAPTCHA_SITE_KEY: "Site key"
+    RECAPTCHA_SITE_KEY_HELP: "Для получения дополнительной информации посетите https://developers.google.com/recaptcha"
+    RECAPTCHA_SECRET_KEY: "Secret key"
+    RECAPTCHA_SECRET_KEY_HELP: "Для получения дополнительной информации посетите https://developers.google.com/recaptcha"
+    GENERAL: "Общие"
+    USE_BUILT_IN_CSS: "Использовать встроенный CSS"
+    FILEUPLOAD_PREVENT_SELF: 'Нельзя использовать "%s" за пределами страниц.'
+    FILEUPLOAD_UNABLE_TO_UPLOAD: 'Не удалось загрузить файл %s: %s'
+    FILEUPLOAD_UNABLE_TO_MOVE: 'Не удалось переместить файл %s в "%s"'
+    DROPZONE_CANCEL_UPLOAD: 'Отменить загрузку'
+    DROPZONE_CANCEL_UPLOAD_CONFIRMATION: 'Вы действительно хотите отменить эту загрузку?'
+    DROPZONE_DEFAULT_MESSAGE: 'Бросьте свои файлы сюда или <strong>щелкните в этой области</strong>'
+    DROPZONE_FALLBACK_MESSAGE: 'Ваш браузер не поддерживает загрузку файлов с перетаскиванием.'
+    DROPZONE_FALLBACK_TEXT: 'Пожалуйста, используйте приведенную ниже форму для загрузки ваших файлов, как в старые времена.'
+    DROPZONE_FILE_TOO_BIG: 'Файл слишком большой ({{filesize}}мб). Максимальный размер файла: {{maxFilesize}}мб.'
+    DROPZONE_INVALID_FILE_TYPE: "Вы не можете загружать файлы этого типа."
+    DROPZONE_MAX_FILES_EXCEEDED: "Вы не можете загружать больше файлов."
+    DROPZONE_REMOVE_FILE: "Удалить файл"
+    DROPZONE_REMOVE_FILE_CONFIRMATION: 'Вы действительно хотите удалить этот файл?'
+    DROPZONE_RESPONSE_ERROR: "Сервер ответил кодом {{statusCode}}."
+    YES: "Да"
+    NO: "Нет"
+
 hr:
   PLUGIN_FORM:
     NOT_VALIDATED: "Formular nije validiran. Jedan ili više traženih polja nedostaju."
