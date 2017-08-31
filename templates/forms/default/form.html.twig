@@ -2,13 +2,8 @@
     {% set form = grav.session.getFlashObject('form') %}
 {% endif  %}
 
-{% if form.message %}
-    {% if form.inline_errors and form.messages %}
-        <div class="alert notices {{ form.message_color ?: 'green' }}"><p>{{ "FORM.VALIDATION_FAIL"|t|raw }}</p></div>
-    {% else %}
-        <div class="alert notices {{ form.message_color ?: 'green' }}"><p>{{ form.message|raw }}</p></div>
-    {% endif %}
-{% endif %}
+{% include 'partials/form-messages.html.twig' %}
+
 {% set scope = scope ?: 'data.' %}
 {% set multipart = '' %}
 {% set method = form.method|upper|default('POST') %}
