@@ -255,25 +255,30 @@ class FormPlugin extends Plugin
         $current_page_route = $this->getCurrentPageRoute();
         $found_forms = [];
 
-        if (isset($this->form)) {
-            $this->grav['twig']->twig_vars['form'] = $this->form;
-        } elseif (!isset($this->grav['twig']->twig_vars['form'])) {
-            if (isset($this->forms[$page_route])) {
-                $found_forms = $this->forms[$page_route];
-            } elseif (isset($this->forms[$current_page_route])) {
-                $found_forms = $this->forms[$current_page_route];
-            } elseif (isset($header->form)) {
-                $found_forms = [new Form($page)];
-            }
+        $twig = $this->grav['twig'];
 
-            $this->grav['twig']->twig_vars['form'] = array_shift($found_forms);
+        if (!isset($twig->twig_vars['form'])) {
+            if (isset($this->form)) {
+                $twig->twig_vars['form'] = $this->form;
+            } elseif (!isset($twig->twig_vars['form'])) {
+                if (isset($this->forms[$page_route])) {
+                    $found_forms = $this->forms[$page_route];
+                } elseif (isset($this->forms[$current_page_route])) {
+                    $found_forms = $this->forms[$current_page_route];
+                } elseif (isset($header->form)) {
+                    $found_forms = [new Form($page)];
+                }
+
+                $twig->twig_vars['form'] = array_shift($found_forms);
+            }
         }
+
 
         if ($this->config->get('plugins.form.built_in_css')) {
             $this->grav['assets']->addCss('plugin://form/assets/form-styles.css');
         }
 
-        $this->grav['twig']->twig_vars['form_json_response'] = $this->json_response;
+        $twig->twig_vars['form_json_response'] = $this->json_response;
     }
 
     /**
