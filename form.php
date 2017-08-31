@@ -260,7 +260,7 @@ class FormPlugin extends Plugin
         if (!isset($twig->twig_vars['form'])) {
             if (isset($this->form)) {
                 $twig->twig_vars['form'] = $this->form;
-            } elseif (!isset($twig->twig_vars['form'])) {
+            } else {
                 if (isset($this->forms[$page_route])) {
                     $found_forms = $this->forms[$page_route];
                 } elseif (isset($this->forms[$current_page_route])) {
@@ -268,11 +268,9 @@ class FormPlugin extends Plugin
                 } elseif (isset($header->form)) {
                     $found_forms = [new Form($page)];
                 }
-
                 $twig->twig_vars['form'] = array_shift($found_forms);
             }
         }
-
 
         if ($this->config->get('plugins.form.built_in_css')) {
             $this->grav['assets']->addCss('plugin://form/assets/form-styles.css');

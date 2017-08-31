@@ -5,6 +5,7 @@
     * Added support for field `attributes` [#176](https://github.com/getgrav/grav-plugin-form/pull/176)
 1. [](#bugfix)
     * Fixed an issue with conditionals
+    * Only add Twig form variable if not already set
 
 # v2.8.2
 ## 08/18/2017
