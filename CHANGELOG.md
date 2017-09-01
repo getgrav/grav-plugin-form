@@ -3,6 +3,7 @@
 
 1. [](#new)
     * Added support for field `attributes` [#176](https://github.com/getgrav/grav-plugin-form/pull/176)
+    * Added global variables for setting form classes
 1. [](#improved)
     * Moved messages output into partial to allow style overriding
 1. [](#bugfix)
