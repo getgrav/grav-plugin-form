@@ -1,5 +1,6 @@
 enabled: true
 built_in_css: true
+refresh_prevention: false
 files:
   multiple: false          # To allow multiple files, default is single
   limit: 10                # Number of allowed files per field (multiple required)

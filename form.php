@@ -173,7 +173,7 @@ class FormPlugin extends Plugin
         }
 
         // Enable form events if there's a POST
-        if (isset($_POST) && isset($_POST['form-nonce'])) {
+        if ($this->shouldProcessForm()) {
             $this->enable([
                 'onFormProcessed' => ['onFormProcessed', 0],
                 'onFormValidationError' => ['onFormValidationError', 0],
@@ -213,6 +213,18 @@ class FormPlugin extends Plugin
                     }
                 }
             }
+        } else {
+            if (!isset($this->form)) {
+                $current_form_name = $this->getFormName($this->grav['page']);
+                $this->form = $this->getFormByName($current_form_name);
+            }
+            if ($this->form) {
+                $this->form->message = $this->grav['language']->translate('PLUGIN_FORM.FORM_ALREADY_SUBMITTED');
+                $this->form->message_color = 'red';
+            } else {
+                $this->grav['messages']->add($this->grav['language']->translate('PLUGIN_FORM.FORM_ALREADY_SUBMITTED'), error);
+            }
+
         }
     }
 
@@ -658,5 +670,24 @@ class FormPlugin extends Plugin
         }
         return null;
     }
+
+    protected function shouldProcessForm()
+    {
+        $status = isset($_POST) && isset($_POST['form-nonce']);
+
+        $refresh_prevention_enabled = $this->config->get('plugins.form.refresh_prevention', false);
+
+        if ($status && $refresh_prevention_enabled && isset($_POST['__unique_form_id__'])) {
+            if(($this->grav['session']->unique_form_id != $_POST['__unique_form_id__'])) {
+                $this->grav['session']->unique_form_id = $_POST['__unique_form_id__'];
+            } else {
+                $status = false;
+            }
+        }
+
+        return $status;
+
+    }
+
 
 }

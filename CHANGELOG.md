@@ -2,6 +2,7 @@
 ## xx/xx/2017
 
 1. [](#new)
+    * Added "Refresh Prevention" capabilities (Not enabled by default) [#184](https://github.com/getgrav/grav-plugin-form/issues/184)
     * Added support for field `attributes` [#176](https://github.com/getgrav/grav-plugin-form/pull/176)
     * Added global variables for setting form classes
 1. [](#improved)
