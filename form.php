@@ -180,14 +180,8 @@ class FormPlugin extends Plugin
                 'onFormFieldTypes'       => ['onFormFieldTypes', 0],
             ]);
 
-            // Retrieve the form if it's not already set
-            if (!isset($this->form)) {
-                $current_form_name = $this->getFormName($this->grav['page']);
-                $this->form = $this->getFormByName($current_form_name);
-            }
-
             // Post the form
-            if ($this->form) {
+            if ($this->form()) {
                 if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
                     $this->json_response = $this->form->uploadFiles();
                 } else {
@@ -662,25 +656,24 @@ class FormPlugin extends Plugin
     protected function shouldProcessForm()
     {
         $status = isset($_POST) && isset($_POST['form-nonce']);
+        $refresh_prevention = null;
 
-        $refresh_prevention_enabled = $this->config->get('plugins.form.refresh_prevention', false);
-        $unique_form_id = filter_input(INPUT_POST, '__unique_form_id__', FILTER_SANITIZE_STRING);
-
-        if ($status && $refresh_prevention_enabled && $unique_form_id) {
-            if(($this->grav['session']->unique_form_id != $unique_form_id)) {
-                $this->grav['session']->unique_form_id = $unique_form_id;
+        if ($status && $this->form()) {
+            if (!is_null($this->form->refresh_prevention)) {
+                $refresh_prevention = (bool) $this->form->refresh_prevention;
             } else {
-                $status = false;
+                $refresh_prevention = $this->config->get('plugins.form.refresh_prevention', false);
+            }
 
-                if (!isset($this->form)) {
-                    $current_form_name = $this->getFormName($this->grav['page']);
-                    $this->form = $this->getFormByName($current_form_name);
-                }
-                if ($this->form) {
+            $unique_form_id = filter_input(INPUT_POST, '__unique_form_id__', FILTER_SANITIZE_STRING);
+
+            if ($refresh_prevention && $unique_form_id) {
+                if(($this->grav['session']->unique_form_id != $unique_form_id)) {
+                    $this->grav['session']->unique_form_id = $unique_form_id;
+                } else {
+                    $status = false;
                     $this->form->message = $this->grav['language']->translate('PLUGIN_FORM.FORM_ALREADY_SUBMITTED');
                     $this->form->message_color = 'red';
-                } else {
-                    $this->grav['messages']->add($this->grav['language']->translate('PLUGIN_FORM.FORM_ALREADY_SUBMITTED'), 'error');
                 }
             }
         }
@@ -689,5 +682,12 @@ class FormPlugin extends Plugin
 
     }
 
-
+    protected function form()
+    {
+        if (!isset($this->form)) {
+            $current_form_name = $this->getFormName($this->grav['page']);
+            $this->form = $this->getFormByName($current_form_name);
+        }
+        return $this->form;
+    }
 }
