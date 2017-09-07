@@ -190,7 +190,6 @@ class FormPlugin extends Plugin
                 }
             }
 
-
             // Clear flash objects for previously uploaded files
             // whenever the user switches page / reloads
             // ignoring any JSON / extension call
@@ -531,11 +530,6 @@ class FormPlugin extends Plugin
                 }
             }
         }
-
-        // Set page template if passed by form
-        if (isset($form->template)) {
-            $this->grav['page']->template($form->template);
-        }
     }
 
     /**
@@ -659,6 +653,12 @@ class FormPlugin extends Plugin
         $refresh_prevention = null;
 
         if ($status && $this->form()) {
+
+            // Set page template if passed by form
+            if (isset($this->form->template)) {
+                $this->grav['page']->template($this->form->template);
+            }
+
             if (!is_null($this->form->refresh_prevention)) {
                 $refresh_prevention = (bool) $this->form->refresh_prevention;
             } else {
@@ -679,7 +679,6 @@ class FormPlugin extends Plugin
         }
 
         return $status;
-
     }
 
     protected function form()
