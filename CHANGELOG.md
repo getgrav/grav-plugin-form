@@ -1,5 +1,5 @@
 # v2.9.0
-## xx/xx/2017
+## 09/07/2017
 
 1. [](#new)
     * Added **Refresh Prevention** capabilities (Not enabled by default) [#184](https://github.com/getgrav/grav-plugin-form/issues/184)
