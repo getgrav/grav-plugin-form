@@ -613,8 +613,6 @@ class Form extends Iterator implements \Serializable
                     $grav->fireEvent('onFormProcessed', $event);
                 }
             }
-        } else {
-            // Default action.
         }
     }
 

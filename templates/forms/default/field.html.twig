@@ -5,11 +5,11 @@
 {% set errors = attribute(form.messages, field.name) %}
 
 {% block field %}
-    <div class="form-field {{ field.outerclasses }} {% if errors %} has-errors{% endif %} {% block outer_field_classes %}{% endblock %}">
+    <div class="{{ form_field_outer_classes ?: 'form-field' }} {{ field.outerclasses }} {% if errors %} has-errors{% endif %} {% block outer_field_classes %}{% endblock %}">
         {% block contents %}
             {% if field.label is not same as(false) %}
-                <div class="form-label {{ field.labelclasses }}">
-                    <label class="inline" {% if field.id is defined %}for="{{ field.id|e }}" {% endif %} >
+                <div class="{{ form_field_outer_label_classes ?: 'form-label' }} {{ field.labelclasses }}">
+                    <label class="{{ form_field_label_classes ?: 'inline' }}" {% if field.id is defined %}for="{{ field.id|e }}" {% endif %} >
                     {% block label %}
                         {% if field.help %}
                         <span class="tooltip" data-asTooltip-position="w" title="{{ field.help|t|e }}">{{ field.label|default(field.name|capitalize)|t }}</span>
@@ -21,7 +21,7 @@
                     </label>
                 </div>
             {% endif %}
-            <div class="form-data {{ field.dataclasses }}"
+            <div class="{{ form_field_outer_data_classes ?: 'form-data' }} {{ field.dataclasses }}"
                 {% block global_attributes %}
                 data-grav-field="{{ field.type }}"
                 data-grav-disabled="{{ originalValue is null ? 'true' : 'false' }}"
@@ -30,7 +30,7 @@
             >
                 {% block group %}
                     {% block input %}
-                        <div class="form-input-wrapper {{ field.size }} {{ field.wrapper_classes }}">
+                        <div class="{{ form_field_wrapper_classes ?: 'form-input-wrapper' }} {{ field.size }} {{ field.wrapper_classes }}">
                             {% block prepend %}{% endblock prepend %}
                             <input
                                 {# required attribute structures #}
@@ -47,6 +47,11 @@
                                     {% if field.novalidate in ['on', 'true', 1] %}novalidate="novalidate"{% endif %}
                                     {% if field.readonly in ['on', 'true', 1] %}readonly="readonly"{% endif %}
                                     {% if field.autocomplete in ['on', 'off'] %}autocomplete="{{ field.autocomplete }}"{% endif %}
+                                    {% if field.attributes is defined %}
+                                      {% for attribute in field.attributes %}
+                                          {{ attribute.name }}="{{ attribute.value|e }}"
+                                      {% endfor %}
+                                    {% endif %}
                                     {% if field.validate.required in ['on', 'true', 1] %}required="required"{% endif %}
                                     {% if field.validate.pattern %}pattern="{{ field.validate.pattern|e }}"{% endif %}
                                     {% if field.validate.message %}title="{{ field.validate.message|t|e }}"
@@ -55,7 +60,7 @@
                             />
                             {% block append %}{% endblock append %}
                             {% if form.inline_errors and errors %}
-                                <div class="form-errors">
+                                <div class="{{ form_errors_classes ?: 'form-errors' }}">
                                     {% for error in errors %}
                                         <p class="form-message"><i class="fa fa-exclamation-circle"></i> {{ error }}</p>
                                     {% endfor %}

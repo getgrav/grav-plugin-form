@@ -2,13 +2,8 @@
     {% set form = grav.session.getFlashObject('form') %}
 {% endif  %}
 
-{% if form.message %}
-    {% if form.inline_errors and form.messages %}
-        <div class="alert notices {{ form.message_color ?: 'green' }}"><p>{{ "FORM.VALIDATION_FAIL"|t|raw }}</p></div>
-    {% else %}
-        <div class="alert notices {{ form.message_color ?: 'green' }}"><p>{{ form.message|raw }}</p></div>
-    {% endif %}
-{% endif %}
+{% include 'partials/form-messages.html.twig' %}
+
 {% set scope = scope ?: 'data.' %}
 {% set multipart = '' %}
 {% set method = form.method|upper|default('POST') %}
@@ -30,7 +25,7 @@
       method="{{ method }}"{{ multipart }}
       {% if form.id %}id="{{ form.id }}"{% endif %}
       {% block form_classes %}
-      {% if form.classes %}class="{{ form.classes }}"{% endif %}
+      class="{{ form_outer_classes }} {{ form.classes }}"
       {% endblock %}
 >
 
@@ -49,18 +44,18 @@
   {% block inner_markup_fields_end %}{% endblock %}
 
   {% block inner_markup_buttons_start %}
-  <div class="buttons">
+  <div class="{{ form_button_outer_classes ?: 'buttons'}}">
   {% endblock %}
 
   {% for button in form.buttons %}
-      {% if button.outerclasses is defined %}<div class="{{ button.outerclasses }}">{% endif %}
+      {% if button.outerclasses is defined %}<div class=" {{ button.outerclasses }}">{% endif %}
           {% if button.url %}
               <a href="{{ button.url starts with 'http' ? button.url : url(button.url) }}">
           {% endif %}
           <button
                 {% if button.id %}id="{{ button.id }}"{% endif %}
                 {% block button_classes %}
-                class="{{ button.classes|default('button') }}"
+                class="{{ form_button_classes ?: 'button' }} {{ button.classes }}"
                 {% endblock %}
                 {% if button.disabled %}disabled="disabled"{% endif %}
 
@@ -82,5 +77,6 @@
   </div>
   {% endblock %}
 
+  {% include 'forms/fields/uniqueid/uniqueid.html.twig' %}
   {{ nonce_field('form', 'form-nonce')|raw }}
 </form>

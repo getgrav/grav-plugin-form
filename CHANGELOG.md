@@ -1,3 +1,21 @@
+# v2.9.0
+## 09/07/2017
+
+1. [](#new)
+    * Added **Refresh Prevention** capabilities (Not enabled by default) [#184](https://github.com/getgrav/grav-plugin-form/issues/184)
+    * Added support for field `attributes` [#176](https://github.com/getgrav/grav-plugin-form/pull/176)
+    * Added global variables for setting form classes
+    * Added support for new `select_optgroup` form field [#165](https://github.com/getgrav/grav-plugin-form/issues/165)
+1. [](#improved)
+    * Moved messages output into partial to allow style overriding
+    * Logic cleanup
+    * Updated Italian and Russian translations
+1. [](#bugfix)
+    * Fixed an issue with conditional field not always displaying properly
+    * Only add Twig form variable if not already set
+    * Fixed issue with multiple forms on a page failing on Captcha client-side validation [#182](https://github.com/getgrav/grav-plugin-form/issues/182)
+    * Fixed issue with Ajax forms return full form HTML on error [#163](https://github.com/getgrav/grav-plugin-form/issues/163)
+    
 # v2.8.2
 ## 08/18/2017
 
