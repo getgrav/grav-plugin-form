@@ -1,3 +1,9 @@
+# v2.9.1
+## 09/14/2017
+
+1. [](#bugfix)
+    * Fixed backwards compatibility issue with conditional field [#188](https://github.com/getgrav/grav-plugin-form/pull/188)
+
 # v2.9.0
 ## 09/07/2017
 
