@@ -2,6 +2,7 @@
 ## 09/14/2017
 
 1. [](#bugfix)
+    * Added missing `@input: false` attributes to some non-display fields [#189](https://github.com/getgrav/grav-plugin-form/issues/189)
     * Fixed backwards compatibility issue with conditional field [#188](https://github.com/getgrav/grav-plugin-form/pull/188)
 
 # v2.9.0
