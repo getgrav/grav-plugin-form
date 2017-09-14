@@ -1,6 +1,8 @@
 {% set value = evaluate(field.condition) %}
-{% if value == true or value == 'true' %}
+{% set value = value == 'true' ? 1 : value %}
+{% set value = value == 'false' ? 0 : value %}
 
+{% if value %}
     {% if field.classes %}
     <div class="{{ field.classes }}">
     {% endif %}
