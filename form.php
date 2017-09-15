@@ -487,6 +487,10 @@ class FormPlugin extends Plugin
             $this->grav['page'] = $page;
         }
 
+        if ($uri->extension() === 'json') {
+            throw new ValidationException("Form validation errror", 500);
+        }
+
         $event->stopPropagation();
     }
 
