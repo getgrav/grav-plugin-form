@@ -264,3 +264,43 @@ cs:
     DROPZONE_RESPONSE_ERROR: "Server vrátil chybový kód: {{statusCode}}."
     YES: "Ano"
     NO: "Ne"
+pl:
+  PLUGIN_FORM:
+    NOT_VALIDATED: “Formularz został odrzucony. Jedno lub więcej pól wymaga wypełnienia.”
+    NONCE_NOT_VALIDATED: “Ups, pojawił się problem. Proszę sprawdź czy wszystkie pola zostały wypełnione i wyślij formularz ponownie.”
+    FILES: “Plik przesłany.“
+    FORM_ALREADY_SUBMITTED: “Ten formularz został już wysłany.”
+    ALLOW_MULTIPLE: “Zezwól na więcej niż jeden plik.”
+    ALLOW_MULTIPLE_HELP: “Zezwól na przesłanie więcej niż jednego pliku.”
+    DESTINATION: “Przeznaczenie.”
+    DESTINATION_HELP: “Lokalizacja przesłanego pliku.”
+    ACCEPT: “Zezwól na typ MIME.”
+    ACCEPT_HELP: “Lista wspieranych do przesłania typów MIME.”
+    ERROR_VALIDATING_CAPTCHA: “Błąd walidacji Captcha.”
+    DATA_SUMMARY: “Oto podsumowanie informacji, które do nas napisałeś:“
+    NO_FORM_DATA: "Brak dostępnych danych formularza"
+    RECAPTCHA: "ReCaptcha"
+    RECAPTCHA_SITE_KEY: “Klucz strony”
+    RECAPTCHA_SITE_KEY_HELP: "Aby uzyskać więcej informacji odwiedź https://developers.google.com/recaptcha"
+    RECAPTCHA_SECRET_KEY: “Tajny klucz”
+    RECAPTCHA_SECRET_KEY_HELP: "Aby uzyskać więcej informacji odwiedź https://developers.google.com/recaptcha"
+    GENERAL: "Ogólne"
+    USE_BUILT_IN_CSS: "Użyj wbudowanych styli CSS"
+    FILEUPLOAD_PREVENT_SELF: 'Nie można użyć "%s" poza stronami.’
+    FILEUPLOAD_UNABLE_TO_UPLOAD: 'Nie można przesłać plików %s: %s'
+    FILEUPLOAD_UNABLE_TO_MOVE: 'Nie można przenieść plików z %s do "%s"'
+    DROPZONE_CANCEL_UPLOAD: 'Anuluj przesyłanie'
+    DROPZONE_CANCEL_UPLOAD_CONFIRMATION: 'Czy na pewno chcesz anulować przesyłanie?’
+    DROPZONE_DEFAULT_MESSAGE: 'Upuść pliki tutaj lub <strong>kliknij w tym obszarze</strong>'
+    DROPZONE_FALLBACK_MESSAGE: ’Twoja przelądarka nie obsługują funkcji przeciągnij i upuść.’
+    DROPZONE_FALLBACK_TEXT: ‘Proszę użyć zapasowego formularza do przesyłania plików znajdującego się poniżej.’
+    DROPZONE_FILE_TOO_BIG: ‘Plik jest zbyt duży ({{filesize}}MiB). Maksymalna wielkość pliku to: {{maxFilesize}}MiB.'
+    DROPZONE_INVALID_FILE_TYPE: “Nie można przesłać pliku. Format nie jest obsługiwany.”
+    DROPZONE_MAX_FILES_EXCEEDED: “Nie można przesłać więcej plików.“
+    DROPZONE_REMOVE_FILE: “Usuń plik“
+    DROPZONE_REMOVE_FILE_CONFIRMATION: ‘Czy na pewno chcesz usunąć plik?’
+    DROPZONE_RESPONSE_ERROR: “Status serwera {{statusCode}}."
+    YES: “Tak”
+    NO: “Nie”
+    REFRESH_PREVENTION: “Zapobiegaj odświeżaniu”
+    REFRESH_PREVENTION_HELP: "Użyj unikatowego identyfikatora ID , aby upewnić się, że przeglądarka nie przetworzy formularza ponownie."
