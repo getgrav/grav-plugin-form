@@ -1,3 +1,11 @@
+# v2.9.2
+## 09/30/2017
+
+1. [](#improved)
+    * Improved Polish translation
+1. [](#bugfix)
+    * Added missing `@input: false` attributes to some non-display fields [#189](https://github.com/getgrav/grav-plugin-form/issues/189)
+    
 # v2.9.1
 ## 09/14/2017
 

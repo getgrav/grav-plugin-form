@@ -498,6 +498,18 @@ class FormPlugin extends Plugin
     public function getFormFieldTypes()
     {
         return [
+            'column'   => [
+                'input@' => false
+            ],
+            'columns'  => [
+                'input@' => false
+            ],
+            'fieldset' => [
+                'input@' => false
+            ],
+            'conditional' => [
+                'input@' => false
+            ],
             'display' => [
                 'input@' => false
             ],
