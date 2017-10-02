@@ -1,5 +1,7 @@
+{% set code = 200 %}
 {% if form.message %}
     {% set message = form.inline_errors and form.messages ? "FORM.VALIDATION_FAIL"|t : form.message %}
-
+    {% set code = form.message_color == 'red' ? 207 : code %}
+    {% do form.responseCode(code) %}
     <div class="alert notices {{ form.message_color ?: 'green' }}"><p>{{ message|raw }}</p></div>
 {% endif %}

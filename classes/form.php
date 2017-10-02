@@ -19,6 +19,11 @@ class Form extends Iterator implements \Serializable
     public $message;
 
     /**
+     * @var int
+     */
+    public $response_code;
+
+    /**
      * @var string
      */
     public $message_color;
@@ -65,6 +70,7 @@ class Form extends Iterator implements \Serializable
      * @var Page $page
      */
     protected $page;
+
 
     /**
      * Create form for the given page.
@@ -651,4 +657,15 @@ class Form extends Iterator implements \Serializable
         $action = 'form-plugin';
         return Utils::getNonce($action);
     }
+
+    public function responseCode($code = null)
+    {
+        if ($code) {
+            $this->response_code = $code;
+        }
+        return $this->response_code;
+
+    }
+
+
 }
