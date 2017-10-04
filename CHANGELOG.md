@@ -1,3 +1,11 @@
+# v2.9.4
+## xx/xx/2017
+
+1. [](#improved)
+    * Consolidated `field.classes` and `field.wrapper_classes` in radio/checkbox/checkboxes [#193](https://github.com/getgrav/grav-plugin-form/issues/)
+    * Remove trailing slash from form action [#195](https://github.com/getgrav/grav-plugin-form/issues/195)
+    * Improved `honeypot` validation check [#198](https://github.com/getgrav/grav-plugin-form/issues/198)
+
 # v2.9.2
 ## 09/30/2017
 
