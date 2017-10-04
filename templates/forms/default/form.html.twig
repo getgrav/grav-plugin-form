@@ -21,7 +21,7 @@
 {% endif %}
 
 <form name="{{ form.name }}"
-      action="{{ action }}"
+      action="{{ action | trim('/', 'right') }}"
       method="{{ method }}"{{ multipart }}
       {% if form.id %}id="{{ form.id }}"{% endif %}
       {% block form_classes %}
