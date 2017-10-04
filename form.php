@@ -452,8 +452,10 @@ class FormPlugin extends Plugin
     public function onFormValidationProcessed(Event $event)
     {
         // special check for honeypot field
-        if (!empty($event['form']->value('honeypot'))) {
-            throw new ValidationException('Are you a bot?');
+        foreach ($event['form']->fields() as $field) {
+            if ($field['type'] == 'honeypot' && !empty($event['form']->value($field['name']))) {
+                throw new ValidationException('Are you a bot?'); 
+            }
         }
     }
 
