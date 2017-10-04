@@ -7,7 +7,7 @@
     {% for key, text in field.options %}
         {% set id = field.id|default(field.name) ~ '-' ~ key %}
 
-        <span class="radio">
+        <span class="radio{% if field.classes is defined %} {{ field.classes }}{% endif %}">
             <input type="radio"
                    value="{{ key|e }}"
                    id="{{ id|e }}"
