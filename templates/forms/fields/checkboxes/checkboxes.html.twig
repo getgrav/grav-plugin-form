@@ -21,7 +21,7 @@
         {% set checked = (field.use == 'keys' ? value[key] : key in value) %}
         {% set help = (key in field.help_options|keys ? field.help_options[key] : false) %}
 
-        <span class="checkboxes">
+        <span class="checkboxes {{ field.wrapper_classes }}">
             <input type="checkbox"
                    id="{{ id|e }}"
                    value="{{ val|e }}"

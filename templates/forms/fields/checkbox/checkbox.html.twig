@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block input %}
-    <div class="form-input-wrapper {{ field.size }}">
+    <div class="form-input-wrapper {{ field.size }} {{ field.wrapper_classes }}">
         <input
             {# required attribute structures #}
             name="{{ (scope ~ field.name)|fieldName }}"
