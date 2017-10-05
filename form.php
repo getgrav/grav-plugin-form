@@ -173,21 +173,15 @@ class FormPlugin extends Plugin
         }
 
         // Enable form events if there's a POST
-        if (isset($_POST) && isset($_POST['form-nonce'])) {
+        if ($this->shouldProcessForm()) {
             $this->enable([
                 'onFormProcessed' => ['onFormProcessed', 0],
                 'onFormValidationError' => ['onFormValidationError', 0],
                 'onFormFieldTypes'       => ['onFormFieldTypes', 0],
             ]);
 
-            // Retrieve the form if it's not already set
-            if (!isset($this->form)) {
-                $current_form_name = $this->getFormName($this->grav['page']);
-                $this->form = $this->getFormByName($current_form_name);
-            }
-
             // Post the form
-            if ($this->form) {
+            if ($this->form()) {
                 if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
                     $this->json_response = $this->form->uploadFiles();
                 } else {
@@ -195,7 +189,6 @@ class FormPlugin extends Plugin
                     $submitted = true;
                 }
             }
-
 
             // Clear flash objects for previously uploaded files
             // whenever the user switches page / reloads
@@ -255,25 +248,28 @@ class FormPlugin extends Plugin
         $current_page_route = $this->getCurrentPageRoute();
         $found_forms = [];
 
-        if (isset($this->form)) {
-            $this->grav['twig']->twig_vars['form'] = $this->form;
-        } elseif (!isset($this->grav['twig']->twig_vars['form'])) {
-            if (isset($this->forms[$page_route])) {
-                $found_forms = $this->forms[$page_route];
-            } elseif (isset($this->forms[$current_page_route])) {
-                $found_forms = $this->forms[$current_page_route];
-            } elseif (isset($header->form)) {
-                $found_forms = [new Form($page)];
-            }
+        $twig = $this->grav['twig'];
 
-            $this->grav['twig']->twig_vars['form'] = array_shift($found_forms);
+        if (!isset($twig->twig_vars['form'])) {
+            if (isset($this->form)) {
+                $twig->twig_vars['form'] = $this->form;
+            } else {
+                if (isset($this->forms[$page_route])) {
+                    $found_forms = $this->forms[$page_route];
+                } elseif (isset($this->forms[$current_page_route])) {
+                    $found_forms = $this->forms[$current_page_route];
+                } elseif (isset($header->form)) {
+                    $found_forms = [new Form($page)];
+                }
+                $twig->twig_vars['form'] = array_shift($found_forms);
+            }
         }
 
         if ($this->config->get('plugins.form.built_in_css')) {
             $this->grav['assets']->addCss('plugin://form/assets/form-styles.css');
         }
 
-        $this->grav['twig']->twig_vars['form_json_response'] = $this->json_response;
+        $twig->twig_vars['form_json_response'] = $this->json_response;
     }
 
     /**
@@ -456,8 +452,10 @@ class FormPlugin extends Plugin
     public function onFormValidationProcessed(Event $event)
     {
         // special check for honeypot field
-        if (!empty($event['form']->value('honeypot'))) {
-            throw new ValidationException('Are you a bot?');
+        foreach ($event['form']->fields() as $field) {
+            if ($field['type'] == 'honeypot' && !empty($event['form']->value($field['name']))) {
+                throw new ValidationException('Are you a bot?'); 
+            }
         }
     }
 
@@ -502,6 +500,18 @@ class FormPlugin extends Plugin
     public function getFormFieldTypes()
     {
         return [
+            'column'   => [
+                'input@' => false
+            ],
+            'columns'  => [
+                'input@' => false
+            ],
+            'fieldset' => [
+                'input@' => false
+            ],
+            'conditional' => [
+                'input@' => false
+            ],
             'display' => [
                 'input@' => false
             ],
@@ -533,11 +543,6 @@ class FormPlugin extends Plugin
                     $form->setData($field['name'], gmdate('D, d M Y H:i:s', time()));
                 }
             }
-        }
-
-        // Set page template if passed by form
-        if (isset($form->template)) {
-            $this->grav['page']->template($form->template);
         }
     }
 
@@ -656,4 +661,46 @@ class FormPlugin extends Plugin
         return null;
     }
 
+    protected function shouldProcessForm()
+    {
+        $status = isset($_POST) && isset($_POST['form-nonce']);
+        $refresh_prevention = null;
+
+        if ($status && $this->form()) {
+
+            // Set page template if passed by form
+            if (isset($this->form->template)) {
+                $this->grav['page']->template($this->form->template);
+            }
+
+            if (!is_null($this->form->refresh_prevention)) {
+                $refresh_prevention = (bool) $this->form->refresh_prevention;
+            } else {
+                $refresh_prevention = $this->config->get('plugins.form.refresh_prevention', false);
+            }
+
+            $unique_form_id = filter_input(INPUT_POST, '__unique_form_id__', FILTER_SANITIZE_STRING);
+
+            if ($refresh_prevention && $unique_form_id) {
+                if(($this->grav['session']->unique_form_id != $unique_form_id)) {
+                    $this->grav['session']->unique_form_id = $unique_form_id;
+                } else {
+                    $status = false;
+                    $this->form->message = $this->grav['language']->translate('PLUGIN_FORM.FORM_ALREADY_SUBMITTED');
+                    $this->form->message_color = 'red';
+                }
+            }
+        }
+
+        return $status;
+    }
+
+    protected function form()
+    {
+        if (!isset($this->form)) {
+            $current_form_name = $this->getFormName($this->grav['page']);
+            $this->form = $this->getFormByName($current_form_name);
+        }
+        return $this->form;
+    }
 }

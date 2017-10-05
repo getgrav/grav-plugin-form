@@ -19,7 +19,7 @@
         };
 
         $('form').submit(function(event) {
-            if ($("#g-recaptcha-response").val() === '') {
+            if ($(this).has("#g-recaptcha-response").length && $("#g-recaptcha-response").val() === '') {
                 event.preventDefault();
                 alert("{{grav.language.translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA')}}");
             }
