@@ -1,3 +1,12 @@
+# v2.9.3
+## 10/11/2017
+
+1. [](#improved)
+    * Removed `filesize` plugin configuration in favor of `system.media.upload_limit`
+    * Consolidated `field.classes` and `field.wrapper_classes` in radio/checkbox/checkboxes [#193](https://github.com/getgrav/grav-plugin-form/issues/)
+    * Remove trailing slash from form action [#195](https://github.com/getgrav/grav-plugin-form/issues/195)
+    * Improved `honeypot` validation check [#198](https://github.com/getgrav/grav-plugin-form/issues/198)
+
 # v2.9.2
 ## 09/30/2017
 

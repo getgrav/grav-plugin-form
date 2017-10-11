@@ -21,12 +21,13 @@
         {% set checked = (field.use == 'keys' ? value[key] : key in value) %}
         {% set help = (key in field.help_options|keys ? field.help_options[key] : false) %}
 
-        <span class="checkboxes">
+        <span class="checkboxes {{ field.wrapper_classes }}">
             <input type="checkbox"
                    id="{{ id|e }}"
                    value="{{ val|e }}"
                    name="{{ (scope ~ field.name)|fieldName ~ '[' ~ name ~ ']' }}"
                    {% if checked %}checked="checked"{% endif %}
+                   {% if field.classes is defined %}class="{{ field.classes }}" {% endif %}
                    {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
                    {% if field.validate.required %}required="required"{% endif %}
             >
