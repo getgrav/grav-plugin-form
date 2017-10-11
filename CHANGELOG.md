@@ -1,5 +1,5 @@
-# v2.9.4
-## xx/xx/2017
+# v2.9.3
+## 10/11/2017
 
 1. [](#improved)
     * Removed `filesize` plugin configuration in favor of `system.media.upload_limit`
