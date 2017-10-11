@@ -377,7 +377,7 @@ class Form extends Iterator implements \Serializable
              'random_name' => $config->get('plugins.form.files.random_name', false),
              'accept' => $config->get('plugins.form.files.accept', ['image/*']),
              'limit' => $config->get('plugins.form.files.limit', 10),
-             'filesize' => $config->get('plugins.form.files.filesize', 5242880) // 5MB
+             'filesize' => $config->get('system.media.upload_limit', 0) // unlimited
             ],
             (array) $settings,
             ['name' => $post['name']]
