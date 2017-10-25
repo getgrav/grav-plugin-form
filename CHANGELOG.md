@@ -1,6 +1,8 @@
 # v2.9.4
 ## xx/xx/2017
 
+1. [](#new)
+    * Added ability to 'remember' field values in cookie between submissions [#200](https://github.com/getgrav/grav-plugin-form/pull/200)
 1. [](#improved)
     * Added back improved `filesize` option that falls back to PHP file upload limits by default [#202](https://github.com/getgrav/grav-plugin-form/issues/202)
     * Added missing file upload options into blueprints and language files
