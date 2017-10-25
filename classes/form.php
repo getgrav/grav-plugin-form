@@ -13,6 +13,8 @@ use RocketTheme\Toolbox\Event\Event;
 
 class Form extends Iterator implements \Serializable
 {
+    const BYTES_TO_MB = 1048576;
+
     /**
      * @var string
      */
@@ -377,7 +379,7 @@ class Form extends Iterator implements \Serializable
              'random_name' => $config->get('plugins.form.files.random_name', false),
              'accept' => $config->get('plugins.form.files.accept', ['image/*']),
              'limit' => $config->get('plugins.form.files.limit', 10),
-             'filesize' => $config->get('system.media.upload_limit', 0) // unlimited
+             'filesize' => $this->getMaxFilesize() / self::BYTES_TO_MB,
             ],
             (array) $settings,
             ['name' => $post['name']]
@@ -416,7 +418,7 @@ class Form extends Iterator implements \Serializable
         }
 
         // Handle file size limits
-        $settings->filesize *= 1048576; // 2^20 [MB in Bytes]
+        $settings->filesize *= self::BYTES_TO_MB; // 1024 * 1024 [MB in Bytes]
         if ($settings->filesize > 0 && $upload->file->size > $settings->filesize) {
             // json_response
             return [
@@ -646,9 +648,37 @@ class Form extends Iterator implements \Serializable
         return $files;
     }
 
+    /**
+     * Get the nonce for a form
+     *
+     * @return string
+     */
     public static function getNonce()
     {
         $action = 'form-plugin';
         return Utils::getNonce($action);
+    }
+
+    /**
+     * Get the configured max file size
+     *
+     * @param bool $bytes
+     * @return int
+     */
+    public static function getMaxFilesize($bytes = false)
+    {
+        $config = Grav::instance()['config'];
+
+        $filesize_mb = $config->get('plugins.form.files.filesize', 0) * static::BYTES_TO_MB;
+        $system_filesize = $config->get('system.media.upload_limit', 0);
+        if ($filesize_mb > $system_filesize || $filesize_mb == 0) {
+            $filesize_mb = $system_filesize;
+        }
+
+        if ($bytes) {
+            return $filesize_mb / static::BYTES_TO_MB;
+        }
+
+        return $filesize_mb;
     }
 }

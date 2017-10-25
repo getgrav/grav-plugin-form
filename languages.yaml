@@ -38,6 +38,8 @@ en:
     NO: "No"
     REFRESH_PREVENTION: "Refresh prevention"
     REFRESH_PREVENTION_HELP: "Use the form's unique ID to ensure the same form is not reprocessed when refreshing the browser"
+    FILESIZE: "Max Filesize"
+    FILESIZE_HELP: "Maximum file size allowed (in MB), 0 = Use system default"
 
 de:
   PLUGIN_FORM:
