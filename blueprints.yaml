@@ -71,8 +71,18 @@ form:
             0: PLUGIN_ADMIN.DISABLED
           validate:
             type: bool
+        files.limit:
+          type: text
+          size: x-small
+          label: PLUGIN_FORM.LIMIT
+          help: PLUGIN_FORM.LIMIT_HELP
+          default: 10
+          validate:
+            type: number
+            min: 1
         files.destination:
           type: text
+          size: large
           label: PLUGIN_FORM.DESTINATION
           help: PLUGIN_FORM.DESTINATION_HELP
           default: '@self'
@@ -95,6 +105,28 @@ form:
           validate:
             type: number
             min: 0
+        files.avoid_overwriting:
+          type: toggle
+          label: PLUGIN_FORM.AVOID_OVERWRITING
+          help: PLUGIN_FORM.AVOID_OVERWRITING_HELP
+          highlight: 0
+          default: 0
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
+        files.random_name:
+          type: toggle
+          label: PLUGIN_FORM.RANDOM_NAME
+          help: PLUGIN_FORM.RANDOM_NAME_HELP
+          highlight: 0
+          default: 0
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
 
     recaptcha:
       type: section
