@@ -2,6 +2,8 @@
 {% set toggleableChecked = field.toggleable and (originalValue is not null and originalValue is not empty) %}
 {% set isDisabledToggleable = field.toggleable and not toggleableChecked %}
 {% set value = (is_object(value) or value is null ? field.default : value) %}
+{% set cookie_name = 'forms-' ~ form.name ~ '-' ~ field.name %}
+{% set value = (is_object(value) or value is null ? (get_cookie(cookie_name) is null ? field.default : get_cookie(cookie_name)) : value) %}
 {% set errors = attribute(form.messages, field.name) %}
 
 {% block field %}
