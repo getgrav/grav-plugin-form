@@ -379,7 +379,7 @@ class Form extends Iterator implements \Serializable
              'random_name' => $config->get('plugins.form.files.random_name', false),
              'accept' => $config->get('plugins.form.files.accept', ['image/*']),
              'limit' => $config->get('plugins.form.files.limit', 10),
-             'filesize' => $this->getMaxFilesize() / self::BYTES_TO_MB,
+             'filesize' => $this->getMaxFilesize(),
             ],
             (array) $settings,
             ['name' => $post['name']]
@@ -660,12 +660,12 @@ class Form extends Iterator implements \Serializable
     }
 
     /**
-     * Get the configured max file size
+     * Get the configured max file size in bytes
      *
-     * @param bool $bytes
+     * @param bool $mbytes return size in MB
      * @return int
      */
-    public static function getMaxFilesize($bytes = false)
+    public static function getMaxFilesize($mbytes = false)
     {
         $config = Grav::instance()['config'];
 
@@ -675,10 +675,10 @@ class Form extends Iterator implements \Serializable
             $filesize_mb = $system_filesize;
         }
 
-        if ($bytes) {
-            return $filesize_mb / static::BYTES_TO_MB;
+        if ($mbytes) {
+            return $filesize_mb;
         }
 
-        return $filesize_mb;
+        return $filesize_mb  / static::BYTES_TO_MB;
     }
 }

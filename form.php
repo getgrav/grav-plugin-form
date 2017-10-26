@@ -268,7 +268,7 @@ class FormPlugin extends Plugin
         if ($this->config->get('plugins.form.built_in_css')) {
             $this->grav['assets']->addCss('plugin://form/assets/form-styles.css');
         }
-        $twig->twig_vars['form_max_filesize'] = Form::getMaxFilesize(true);
+        $twig->twig_vars['form_max_filesize'] = Form::getMaxFilesize();
         $twig->twig_vars['form_json_response'] = $this->json_response;
     }
 
