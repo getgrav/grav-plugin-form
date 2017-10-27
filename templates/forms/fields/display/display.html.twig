@@ -1,7 +1,7 @@
 {% extends "forms/field.html.twig" %}
 
 {% block input %}
-    <div class="form-display-wrapper {{ field.size }}">
+    <div class="form-display-wrapper {{ field.size }}" {% if field.id is defined %}id="{{ field.id|e }}" {% endif %}>
         {% if field.markdown %}
             {% if grav.twig.twig.filters['tu'] is defined %}
                 {{ field.content|tu|markdown|raw }}
