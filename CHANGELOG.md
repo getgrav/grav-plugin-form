@@ -1,5 +1,5 @@
-# v2.9.4
-## xx/xx/2017
+# v2.10.0
+## 10/26/2017
 
 1. [](#new)
     * Added ability to 'remember' field values in cookie between submissions [#200](https://github.com/getgrav/grav-plugin-form/pull/200)
