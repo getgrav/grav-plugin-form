@@ -6,6 +6,7 @@
 1. [](#improved)
     * Added back improved `filesize` option that falls back to PHP file upload limits by default [#202](https://github.com/getgrav/grav-plugin-form/issues/202)
     * Added missing file upload options into blueprints and language files
+    * Added the ability for a form to have an `http_response_code` and use it for `form-messages.html.twig` (requires Grav v1.3.6+)
 
 # v2.9.3
 ## 10/11/2017
