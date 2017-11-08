@@ -87,8 +87,8 @@ class Form extends Iterator implements \Serializable
 
         $this->page = $page->route();
 
-        $header            = $page->header();
-        $this->rules       = isset($header->rules) ? $header->rules : [];
+        $header = $page->header();
+        $this->rules = isset($header->rules) ? $header->rules : [];
         $this->header_data = isset($header->data) ? $header->data : [];
 
         if ($form) {
@@ -162,7 +162,7 @@ class Form extends Iterator implements \Serializable
         $items = $this->items;
         $rules = $this->rules;
 
-        $blueprint  = function() use ($name, $items, $rules) {
+        $blueprint  = function () use ($name, $items, $rules) {
             $blueprint = new Blueprint($name, ['form' => $items, 'rules' => $rules]);
             return $blueprint->load()->init();
         };
@@ -208,19 +208,18 @@ class Form extends Iterator implements \Serializable
         $items = $this->items;
         $rules = $this->rules;
 
-        $blueprint  = function() use ($name, $items, $rules) {
+        $blueprint = function () use ($name, $items, $rules) {
             $blueprint = new Blueprint($name, ['form' => $items, 'rules' => $rules]);
             return $blueprint->load()->init();
         };
 
-        $this->data   = new Data($this->header_data, $blueprint);
+        $this->data = new Data($this->header_data, $blueprint);
         $this->values = new Data();
         $this->fields = null;
         $this->fields = $this->fields();
 
         // Fire event
         $grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
-
     }
 
     protected function processFields($fields)
@@ -229,7 +228,6 @@ class Form extends Iterator implements \Serializable
 
         $return = array();
         foreach ($fields as $key => $value) {
-
             // default to text if not set
             if (!isset($value['type'])) {
                 $value['type'] = 'text';
@@ -252,7 +250,8 @@ class Form extends Iterator implements \Serializable
         return $return;
     }
 
-    public function fields() {
+    public function fields()
+    {
 
         if (is_null($this->fields)) {
             $blueprint = $this->data->blueprints();
@@ -333,7 +332,7 @@ class Form extends Iterator implements \Serializable
 
     /**
      * Get all data
-     * 
+     *
      * @return Data
      */
     public function getData()
@@ -453,7 +452,7 @@ class Form extends Iterator implements \Serializable
                 $message = $isMime ? 'The MIME type "' . $upload->file->type . '"' : 'The File Extension';
                 $errors[] = $message . ' for the file "' . $upload->file->name . '" is not an accepted.';
                 $accepted |= false;
-            }  else {
+            } else {
                 $accepted |= true;
             }
         }
@@ -462,7 +461,7 @@ class Form extends Iterator implements \Serializable
             // json_response
             return [
                 'status' => 'error',
-                'message' => implode('<br />', $errors)
+                'message' => implode('<br/>', $errors)
             ];
         }
 
@@ -470,9 +469,15 @@ class Form extends Iterator implements \Serializable
         // and initialize it if it doesn't exist
         $sessionField = base64_encode($uri);
         $flash = $session->getFlashObject('files-upload');
-        if (!$flash) { $flash = []; }
-        if (!isset($flash[$sessionField])) { $flash[$sessionField] = []; }
-        if (!isset($flash[$sessionField][$upload->field])) { $flash[$sessionField][$upload->field] = []; }
+        if (!$flash) {
+            $flash = [];
+        }
+        if (!isset($flash[$sessionField])) {
+            $flash[$sessionField] = [];
+        }
+        if (!isset($flash[$sessionField][$upload->field])) {
+            $flash[$sessionField][$upload->field] = [];
+        }
 
         // Set destination
         $destination = Folder::getRelativePath(rtrim($settings->destination, '/'));
@@ -530,7 +535,7 @@ class Form extends Iterator implements \Serializable
 
         if (isset($_POST)) {
             $this->values = new Data(isset($_POST) ? (array)$_POST : []);
-            $data         = $this->values->get('data');
+            $data = $this->values->get('data');
 
             // Add post data to form dataset
             if (!$data) {
@@ -539,7 +544,7 @@ class Form extends Iterator implements \Serializable
 
             if (method_exists('Grav\Common\Utils', 'getNonce')) {
                 if (!$this->values->get('form-nonce') || !Utils::verifyNonce($this->values->get('form-nonce'), 'form')) {
-                    $event = new Event(['form'    => $this,
+                    $event = new Event(['form' => $this,
                                         'message' => $grav['language']->translate('PLUGIN_FORM.NONCE_NOT_VALIDATED')
                     ]);
                     $grav->fireEvent('onFormValidationError', $event);
@@ -595,7 +600,6 @@ class Form extends Iterator implements \Serializable
                 }
 
                 $this->data->merge([$key => $files]);
-
             }
         }
 
@@ -605,11 +609,11 @@ class Form extends Iterator implements \Serializable
             foreach ($process as $action => $data) {
                 if (is_numeric($action)) {
                     $action = \key($data);
-                    $data   = $data[$action];
+                    $data = $data[$action];
                 }
 
                 $previousEvent = $event;
-                $event         = new Event(['form' => $this, 'action' => $action, 'params' => $data]);
+                $event = new Event(['form' => $this, 'action' => $action, 'params' => $data]);
 
                 if ($previousEvent) {
                     if (!$previousEvent->isPropagationStopped()) {
@@ -636,12 +640,13 @@ class Form extends Iterator implements \Serializable
      * @param string $key
      * @return object a new Object with a normalized list of files
      */
-    protected function normalizeFiles($data, $key = '') {
+    protected function normalizeFiles($data, $key = '')
+    {
         $files = new \stdClass();
         $files->field = $key;
         $files->file = new \stdClass();
 
-        foreach($data as $fieldName => $fieldValue) {
+        foreach ($data as $fieldName => $fieldValue) {
             // Since Files Upload are always happening via Ajax
             // we are not interested in handling `multiple="true"`
             // because they are always handled one at a time.
@@ -694,7 +699,5 @@ class Form extends Iterator implements \Serializable
             $this->response_code = $code;
         }
         return $this->response_code;
-
     }
-
 }
