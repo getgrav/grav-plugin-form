@@ -3,6 +3,7 @@ namespace Grav\Plugin;
 
 use Grav\Common\Data\Data;
 use Grav\Common\Data\Blueprint;
+use Grav\Common\Data\ValidationException;
 use Grav\Common\Filesystem\Folder;
 use Grav\Common\Grav;
 use Grav\Common\Inflector;
@@ -570,8 +571,14 @@ class Form extends Iterator implements \Serializable
             $this->data->filter();
 
             $grav->fireEvent('onFormValidationProcessed', new Event(['form' => $this]));
-        } catch (\RuntimeException $e) {
+        } catch (ValidationException $e) {
             $event = new Event(['form' => $this, 'message' => $e->getMessage(), 'messages' => $e->getMessages()]);
+            $grav->fireEvent('onFormValidationError', $event);
+            if ($event->isPropagationStopped()) {
+                return;
+            }
+        } catch (\RuntimeException $e) {
+            $event = new Event(['form' => $this, 'message' => $e->getMessage(), 'messages' => []]);
             $grav->fireEvent('onFormValidationError', $event);
             if ($event->isPropagationStopped()) {
                 return;
