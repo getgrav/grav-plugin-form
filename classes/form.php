@@ -3,6 +3,7 @@ namespace Grav\Plugin;
 
 use Grav\Common\Data\Data;
 use Grav\Common\Data\Blueprint;
+use Grav\Common\Data\ValidationException;
 use Grav\Common\Filesystem\Folder;
 use Grav\Common\Grav;
 use Grav\Common\Inflector;
@@ -78,7 +79,7 @@ class Form extends Iterator implements \Serializable
      * Create form for the given page.
      *
      * @param Page $page
-     * @param null $name
+     * @param string|int|null $name
      * @param null $form
      */
     public function __construct(Page $page, $name = null, $form = null)
@@ -215,6 +216,7 @@ class Form extends Iterator implements \Serializable
 
         $this->data   = new Data($this->header_data, $blueprint);
         $this->values = new Data();
+        // Reset fields to null before calling fields() -- Do not remove:
         $this->fields = null;
         $this->fields = $this->fields();
 
@@ -236,7 +238,7 @@ class Form extends Iterator implements \Serializable
             }
 
             // manually merging the field types
-            if ($types !== null && key_exists($value['type'], $types)) {
+            if ($types !== null && array_key_exists($value['type'], $types)) {
                 $value += $types[$value['type']];
             }
 
@@ -254,7 +256,7 @@ class Form extends Iterator implements \Serializable
 
     public function fields() {
 
-        if (is_null($this->fields)) {
+        if (null === $this->fields) {
             $blueprint = $this->data->blueprints();
 
             if (method_exists($blueprint, 'load')) {
@@ -308,8 +310,6 @@ class Form extends Iterator implements \Serializable
      * Set value of given variable in the values array
      *
      * @param string $name
-     *
-     * @return mixed
      */
     public function setValue($name = null, $value = '')
     {
@@ -345,8 +345,9 @@ class Form extends Iterator implements \Serializable
      * Set value of given variable in the data array
      *
      * @param string $name
+     * @param string $value
      *
-     * @return mixed
+     * @return bool
      */
     public function setData($name = null, $value = '')
     {
@@ -400,28 +401,28 @@ class Form extends Iterator implements \Serializable
                 'status' => 'error',
                 'message' => sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_UPLOAD', null, true), $upload->file->name, $this->upload_errors[$upload->file->error])
             ];
-        } else {
-            // Remove the error object to avoid storing it
-            unset($upload->file->error);
-
-            // we need to move the file at this stage or else
-            // it won't be available upon save later on
-            // since php removes it from the upload location
-            $tmp_dir = $grav['locator']->findResource('tmp://', true, true);
-            $tmp_file = $upload->file->tmp_name;
-            $tmp = $tmp_dir . '/uploaded-files/' . basename($tmp_file);
-
-            Folder::create(dirname($tmp));
-            if (!move_uploaded_file($tmp_file, $tmp)) {
-                // json_response
-                return [
-                    'status' => 'error',
-                    'message' => sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '', $tmp)
-                ];
-            }
-
-            $upload->file->tmp_name = $tmp;
         }
+
+        // Remove the error object to avoid storing it
+        unset($upload->file->error);
+
+        // we need to move the file at this stage or else
+        // it won't be available upon save later on
+        // since php removes it from the upload location
+        $tmp_dir = $grav['locator']->findResource('tmp://', true, true);
+        $tmp_file = $upload->file->tmp_name;
+        $tmp = $tmp_dir . '/uploaded-files/' . basename($tmp_file);
+
+        Folder::create(dirname($tmp));
+        if (!move_uploaded_file($tmp_file, $tmp)) {
+            // json_response
+            return [
+                'status' => 'error',
+                'message' => sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '', $tmp)
+            ];
+        }
+
+        $upload->file->tmp_name = $tmp;
 
         // Handle file size limits
         $settings->filesize *= self::BYTES_TO_MB; // 1024 * 1024 [MB in Bytes]
@@ -440,7 +441,7 @@ class Form extends Iterator implements \Serializable
         $errors = [];
         foreach ((array) $settings->accept as $type) {
             // Force acceptance of any file when star notation
-            if ($type == '*') {
+            if ($type === '*') {
                 $accepted = true;
                 break;
             }
@@ -557,7 +558,7 @@ class Form extends Iterator implements \Serializable
                         unset($data[$i]);
                     }
                 }
-                if ($field['type'] == 'checkbox') {
+                if ($field['type'] === 'checkbox') {
                     $data[$name] = isset($data[$name]) ? true : false;
                 }
                 $i++;
@@ -572,8 +573,14 @@ class Form extends Iterator implements \Serializable
             $this->data->filter();
 
             $grav->fireEvent('onFormValidationProcessed', new Event(['form' => $this]));
-        } catch (\RuntimeException $e) {
+        } catch (ValidationException $e) {
             $event = new Event(['form' => $this, 'message' => $e->getMessage(), 'messages' => $e->getMessages()]);
+            $grav->fireEvent('onFormValidationError', $event);
+            if ($event->isPropagationStopped()) {
+                return;
+            }
+        } catch (\RuntimeException $e) {
+            $event = new Event(['form' => $this, 'message' => $e->getMessage(), 'messages' => []]);
             $grav->fireEvent('onFormValidationError', $event);
             if ($event->isPropagationStopped()) {
                 return;
@@ -675,9 +682,9 @@ class Form extends Iterator implements \Serializable
     {
         $config = Grav::instance()['config'];
 
-        $filesize_mb = $config->get('plugins.form.files.filesize', 0) * static::BYTES_TO_MB;
+        $filesize_mb = (float)$config->get('plugins.form.files.filesize', 0) * static::BYTES_TO_MB;
         $system_filesize = $config->get('system.media.upload_limit', 0);
-        if ($filesize_mb > $system_filesize || $filesize_mb == 0) {
+        if ($filesize_mb > $system_filesize || $filesize_mb === 0) {
             $filesize_mb = $system_filesize;
         }
 

@@ -2,6 +2,7 @@
 namespace Grav\Plugin;
 
 use Grav\Common\Data\ValidationException;
+use Grav\Common\Filesystem\Folder;
 use Grav\Common\Page\Page;
 use Grav\Common\Page\Pages;
 use Grav\Common\Plugin;
@@ -193,7 +194,7 @@ class FormPlugin extends Plugin
             // Clear flash objects for previously uploaded files
             // whenever the user switches page / reloads
             // ignoring any JSON / extension call
-            if (is_null($this->grav['uri']->extension()) && !$submitted) {
+            if (null === $this->grav['uri']->extension() && !$submitted) {
                 // Discard any previously uploaded files session.
                 // and if there were any uploaded file, remove them from the filesystem
                 if ($flash = $this->grav['session']->getFlashObject('files-upload')) {
@@ -234,7 +235,7 @@ class FormPlugin extends Plugin
      */
     public function onTwigVariables(Event $event =  null)
     {
-        if ($event && isset($event['page'])) {
+        if ($event !== null && isset($event['page'])) {
             $page = $event['page'];
         } else {
             $page = $this->grav['page'];
@@ -351,7 +352,7 @@ class FormPlugin extends Plugin
                 break;
             case 'display':
                 $route = (string)$params;
-                if (!$route || $route[0] != '/') {
+                if (!$route || $route[0] !== '/') {
                     /** @var Uri $uri */
                     $uri = $this->grav['uri'];
                     $route = rtrim($uri->route(), '/'). '/' . ($route ?: '');
@@ -405,18 +406,18 @@ class FormPlugin extends Plugin
 
                 $file = File::instance($fullFileName);
 
-                if ($operation == 'create') {
+                if ($operation === 'create') {
                     $body = $twig->processString(!empty($params['body']) ? $params['body'] : '{% include "forms/data.txt.twig" %}',
                         $vars);
                     $file->save($body);
-                } elseif ($operation == 'add') {
+                } elseif ($operation === 'add') {
                     if (!empty($params['body'])) {
                         // use body similar to 'create' action and append to file as a log
                         $body = $twig->processString($params['body'], $vars);
 
                         // create folder if it doesn't exist
                         if (!file_exists($dir)) {
-                            mkdir($dir);
+                            Folder::create($dir);
                         }
 
                         // append data to existing file
@@ -426,7 +427,7 @@ class FormPlugin extends Plugin
                         $vars = $vars['form']->value()->toArray();
 
                         foreach ($form->fields as $field) {
-                            if (isset($field['process']) && isset($field['process']['ignore']) && $field['process']['ignore']) {
+                            if (!empty($field['process']['ignore'])) {
                                 unset($vars[$field['name']]);
                             }
                         }
@@ -459,7 +460,7 @@ class FormPlugin extends Plugin
     {
         // special check for honeypot field
         foreach ($event['form']->fields() as $field) {
-            if ($field['type'] == 'honeypot' && !empty($event['form']->value($field['name']))) {
+            if ($field['type'] === 'honeypot' && !empty($event['form']->value($field['name']))) {
                 throw new ValidationException('Are you a bot?');
             }
         }
@@ -538,16 +539,12 @@ class FormPlugin extends Plugin
      * - fillWithCurrentDateTime
      *
      * @param Form $form
-     *
-     * @return bool
      */
     protected function process($form)
     {
         foreach ($form->fields as $field) {
-            if (isset($field['process'])) {
-                if (isset($field['process']['fillWithCurrentDateTime']) && $field['process']['fillWithCurrentDateTime']) {
-                    $form->setData($field['name'], gmdate('D, d M Y H:i:s', time()));
-                }
+            if (!empty($field['process']['fillWithCurrentDateTime'])) {
+                $form->setData($field['name'], gmdate('D, d M Y H:i:s', time()));
             }
         }
     }
@@ -562,7 +559,7 @@ class FormPlugin extends Plugin
      */
     private function udate($format = 'u', $utimestamp = null)
     {
-        if (is_null($utimestamp)) {
+        if (null === $utimestamp) {
             $utimestamp = microtime(true);
         }
 
@@ -590,7 +587,7 @@ class FormPlugin extends Plugin
     /**
      * function to get a specific form
      *
-     * @param null|array $data optional form `name`
+     * @param null|array|string $data optional form `name`
      *
      * @return null|Form
      */
@@ -635,9 +632,7 @@ class FormPlugin extends Plugin
         }
 
         // return the form you are looking for if available
-        $form = $this->getFormByName($form_name);
-
-        return $form;
+        return $this->getFormByName($form_name);
     }
 
     /**
@@ -661,8 +656,7 @@ class FormPlugin extends Plugin
     protected function getFormByName($form_name)
     {
         if (array_key_exists($form_name, $this->flat_forms)) {
-            $form = $this->flat_forms[$form_name];
-            return $form;
+            return $this->flat_forms[$form_name];
         }
         return null;
     }
@@ -703,7 +697,7 @@ class FormPlugin extends Plugin
 
     protected function form()
     {
-        if (!isset($this->form)) {
+        if (null === $this->form) {
             $current_form_name = $this->getFormName($this->grav['page']);
             $this->form = $this->getFormByName($current_form_name);
         }
