@@ -216,6 +216,8 @@ class Form extends Iterator implements \Serializable
 
         $this->data   = new Data($this->header_data, $blueprint);
         $this->values = new Data();
+        // Reset fields to null before calling fields() -- Do not remove:
+        $this->fields = null;
         $this->fields = $this->fields();
 
         // Fire event
