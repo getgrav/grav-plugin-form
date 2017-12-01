@@ -1,3 +1,17 @@
+# v2.10.1
+## mm/dd/2017
+
+1. [](#improved)
+    * Added Dutch Translation [#207](https://github.com/getgrav/grav-plugin-form/pull/207)
+    * Improved both HTML and JSON error output by utilizing `form.status`
+    * Code Cleanup
+1. [](#bugfix)
+    * Fix AJAX response message and wrong status [#211](https://github.com/getgrav/grav-plugin-form/pull/211)
+    * Escaped YAML to form save action to prevent parsing errors [#206](https://github.com/getgrav/grav-plugin-form/pull/206)
+    * Fixed RU translations [#204](https://github.com/getgrav/grav-plugin-form/pull/204)
+    * Catch ValidationException to avoid potential fatal error
+    * Fixed regression issue on reset fields
+
 # v2.10.0
 ## 10/26/2017
 
