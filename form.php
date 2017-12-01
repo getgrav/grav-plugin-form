@@ -43,8 +43,8 @@ class FormPlugin extends Plugin
     public static function getSubscribedEvents()
     {
         return [
-            'onPluginsInitialized'   => ['onPluginsInitialized', 0],
-            'onTwigTemplatePaths'    => ['onTwigTemplatePaths', 0]
+            'onPluginsInitialized' => ['onPluginsInitialized', 0],
+            'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0]
         ];
     }
 
@@ -57,17 +57,17 @@ class FormPlugin extends Plugin
 
         if ($this->isAdmin()) {
             $this->enable([
-                'onPagesInitialized'     => ['onPagesInitialized', 0]
+                'onPagesInitialized' => ['onPagesInitialized', 0]
             ]);
             return;
         }
 
         $this->enable([
-            'onPageProcessed'           => ['onPageProcessed', 0],
-            'onPagesInitialized'        => ['onPagesInitialized', 0],
-            'onTwigInitialized'         => ['onTwigInitialized', 0],
-            'onTwigPageVariables'       => ['onTwigVariables', 0],
-            'onTwigSiteVariables'       => ['onTwigVariables', 0],
+            'onPageProcessed' => ['onPageProcessed', 0],
+            'onPagesInitialized' => ['onPagesInitialized', 0],
+            'onTwigInitialized' => ['onTwigInitialized', 0],
+            'onTwigPageVariables' => ['onTwigVariables', 0],
+            'onTwigSiteVariables' => ['onTwigVariables', 0],
             'onFormValidationProcessed' => ['onFormValidationProcessed', 0],
         ]);
     }
@@ -94,7 +94,6 @@ class FormPlugin extends Plugin
 
         if ((isset($header->forms) && is_array($header->forms)) ||
             (isset($header->form) && is_array($header->form))) {
-
             $page_forms = [];
 
             // Force never_cache_twig if modular form
@@ -118,7 +117,6 @@ class FormPlugin extends Plugin
                 } else {
                     $this->forms[$page_route] = $form_array;
                 }
-
             }
 
             $this->recache_forms = true;
@@ -149,7 +147,6 @@ class FormPlugin extends Plugin
 
         // No forms in pages, try the current one in the page
         if (empty($this->forms)) {
-
             $page = $this->grav['page'];
             if (!$page) {
                 return;
@@ -160,7 +157,6 @@ class FormPlugin extends Plugin
             if (isset($header->form) && is_array($header->form)) {
                 $this->form = new Form($page);
             }
-
         } else {
             // Regenerate list of flat_forms if not already populated
             if (empty($this->flat_forms)) {
@@ -233,7 +229,7 @@ class FormPlugin extends Plugin
      *
      * @param Event $event
      */
-    public function onTwigVariables(Event $event =  null)
+    public function onTwigVariables(Event $event = null)
     {
         if ($event !== null && isset($event['page'])) {
             $page = $event['page'];
@@ -290,7 +286,7 @@ class FormPlugin extends Plugin
             case 'captcha':
                 if (isset($params['recaptcha_secret'])) {
                     $recaptchaSecret = $params['recaptcha_secret'];
-                } else if (isset($params['recatpcha_secret'])) {
+                } elseif (isset($params['recatpcha_secret'])) {
                     // Included for backwards compatibility with typo (issue #51)
                     $recaptchaSecret = $params['recatpcha_secret'];
                 } else {
@@ -376,7 +372,7 @@ class FormPlugin extends Plugin
             case 'remember':
                 foreach ($params as $remember_field) {
                     $field_cookie = 'forms-'.$form['name'].'-'.$remember_field;
-                    setcookie($field_cookie, $form->value($remember_field),  time()+60*60*24*60);
+                    setcookie($field_cookie, $form->value($remember_field), time()+60*60*24*60);
                 }
                 break;
             case 'save':
@@ -445,7 +441,6 @@ class FormPlugin extends Plugin
 
                         $file->save(Yaml::dump($data));
                     }
-
                 }
                 break;
         }
@@ -507,10 +502,10 @@ class FormPlugin extends Plugin
     public function getFormFieldTypes()
     {
         return [
-            'column'   => [
+            'column' => [
                 'input@' => false
             ],
-            'columns'  => [
+            'columns' => [
                 'input@' => false
             ],
             'fieldset' => [
@@ -522,7 +517,7 @@ class FormPlugin extends Plugin
             'display' => [
                 'input@' => false
             ],
-            'spacer'  => [
+            'spacer' => [
                 'input@' => false
             ],
             'captcha' => [
@@ -609,7 +604,6 @@ class FormPlugin extends Plugin
 
         // if no form name, use the first form found in the page
         if (!$form_name) {
-
             // If page route not provided, use the current page
             if (!$page_route) {
                 // Get page route
@@ -667,7 +661,6 @@ class FormPlugin extends Plugin
         $refresh_prevention = null;
 
         if ($status && $this->form()) {
-
             // Set page template if passed by form
             if (isset($this->form->template)) {
                 $this->grav['page']->template($this->form->template);
@@ -682,12 +675,13 @@ class FormPlugin extends Plugin
             $unique_form_id = filter_input(INPUT_POST, '__unique_form_id__', FILTER_SANITIZE_STRING);
 
             if ($refresh_prevention && $unique_form_id) {
-                if(($this->grav['session']->unique_form_id != $unique_form_id)) {
+                if (($this->grav['session']->unique_form_id != $unique_form_id)) {
                     $this->grav['session']->unique_form_id = $unique_form_id;
                 } else {
                     $status = false;
                     $this->form->message = $this->grav['language']->translate('PLUGIN_FORM.FORM_ALREADY_SUBMITTED');
                     $this->form->message_color = 'red';
+                    $this->form->status = 'error';
                 }
             }
         }
