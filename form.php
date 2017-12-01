@@ -476,7 +476,6 @@ class FormPlugin extends Plugin
     {
         $form = $event['form'];
         if (isset($event['message'])) {
-            $form->message_color = 'red';
             $form->status = 'error';
             $form->message = $event['message'];
             $form->messages = $event['messages'];
@@ -687,7 +686,6 @@ class FormPlugin extends Plugin
                 } else {
                     $status = false;
                     $this->form->message = $this->grav['language']->translate('PLUGIN_FORM.FORM_ALREADY_SUBMITTED');
-                    $this->form->message_color = 'red';
                     $this->form->status = 'error';
                 }
             }
