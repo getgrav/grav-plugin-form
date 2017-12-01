@@ -543,16 +543,16 @@ class Form extends Iterator implements \Serializable
                 $data = $this->values->toArray();
             }
 
-            if (method_exists('Grav\Common\Utils', 'getNonce')) {
-                if (!$this->values->get('form-nonce') || !Utils::verifyNonce($this->values->get('form-nonce'), 'form')) {
-                    $event = new Event(['form' => $this,
-                                        'message' => $grav['language']->translate('PLUGIN_FORM.NONCE_NOT_VALIDATED')
-                    ]);
-                    $grav->fireEvent('onFormValidationError', $event);
 
-                    return;
-                }
+            if (!$this->values->get('form-nonce') || !Utils::verifyNonce($this->values->get('form-nonce'), 'form')) {
+                $event = new Event(['form' => $this,
+                                    'message' => $grav['language']->translate('PLUGIN_FORM.NONCE_NOT_VALIDATED')
+                ]);
+                $grav->fireEvent('onFormValidationError', $event);
+
+                return;
             }
+
 
             $i = 0;
             foreach ($this->items['fields'] as $key => $field) {
