@@ -214,6 +214,12 @@ class FormPlugin extends Plugin
         $this->grav['twig']->twig()->addFunction(
             new \Twig_SimpleFunction('forms', [$this, 'getForm'])
         );
+
+        $this->grav['twig']->twig()->getExtension('Twig_Extension_Core')->setEscaper('yaml', function($twig, $string, $charset) {
+            return Yaml::dump($string);
+            }
+        );
+
     }
 
     /**
