@@ -209,7 +209,7 @@ class Form extends Iterator implements \Serializable
         $items = $this->items;
         $rules = $this->rules;
 
-        $blueprint = function () use ($name, $items, $rules) {
+        $blueprint = function() use ($name, $items, $rules) {
             $blueprint = new Blueprint($name, ['form' => $items, 'rules' => $rules]);
             return $blueprint->load()->init();
         };
