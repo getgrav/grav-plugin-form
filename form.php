@@ -111,16 +111,32 @@ class FormPlugin extends Plugin
             // Store the page forms in the forms instance
             foreach ($page_forms as $name => $page_form) {
                 $form = new Form($page, $name, $page_form);
-                $form_array = [$form['name'] => $form];
-                if (array_key_exists($page_route, $this->forms)) {
-                    $this->forms[$page_route] = array_merge($this->forms[$page_route], $form_array);
-                } else {
-                    $this->forms[$page_route] = $form_array;
-                }
+                $this->addForm($page_route, $form);
             }
-
-            $this->recache_forms = true;
         }
+    }
+
+    /**
+     * Add a form to the forms plugin
+     *
+     * @param $page_route
+     * @param $form
+     */
+    public function addForm($page_route, $form)
+    {
+
+        $form_array = [$form['name'] => $form];
+        if (array_key_exists($page_route, $this->forms)) {
+            if (!isset($this->form[$page_route][$form['name']])) {
+                $this->forms[$page_route] = array_merge($this->forms[$page_route], $form_array);
+            }
+        } else {
+            $this->forms[$page_route] = $form_array;
+
+        }
+
+        $this->flattenForms();
+        $this->recache_forms = true;
     }
 
     /**
@@ -137,36 +153,17 @@ class FormPlugin extends Plugin
 
         // Only store the forms if they are an array
         if (is_array($forms)) {
-            $this->forms = $forms;
+            $this->forms = array_merge($this->forms, $forms);
         }
 
         // Only store the flat_forms if they are an array
         if (is_array($flat_forms)) {
-            $this->flat_forms = $flat_forms;
+            $this->flat_forms = array_merge($this->flat_forms, $flat_forms);
         }
 
-        // No forms in pages, try the current one in the page
-        if (empty($this->forms)) {
-            $page = $this->grav['page'];
-            if (!$page) {
-                return;
-            }
-
-            // Create form from page
-            $header = $page->header();
-            if (isset($header->form) && is_array($header->form)) {
-                $this->form = new Form($page);
-            }
-        } else {
-            // Regenerate list of flat_forms if not already populated
-            if (empty($this->flat_forms)) {
-                $this->flat_forms = Utils::arrayFlatten($this->forms);
-            }
-
-            // Save the current state of the forms to cache
-            if ($this->recache_forms) {
-                $this->grav['cache']->save($cache_id, [$this->forms, $this->flat_forms]);
-            }
+        // Save the current state of the forms to cache
+        if ($this->recache_forms) {
+            $this->grav['cache']->save($cache_id, [$this->forms, $this->flat_forms]);
         }
 
         // Enable form events if there's a POST
@@ -243,29 +240,10 @@ class FormPlugin extends Plugin
             $page = $this->grav['page'];
         }
 
-        $header = $page->header();
-
-        // get route to calculated page
-        $page_route = $page->route();
-        // get route to current page
-        $current_page_route = $this->getCurrentPageRoute();
-        $found_forms = [];
-
         $twig = $this->grav['twig'];
 
         if (!isset($twig->twig_vars['form'])) {
-            if (isset($this->form)) {
-                $twig->twig_vars['form'] = $this->form;
-            } else {
-                if (isset($this->forms[$page_route])) {
-                    $found_forms = $this->forms[$page_route];
-                } elseif (isset($this->forms[$current_page_route])) {
-                    $found_forms = $this->forms[$current_page_route];
-                } elseif (isset($header->form)) {
-                    $found_forms = [new Form($page)];
-                }
-                $twig->twig_vars['form'] = array_shift($found_forms);
-            }
+            $twig->twig_vars['form'] = $this->form($page);
         }
 
         if ($this->config->get('plugins.form.built_in_css')) {
@@ -279,6 +257,7 @@ class FormPlugin extends Plugin
      * Handle form processing instructions.
      *
      * @param Event $event
+     * @throws \Exception
      */
     public function onFormProcessed(Event $event)
     {
@@ -471,6 +450,7 @@ class FormPlugin extends Plugin
      * Handle form validation error
      *
      * @param  Event $event An event object
+     * @throws \Exception
      */
     public function onFormValidationError(Event $event)
     {
@@ -661,6 +641,11 @@ class FormPlugin extends Plugin
         return null;
     }
 
+    /**
+     * Determine if the page has a form submission that should be processed
+     *
+     * @return bool
+     */
     protected function shouldProcessForm()
     {
         $status = isset($_POST) && isset($_POST['form-nonce']);
@@ -694,11 +679,49 @@ class FormPlugin extends Plugin
         return $status;
     }
 
-    protected function form()
+    /**
+     * Flatten the forms array into something that can be more easily searched
+     */
+    protected function flattenForms()
     {
+        $this->flat_forms = Utils::arrayFlatten($this->forms);
+    }
+
+    /**
+     * Get the current form, should already be processed but can get it directly from the page if necessary
+     *
+     * @param null $page
+     * @return Form|mixed
+     */
+    protected function form($page = null)
+    {
+        // Regenerate list of flat_forms if not already populated
+        if (empty($this->flat_forms)) {
+            $this->flattenForms();
+        }
+
         if (null === $this->form) {
             $current_form_name = $this->getFormName($this->grav['page']);
             $this->form = $this->getFormByName($current_form_name);
+        }
+
+        // last attempt using current page's form
+        if (null == $this->form) {
+
+            // try to get the page if possible
+            if ($page == null) {
+                $page = $this->grav['page'];
+            }
+
+            if ($page) {
+                $header = $page->header();
+
+                if (isset($header->form)) {
+                    $this->form = new Form($page);
+                }
+
+            }
+
         }
         return $this->form;
     }
