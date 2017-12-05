@@ -1,6 +1,8 @@
 # v2.10.1
 ## mm/dd/2017
 
+1. [](#new)
+    * Added ability to set `novalidate: true` on form definition to turn off all HTML5 form validation
 1. [](#improved)
     * Improved logic to handle dynamically added forms to be more reliable
     * Added Dutch Translation [#207](https://github.com/getgrav/grav-plugin-form/pull/207)
