@@ -395,36 +395,20 @@ class Form extends Iterator implements \Serializable
             ];
         }
 
+        // Handle bad filenames.
+        $filename = $upload->file->name;
+        if (strtr($filename, "\t\n\r\0\x0b", '_____') !== $filename || rtrim($filename, ". ") !== $filename || preg_match('|\.php|', $filename)) {
+            $this->admin->json_response = [
+                'status'  => 'error',
+                'message' => sprintf($this->admin->translate('PLUGIN_ADMIN.FILEUPLOAD_UNABLE_TO_UPLOAD', null),
+                    $filename, 'Bad filename')
+            ];
+
+            return false;
+        }
+
         // Remove the error object to avoid storing it
         unset($upload->file->error);
-
-        // we need to move the file at this stage or else
-        // it won't be available upon save later on
-        // since php removes it from the upload location
-        $tmp_dir = $grav['locator']->findResource('tmp://', true, true);
-        $tmp_file = $upload->file->tmp_name;
-        $tmp = $tmp_dir . '/uploaded-files/' . basename($tmp_file);
-
-        Folder::create(dirname($tmp));
-        if (!move_uploaded_file($tmp_file, $tmp)) {
-            // json_response
-            return [
-                'status' => 'error',
-                'message' => sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '', $tmp)
-            ];
-        }
-
-        $upload->file->tmp_name = $tmp;
-
-        // Handle file size limits
-        $settings->filesize *= self::BYTES_TO_MB; // 1024 * 1024 [MB in Bytes]
-        if ($settings->filesize > 0 && $upload->file->size > $settings->filesize) {
-            // json_response
-            return [
-                'status'  => 'error',
-                'message' => $grav['language']->translate('PLUGIN_FORM.EXCEEDED_GRAV_FILESIZE_LIMIT')
-            ];
-        }
 
 
         // Handle Accepted file types
@@ -458,6 +442,36 @@ class Form extends Iterator implements \Serializable
                 'message' => implode('<br/>', $errors)
             ];
         }
+
+
+        // Handle file size limits
+        $settings->filesize *= self::BYTES_TO_MB; // 1024 * 1024 [MB in Bytes]
+        if ($settings->filesize > 0 && $upload->file->size > $settings->filesize) {
+            // json_response
+            return [
+                'status'  => 'error',
+                'message' => $grav['language']->translate('PLUGIN_FORM.EXCEEDED_GRAV_FILESIZE_LIMIT')
+            ];
+        }
+
+
+        // we need to move the file at this stage or else
+        // it won't be available upon save later on
+        // since php removes it from the upload location
+        $tmp_dir = $grav['locator']->findResource('tmp://', true, true);
+        $tmp_file = $upload->file->tmp_name;
+        $tmp = $tmp_dir . '/uploaded-files/' . basename($tmp_file);
+
+        Folder::create(dirname($tmp));
+        if (!move_uploaded_file($tmp_file, $tmp)) {
+            // json_response
+            return [
+                'status' => 'error',
+                'message' => sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '', $tmp)
+            ];
+        }
+
+        $upload->file->tmp_name = $tmp;
 
         // Retrieve the current session of the uploaded files for the field
         // and initialize it if it doesn't exist

@@ -17,6 +17,7 @@
     * Catch ValidationException to avoid potential fatal error
     * Fixed regression issue on reset fields
     * Removed `required` attribute in individual checkboxes as it forces all to be checked
+    * Security fix to ensure file uploads are not manipulated mid-post - thnx @FLH!
 
 # v2.10.0
 ## 10/26/2017
