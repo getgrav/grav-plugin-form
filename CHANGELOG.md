@@ -16,6 +16,7 @@
     * Fixed validation fail not setting status to `error` [#209](https://github.com/getgrav/grav-plugin-form/issues/209)
     * Catch ValidationException to avoid potential fatal error
     * Fixed regression issue on reset fields
+    * Removed `required` attribute in individual checkboxes as it forces all to be checked
 
 # v2.10.0
 ## 10/26/2017
