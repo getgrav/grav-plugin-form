@@ -538,6 +538,7 @@ class Form extends Iterator implements \Serializable
 
 
             if (!$this->values->get('form-nonce') || !Utils::verifyNonce($this->values->get('form-nonce'), 'form')) {
+                $this->status = 'error';
                 $event = new Event(['form' => $this,
                                     'message' => $grav['language']->translate('PLUGIN_FORM.NONCE_NOT_VALIDATED')
                 ]);
@@ -572,12 +573,14 @@ class Form extends Iterator implements \Serializable
 
             $grav->fireEvent('onFormValidationProcessed', new Event(['form' => $this]));
         } catch (ValidationException $e) {
+            $this->status = 'error';
             $event = new Event(['form' => $this, 'message' => $e->getMessage(), 'messages' => $e->getMessages()]);
             $grav->fireEvent('onFormValidationError', $event);
             if ($event->isPropagationStopped()) {
                 return;
             }
         } catch (\RuntimeException $e) {
+            $this->status = 'error';
             $event = new Event(['form' => $this, 'message' => $e->getMessage(), 'messages' => []]);
             $grav->fireEvent('onFormValidationError', $event);
             if ($event->isPropagationStopped()) {

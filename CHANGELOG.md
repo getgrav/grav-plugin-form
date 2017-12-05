@@ -10,6 +10,8 @@
     * Fix AJAX response message and wrong status [#211](https://github.com/getgrav/grav-plugin-form/pull/211)
     * Escaped YAML to form save action to prevent parsing errors [#206](https://github.com/getgrav/grav-plugin-form/pull/206)
     * Fixed RU translations [#204](https://github.com/getgrav/grav-plugin-form/pull/204)
+    * Fixed nonce check fail not setting status to `error` [#213](https://github.com/getgrav/grav-plugin-form/issues/213)
+    * Fixed validation fail not setting status to `error` [#209](https://github.com/getgrav/grav-plugin-form/issues/209)
     * Catch ValidationException to avoid potential fatal error
     * Fixed regression issue on reset fields
 
