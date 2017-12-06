@@ -1,3 +1,24 @@
+# v2.11.0
+## mm/dd/2017
+
+1. [](#new)
+    * Added ability to set `novalidate: true` on form definition to turn off all HTML5 form validation
+1. [](#improved)
+    * Improved logic to handle dynamically added forms to be more reliable
+    * Added Dutch Translation [#207](https://github.com/getgrav/grav-plugin-form/pull/207)
+    * Improved both HTML and JSON error output by utilizing `form.status`
+    * Code Cleanup
+1. [](#bugfix)
+    * Fix AJAX response message and wrong status [#211](https://github.com/getgrav/grav-plugin-form/pull/211)
+    * Escaped YAML to form save action to prevent parsing errors [#206](https://github.com/getgrav/grav-plugin-form/pull/206)
+    * Fixed RU translations [#204](https://github.com/getgrav/grav-plugin-form/pull/204)
+    * Fixed nonce check fail not setting status to `error` [#213](https://github.com/getgrav/grav-plugin-form/issues/213)
+    * Fixed validation fail not setting status to `error` [#209](https://github.com/getgrav/grav-plugin-form/issues/209)
+    * Catch ValidationException to avoid potential fatal error
+    * Fixed regression issue on reset fields
+    * Removed `required` attribute in individual checkboxes as it forces all to be checked
+    * Security fix to ensure file uploads are not manipulated mid-post - thnx @FLH!
+
 # v2.10.0
 ## 10/26/2017
 
@@ -6,6 +27,7 @@
 1. [](#improved)
     * Added back improved `filesize` option that falls back to PHP file upload limits by default [#202](https://github.com/getgrav/grav-plugin-form/issues/202)
     * Added missing file upload options into blueprints and language files
+    * Added the ability for a form to have an `http_response_code` and use it for `form-messages.html.twig` (requires Grav v1.3.6+)
 
 # v2.9.3
 ## 10/11/2017

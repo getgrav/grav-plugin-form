@@ -1,5 +1,5 @@
 {% if form.message %}
+    {% set status_mapping = {'success':'green', 'error': 'red', 'warning': 'yellow'} %}
     {% set message = form.inline_errors and form.messages ? "FORM.VALIDATION_FAIL"|t : form.message %}
-
-    <div class="alert notices {{ form.message_color ?: 'green' }}"><p>{{ message|raw }}</p></div>
+    <div class="notices {{ form.status }} {{ status_mapping[form.status] ?: 'green' }}"><p>{{ message|raw }}</p></div>
 {% endif %}

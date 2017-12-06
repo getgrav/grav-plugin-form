@@ -29,7 +29,7 @@
                    {% if checked %}checked="checked"{% endif %}
                    {% if field.classes is defined %}class="{{ field.classes }}" {% endif %}
                    {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
-                   {% if field.validate.required %}required="required"{% endif %}
+
             >
             <label style="display: inline" for="{{ id|e }}">
                 {% if help %}

@@ -3,7 +3,7 @@
     {%- set input = attribute(field, "input@") %}
         {%- if input is null or input == true %}
         {%- set value = form.value(field.name ?? index) %}
-        {{- field.name ?? index }}: {{ string((value is iterable ? value|json_encode : value)) ~ "\r\n" }}
+        {{- field.name ?? index }}: {{ string(value is iterable ? value|json_encode : value|escape('yaml')) ~ "\r\n" }}
     {%- else %}
         {%- if field.fields %}
         {{- _self.render_field(form, field.fields) }}
