@@ -57,7 +57,7 @@
 
 
     {% set settings = {name: field.name, paramName: (scope ~ field.name)|fieldName ~ (files.multiple ? '[]' : ''), limit: limit, filesize: form_max_filesize, accept: files.accept} %}
-    <div class="form-input-wrapper dropzone files-upload form-input-file {{ field.size }}" data-grav-file-settings="{{ settings|json_encode|e('html_attr') }}">
+    <div class="{{ form_field_wrapper_classes ?: 'form-input-wrapper' }} dropzone files-upload form-input-file {{ field.size }}" data-grav-file-settings="{{ settings|json_encode|e('html_attr') }}">
         <input
                 {# required attribute structures #}
                 {% block input_attributes %}

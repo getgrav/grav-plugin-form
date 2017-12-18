@@ -21,7 +21,7 @@
         {% set checked = (field.use == 'keys' ? value[key] : key in value) %}
         {% set help = (key in field.help_options|keys ? field.help_options[key] : false) %}
 
-        <span class="checkboxes {{ field.wrapper_classes }}">
+        <div class="checkboxes {{ form_field_wrapper_classes }} {{ field.wrapper_classes }}">
             <input type="checkbox"
                    id="{{ id|e }}"
                    value="{{ val|e }}"
@@ -38,6 +38,6 @@
                     {{ text|t|e }}
                 {% endif %}
             </label>
-        </span>
+        </div>
     {% endfor %}
 {% endblock %}
