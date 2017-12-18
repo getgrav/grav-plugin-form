@@ -40,7 +40,7 @@
                                 value="{{ value|join(', ')|e('html_attr') }}"
                                 {# input attribute structures #}
                                 {% block input_attributes %}
-                                    {% if field.classes is defined %}class="{{ field.classes }}" {% endif %}
+                                    class="{{ form_field_input_classes }} {{ field.classes }}"
                                     {% if field.id is defined %}id="{{ field.id|e }}" {% endif %}
                                     {% if field.style is defined %}style="{{ field.style|e }}" {% endif %}
                                     {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}

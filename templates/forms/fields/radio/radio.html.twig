@@ -7,7 +7,7 @@
     {% for key, text in field.options %}
         {% set id = field.id|default(field.name) ~ '-' ~ key %}
 
-        <span class="radio {{ field.wrapper_classes }}">
+        <div class="radio {{ form_field_wrapper_classes }} {{ field.wrapper_classes }}">
             <input type="radio"
                    value="{{ key|e }}"
                    id="{{ id|e }}"
@@ -18,6 +18,6 @@
                    {% if field.validate.required in ['on', 'true', 1] %}required="required"{% endif %}
             />
             <label style="display: inline" class="inline" for="{{ id|e }}">{% if grav.twig.twig.filters['tu'] is defined %}{{ text|tu|raw }}{% else %}{{ text|t|raw }}{% endif %}</label>
-        </span>
+        </div>
     {% endfor %}
 {% endblock %}
