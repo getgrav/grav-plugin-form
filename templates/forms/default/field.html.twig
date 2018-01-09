@@ -15,13 +15,13 @@
                     {% block label %}
                         {% if field.help %}
                             {% if field.markdown %}
-                                <span class="tooltip" data-asTooltip-position="w" title="{{ field.help|t|markdown|e }}">{{ field.label|markdown|default(field.name|capitalize)|t }}</span>
+                                <span class="tooltip" data-asTooltip-position="w" title="{{ field.help|t|markdown(false)|e }}">{{ field.label|markdown(false)|default(field.name|capitalize)|t }}</span>
                             {% else %}
                                 <span class="tooltip" data-asTooltip-position="w" title="{{ field.help|t|e }}">{{ field.label|default(field.name|capitalize)|t }}</span>
                             {% endif %}
                         {% else %}
                             {% if field.markdown %}
-                                {{ field.label|markdown|default(field.name|capitalize)|t }}
+                                {{ field.label|markdown(false)|default(field.name|capitalize)|t }}
                             {% else %}
                                 {{ field.label|default(field.name|capitalize)|t }}
                             {% endif %}
@@ -84,7 +84,7 @@
                     <div class="form-extra-wrapper {{ field.size|e }} {{ field.wrapper_classes }}">
                         <span class="form-description">
                             {% if field.markdown %}
-                                {{ field.description|tu|markdown|raw }}
+                                {{ field.description|tu|markdown(false)|raw }}
                             {% else %}
                                 {{ field.description|tu|raw }}
                             {% endif %}
