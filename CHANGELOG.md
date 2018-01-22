@@ -1,3 +1,9 @@
+# v2.11.2
+## 01/22/2018
+
+1. [](#new)
+    * Added support for markdown in all form fields for `label`, `help`, and `description` when `markdown: true` is set on field
+
 # v2.11.1
 ## 12/18/2017
 
