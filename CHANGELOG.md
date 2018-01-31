@@ -1,3 +1,9 @@
+# v2.11.3
+## mm/dd/2018
+
+1. [](#new)
+    * Added support for `file` in **Display** field. Allows the ability to read a file and output it, works in combination with `|markdown` filter
+
 # v2.11.2
 ## 01/22/2018
 

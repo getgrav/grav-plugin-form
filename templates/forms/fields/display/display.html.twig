@@ -1,18 +1,24 @@
 {% extends "forms/field.html.twig" %}
 
+{% if field.file %}
+    {% set content = read_file(field.file) %}
+{% else %}
+    {% set content = field.content %}
+{% endif %}
+
 {% block input %}
     <div class="form-display-wrapper {{ field.size }}" {% if field.id is defined %}id="{{ field.id|e }}" {% endif %}>
         {% if field.markdown %}
             {% if grav.twig.twig.filters['tu'] is defined %}
-                {{ field.content|tu|markdown|raw }}
+                {{ content|tu|markdown|raw }}
             {% else %}
-                {{ field.content|t|markdown|raw }}
+                {{ content|t|markdown|raw }}
             {% endif %}
         {% else %}
             {% if grav.twig.twig.filters['tu'] is defined %}
-                {{ field.content|tu|raw }}
+                {{ content|tu|raw }}
             {% else %}
-                {{ field.content|t|raw }}
+                {{ content|t|raw }}
             {% endif %}
         {% endif %}
     </div>
