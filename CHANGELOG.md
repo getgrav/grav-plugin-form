@@ -1,3 +1,10 @@
+# v2.11.3
+## 01/31/2018
+
+1. [](#new)
+    * Added support for `file` in **Display** field. Allows the ability to read a file and output it, works in combination with `|markdown` filter
+    * Added `minlength` and `maxlength` to **Textarea** field [#231](https://github.com/getgrav/grav-plugin-form/pull/231)
+
 # v2.11.2
 ## 01/22/2018
 
