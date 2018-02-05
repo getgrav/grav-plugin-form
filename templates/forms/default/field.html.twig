@@ -57,7 +57,7 @@
                                     {% if field.autofocus in ['on', 'true', 1] %}autofocus="autofocus"{% endif %}
                                     {% if field.novalidate in ['on', 'true', 1] %}novalidate="novalidate"{% endif %}
                                     {% if field.readonly in ['on', 'true', 1] %}readonly="readonly"{% endif %}
-                                    {% if field.autocomplete in ['on', 'off'] %}autocomplete="{{ field.autocomplete }}"{% endif %}
+                                    {% if field.autocomplete in ['on', 'off', 'new-password'] %}autocomplete="{{ field.autocomplete }}"{% endif %}
                                     {% if field.attributes is defined %}
                                       {% for attribute in field.attributes %}
                                           {{ attribute.name }}="{{ attribute.value|e }}"
