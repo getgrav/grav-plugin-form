@@ -61,7 +61,7 @@ class FormPlugin extends Plugin
 
         if ($this->isAdmin()) {
             $this->enable([
-                'onPagesInitialized' => ['onPagesInitialized', 0]
+                'onPageInitialized' => ['onPageInitialized', 0]
             ]);
             return;
         }
@@ -178,14 +178,11 @@ class FormPlugin extends Plugin
                 'onFormFieldTypes'       => ['onFormFieldTypes', 0],
             ]);
 
-            // Post the form
-            if ($this->form) {
-                if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
-                    $this->json_response = $this->form->uploadFiles();
-                } else {
-                    $this->form->post();
-                    $submitted = true;
-                }
+            if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
+                $this->json_response = $this->form->uploadFiles();
+            } else {
+                $this->form->post();
+                $submitted = true;
             }
 
             // Clear flash objects for previously uploaded files
