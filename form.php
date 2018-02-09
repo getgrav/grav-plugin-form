@@ -9,6 +9,7 @@ use Grav\Common\Plugin;
 use Grav\Common\Twig\Twig;
 use Grav\Common\Utils;
 use Grav\Common\Uri;
+use Grav\Plugin\Form\Form;
 use Symfony\Component\Yaml\Yaml;
 use RocketTheme\Toolbox\File\File;
 use RocketTheme\Toolbox\Event\Event;
@@ -54,6 +55,9 @@ class FormPlugin extends Plugin
     public function onPluginsInitialized()
     {
         require_once __DIR__ . '/vendor/autoload.php';
+
+        // Backwards compatibility for plugins that use forms.
+        class_alias('Grav\Plugin\Form\Form', 'Grav\Plugin\Form');
 
         if ($this->isAdmin()) {
             $this->enable([

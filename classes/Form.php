@@ -1,5 +1,5 @@
 <?php
-namespace Grav\Plugin;
+namespace Grav\Plugin\Form;
 
 use Grav\Common\Data\Data;
 use Grav\Common\Data\Blueprint;
