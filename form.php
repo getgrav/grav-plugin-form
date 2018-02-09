@@ -68,7 +68,7 @@ class FormPlugin extends Plugin
 
         $this->enable([
             'onPageProcessed' => ['onPageProcessed', 0],
-            'onPagesInitialized' => ['onPagesInitialized', 0],
+            'onPageInitialized' => ['onPageInitialized', 0],
             'onTwigInitialized' => ['onTwigInitialized', 0],
             'onTwigPageVariables' => ['onTwigVariables', 0],
             'onTwigSiteVariables' => ['onTwigVariables', 0],
@@ -94,7 +94,7 @@ class FormPlugin extends Plugin
         $header = $page->header();
 
         //call event to allow filling the page header form dynamically (e.g. use case: Comments plugin)
-        $this->grav->fireEvent('onFormPageHeaderProcessed', new Event(['header' => $header]));
+        $this->grav->fireEvent('onFormPageHeaderProcessed', new Event(['page' => $page, 'header' => $header]));
 
         if ((isset($header->forms) && is_array($header->forms)) ||
             (isset($header->form) && is_array($header->form))) {
@@ -146,7 +146,7 @@ class FormPlugin extends Plugin
     /**
      * Initialize form if the page has one. Also catches form processing if user posts the form.
      */
-    public function onPagesInitialized()
+    public function onPageInitialized()
     {
         $submitted = false;
         $this->json_response = [];
@@ -179,7 +179,7 @@ class FormPlugin extends Plugin
             ]);
 
             // Post the form
-            if ($this->form()) {
+            if ($this->form) {
                 if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
                     $this->json_response = $this->form->uploadFiles();
                 } else {
@@ -555,21 +555,6 @@ class FormPlugin extends Plugin
     }
 
     /**
-     * @param Page $page
-     * @return mixed
-     */
-    private function getFormName(Page $page)
-    {
-        $name = filter_input(INPUT_POST, '__form-name__');
-
-        if (!$name) {
-            $name = $page->slug();
-        }
-
-        return $name;
-    }
-
-    /**
      * function to get a specific form
      *
      * @param null|array|string $data optional form `name`
@@ -694,7 +679,7 @@ class FormPlugin extends Plugin
     /**
      * Get the current form, should already be processed but can get it directly from the page if necessary
      *
-     * @param null $page
+     * @param Page|null $page
      * @return Form|mixed
      */
     protected function form($page = null)
@@ -705,28 +690,28 @@ class FormPlugin extends Plugin
         }
 
         if (null === $this->form) {
-            $current_form_name = $this->getFormName($this->grav['page']);
-            $this->form = $this->getFormByName($current_form_name);
-        }
-
-        // last attempt using current page's form
-        if (null === $this->form) {
-
             // try to get the page if possible
             if (null === $page) {
                 $page = $this->grav['page'];
             }
 
-            if ($page) {
+            $form_name = filter_input(INPUT_POST, '__form-name__');
+            if (!$form_name) {
+                $form_name = $page ? $page->slug() : null;
+            }
+
+            $this->form = $this->getFormByName($form_name);
+
+            // last attempt using current page's form
+            if (null === $this->form && $page) {
                 $header = $page->header();
 
                 if (isset($header->form)) {
                     $this->form = new Form($page);
                 }
-
             }
-
         }
+
         return $this->form;
     }
 }
