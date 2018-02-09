@@ -3,6 +3,7 @@
 
 1. [](#improved)
     * Stopped Chrome from auto-completing admin user profile form [grav#1847](https://github.com/getgrav/grav/issues/1847)
+    * Start using composer to autoload classes
 
 # v2.11.3
 ## 01/31/2018

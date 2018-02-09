@@ -53,7 +53,7 @@ class FormPlugin extends Plugin
      */
     public function onPluginsInitialized()
     {
-        require_once(__DIR__ . '/classes/form.php');
+        require_once __DIR__ . '/vendor/autoload.php';
 
         if ($this->isAdmin()) {
             $this->enable([
@@ -648,7 +648,7 @@ class FormPlugin extends Plugin
      */
     protected function shouldProcessForm()
     {
-        $status = isset($_POST) && isset($_POST['form-nonce']);
+        $status = isset($_POST['form-nonce']);
         $refresh_prevention = null;
 
         if ($status && $this->form()) {
@@ -657,7 +657,7 @@ class FormPlugin extends Plugin
                 $this->grav['page']->template($this->form->template);
             }
 
-            if (!is_null($this->form->refresh_prevention)) {
+            if (isset($this->form->refresh_prevention)) {
                 $refresh_prevention = (bool) $this->form->refresh_prevention;
             } else {
                 $refresh_prevention = $this->config->get('plugins.form.refresh_prevention', false);
@@ -666,7 +666,7 @@ class FormPlugin extends Plugin
             $unique_form_id = filter_input(INPUT_POST, '__unique_form_id__', FILTER_SANITIZE_STRING);
 
             if ($refresh_prevention && $unique_form_id) {
-                if (($this->grav['session']->unique_form_id != $unique_form_id)) {
+                if ($this->grav['session']->unique_form_id !== $unique_form_id) {
                     $this->grav['session']->unique_form_id = $unique_form_id;
                 } else {
                     $status = false;
@@ -706,10 +706,10 @@ class FormPlugin extends Plugin
         }
 
         // last attempt using current page's form
-        if (null == $this->form) {
+        if (null === $this->form) {
 
             // try to get the page if possible
-            if ($page == null) {
+            if (null === $page) {
                 $page = $this->grav['page'];
             }
 
