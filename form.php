@@ -634,8 +634,9 @@ class FormPlugin extends Plugin
      */
     protected function shouldProcessForm()
     {
-        $status = isset($_POST['form-nonce']);
+        $status = isset($_POST['form-nonce']) ? true : false; // php72 quirk?
         $refresh_prevention = null;
+
 
         if ($status && $this->form()) {
             // Set page template if passed by form
