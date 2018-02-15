@@ -1,5 +1,5 @@
 # v2.11.4
-## mm/dd/2018
+## 02/15/2018
 
 1. [](#improved)
     * Stopped Chrome from auto-completing admin user profile form [grav#1847](https://github.com/getgrav/grav/issues/1847)
