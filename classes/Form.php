@@ -571,7 +571,7 @@ class Form extends Iterator implements \Serializable
                         unset($data[$i]);
                     }
                 }
-                if ($field['type'] === 'checkbox') {
+                if ($field['type'] === 'checkbox' || $field['type'] === 'switch') {
                     $data[$name] = isset($data[$name]) ? true : false;
                 }
                 $i++;
