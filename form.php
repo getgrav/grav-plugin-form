@@ -9,6 +9,7 @@ use Grav\Common\Plugin;
 use Grav\Common\Twig\Twig;
 use Grav\Common\Utils;
 use Grav\Common\Uri;
+use Grav\Plugin\Form\Form;
 use Symfony\Component\Yaml\Yaml;
 use RocketTheme\Toolbox\File\File;
 use RocketTheme\Toolbox\Event\Event;
@@ -53,18 +54,21 @@ class FormPlugin extends Plugin
      */
     public function onPluginsInitialized()
     {
-        require_once(__DIR__ . '/classes/form.php');
+        require_once __DIR__ . '/vendor/autoload.php';
+
+        // Backwards compatibility for plugins that use forms.
+        class_alias('Grav\Plugin\Form\Form', 'Grav\Plugin\Form');
 
         if ($this->isAdmin()) {
             $this->enable([
-                'onPagesInitialized' => ['onPagesInitialized', 0]
+                'onPageInitialized' => ['onPageInitialized', 0]
             ]);
             return;
         }
 
         $this->enable([
             'onPageProcessed' => ['onPageProcessed', 0],
-            'onPagesInitialized' => ['onPagesInitialized', 0],
+            'onPageInitialized' => ['onPageInitialized', 0],
             'onTwigInitialized' => ['onTwigInitialized', 0],
             'onTwigPageVariables' => ['onTwigVariables', 0],
             'onTwigSiteVariables' => ['onTwigVariables', 0],
@@ -90,7 +94,7 @@ class FormPlugin extends Plugin
         $header = $page->header();
 
         //call event to allow filling the page header form dynamically (e.g. use case: Comments plugin)
-        $this->grav->fireEvent('onFormPageHeaderProcessed', new Event(['header' => $header]));
+        $this->grav->fireEvent('onFormPageHeaderProcessed', new Event(['page' => $page, 'header' => $header]));
 
         if ((isset($header->forms) && is_array($header->forms)) ||
             (isset($header->form) && is_array($header->form))) {
@@ -142,7 +146,7 @@ class FormPlugin extends Plugin
     /**
      * Initialize form if the page has one. Also catches form processing if user posts the form.
      */
-    public function onPagesInitialized()
+    public function onPageInitialized()
     {
         $submitted = false;
         $this->json_response = [];
@@ -174,14 +178,11 @@ class FormPlugin extends Plugin
                 'onFormFieldTypes'       => ['onFormFieldTypes', 0],
             ]);
 
-            // Post the form
-            if ($this->form()) {
-                if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
-                    $this->json_response = $this->form->uploadFiles();
-                } else {
-                    $this->form->post();
-                    $submitted = true;
-                }
+            if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
+                $this->json_response = $this->form->uploadFiles();
+            } else {
+                $this->form->post();
+                $submitted = true;
             }
 
             // Clear flash objects for previously uploaded files
@@ -551,21 +552,6 @@ class FormPlugin extends Plugin
     }
 
     /**
-     * @param Page $page
-     * @return mixed
-     */
-    private function getFormName(Page $page)
-    {
-        $name = filter_input(INPUT_POST, '__form-name__');
-
-        if (!$name) {
-            $name = $page->slug();
-        }
-
-        return $name;
-    }
-
-    /**
      * function to get a specific form
      *
      * @param null|array|string $data optional form `name`
@@ -648,8 +634,9 @@ class FormPlugin extends Plugin
      */
     protected function shouldProcessForm()
     {
-        $status = isset($_POST) && isset($_POST['form-nonce']);
+        $status = isset($_POST['form-nonce']) ? true : false; // php72 quirk?
         $refresh_prevention = null;
+
 
         if ($status && $this->form()) {
             // Set page template if passed by form
@@ -657,7 +644,7 @@ class FormPlugin extends Plugin
                 $this->grav['page']->template($this->form->template);
             }
 
-            if (!is_null($this->form->refresh_prevention)) {
+            if (isset($this->form->refresh_prevention)) {
                 $refresh_prevention = (bool) $this->form->refresh_prevention;
             } else {
                 $refresh_prevention = $this->config->get('plugins.form.refresh_prevention', false);
@@ -666,7 +653,7 @@ class FormPlugin extends Plugin
             $unique_form_id = filter_input(INPUT_POST, '__unique_form_id__', FILTER_SANITIZE_STRING);
 
             if ($refresh_prevention && $unique_form_id) {
-                if (($this->grav['session']->unique_form_id != $unique_form_id)) {
+                if ($this->grav['session']->unique_form_id !== $unique_form_id) {
                     $this->grav['session']->unique_form_id = $unique_form_id;
                 } else {
                     $status = false;
@@ -690,7 +677,7 @@ class FormPlugin extends Plugin
     /**
      * Get the current form, should already be processed but can get it directly from the page if necessary
      *
-     * @param null $page
+     * @param Page|null $page
      * @return Form|mixed
      */
     protected function form($page = null)
@@ -701,28 +688,28 @@ class FormPlugin extends Plugin
         }
 
         if (null === $this->form) {
-            $current_form_name = $this->getFormName($this->grav['page']);
-            $this->form = $this->getFormByName($current_form_name);
-        }
-
-        // last attempt using current page's form
-        if (null == $this->form) {
-
             // try to get the page if possible
-            if ($page == null) {
+            if (null === $page) {
                 $page = $this->grav['page'];
             }
 
-            if ($page) {
+            $form_name = filter_input(INPUT_POST, '__form-name__');
+            if (!$form_name) {
+                $form_name = $page ? $page->slug() : null;
+            }
+
+            $this->form = $this->getFormByName($form_name);
+
+            // last attempt using current page's form
+            if (null === $this->form && $page) {
                 $header = $page->header();
 
                 if (isset($header->form)) {
                     $this->form = new Form($page);
                 }
-
             }
-
         }
+
         return $this->form;
     }
 }
