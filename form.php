@@ -432,6 +432,18 @@ class FormPlugin extends Plugin
                     }
                 }
                 break;
+            case 'call':
+                $callable = $params;
+
+                if (is_array($callable) && !method_exists($callable[0], $callable[1])) {
+                    throw new \RuntimeException('Form cannot be processed (method does not exist)');
+                }
+                if (is_string($callable) && !function_exists($callable)) {
+                    throw new \RuntimeException('Form cannot be processed (function does not exist)');
+                }
+
+                call_user_func($callable, $form);
+                break;
         }
     }
 

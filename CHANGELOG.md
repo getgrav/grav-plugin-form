@@ -1,6 +1,8 @@
 # v2.11.5
 ## mm/dd/2018
 
+1. [](#new)
+    * Added support for `form: process: - call: ['Class', 'method']` for custom form handling
 1. [](#bugfix)
     * Fixed regression in v2.11.4: Call to a member function post() on null [grav#1720](https://github.com/getgrav/grav/issues/1720)
 
