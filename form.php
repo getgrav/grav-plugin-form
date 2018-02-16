@@ -178,11 +178,14 @@ class FormPlugin extends Plugin
                 'onFormFieldTypes'       => ['onFormFieldTypes', 0],
             ]);
 
-            if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
-                $this->json_response = $this->form->uploadFiles();
-            } else {
-                $this->form->post();
-                $submitted = true;
+            // Post the form
+            if ($this->form) {
+                if (isset($_POST['__form-file-uploader__']) && $this->grav['uri']->extension() === 'json') {
+                    $this->json_response = $this->form->uploadFiles();
+                } else {
+                    $this->form->post();
+                    $submitted = true;
+                }
             }
 
             // Clear flash objects for previously uploaded files
@@ -636,7 +639,6 @@ class FormPlugin extends Plugin
     {
         $status = isset($_POST['form-nonce']) ? true : false; // php72 quirk?
         $refresh_prevention = null;
-
 
         if ($status && $this->form()) {
             // Set page template if passed by form
