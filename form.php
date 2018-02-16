@@ -178,11 +178,14 @@ class FormPlugin extends Plugin
                 'onFormFieldTypes'       => ['onFormFieldTypes', 0],
             ]);
 
-            if ($this->grav['uri']->extension() === 'json' && isset($_POST['__form-file-uploader__'])) {
-                $this->json_response = $this->form->uploadFiles();
-            } else {
-                $this->form->post();
-                $submitted = true;
+            // Post the form
+            if ($this->form) {
+                if (isset($_POST['__form-file-uploader__']) && $this->grav['uri']->extension() === 'json') {
+                    $this->json_response = $this->form->uploadFiles();
+                } else {
+                    $this->form->post();
+                    $submitted = true;
+                }
             }
 
             // Clear flash objects for previously uploaded files
@@ -429,6 +432,18 @@ class FormPlugin extends Plugin
                     }
                 }
                 break;
+            case 'call':
+                $callable = $params;
+
+                if (is_array($callable) && !method_exists($callable[0], $callable[1])) {
+                    throw new \RuntimeException('Form cannot be processed (method does not exist)');
+                }
+                if (is_string($callable) && !function_exists($callable)) {
+                    throw new \RuntimeException('Form cannot be processed (function does not exist)');
+                }
+
+                call_user_func($callable, $form);
+                break;
         }
     }
 
@@ -636,7 +651,6 @@ class FormPlugin extends Plugin
     {
         $status = isset($_POST['form-nonce']) ? true : false; // php72 quirk?
         $refresh_prevention = null;
-
 
         if ($status && $this->form()) {
             // Set page template if passed by form
