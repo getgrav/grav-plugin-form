@@ -84,6 +84,8 @@ class FormPlugin extends Plugin
      */
     public function onPageProcessed(Event $e)
     {
+        $this->grav['debugger']->addMessage('onPageProcessed');
+
         /** @var Page $page */
         $page = $e['page'];
         $page_route = $page->route();
@@ -126,6 +128,7 @@ class FormPlugin extends Plugin
      */
     public function onPagesInitialized()
     {
+        $this->grav['debugger']->addMessage('onPageSInitialized');
         $this->loadCachedForms();
     }
 
@@ -134,8 +137,18 @@ class FormPlugin extends Plugin
      */
     public function onPageInitialized()
     {
+        $this->grav['debugger']->addMessage('onPageInitialized');
+        $this->grav['debugger']->addMessage('$this->form: ');
+        $this->grav['debugger']->addMessage($this->form);
         $submitted = false;
         $this->json_response = [];
+
+        // Force rebuild form when form has not been built and form cache expired.
+        // This happens when form cache expires before the page cache
+        // and then does not trigger 'onPageProcessed' event.
+        if (!$this->forms) {
+            $this->onPageProcessed(new Event(['page' => $this->grav['page']]));
+        }
 
         // Save cached forms
         if ($this->recache_forms) {
@@ -707,8 +720,10 @@ class FormPlugin extends Plugin
      */
     protected function loadCachedForms()
     {
+
+        $this->grav['debugger']->addMessage('loadCachedForms');
         // Get and set the cache of forms if it exists
-        list($forms, $flat_forms) = $this->grav['cache']->fetch($this->getFormCacheId());
+        /*list($forms, $flat_forms) = $this->grav['cache']->fetch($this->getFormCacheId());
 
         // Only store the forms if they are an array
         if (is_array($forms)) {
@@ -718,7 +733,10 @@ class FormPlugin extends Plugin
         // Only store the flat_forms if they are an array
         if (is_array($flat_forms)) {
             $this->flat_forms = array_merge($this->flat_forms, $flat_forms);
-        }
+        }*/
+
+        //$this->grav['debugger']->addMessage('Cached $forms:');
+        //$this->grav['debugger']->addMessage($forms);
     }
 
     /**
