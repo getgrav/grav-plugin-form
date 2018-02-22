@@ -46,6 +46,10 @@ en:
     AVOID_OVERWRITING_HELP: "Prevent files with the same name to be overridden. Date prefix will be added"
     RANDOM_NAME: "Random name"
     RANDOM_NAME_HELP: "Generate a random 15 long string name for the uploaded files"
+    CLIENT_SIDE_VALIDATION: "Client-side validation"
+    CLIENT_SIDE_VALIDATION_HELP: "By default forms will use HTML5 client validation as first line of defense"
+    INLINE_ERRORS: "Inline errors"
+    INLINE_ERRORS_HELP: "Useful with 'client-side validation' off, shows inline contextual form errors"
 
 de:
   PLUGIN_FORM:

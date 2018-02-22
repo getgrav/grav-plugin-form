@@ -1,28 +1,17 @@
-.form-errors {
-    background: #fdf7f7;
-    color: #b52b27;
-    padding: 0 5px;
+.form-group.has-errors {
+    background: rgba(255,0,0,0.05);
+    border: 1px solid rgba(255,0,0,0.2);
     border-radius: 3px;
-    margin-bottom: 10px;
+    margin: 0 -5px;
+    padding: 0 5px;
+}
+
+.form-errors {
+    color: #b52b27;
 }
 
 .form-errors p {
     margin: 0;
-    line-height: 2;
-}
-
-.form-field.has-errors .form-errors {
-    margin-top: -5px;
-}
-
-.form-field.has-errors label {
-    color: #b52b27;
-}
-
-.form-field.has-errors .form-input-wrapper input,
-.form-field.has-errors .form-input-wrapper select,
-.form-field.has-errors .form-input-wrapper textarea {
-    border: 1px solid #d9534f;
 }
 
 .form-input-file.dropzone {

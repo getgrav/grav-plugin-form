@@ -1,6 +1,9 @@
-# v2.11.6
+# v2.12.0
 ## mm/dd/2018
 
+1. [](#new)
+    * Added toggle to enable/disable client-side HTML5 validation
+    * Added toggle to enable/disable inline-error messages
 1. [](#bugfix)
     * Fixed an issue with in-content Twig forms not working because forms were not initialized yet
 1. [](#improved)

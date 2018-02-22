@@ -55,6 +55,30 @@ form:
           validate:
             type: bool
 
+        client_side_validation:
+          type: toggle
+          label: PLUGIN_FORM.CLIENT_SIDE_VALIDATION
+          help: PLUGIN_FORM.CLIENT_SIDE_VALIDATION_HELP
+          highlight: 1
+          default: 1
+          options:
+            1: Enabled
+            0: Disabled
+          validate:
+            type: bool
+
+        inline_errors:
+          type: toggle
+          label: PLUGIN_FORM.INLINE_ERRORS
+          help: PLUGIN_FORM.INLINE_ERRORS_HELP
+          highlight: 0
+          default: 0
+          options:
+            1: Enabled
+            0: Disabled
+          validate:
+            type: bool
+
     files:
       type: section
       title: PLUGIN_FORM.FILES
