@@ -1,5 +1,5 @@
 # v2.12.0
-## mm/dd/2018
+## 02/22/2018
 
 1. [](#new)
     * Added toggle to enable/disable client-side HTML5 validation
