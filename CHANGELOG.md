@@ -1,3 +1,11 @@
+# v2.11.6
+## mm/dd/2018
+
+1. [](#bugfix)
+    * Fixed an issue with in-content Twig forms not working because forms were not initialized yet
+1. [](#improved)
+    * Reformatted `form.php` plugin class for better readability    
+
 # v2.11.5
 ## 02/16/2018
 
