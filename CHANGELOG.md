@@ -1,3 +1,14 @@
+# v2.12.0
+## 02/22/2018
+
+1. [](#new)
+    * Added toggle to enable/disable client-side HTML5 validation
+    * Added toggle to enable/disable inline-error messages
+1. [](#bugfix)
+    * Fixed an issue with in-content Twig forms not working because forms were not initialized yet
+1. [](#improved)
+    * Reformatted `form.php` plugin class for better readability    
+
 # v2.11.5
 ## 02/16/2018
 

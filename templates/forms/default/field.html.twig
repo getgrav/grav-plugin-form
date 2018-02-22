@@ -5,6 +5,12 @@
 {% set cookie_name = 'forms-' ~ form.name ~ '-' ~ field.name %}
 {% set value = (is_object(value) or value is null ? (get_cookie(cookie_name) is null ? field.default : get_cookie(cookie_name)) : value) %}
 {% set errors = attribute(form.messages, field.name) %}
+{% set required = client_side_validation and field.validate.required in ['on', 'true', 1] %}
+{% set autofocus = (inline_errors == false) and field.autofocus in ['on', 'true', 1] %}
+
+{% if inline_errors and errors %}
+    {% set autofocus = true %}
+{% endif %}
 
 {% block field %}
     <div class="{{ form_field_outer_classes ?: 'form-field' }} {{ field.outerclasses }} {% if errors %} has-errors{% endif %} {% block outer_field_classes %}{% endblock %}">
@@ -54,7 +60,7 @@
                                     {% if field.style is defined %}style="{{ field.style|e }}" {% endif %}
                                     {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
                                     {% if field.placeholder %}placeholder="{{ field.placeholder|t }}"{% endif %}
-                                    {% if field.autofocus in ['on', 'true', 1] %}autofocus="autofocus"{% endif %}
+                                    {% if autofocus %}autofocus="autofocus"{% endif %}
                                     {% if field.novalidate in ['on', 'true', 1] %}novalidate="novalidate"{% endif %}
                                     {% if field.readonly in ['on', 'true', 1] %}readonly="readonly"{% endif %}
                                     {% if field.autocomplete in ['on', 'off', 'new-password'] %}autocomplete="{{ field.autocomplete }}"{% endif %}
@@ -63,14 +69,14 @@
                                           {{ attribute.name }}="{{ attribute.value|e }}"
                                       {% endfor %}
                                     {% endif %}
-                                    {% if field.validate.required in ['on', 'true', 1] %}required="required"{% endif %}
+                                    {% if required %}required="required"{% endif %}
                                     {% if field.validate.pattern %}pattern="{{ field.validate.pattern|e }}"{% endif %}
                                     {% if field.validate.message %}title="{{ field.validate.message|t|e }}"
                                     {% elseif field.title is defined %}title="{{ field.title|t|e }}" {% endif %}
                                 {% endblock %}
                             />
                             {% block append %}{% endblock append %}
-                            {% if form.inline_errors and errors %}
+                            {% if inline_errors and errors %}
                                 <div class="{{ form_errors_classes ?: 'form-errors' }}">
                                     {% for error in errors %}
                                         <p class="form-message"><i class="fa fa-exclamation-circle"></i> {{ error }}</p>
