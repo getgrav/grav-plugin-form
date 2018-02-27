@@ -282,7 +282,7 @@ const addNode = (container) => {
                     if (resolution.min) {
                         Object.keys(resolution.min).forEach((attr) => {
                             if (file[attr] < resolution.min[attr]) {
-                                error += `The ${attr} was less than the required ${resolution.min[attr]} px <br />`;
+                                error += translations.PLUGIN_FORM.RESOLUTION_MIN.replace(/{{attr}}/g, attr).replace(/{{min}}/g, resolution.min[attr]);
                             }
                         });
                     }
@@ -290,7 +290,7 @@ const addNode = (container) => {
                     if (resolution.max) {
                         Object.keys(resolution.max).forEach((attr) => {
                             if (file[attr] > resolution.max[attr]) {
-                                error += `The ${attr} was more than the required ${resolution.max[attr]} px <br />`;
+                                error += translations.PLUGIN_FORM.RESOLUTION_MAX.replace(/{{attr}}/g, attr).replace(/{{max}}/g, resolution.max[attr]);
                             }
                         });
                     }
