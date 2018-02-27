@@ -1,3 +1,9 @@
+# v2.12.1
+## XX/XX/2018
+
+1. [](#new)
+    * Implemented support for 'resolution' setting
+
 # v2.12.0
 ## 02/22/2018
 
