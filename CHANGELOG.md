@@ -3,7 +3,9 @@
 
 1. [](#new)
     * Implemented support for 'resolution' setting
-
+1. [](#bugfix)
+    * Fixed an issue where unlimited size `0` was not being set properly in File field
+    
 # v2.12.0
 ## 02/22/2018
 
