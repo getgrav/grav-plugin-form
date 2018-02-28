@@ -2,7 +2,8 @@
 ## XX/XX/2018
 
 1. [](#new)
-    * Implemented support for 'resolution' setting
+    * Implemented support for 'resolution' setting for images in file field
+    * Added a new `signature` field
 1. [](#bugfix)
     * Fixed an issue where unlimited size `0` was not being set properly in File field
     
