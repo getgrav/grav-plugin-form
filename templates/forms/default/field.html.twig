@@ -13,9 +13,6 @@
 {% endif %}
 
 {% block field %}
-
-    {{ dump(field) }}
-
     <div class="{{ form_field_outer_classes ?: 'form-field' }} {{ field.outerclasses }} {% if errors %} has-errors{% endif %} {% block outer_field_classes %}{% endblock %}">
         {% block contents %}
             {% if field.label is not same as(false) %}
