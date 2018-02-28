@@ -6,6 +6,7 @@
     * Added a new `signature` field
 1. [](#bugfix)
     * Fixed an issue where unlimited size `0` was not being set properly in File field
+    * `field.description` now translated and displays properly
     
 # v2.12.0
 ## 02/22/2018

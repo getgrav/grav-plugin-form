@@ -13,6 +13,9 @@
 {% endif %}
 
 {% block field %}
+
+    {{ dump(field) }}
+
     <div class="{{ form_field_outer_classes ?: 'form-field' }} {{ field.outerclasses }} {% if errors %} has-errors{% endif %} {% block outer_field_classes %}{% endblock %}">
         {% block contents %}
             {% if field.label is not same as(false) %}
@@ -90,9 +93,9 @@
                     <div class="form-extra-wrapper {{ field.size|e }} {{ field.wrapper_classes }}">
                         <span class="form-description">
                             {% if field.markdown %}
-                                {{ field.description|tu|markdown(false)|raw }}
+                                {{ field.description|t|markdown(false)|raw }}
                             {% else %}
-                                {{ field.description|tu|raw }}
+                                {{ field.description|t|raw }}
                             {% endif %}
                         </span>
                     </div>
