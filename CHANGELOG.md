@@ -3,6 +3,7 @@
 
 1. [](#new)
     * Implemented support for 'resolution' setting for images in file field
+    * Implemented support for 'resizeWidth', 'resizeHeight', 'resizeQuality' and updated Dropzone to latest
     * Added a new `signature` field
 1. [](#bugfix)
     * Fixed an issue where unlimited size `0` was not being set properly in File field
