@@ -273,6 +273,9 @@ const addNode = (container) => {
         acceptedFiles: settings.accept ? settings.accept.join(',') : input.attr('accept') || container.data('media-types'),
         maxFilesize: settings.filesize || 256,
         maxFiles: settings.limit || null,
+        resizeWidth: settings.resizeWidth || null,
+        resizeHeight: settings.resizeHeight || null,
+        resizeQuality: settings.resizeQuality || null,
         accept: function(file, done) {
             const resolution = settings.resolution;
             if (!resolution) return done();
@@ -287,12 +290,15 @@ const addNode = (container) => {
                         });
                     }
 
-                    if (resolution.max) {
-                        Object.keys(resolution.max).forEach((attr) => {
-                            if (file[attr] > resolution.max[attr]) {
-                                error += translations.PLUGIN_FORM.RESOLUTION_MAX.replace(/{{attr}}/g, attr).replace(/{{max}}/g, resolution.max[attr]);
-                            }
-                        });
+                    console.log('a');
+                    if (!(settings.resizeWidth || settings.resizeHeight)) {
+                        if (resolution.max) {
+                            Object.keys(resolution.max).forEach((attr) => {
+                                if (file[attr] > resolution.max[attr]) {
+                                    error += translations.PLUGIN_FORM.RESOLUTION_MAX.replace(/{{attr}}/g, attr).replace(/{{max}}/g, resolution.max[attr]);
+                                }
+                            });
+                        }
                     }
                 return done(error);
             }, 50);
