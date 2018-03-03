@@ -56,7 +56,7 @@
     {% set page_can_upload = exists or (type == 'page' and not exists and not (field.destination starts with '@self' or field.destination starts with 'self@')) %}
 
 
-    {% set settings = {name: field.name, paramName: (scope ~ field.name)|fieldName ~ (files.multiple ? '[]' : ''), limit: limit, filesize: form_max_filesize, accept: files.accept} %}
+    {% set settings = {name: field.name, paramName: (scope ~ field.name)|fieldName ~ (files.multiple ? '[]' : ''), limit: limit, filesize: form_max_filesize, accept: files.accept, resolution: files.resolution, resizeWidth: files.resizeWidth, resizeHeight: files.resizeHeight, resizeQuality: files.resizeQuality } %}
     <div class="{{ form_field_wrapper_classes ?: 'form-input-wrapper' }} dropzone files-upload form-input-file {{ field.size }}" data-grav-file-settings="{{ settings|json_encode|e('html_attr') }}">
         <input
                 {# required attribute structures #}
@@ -66,6 +66,7 @@
                     {% if files.accept %}accept="{{ files.accept|join(',') }}"{% endif %}
                     {% if field.disabled %}disabled="disabled"{% endif %}
                     {% if field.random_name %}random="true"{% endif %}
+                    {% if required %}required="required"{% endif %}
                     {{ parent() }}
                 {% endblock %}
         />
@@ -100,7 +101,9 @@
         'DROPZONE_MAX_FILES_EXCEEDED': " ~ 'PLUGIN_FORM.DROPZONE_MAX_FILES_EXCEEDED'|t|json_encode ~ ",
         'DROPZONE_REMOVE_FILE': " ~ 'PLUGIN_FORM.DROPZONE_REMOVE_FILE'|t|json_encode ~ ",
         'DROPZONE_REMOVE_FILE_CONFIRMATION': " ~ 'PLUGIN_FORM.DROPZONE_REMOVE_FILE_CONFIRMATION'|t|json_encode ~ ",
-        'DROPZONE_RESPONSE_ERROR': " ~ 'PLUGIN_FORM.DROPZONE_RESPONSE_ERROR'|t|json_encode ~ "
+        'DROPZONE_RESPONSE_ERROR': " ~ 'PLUGIN_FORM.DROPZONE_RESPONSE_ERROR'|t|json_encode ~ ",
+        'RESOLUTION_MIN': " ~ 'PLUGIN_FORM.RESOLUTION_MIN'|t|json_encode ~ ",
+        'RESOLUTION_MAX': " ~ 'PLUGIN_FORM.RESOLUTION_MAX'|t|json_encode ~ "
     };
     ", { 'group': 'bottom' }) %}
 {% endblock %}

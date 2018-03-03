@@ -50,7 +50,8 @@ en:
     CLIENT_SIDE_VALIDATION_HELP: "By default forms will use HTML5 client validation as first line of defense"
     INLINE_ERRORS: "Inline errors"
     INLINE_ERRORS_HELP: "Useful with 'client-side validation' off, shows inline contextual form errors"
-
+    RESOLUTION_MIN: "The {{attr}} was less than the minimum of {{min}}px <br />"
+    RESOLUTION_MAX: "The {{attr}} was more than the maximum of {{max}}px <br />"
 de:
   PLUGIN_FORM:
     NOT_VALIDATED: "Formularwerte nicht gültig. Für ein oder mehrere erforderliche Felder fehlen Werte."
