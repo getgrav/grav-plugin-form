@@ -61,7 +61,8 @@ class FormPlugin extends Plugin
 
         if ($this->isAdmin()) {
             $this->enable([
-                'onPageInitialized' => ['onPageInitialized', 0]
+                'onPageInitialized' => ['onPageInitialized', 0],
+                'onGetPageTemplates' => ['onGetPageTemplates', 0],
             ]);
             return;
         }
@@ -75,6 +76,13 @@ class FormPlugin extends Plugin
             'onTwigSiteVariables' => ['onTwigVariables', 0],
             'onFormValidationProcessed' => ['onFormValidationProcessed', 0],
         ]);
+    }
+
+    public function onGetPageTemplates(Event $event)
+    {
+        /** @var Types $types */
+        $types = $event->types;
+        $types->register('form');
     }
 
     /**

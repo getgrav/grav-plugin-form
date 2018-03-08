@@ -2,6 +2,7 @@
 ## XX/XX/2018
 
 1. [](#new)
+    * Forced registration of `Form` page template for admin
     * Implemented support for 'resolution' setting for images in file field
     * Implemented support for 'resizeWidth', 'resizeHeight', 'resizeQuality' and updated Dropzone to latest
     * Added a new `signature` field
