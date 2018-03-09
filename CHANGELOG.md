@@ -1,5 +1,5 @@
-# v2.12.1
-## XX/XX/2018
+# v2.13.0
+## 03/09/2018
 
 1. [](#new)
     * Forced registration of `Form` page template for admin
