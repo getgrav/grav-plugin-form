@@ -697,7 +697,7 @@ class Form extends Iterator implements \Serializable
     {
         $config = Grav::instance()['config'];
 
-        $filesize_mb = (float)$config->get('plugins.form.files.filesize', 0) * static::BYTES_TO_MB;
+        $filesize_mb = (int)($config->get('plugins.form.files.filesize', 0) * static::BYTES_TO_MB);
         $system_filesize = $config->get('system.media.upload_limit', 0);
         if ($filesize_mb > $system_filesize || $filesize_mb === 0) {
             $filesize_mb = $system_filesize;

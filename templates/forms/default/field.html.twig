@@ -90,9 +90,9 @@
                     <div class="form-extra-wrapper {{ field.size|e }} {{ field.wrapper_classes }}">
                         <span class="form-description">
                             {% if field.markdown %}
-                                {{ field.description|tu|markdown(false)|raw }}
+                                {{ field.description|t|markdown(false)|raw }}
                             {% else %}
-                                {{ field.description|tu|raw }}
+                                {{ field.description|t|raw }}
                             {% endif %}
                         </span>
                     </div>

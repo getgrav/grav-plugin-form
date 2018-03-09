@@ -272,7 +272,37 @@ const addNode = (container) => {
         dotNotation: settings.name || 'file',
         acceptedFiles: settings.accept ? settings.accept.join(',') : input.attr('accept') || container.data('media-types'),
         maxFilesize: settings.filesize || 256,
-        maxFiles: settings.limit || null
+        maxFiles: settings.limit || null,
+        resizeWidth: settings.resizeWidth || null,
+        resizeHeight: settings.resizeHeight || null,
+        resizeQuality: settings.resizeQuality || null,
+        accept: function(file, done) {
+            const resolution = settings.resolution;
+            if (!resolution) return done();
+
+            setTimeout(() => {
+                let error = '';
+                    if (resolution.min) {
+                        Object.keys(resolution.min).forEach((attr) => {
+                            if (file[attr] < resolution.min[attr]) {
+                                error += translations.PLUGIN_FORM.RESOLUTION_MIN.replace(/{{attr}}/g, attr).replace(/{{min}}/g, resolution.min[attr]);
+                            }
+                        });
+                    }
+
+                    console.log('a');
+                    if (!(settings.resizeWidth || settings.resizeHeight)) {
+                        if (resolution.max) {
+                            Object.keys(resolution.max).forEach((attr) => {
+                                if (file[attr] > resolution.max[attr]) {
+                                    error += translations.PLUGIN_FORM.RESOLUTION_MAX.replace(/{{attr}}/g, attr).replace(/{{max}}/g, resolution.max[attr]);
+                                }
+                            });
+                        }
+                    }
+                return done(error);
+            }, 50);
+        }
     };
 
     cache = cache.add(container);

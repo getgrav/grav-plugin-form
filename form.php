@@ -61,7 +61,8 @@ class FormPlugin extends Plugin
 
         if ($this->isAdmin()) {
             $this->enable([
-                'onPageInitialized' => ['onPageInitialized', 0]
+                'onPageInitialized' => ['onPageInitialized', 0],
+                'onGetPageTemplates' => ['onGetPageTemplates', 0],
             ]);
             return;
         }
@@ -75,6 +76,13 @@ class FormPlugin extends Plugin
             'onTwigSiteVariables' => ['onTwigVariables', 0],
             'onFormValidationProcessed' => ['onFormValidationProcessed', 0],
         ]);
+    }
+
+    public function onGetPageTemplates(Event $event)
+    {
+        /** @var Types $types */
+        $types = $event->types;
+        $types->register('form');
     }
 
     /**
@@ -136,6 +144,13 @@ class FormPlugin extends Plugin
     {
         $submitted = false;
         $this->json_response = [];
+
+        // Force rebuild form when form has not been built and form cache expired.
+        // This happens when form cache expires before the page cache
+        // and then does not trigger 'onPageProcessed' event.
+        if (!$this->forms) {
+            $this->onPageProcessed(new Event(['page' => $this->grav['page']]));
+        }
 
         // Save cached forms
         if ($this->recache_forms) {
