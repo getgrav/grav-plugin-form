@@ -274,8 +274,19 @@ class FormPlugin extends Plugin
                     'secret'   => $recaptchaSecret,
                     'response' => $form->value('g-recaptcha-response', true)
                 ]);
-                $url = 'https://www.google.com/recaptcha/api/siteverify?' . $query;
-                $response = json_decode(file_get_contents($url), true);
+
+                $url = 'https://www.google.com/recaptcha/api/siteverify';
+                if (ini_get('allow_url_fopen')) {
+                    $response = json_decode(file_get_contents($url . '?' . $query), true);
+                } else {
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, $url);
+                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    $response = json_decode(curl_exec($ch), true);
+                }
 
                 if (!isset($response['success']) || $response['success'] !== true) {
                     $this->grav->fireEvent('onFormValidationError', new Event([
