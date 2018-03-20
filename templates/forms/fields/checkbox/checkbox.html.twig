@@ -24,6 +24,13 @@
                 {% if required %}required="required"{% endif %}
             {% endblock %}
             />
-        <label style="display:inline;" class="inline" for="{{ id|e }}">{{ field.label|t|e }} {{ field.validate.required in ['on', 'true', 1] ? '<span class="required">*</span>' }}</label>
+        <label style="display:inline;" class="inline" for="{{ id|e }}">
+            {% if field.markdown %}
+                {{ field.label|t|markdown(false) }}
+            {% else %}
+                {{ field.label|t|e }}
+            {% endif %}
+            {{ field.validate.required in ['on', 'true', 1] ? '<span class="required">*</span>' }}
+        </label>
     </div>
 {% endblock %}
