@@ -1,3 +1,11 @@
+# v2.13.1
+## 03/21/2018
+
+1. [](#improved)
+    * CAPTCHA fallback to cURL if fopen() is not allowed [#224](https://github.com/getgrav/grav-plugin-form/pull/244)
+    * Use `display:non`
+
+
 # v2.13.0
 ## 03/09/2018
 

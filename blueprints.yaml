@@ -43,6 +43,17 @@ form:
           validate:
             type: bool
 
+        inline_css:
+          type: toggle
+          label: PLUGIN_FORM.USE_INLINE_CSS
+          highlight: 1
+          default: 1
+          options:
+            1: Enabled
+            0: Disabled
+          validate:
+            type: bool
+
         refresh_prevention:
           type: toggle
           label: PLUGIN_FORM.REFRESH_PREVENTION

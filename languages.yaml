@@ -20,6 +20,7 @@ en:
     RECAPTCHA_SECRET_KEY_HELP: "For more info visit https://developers.google.com/recaptcha"
     GENERAL: "General"
     USE_BUILT_IN_CSS: "Use built-in CSS"
+    USE_INLINE_CSS: "Use inline CSS"
     FILEUPLOAD_PREVENT_SELF: 'Cannot use "%s" outside of pages.'
     FILEUPLOAD_UNABLE_TO_UPLOAD: 'Unable to upload file %s: %s'
     FILEUPLOAD_UNABLE_TO_MOVE: 'Unable to move file %s to "%s"'

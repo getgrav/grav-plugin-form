@@ -10,6 +10,15 @@
     color: #b52b27;
 }
 
+.form-honeybear {
+    visibility: hidden;
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+}
+
 .form-errors p {
     margin: 0;
 }
