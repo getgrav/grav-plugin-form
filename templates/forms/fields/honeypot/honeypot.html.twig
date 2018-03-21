@@ -1,1 +1,8 @@
-<input type="text" style="display:none;" name="{{ (scope ~ field.name)|fieldName }}" value="{{ value|join(', ') }}" />
+<input aria-hidden="true"
+       type="text"
+       {% if config.plugins.form.inline_css == true %}
+       style="visibility:hidden;position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);"
+       {% endif %}
+       class="form-honeybear"
+       name="{{ (scope ~ field.name)|fieldName }}"
+       value="{{ value|join(', ') }}" />

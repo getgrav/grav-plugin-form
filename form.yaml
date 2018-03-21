@@ -1,5 +1,6 @@
 enabled: true
 built_in_css: true
+inline_css: true
 refresh_prevention: false
 client_side_validation: true
 inline_errors: false

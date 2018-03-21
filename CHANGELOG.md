@@ -1,3 +1,13 @@
+# v2.13.1
+## 03/21/2018
+
+1. [](#improved)
+    * CAPTCHA fallback to `cURL` if `Fopen` is not allowed [#224](https://github.com/getgrav/grav-plugin-form/pull/244)
+    * Use `visibility:hidden` rather than `display:none` for honeypot field [#235](https://github.com/getgrav/grav-plugin-form/pull/235)
+    * Added support for markdown in checkbox field [#233](https://github.com/getgrav/grav-plugin-form/pull/233)
+    * Added option to control `inline_css: true|false` for fields such as honeypot
+    * Added class and CSS for honeypot field    
+
 # v2.13.0
 ## 03/09/2018
 
