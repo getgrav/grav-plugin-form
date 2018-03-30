@@ -89,10 +89,8 @@ class Form extends Iterator implements \Serializable
 
         if ($form) {
             $this->items = $form;
-        } else {
-            if (isset($header->form)) {
-                $this->items = $header->form; // for backwards compatibility
-            }
+        } elseif (isset($header->form)) {
+            $this->items = $header->form; // for backwards compatibility
         }
 
         // Add form specific rules.
@@ -167,17 +165,22 @@ class Form extends Iterator implements \Serializable
     }
 
     /**
-     * Allow overriding of fields
+     * Allow overriding of fields.
      *
-     * @param $fields
+     * @param array $fields
      */
-    public function setFields($fields)
+    public function setFields(array $fields = [])
     {
+        // Make sure blueprints are updated, otherwise validation may fail.
+        $blueprint = $this->data->blueprints();
+        $blueprint->set('form/fields', $fields);
+        $blueprint->undef('form/field');
+
         $this->fields = $fields;
     }
 
     /**
-     * Get the name of this form
+     * Get the name of this form.
      *
      * @return String
      */
@@ -209,9 +212,7 @@ class Form extends Iterator implements \Serializable
 
         $this->data = new Data($this->header_data, $blueprint);
         $this->values = new Data();
-        // Reset fields to null before calling fields() -- Do not remove:
-        $this->fields = null;
-        $this->fields = $this->fields();
+        $this->fields = $this->fields(true);
 
         // Fire event
         $grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
@@ -245,10 +246,10 @@ class Form extends Iterator implements \Serializable
         return $return;
     }
 
-    public function fields()
+    public function fields($reset = false)
     {
 
-        if (null === $this->fields) {
+        if ($reset || null === $this->fields) {
             $blueprint = $this->data->blueprints();
 
             if (method_exists($blueprint, 'load')) {
@@ -321,6 +322,14 @@ class Form extends Iterator implements \Serializable
     public function getValue($name)
     {
         return $this->values->get($name);
+    }
+
+    /**
+     * @return Data
+     */
+    public function getValues()
+    {
+        return $this->values;
     }
 
     /**
@@ -582,6 +591,8 @@ class Form extends Iterator implements \Serializable
 
         // Validate and filter data
         try {
+            $grav->fireEvent('onFormPrepareValidation', new Event(['form' => $this]));
+
             $this->data->validate();
             $this->data->filter();
 

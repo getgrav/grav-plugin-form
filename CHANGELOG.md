@@ -1,3 +1,11 @@
+# v2.13.2
+## mm/dd/2018
+
+1. [](#new)
+    * Added event `onFormPrepareValidation` to allow some pre-processing before form validation
+1. [](#bugfix)
+    * Fixed `Form::setFields()` causing validation to fail on added and removed fields
+    
 # v2.13.1
 ## 03/21/2018
 
