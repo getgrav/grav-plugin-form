@@ -6,7 +6,7 @@
         {{- scope ~ (field.name ?? index) }}: {{ string(value is iterable ? value|json_encode : value|escape('yaml')) ~ "\r\n" }}
     {%- else %}
         {%- if field.fields %}
-        {%- set new_scope = field.nest_id ? scope ~ field.id ~ '.' : scope -%}
+        {%- set new_scope = field.nest_id ? scope ~ field.name ~ '.' : scope -%}
         {{- _self.render_field(form, field.fields, new_scope) }}
         {%- endif %}
     {%- endif %}
