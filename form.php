@@ -381,12 +381,14 @@ class FormPlugin extends Plugin
             case 'save':
                 $prefix = !empty($params['fileprefix']) ? $params['fileprefix'] : '';
                 $format = !empty($params['dateformat']) ? $params['dateformat'] : 'Ymd-His-u';
+                $raw_format = !empty($params['dateraw']) ? (bool) $params['dateraw'] : false;
+                $postfix = !empty($params['filepostfix']) ? $params['filepostfix'] : '';
                 $ext = !empty($params['extension']) ? '.' . trim($params['extension'], '.') : '.txt';
                 $filename = !empty($params['filename']) ? $params['filename'] : '';
                 $operation = !empty($params['operation']) ? $params['operation'] : 'create';
 
                 if (!$filename) {
-                    $filename = $prefix . $this->udate($format) . $ext;
+                    $filename = $prefix . $this->udate($format, $raw_format) . $postfix. $ext;
                 }
 
                 /** @var Twig $twig */
@@ -788,14 +790,17 @@ class FormPlugin extends Plugin
      * Create unix timestamp for storing the data into the filesystem.
      *
      * @param string $format
-     * @param int    $utimestamp
+     * @param bool   $raw
      *
      * @return string
      */
-    protected function udate($format = 'u', $utimestamp = null)
+    protected function udate($format = 'u', $raw = false)
     {
-        if (null === $utimestamp) {
-            $utimestamp = microtime(true);
+
+        $utimestamp = microtime(true);
+
+        if ($raw) {
+            return date($format);
         }
 
         $timestamp = floor($utimestamp);
