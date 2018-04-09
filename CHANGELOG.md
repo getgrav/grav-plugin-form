@@ -3,6 +3,7 @@
 
 1. [](#new)
     * Added event `onFormPrepareValidation` to allow some pre-processing before form validation
+    * Added new `postfix` and `dateraw` options to "Save" action
 1. [](#bugfix)
     * Fixed `Form::setFields()` causing validation to fail on added and removed fields
     
