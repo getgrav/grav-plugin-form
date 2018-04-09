@@ -1,8 +1,10 @@
-{% macro render_field(form, fields) %}
+{% macro render_field(form, fields, scope) %}
     {% for index, field in fields %}
         {% set input = attribute(field, "input@") %}
+
         {% if input is null or input == true %}
-            {% if form.value(field.name) %}
+
+            {% if form.value(scope ~ field.name) %}
                 {% block field %}
                     <div>
                         {% block field_label %}
@@ -12,16 +14,16 @@
                         {% block field_value %}
                             {% if field.type == 'checkboxes' %}
                                 <ul>
-                                    {% for value in form.value(field.name) %}
+                                    {% for value in form.value(scope ~ field.name) %}
                                         <li>{{ field.options[value]|e }}</li>
                                     {% endfor %}
                                 </ul>
                             {% elseif field.type == 'checkbox' %}
-                                {{ (form.value(field.name) == 1) ? "PLUGIN_FORM.YES"|t|e : "PLUGIN_FORM.NO"|t|e }}
+                                {{ (form.value(scope ~ field.name) == 1) ? "PLUGIN_FORM.YES"|t|e : "PLUGIN_FORM.NO"|t|e }}
                             {% elseif field.type == 'select' %}
-                                {{ field.options[form.value(field.name)]|e }}
+                                {{ field.options[form.value(scope ~ field.name)]|e }}
                             {% else %}
-                                {{ string(form.value(field.name))|nl2br }}
+                                {{ string(form.value(scope ~ field.name))|nl2br }}
                             {% endif %}
                         {% endblock %}
                     </div>
@@ -29,11 +31,12 @@
             {% endif %}
         {% else %}
             {% if field.fields %}
-                {{ _self.render_field(form, field.fields) }}
+                {% set new_scope = field.nest_id ? scope ~ field.name ~ '.' : scope %}
+                {{ _self.render_field(form, field.fields, new_scope) }}
             {% endif %}
         {% endif %}
     {% endfor %}
 {% endmacro %}
 
-{{ _self.render_field(form, form.fields) }}
+{{ _self.render_field(form, form.fields, '') }}
 
