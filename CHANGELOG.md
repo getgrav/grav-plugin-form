@@ -5,7 +5,8 @@
     * Added event `onFormPrepareValidation` to allow some pre-processing before form validation
     * Added new `postfix` and `dateraw` options to "Save" action
 1. [](#improved)
-    * Added support for `nest_id` boolean flag to `fieldset` field to nest sub-fields with name of fieldset   
+    * Added support for `nest_id` boolean flag to `fieldset` field to nest sub-fields with name of fieldset  
+    * Added classes attribute to `spacer` field 
 1. [](#bugfix)
     * Fixed `Form::setFields()` causing validation to fail on added and removed fields
     
