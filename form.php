@@ -12,6 +12,8 @@ use Grav\Common\Twig\Twig;
 use Grav\Common\Utils;
 use Grav\Common\Uri;
 use Grav\Plugin\Form\Form;
+use RocketTheme\Toolbox\File\JsonFile;
+use RocketTheme\Toolbox\File\YamlFile;
 use Symfony\Component\Yaml\Yaml;
 use RocketTheme\Toolbox\File\File;
 use RocketTheme\Toolbox\Event\Event;
@@ -268,6 +270,7 @@ class FormPlugin extends Plugin
      */
     public function onFormProcessed(Event $event)
     {
+        /** @var Form $form */
         $form = $event['form'];
         $action = $event['action'];
         $params = $event['params'];
@@ -404,6 +407,34 @@ class FormPlugin extends Plugin
                 $path = $locator->findResource('user://data', true);
                 $dir = $path . DS . $form->name();
                 $fullFileName = $dir. DS . $filename;
+
+                if (!empty($params['raw']) || !empty($params['template'])) {
+                    // Save data as it comes from the form.
+                    if ($operation === 'add') {
+                        throw new \RuntimeException('Form save: \'operation: add\' is not supported for raw files');
+                    }
+                    switch ($ext) {
+                        case '.yaml':
+                            $file = YamlFile::instance($fullFileName);
+                            break;
+                        case '.json':
+                            $file = JsonFile::instance($fullFileName);
+                            break;
+                        default:
+                            throw new \RuntimeException('Form save: Unsupported RAW file format, please use either yaml or json');
+                    }
+
+                    $data = [
+                        '_data_type' => 'form',
+                        'template' => !empty($params['template']) ? $params['template'] : null,
+                        'name' => $form->name(),
+                        'timestamp' => date('Y-m-d H:i:s'),
+                        'content' => $form->getData()->toArray()
+                    ];
+
+                    $file->save(array_filter($data));
+                    break;
+                }
 
                 $file = File::instance($fullFileName);
 
