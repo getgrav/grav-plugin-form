@@ -317,6 +317,16 @@ class FormPlugin extends Plugin
                     return;
                 }
                 break;
+            case 'timestamp':
+                $label = isset($params['label']) ? $params['label'] : 'Timestamp';
+                $format = isset($params['format']) ? $params['format'] : 'Y-m-d H:i:s';
+                $blueprint = $form->value()->blueprints();
+                $blueprint->set('form/fields/timestamp', ['name'=>'timestamp', 'label'=> $label]);
+                $now = new \DateTime('now');
+                $date_string = $now->format($format);
+                $form->setFields($blueprint->fields());
+                $form->setData('timestamp',$date_string);
+                break;
             case 'ip':
                 $label = isset($params['label']) ? $params['label'] : 'User IP';
                 $blueprint = $form->value()->blueprints();
