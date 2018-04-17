@@ -1,3 +1,9 @@
+# v2.13.4
+## mm/dd/2018
+
+1. [](#bugfix)
+    * Worked around forms being lost if form cache expired before page cache, see [#240](https://github.com/getgrav/grav-plugin-form/pull/240)
+
 # v2.13.3
 ## 04/13/2018
 
