@@ -3,6 +3,7 @@
 
 1. [](#bugfix)
     * Removed overridden class in `password` field
+    * Worked around forms being lost if form cache expired before page cache, see [#240](https://github.com/getgrav/grav-plugin-form/pull/240)
 
 # v2.13.3
 ## 04/13/2018
