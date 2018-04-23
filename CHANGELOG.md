@@ -1,3 +1,9 @@
+# v2.13.4
+## mm/dd/2018
+
+1. [](#bugfix)
+    * Removed overridden class in `password` field
+
 # v2.13.3
 ## 04/13/2018
 
