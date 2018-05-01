@@ -27,9 +27,9 @@
                             {% endif %}
                         {% else %}
                             {% if field.markdown %}
-                                {{ field.label|markdown(false)|default(field.name|capitalize)|t }}
+                                {{ field.label|markdown(false)|default(field.name|capitalize)|t|e('html_attr') }}
                             {% else %}
-                                {{ field.label|default(field.name|capitalize)|t }}
+                                {{ field.label|default(field.name|capitalize)|t|e('html_attr') }}
                             {% endif %}
                         {% endif %}
 
@@ -59,7 +59,7 @@
                                     {% if field.id is defined %}id="{{ field.id|e }}" {% endif %}
                                     {% if field.style is defined %}style="{{ field.style|e }}" {% endif %}
                                     {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
-                                    {% if field.placeholder %}placeholder="{{ field.placeholder|t }}"{% endif %}
+                                    {% if field.placeholder %}placeholder="{{ field.placeholder|t|e('html_attr') }}"{% endif %}
                                     {% if autofocus %}autofocus="autofocus"{% endif %}
                                     {% if field.novalidate in ['on', 'true', 1] %}novalidate="novalidate"{% endif %}
                                     {% if field.readonly in ['on', 'true', 1] %}readonly="readonly"{% endif %}
