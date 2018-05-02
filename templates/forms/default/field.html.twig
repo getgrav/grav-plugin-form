@@ -15,7 +15,7 @@
 {% block field %}
     <div class="{{ form_field_outer_classes ?: 'form-field' }} {{ field.outerclasses }} {% if errors %} has-errors{% endif %} {% block outer_field_classes %}{% endblock %}">
         {% block contents %}
-            {% if field.label is not same as(false) %}
+            {% if field.label is not same as(false) and field.display_label is not same as(false) %}
                 <div class="{{ form_field_outer_label_classes ?: 'form-label' }} {{ field.labelclasses }}">
                     <label class="{{ form_field_label_classes ?: 'inline' }}" {% if field.id is defined %}for="{{ field.id|e }}" {% endif %} >
                     {% block label %}
