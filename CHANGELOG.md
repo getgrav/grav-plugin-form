@@ -6,6 +6,7 @@
     * Worked around forms being lost if form cache expired before page cache, see [#240](https://github.com/getgrav/grav-plugin-form/pull/240)
 1. [](#improved)
     * Added support for optgroup within select field
+    * Allow file field to pass dropzone options
 
 # v2.13.3
 ## 04/13/2018
