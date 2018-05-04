@@ -3,6 +3,8 @@
 {% set files = defaults.files|merge(field|default([])) %}
 {% set limit = not field.multiple ? 1 : files.limit %}
 
+{% do config.set('forms.dropzone.enabled', true) %}
+
 {% macro bytesToSize(bytes) -%}
     {% spaceless %}
         {% set kilobyte = 1024 %}
