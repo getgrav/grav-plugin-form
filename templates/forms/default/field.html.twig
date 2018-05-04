@@ -73,6 +73,11 @@
                                     {% if field.validate.pattern %}pattern="{{ field.validate.pattern|e }}"{% endif %}
                                     {% if field.validate.message %}title="{{ field.validate.message|t|e }}"
                                     {% elseif field.title is defined %}title="{{ field.title|t|e }}" {% endif %}
+                                    {% if field.datasets %}
+                                        {% for datakey, datavalue in field.datasets %}
+                                            data-{{ datakey }}="{{ datavalue|e('html_attr') }}"
+                                        {% endfor %}
+                                    {% endif %}
                                 {% endblock %}
                             />
                             {% block append %}{% endblock append %}
