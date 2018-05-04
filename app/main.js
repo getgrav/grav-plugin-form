@@ -35,7 +35,7 @@ export default class FilesField {
         if (!this.container.length) { return; }
 
         this.urls = {};
-        DropzoneMediaConfig.previewTemplate = $('#dropzone-template').html();
+        DropzoneMediaConfig.previewTemplate = $('#dropzone-template').parent().html();
         this.options = Object.assign({}, Dictionary, DropzoneMediaConfig, {
             klass: this,
             url: this.container.data('file-url-add') || config.current_url,
