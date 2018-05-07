@@ -135,21 +135,32 @@ export default class FilesField {
         if (!file.accepted || file.rejected) { return; }
         let url = file.removeUrl || this.urls.delete || `${location.href}.json`;
         let path = (url || '').match(/path:(.*)\//);
-        let body = { filename: file.name };
+        let data = new FormData();
+
+        data.append('filename', file.name);
+        data.append('__form-name__', this.container.closest('form').find('[name="__form-name__"]').val());
+        data.append('name', this.options.dotNotation);
+        data.append('form-nonce', config.form_nonce);
 
         if (file.sessionParams) {
-            body.task = 'filessessionremove';
-            body.session = file.sessionParams;
+            data.append('task', 'filessessionremove');
+            data.append('session', file.sessionParams);
         }
 
-        $.post(url, body, () => {
-            if (!path) { return; }
+        $.ajax({
+            url,
+            data,
+            processData: false,
+            method: 'POST',
+            success: () => {
+                if (!path) { return; }
 
-            path = global.atob(path[1]);
-            let input = this.container.find('[name][type="hidden"]');
-            let data = JSON.parse(input.val() || '{}');
-            delete data[path];
-            input.val(JSON.stringify(data));
+                path = global.atob(path[1]);
+                let input = this.container.find('[name][type="hidden"]');
+                let data = JSON.parse(input.val() || '{}');
+                delete data[path];
+                input.val(JSON.stringify(data));
+            }
         });
     }
 

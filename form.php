@@ -187,6 +187,8 @@ class FormPlugin extends Plugin
             if ($this->form) {
                 if (isset($_POST['__form-file-uploader__']) && $this->grav['uri']->extension() === 'json') {
                     $this->json_response = $this->form->uploadFiles();
+                } else if (isset($_POST['filessessionremove']) && $this->grav['uri']->extension() === 'json') {
+                    $this->json_response = $this->form->taskFilesSessionRemove();
                 } else {
                     $this->form->post();
                     $submitted = true;

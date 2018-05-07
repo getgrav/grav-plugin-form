@@ -531,7 +531,7 @@ class Form extends Iterator implements \Serializable
 
 
         // json_response
-        return [
+        $json_response = [
             'status' => 'success',
             'session' => \json_encode([
                 'sessionField' => base64_encode($uri),
@@ -539,6 +539,73 @@ class Form extends Iterator implements \Serializable
                 'field' => $settings->name
             ])
         ];
+
+        // Return JSON
+        header('Content-Type: application/json');
+        echo json_encode($json_response);
+        exit;
+    }
+
+    /**
+     * Removes a file from the flash object session, before it gets saved
+     *
+     * @return bool True if the action was performed.
+     */
+    public function taskFilesSessionRemove()
+    {
+        $grav = Grav::instance();
+        $post = $_POST;
+        // Retrieve the current session of the uploaded files for the field
+        // and initialize it if it doesn't exist
+        $sessionField = base64_encode($grav['uri']->url());
+        $request      = \json_decode($post['session']);
+
+        // Ensure the URI requested matches the current one, otherwise fail
+        if ($request->sessionField !== $sessionField) {
+            return false;
+        }
+
+        // Retrieve the flash object and remove the requested file from it
+        $flash    = $session->getFlashObject('files-upload');
+        $endpoint = $flash[$request->sessionField][$request->field][$request->path];
+
+        if (isset($endpoint)) {
+            if (file_exists($endpoint['tmp_name'])) {
+                unlink($endpoint['tmp_name']);
+            }
+
+            unset($endpoint);
+        }
+
+        // Walk backward to cleanup any empty field that's left
+        // Field
+        if (isset($flash[$request->sessionField][$request->field][$request->path])) {
+            unset($flash[$request->sessionField][$request->field][$request->path]);
+        }
+
+        // Field
+        if (isset($flash[$request->sessionField][$request->field]) && empty($flash[$request->sessionField][$request->field])) {
+            unset($flash[$request->sessionField][$request->field]);
+        }
+
+        // Session Field
+        if (isset($flash[$request->sessionField]) && empty($flash[$request->sessionField])) {
+            unset($flash[$request->sessionField]);
+        }
+
+
+        // If there's anything left to restore in the flash object, do so
+        if (count($flash)) {
+            $session->setFlashObject('files-upload', $flash);
+        }
+
+        // json_response
+        $json_response = ['status' => 'success'];
+
+        // Return JSON
+        header('Content-Type: application/json');
+        echo json_encode($json_response);
+        exit;
     }
 
     /**
