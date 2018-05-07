@@ -551,13 +551,14 @@ class Form extends Iterator implements \Serializable
      *
      * @return bool True if the action was performed.
      */
-    public function taskFilesSessionRemove()
+    public function filesSessionRemove()
     {
         $grav = Grav::instance();
         $post = $_POST;
+        $session = $grav['session'];
         // Retrieve the current session of the uploaded files for the field
         // and initialize it if it doesn't exist
-        $sessionField = base64_encode($grav['uri']->url());
+        $sessionField = base64_encode($grav['uri']->url(true));
         $request      = \json_decode($post['session']);
 
         // Ensure the URI requested matches the current one, otherwise fail

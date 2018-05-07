@@ -143,15 +143,16 @@ export default class FilesField {
         data.append('form-nonce', config.form_nonce);
 
         if (file.sessionParams) {
-            data.append('task', 'filessessionremove');
+            data.append('__form-file-remover__', '1');
             data.append('session', file.sessionParams);
         }
 
         $.ajax({
             url,
             data,
-            processData: false,
             method: 'POST',
+            contentType: false,
+            processData: false,
             success: () => {
                 if (!path) { return; }
 
