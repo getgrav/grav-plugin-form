@@ -133,7 +133,7 @@ export default class FilesField {
 
     onDropzoneRemovedFile(file, ...extra) {
         if (!file.accepted || file.rejected) { return; }
-        let url = file.removeUrl || this.urls.delete;
+        let url = file.removeUrl || this.urls.delete || `${location.href}.json`;
         let path = (url || '').match(/path:(.*)\//);
         let body = { filename: file.name };
 
@@ -142,7 +142,7 @@ export default class FilesField {
             body.session = file.sessionParams;
         }
 
-        request(url, { method: 'post', body }, () => {
+        $.post(url, body, () => {
             if (!path) { return; }
 
             path = global.atob(path[1]);
