@@ -28,8 +28,8 @@
                 {% if item_value is iterable %}
                     <optgroup label="{{ key }}">
                         {%for subkey, suboption in item_value %}
-                            {% set selected = field.choices ? suboption : subkey %}
-                            {% set item_value = field.choices and field.multiple ? suboption : subkey %}
+                            {% set selected = field.selectize ? suboption : subkey %}
+                            {% set item_value = field.selectize and field.multiple ? suboption : subkey %}
                             <option {% if subkey == value or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ suboption }}">
                                 {% if grav.twig.twig.filters['tu'] is defined %}
                                     {{ suboption|tu|raw }}{% else %}{{ suboption|t|raw }}
@@ -38,7 +38,9 @@
                         {% endfor %}
                     </optgroup>
                 {% else %}
-                    <option {% if key == value or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ item_value }}">
+                    {% set selected = field.selectize ? item_value : key %}
+                    {% set val = field.selectize and field.multiple ? item_value : key %}
+                    <option {% if key == value or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ val }}">
                         {%- if grav.twig.twig.filters['tu'] is defined %}
                             {{ item_value|tu|raw }}{% else %}{{ item_value|t|raw }}
                         {%- endif -%}
