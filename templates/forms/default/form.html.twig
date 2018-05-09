@@ -83,3 +83,9 @@
   {% include 'forms/fields/uniqueid/uniqueid.html.twig' %}
   {{ nonce_field('form', 'form-nonce')|raw }}
 </form>
+
+{% if config.forms.dropzone.enabled %}
+<div id="dropzone-template" style="display:none;">
+    {% include 'forms/dropzone/template.html.twig' %}
+</div>
+{% endif %}

@@ -15,7 +15,7 @@
 {% block field %}
     <div class="{{ form_field_outer_classes ?: 'form-field' }} {{ field.outerclasses }} {% if errors %} has-errors{% endif %} {% block outer_field_classes %}{% endblock %}">
         {% block contents %}
-            {% if field.label is not same as(false) %}
+            {% if field.label is not same as(false) and field.display_label is not same as(false) %}
                 <div class="{{ form_field_outer_label_classes ?: 'form-label' }} {{ field.labelclasses }}">
                     <label class="{{ form_field_label_classes ?: 'inline' }}" {% if field.id is defined %}for="{{ field.id|e }}" {% endif %} >
                     {% block label %}
@@ -27,9 +27,9 @@
                             {% endif %}
                         {% else %}
                             {% if field.markdown %}
-                                {{ field.label|markdown(false)|default(field.name|capitalize)|t }}
+                                {{ field.label|markdown(false)|default(field.name|capitalize)|t|e('html_attr') }}
                             {% else %}
-                                {{ field.label|default(field.name|capitalize)|t }}
+                                {{ field.label|default(field.name|capitalize)|t|e('html_attr') }}
                             {% endif %}
                         {% endif %}
 
@@ -59,7 +59,7 @@
                                     {% if field.id is defined %}id="{{ field.id|e }}" {% endif %}
                                     {% if field.style is defined %}style="{{ field.style|e }}" {% endif %}
                                     {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
-                                    {% if field.placeholder %}placeholder="{{ field.placeholder|t }}"{% endif %}
+                                    {% if field.placeholder %}placeholder="{{ field.placeholder|t|e('html_attr') }}"{% endif %}
                                     {% if autofocus %}autofocus="autofocus"{% endif %}
                                     {% if field.novalidate in ['on', 'true', 1] %}novalidate="novalidate"{% endif %}
                                     {% if field.readonly in ['on', 'true', 1] %}readonly="readonly"{% endif %}
@@ -73,6 +73,11 @@
                                     {% if field.validate.pattern %}pattern="{{ field.validate.pattern|e }}"{% endif %}
                                     {% if field.validate.message %}title="{{ field.validate.message|t|e }}"
                                     {% elseif field.title is defined %}title="{{ field.title|t|e }}" {% endif %}
+                                    {% if field.datasets %}
+                                        {% for datakey, datavalue in field.datasets %}
+                                            data-{{ datakey }}="{{ datavalue|e('html_attr') }}"
+                                        {% endfor %}
+                                    {% endif %}
                                 {% endblock %}
                             />
                             {% block append %}{% endblock append %}
