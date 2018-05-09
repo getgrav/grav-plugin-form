@@ -2,8 +2,6 @@ import $ from 'jquery';
 import Dropzone from 'dropzone';
 import { config, translations } from 'grav-form';
 
-let request = {};
-
 // translations
 const Dictionary = {
     dictCancelUpload: translations.PLUGIN_FORM.DROPZONE_CANCEL_UPLOAD,
