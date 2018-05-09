@@ -81,6 +81,7 @@ export default class FilesField {
         formData.append('name', this.options.dotNotation);
         formData.append('form-nonce', config.form_nonce);
         formData.append('task', 'filesupload');
+        formData.append('uri', this.getURI());
     }
 
     onDropzoneSuccess(file, response, xhr) {
@@ -139,6 +140,7 @@ export default class FilesField {
         data.append('__form-name__', this.container.closest('form').find('[name="__form-name__"]').val());
         data.append('name', this.options.dotNotation);
         data.append('form-nonce', config.form_nonce);
+        data.append('uri', this.getURI());
 
         if (file.sessionParams) {
             data.append('__form-file-remover__', '1');
