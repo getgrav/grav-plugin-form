@@ -88,9 +88,19 @@ class Form extends Iterator implements \Serializable
         $this->header_data = isset($header->data) ? $header->data : [];
 
         if ($form) {
+            // If form is given, use it.
             $this->items = $form;
+        } elseif ($name && isset($header->forms[$name])) {
+            // If form with that name was found, use that.
+             $this->items = $header->forms[$name];
         } elseif (isset($header->form)) {
-            $this->items = $header->form; // for backwards compatibility
+            // For backwards compatibility.
+            $this->items = $header->form;
+        } elseif (!empty($header->forms)) {
+            // Pick up the first form.
+            $form = reset($header->forms);
+            $name = key($header->forms);
+            $this->items = $form;
         }
 
         // Add form specific rules.

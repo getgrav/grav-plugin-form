@@ -1,12 +1,13 @@
 # v2.13.4
 ## mm/dd/2018
 
-1. [](#bugfix)
-    * Removed overridden class in `password` field
-    * Worked around forms being lost if form cache expired before page cache, see [#240](https://github.com/getgrav/grav-plugin-form/pull/240)
 1. [](#improved)
     * Added support for optgroup within select field
     * Allow file field to pass dropzone options
+1. [](#bugfix)
+    * Removed overridden class in `password` field
+    * Worked around forms being lost if form cache expired before page cache, see [#240](https://github.com/getgrav/grav-plugin-form/pull/240)
+    * Fixed default form in dynamically created page if header uses `forms` instead of old `form` field
 
 # v2.13.3
 ## 04/13/2018
