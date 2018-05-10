@@ -75,6 +75,10 @@ export default class FilesField {
         });
     }
 
+    getURI() {
+        return this.container.data('mediaUri') || '';
+    }
+
     onDropzoneSending(file, xhr, formData) {
         formData.append('__form-name__', this.container.closest('form').find('[name="__form-name__"]').val());
         formData.append('__form-file-uploader__', 1);
