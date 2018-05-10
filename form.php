@@ -815,6 +815,7 @@ class FormPlugin extends Plugin
     {
         // Save the current state of the forms to cache
         if ($this->recache_forms) {
+            $this->recache_forms = false;
             $this->grav['cache']->save($this->getFormCacheId(), [$this->forms, $this->flat_forms]);
         }
     }
