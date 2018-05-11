@@ -1,3 +1,23 @@
+# v2.14.0
+## 05/11/2018
+
+1. [](#new)
+    * Make `pagemedia` field available outside of pages context
+    * Added option on fields to disable displaying of label (`display_label: false`)
+    * Moved Dropzone HTML into an overridable Twig template
+    * Added support for image upload delete in Dropzone `file` field
+1. [](#improved)
+    * Added support for `optgroup` within select field
+    * Save forms only once (stops extra work being done)
+    * Allow file field to pass dropzone options
+    * Added datasets support to fields
+    * Added `field.classes` support to display field
+1. [](#bugfix)
+    * Removed overridden class in `password` field
+    * Worked around forms being lost if form cache expired before page cache, see [#240](https://github.com/getgrav/grav-plugin-form/pull/240)
+    * Fixed default form in dynamically created page if header uses `forms` instead of old `form` field
+    * Escape placeholder text in default field
+
 # v2.13.3
 ## 04/13/2018
 

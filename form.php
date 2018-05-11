@@ -163,16 +163,16 @@ class FormPlugin extends Plugin
         $submitted = false;
         $this->json_response = [];
 
+        // Save cached forms.
+        if ($this->recache_forms) {
+            $this->saveCachedForms();
+        }
+
         // Force rebuild form when form has not been built and form cache expired.
         // This happens when form cache expires before the page cache
         // and then does not trigger 'onPageProcessed' event.
         if (!$this->forms) {
             $this->onPageProcessed(new Event(['page' => $this->grav['page']]));
-        }
-
-        // Save cached forms
-        if ($this->recache_forms) {
-            $this->saveCachedForms();
         }
 
         // Enable form events if there's a POST
@@ -187,6 +187,8 @@ class FormPlugin extends Plugin
             if ($this->form) {
                 if (isset($_POST['__form-file-uploader__']) && $this->grav['uri']->extension() === 'json') {
                     $this->json_response = $this->form->uploadFiles();
+                } else if ($this->form && isset($_POST['__form-file-remover__']) && $this->grav['uri']->extension() === 'json') {
+                    $this->json_response = $this->form->filesSessionRemove();
                 } else {
                     $this->form->post();
                     $submitted = true;
@@ -813,6 +815,7 @@ class FormPlugin extends Plugin
     {
         // Save the current state of the forms to cache
         if ($this->recache_forms) {
+            $this->recache_forms = false;
             $this->grav['cache']->save($this->getFormCacheId(), [$this->forms, $this->flat_forms]);
         }
     }

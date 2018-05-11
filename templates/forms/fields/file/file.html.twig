@@ -3,6 +3,8 @@
 {% set files = defaults.files|merge(field|default([])) %}
 {% set limit = not field.multiple ? 1 : files.limit %}
 
+{% do config.set('forms.dropzone.enabled', true) %}
+
 {% macro bytesToSize(bytes) -%}
     {% spaceless %}
         {% set kilobyte = 1024 %}
@@ -57,7 +59,8 @@
 
 
     {% set settings = {name: field.name, paramName: (scope ~ field.name)|fieldName ~ (files.multiple ? '[]' : ''), limit: limit, filesize: form_max_filesize, accept: files.accept, resolution: files.resolution, resizeWidth: files.resizeWidth, resizeHeight: files.resizeHeight, resizeQuality: files.resizeQuality } %}
-    <div class="{{ form_field_wrapper_classes ?: 'form-input-wrapper' }} dropzone files-upload form-input-file {{ field.size }}" data-grav-file-settings="{{ settings|json_encode|e('html_attr') }}">
+    {% set dropzoneSettings = field.dropzone %}
+    <div class="{{ form_field_wrapper_classes ?: 'form-input-wrapper' }} dropzone files-upload form-input-file {{ field.size }}" data-grav-file-settings="{{ settings|json_encode|e('html_attr') }}" data-dropzone-options="{{ dropzoneSettings|json_encode|e('html_attr') }}">
         <input
                 {# required attribute structures #}
                 {% block input_attributes %}
