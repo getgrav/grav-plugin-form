@@ -40,11 +40,7 @@
                 {% else %}
                     {% set selected = field.selectize ? item_value : key %}
                     {% set val = field.selectize and field.multiple ? item_value : key %}
-                    <option {% if key == value or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ val }}">
-                        {%- if grav.twig.twig.filters['tu'] is defined %}
-                            {{ item_value|tu|raw }}{% else %}{{ item_value|t|raw }}
-                        {%- endif -%}
-                    </option>
+                    <option {% if key == value or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ val }}">{%- if grav.twig.twig.filters['tu'] is defined -%}{{ item_value|tu|raw }}{% else %}{{ item_value|t|raw }}{%- endif -%}</option>
                 {% endif %}
             {% endfor %}
 
