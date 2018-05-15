@@ -1,3 +1,9 @@
+# v2.14.1
+## 05/15/2018
+
+1. [](#bugfix)
+    * Fixed regression with select field, causing issues with filepicker field [grav-plugin-admin#1441](https://github.com/getgrav/grav-plugin-admin/issues/1441)
+    
 # v2.14.0
 ## 05/11/2018
 
