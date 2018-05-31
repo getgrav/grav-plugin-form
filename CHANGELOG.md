@@ -1,5 +1,5 @@
 # v2.15.0
-## mm/dd/2018
+## 05/31/2018
 
 1. [](#new)
     * Added support for `Uri::post()`
