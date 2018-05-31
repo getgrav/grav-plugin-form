@@ -1,3 +1,10 @@
+# v2.15.0
+## 05/31/2018
+
+1. [](#new)
+    * Added support for `Uri::post()`
+    * Added support for `autocapitalize`, `inputmode`, and `spellcheck` options in field definitions
+
 # v2.14.1
 ## 05/15/2018
 

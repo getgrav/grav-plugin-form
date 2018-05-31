@@ -625,11 +625,14 @@ class Form extends Iterator implements \Serializable
     public function post()
     {
         $grav = Grav::instance();
-        $uri = $grav['uri']->url;
+        $uri = $grav['uri'];
+        $url = $uri->url;
         $session = $grav['session'];
 
-        if (isset($_POST)) {
-            $this->values = new Data(isset($_POST) ? (array)$_POST : []);
+        $post = $uri->post();
+
+        if ($post) {
+            $this->values = new Data((array)$post);
             $data = $this->values->get('data');
 
             // Add post data to form dataset
@@ -694,7 +697,7 @@ class Form extends Iterator implements \Serializable
         // Process previously uploaded files for the current URI
         // and finally store them. Everything else will get discarded
         $queue = $session->getFlashObject('files-upload');
-        $queue = $queue[base64_encode($uri)];
+        $queue = $queue[base64_encode($url)];
         if (is_array($queue)) {
             foreach ($queue as $key => $files) {
                 foreach ($files as $destination => $file) {
