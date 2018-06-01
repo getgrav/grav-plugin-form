@@ -1,3 +1,9 @@
+# v2.15.1
+## mm/dd/2018
+
+1. [](#improved)
+    * Including EXIF JS library in the modules dependencies to fix orientation when uploading images 
+
 # v2.15.0
 ## 05/31/2018
 
