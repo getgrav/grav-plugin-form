@@ -66,6 +66,8 @@ de:
     ACCEPT_HELP: "Eine Liste von MIME-Typen, die hochgeladen werden dürfen."
     ERROR_VALIDATING_CAPTCHA: "Die Überprüfung des Captcha ist fehlgeschlagen."
     DATA_SUMMARY: "Hier die Zusammenfassung von dem, was Sie geschrieben haben:"
+    YES: "Ja"
+    NO: "Nein"
 
 es:
   PLUGIN_FORM:
