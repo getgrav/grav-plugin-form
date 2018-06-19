@@ -14,8 +14,10 @@
                         {% block field_value %}
                             {% if field.type == 'checkboxes' %}
                                 <ul>
-                                    {% for value in form.value(scope ~ field.name) %}
-                                        <li>{{ field.options[value]|e }}</li>
+                                    {% set use_keys = field.use is defined and field.use == 'keys' %}
+                                    {% for key,value in form.value(scope ~ field.name) %}
+                                        {% set index = (use_keys ? key : value) %}
+                                        <li>{{ field.options[index]|e }}</li>
                                     {% endfor %}
                                 </ul>
                             {% elseif field.type == 'checkbox' %}

@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import Dropzone from 'dropzone';
+import EXIF from 'exif-js';
 import { config, translations } from 'grav-form';
 
 // translations
@@ -26,6 +27,8 @@ const DropzoneMediaConfig = {
     dictRemoveFileConfirmation: Dictionary.dictRemoveFileConfirmation,
     previewTemplate: ''
 };
+
+window.EXIF = EXIF;
 
 export default class FilesField {
     constructor({ container = '.dropzone.files-upload', options = {} } = {}) {
