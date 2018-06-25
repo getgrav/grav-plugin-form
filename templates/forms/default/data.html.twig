@@ -8,7 +8,11 @@
                 {% block field %}
                     <div>
                         {% block field_label %}
-                            <strong>{{ field.label|t|e }}</strong>:
+                            {% if field.label is not same as(false) %}
+                                <strong>{{ field.label|t|e }}</strong>:
+                            {% else %}
+                                <strong>{{ field.placeholder|t|e }}</strong>:
+                            {% endif %}
                         {% endblock %}
 
                         {% block field_value %}
