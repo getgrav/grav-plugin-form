@@ -702,11 +702,14 @@ class Form extends Iterator implements \Serializable
         $queue = $session->getFlashObject('files-upload');
         $queue = $queue[base64_encode($url)];
         if (is_array($queue)) {
+            $destinations = [];
             foreach ($queue as $key => $files) {
                 foreach ($files as $destination => $file) {
                     // E.g., allow plugins to cleanup a destination directory
-                    $grav->fireEvent('onFormStoreUploadInDestination', new Event(['destination' => $destination]));
-                    
+                    if (!in_array($destination, $destinations)) {
+                        $grav->fireEvent('onFormStoreUploadInDestination', new Event(['destination' => $destination]));
+                        $destinations[] = $destination;
+                    }                 
                     if (!rename($file['tmp_name'], $destination)) {
                         throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $file['tmp_name'] . '"', $destination));
                     }
