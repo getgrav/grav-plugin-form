@@ -703,7 +703,7 @@ class Form extends Iterator implements \Serializable
         $queue = $queue[base64_encode($url)];
         if (is_array($queue)) {
             // Allow plugins to implement additional / alternative logic
-            $grav->fireEvent('onFormStoreUploads', new Event(['queue' => $queue]));
+            $grav->fireEvent('onFormStoreUploads', new Event($queue));
             foreach ($queue as $key => $files) {
                 foreach ($files as $destination => $file) {
                     if (!rename($file['tmp_name'], $destination)) {
