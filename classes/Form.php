@@ -404,7 +404,7 @@ class Form extends Iterator implements \Serializable
         );
         // Allow plugins to adapt settings for a given post name
         // Useful if schema retrieval is not an option, e.g. dynamically created forms
-        $grav->fireEvent('onFormUploadSettings', $settings);
+        $grav->fireEvent('onFormUploadSettings', ['settings' => $settings]);
 
         $upload = $this->normalizeFiles($_FILES['data'], $settings->name);
 
@@ -703,7 +703,7 @@ class Form extends Iterator implements \Serializable
         $queue = $queue[base64_encode($url)];
         if (is_array($queue)) {
             // Allow plugins to implement additional / alternative logic
-            $grav->fireEvent('onFormStoreUploads', new Event($queue));
+            $grav->fireEvent('onFormStoreUploads', new Event(['queue' => $queue]));
             foreach ($queue as $key => $files) {
                 foreach ($files as $destination => $file) {
                     if (!rename($file['tmp_name'], $destination)) {
