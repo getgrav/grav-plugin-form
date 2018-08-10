@@ -63,9 +63,9 @@
                                     {% if autofocus %}autofocus="autofocus"{% endif %}
                                     {% if field.novalidate in ['on', 'true', 1] %}novalidate="novalidate"{% endif %}
                                     {% if field.readonly in ['on', 'true', 1] %}readonly="readonly"{% endif %}
-                                    {% if field.autocomplete in ['on', 'off', 'new-password'] %}autocomplete="{{ field.autocomplete }}"{% endif %}
+                                    {% if field.autocomplete is defined %}autocomplete="{{ field.autocomplete }}"{% endif %}
                                     {% if field.autocapitalize in ['off', 'characters', 'words', 'sentences'] %}autocapitalize="{{ field.autocapitalize }}"{% endif %}
-                                    {% if field.inputmode in ['none', 'text', 'decimal', 'numeric', 'tel', 'search', 'emaiil', 'url'] %}inputmode="{{ field.inputmode }}"{% endif %}
+                                    {% if field.inputmode in ['none', 'text', 'decimal', 'numeric', 'tel', 'search', 'email', 'url'] %}inputmode="{{ field.inputmode }}"{% endif %}
                                     {% if field.spellcheck in ['true', 'false'] %}spellcheck="{{ field.spellcheck }}"{% endif %}
 
                                     {% if field.attributes is defined %}
