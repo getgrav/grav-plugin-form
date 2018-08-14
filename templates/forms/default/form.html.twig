@@ -34,6 +34,7 @@
 
   {% block inner_markup_fields_start %}{% endblock %}
 
+  {% set data = data ?? form.data %}
   {% for field in form.fields %}
     {% if field.type == 'file' %}
         {% do assets.addJs('plugin://form/assets/form.min.js') %}
