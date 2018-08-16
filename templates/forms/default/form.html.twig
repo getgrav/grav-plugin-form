@@ -37,8 +37,8 @@
   {% set data = data ?? form.data %}
   {% for field in form.fields %}
     {% if field.type == 'file' or field.type == 'array' %}
-        {% do assets.addJs('plugin://form/assets/vendor.min.js') %}
-        {% do assets.addJs('plugin://form/assets/form.min.js') %}
+        {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'loading': 'defer' }) %}
+        {% do assets.addJs('plugin://form/assets/form.min.js', { 'loading': 'defer' }) %}
     {% endif %}
     {% set value = form.value(field.name) %}
     {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
