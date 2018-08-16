@@ -1,4 +1,4 @@
-// import FileInstances from './file';
+import FileInstances from './file';
 import ArrayInstances from './array';
 
-export default { ArrayInstances };
+export default { FileInstances, ArrayInstances };
