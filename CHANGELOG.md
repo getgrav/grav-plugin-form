@@ -1,3 +1,9 @@
+# v2.15.2
+## mm/dd/2018
+
+1. [](#improved)
+    * Added `array` field for frontend use
+
 # v2.15.1
 ## 06/20/2018
 

@@ -36,7 +36,8 @@
 
   {% set data = data ?? form.data %}
   {% for field in form.fields %}
-    {% if field.type == 'file' %}
+    {% if field.type == 'file' or field.type == 'array' %}
+        {% do assets.addJs('plugin://form/assets/vendor.min.js') %}
         {% do assets.addJs('plugin://form/assets/form.min.js') %}
     {% endif %}
     {% set value = form.value(field.name) %}
