@@ -22,6 +22,17 @@
     {% set action = base_url_relative ~ '/' ~ page.slug %}
 {% endif %}
 
+    {% do assets.addInlineJs("
+        window.GravForm = window.GravForm || {};
+        window.GravForm.config = {
+            current_url: '" ~ uri.route(true) ~"',
+            base_url_relative: '" ~ base_url_relative ~ "',
+            param_sep: '"~ config.system.param_sep ~ "',
+            form_nonce: '" ~ form.getNonce ~ "',
+        };
+        window.GravForm.translations = {};
+        window.GravForm.translations['PLUGIN_FORM'] = {};
+    ", { 'group': 'bottom' }) %}
 <form name="{{ form.name }}"
       action="{{ action | trim('/', 'right') }}"
       method="{{ method }}"{{ multipart }}

@@ -4,8 +4,6 @@
 {% set limit = not field.multiple ? 1 : files.limit %}
 
 {% do config.set('forms.dropzone.enabled', true) %}
-{% do assets.addJs('plugin://form/assets/form.vendor.js', { 'loading': 'defer' }) %}
-{% do assets.addJs('plugin://form/assets/form.min.js', { 'loading': 'defer' }) %}
 
 {% macro bytesToSize(bytes) -%}
     {% spaceless %}
@@ -83,18 +81,22 @@
     </div>
 
     {% do assets.addJs('jquery', 101) %}
-    {% do assets.addJs('plugin://form/assets/form.min.js', { 'group': 'bottom', 'loading': 'defer' }) %}
+    {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'loading': 'defer' }) %}
+    {% do assets.addJs('plugin://form/assets/form.min.js', { 'loading': 'defer' }) %}
     {% do assets.addCss('plugin://form/assets/dropzone.min.css', { 'group': 'form' }) %}
     {{ assets.css('form')|raw }}
     {% do assets.addInlineJs("
-    window.GravForm = window.GravForm || {};
-    window.GravForm.config = {
-        current_url: '" ~ uri.route(true) ~"',
-        base_url_relative: '" ~ base_url_relative ~ "',
-        param_sep: '"~ config.system.param_sep ~ "',
-        form_nonce: '" ~ form.getNonce ~ "',
-    };
-    window.GravForm.translations = {};
+        window.GravForm = window.GravForm || {};
+        window.GravForm.config = {
+            current_url: '" ~ uri.route(true) ~"',
+            base_url_relative: '" ~ base_url_relative ~ "',
+            param_sep: '"~ config.system.param_sep ~ "',
+            form_nonce: '" ~ form.getNonce ~ "',
+        };
+        window.GravForm.translations = {};
+        window.GravForm.translations['PLUGIN_FORM'] = {};
+    ", { 'group': 'bottom' }) %}
+    {% do assets.addInlineJs("
     window.GravForm.translations['PLUGIN_FORM'] = {
         'DROPZONE_CANCEL_UPLOAD': " ~ 'PLUGIN_FORM.DROPZONE_CANCEL_UPLOAD'|t|json_encode ~ ",
         'DROPZONE_CANCEL_UPLOAD_CONFIRMATION': " ~ 'PLUGIN_FORM.DROPZONE_CANCEL_UPLOAD_CONFIRMATION'|t|json_encode ~ ",
