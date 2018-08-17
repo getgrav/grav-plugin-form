@@ -4,6 +4,8 @@
 {% set limit = not field.multiple ? 1 : files.limit %}
 
 {% do config.set('forms.dropzone.enabled', true) %}
+{% do assets.addJs('plugin://form/assets/form.vendor.js', { 'loading': 'defer' }) %}
+{% do assets.addJs('plugin://form/assets/form.min.js', { 'loading': 'defer' }) %}
 
 {% macro bytesToSize(bytes) -%}
     {% spaceless %}

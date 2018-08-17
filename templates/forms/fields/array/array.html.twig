@@ -1,5 +1,8 @@
 {% extends "forms/field.html.twig" %}
 
+{% do assets.addJs('plugin://form/assets/form.vendor.js', { 'loading': 'defer' }) %}
+{% do assets.addJs('plugin://form/assets/form.min.js', { 'loading': 'defer' }) %}
+
 {% block global_attributes %}
     data-grav-array-name="{{ (scope ~ field.name)|fieldName }}"
     data-grav-array-keyname="{{ field.placeholder_key|e|tu }}"
