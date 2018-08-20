@@ -22,6 +22,22 @@
     {% set action = base_url_relative ~ '/' ~ page.slug %}
 {% endif %}
 
+{% if form.keep_alive %}
+    {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'loading': 'defer', 'group': 'bottom' }) %}
+    {% do assets.addJs('plugin://form/assets/form.min.js', { 'loading': 'defer', 'group': 'bottom' }) %}
+{% endif %}
+
+    {% do assets.addInlineJs("
+        window.GravForm = window.GravForm || {};
+        window.GravForm.config = {
+            current_url: '" ~ uri.route(true) ~"',
+            base_url_relative: '" ~ base_url_relative ~ "',
+            param_sep: '"~ config.system.param_sep ~ "',
+            form_nonce: '" ~ form.getNonce ~ "',
+            session_timeout: " ~ config.system.session.timeout ~ "
+        };
+        window.GravForm.translations = jQuery.extend({}, window.GravForm.translations || {}, { PLUGIN_FORM: {} });
+    ", { 'group': 'bottom' }) %}
 <form name="{{ form.name }}"
       action="{{ action | trim('/', 'right') }}"
       method="{{ method }}"{{ multipart }}
@@ -30,14 +46,13 @@
       class="{{ form_outer_classes }} {{ form.classes }}"
       {% endblock %}
       {% if form.novalidate %}novalidate{% endif %}
+      {% if form.keep_alive %}data-grav-keepalive="true"{% endif %}
 >
 
   {% block inner_markup_fields_start %}{% endblock %}
 
+  {% set data = data ?? form.data %}
   {% for field in form.fields %}
-    {% if field.type == 'file' %}
-        {% do assets.addJs('plugin://form/assets/form.min.js') %}
-    {% endif %}
     {% set value = form.value(field.name) %}
     {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
   {% endfor %}
