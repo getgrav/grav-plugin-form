@@ -1,5 +1,5 @@
 # v2.16.0
-## mm/dd/2018
+## 08/20/2018
 
 1. [](#new)
     * Added new `form.keep_alive` option to keep session alive [#275](https://github.com/getgrav/grav-plugin-form/issues/275)
