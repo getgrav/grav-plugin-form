@@ -40,6 +40,7 @@
       class="{{ form_outer_classes }} {{ form.classes }}"
       {% endblock %}
       {% if form.novalidate %}novalidate{% endif %}
+      {% if form.keep_alive %}data-grav-keepalive="true"{% endif %}
 >
 
   {% block inner_markup_fields_start %}{% endblock %}

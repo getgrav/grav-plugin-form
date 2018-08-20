@@ -94,6 +94,12 @@ class FormPlugin extends Plugin
             'onTwigSiteVariables' => ['onTwigVariables', 0],
             'onFormValidationProcessed' => ['onFormValidationProcessed', 0],
         ]);
+
+        // Mini Keep-Alive Logic
+        $task = $this->grav['uri']->param('task');
+        if ($task && $task === 'keep-alive') {
+            exit;
+        }
     }
 
     public function onGetPageTemplates(Event $event)
