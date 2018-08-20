@@ -1,8 +1,11 @@
-# v2.15.2
+# v2.16.0
 ## mm/dd/2018
 
-1. [](#improved)
+1. [](#new)
+    * Added new `form.keep_alive` option to keep session alive [#275](https://github.com/getgrav/grav-plugin-form/issues/275)
     * Added `array` field for frontend use
+1. [](#improved)
+    * Improving compatibility `autocomplete` spec [#274](https://github.com/getgrav/grav-plugin-form/pull/274)    
 
 # v2.15.1
 ## 06/20/2018

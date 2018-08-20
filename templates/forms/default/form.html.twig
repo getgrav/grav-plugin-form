@@ -22,6 +22,11 @@
     {% set action = base_url_relative ~ '/' ~ page.slug %}
 {% endif %}
 
+{% if form.keep_alive %}
+    {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'loading': 'defer', 'group': 'bottom' }) %}
+    {% do assets.addJs('plugin://form/assets/form.min.js', { 'loading': 'defer', 'group': 'bottom' }) %}
+{% endif %}
+
     {% do assets.addInlineJs("
         window.GravForm = window.GravForm || {};
         window.GravForm.config = {
@@ -29,6 +34,7 @@
             base_url_relative: '" ~ base_url_relative ~ "',
             param_sep: '"~ config.system.param_sep ~ "',
             form_nonce: '" ~ form.getNonce ~ "',
+            session_timeout: " ~ config.system.session.timeout ~ "
         };
         window.GravForm.translations = jQuery.extend({}, window.GravForm.translations || {}, { PLUGIN_FORM: {} });
     ", { 'group': 'bottom' }) %}
@@ -40,6 +46,7 @@
       class="{{ form_outer_classes }} {{ form.classes }}"
       {% endblock %}
       {% if form.novalidate %}novalidate{% endif %}
+      {% if form.keep_alive %}data-grav-keepalive="true"{% endif %}
 >
 
   {% block inner_markup_fields_start %}{% endblock %}
