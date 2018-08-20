@@ -22,6 +22,11 @@
     {% set action = base_url_relative ~ '/' ~ page.slug %}
 {% endif %}
 
+{% if form.keep_alive %}
+    {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'loading': 'defer', 'group': 'bottom' }) %}
+    {% do assets.addJs('plugin://form/assets/form.min.js', { 'loading': 'defer', 'group': 'bottom' }) %}
+{% endif %}
+
     {% do assets.addInlineJs("
         window.GravForm = window.GravForm || {};
         window.GravForm.config = {
