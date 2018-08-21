@@ -81,9 +81,9 @@
     </div>
 
     {% do assets.addJs('jquery', 101) %}
-    {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'loading': 'defer' }) %}
-    {% do assets.addJs('plugin://form/assets/form.min.js', { 'loading': 'defer' }) %}
-    {% do assets.addCss('plugin://form/assets/dropzone.min.css', { 'group': 'form' }) %}
+    {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'loading': 'defer', 'group': 'bottom'  }) %}
+    {% do assets.addJs('plugin://form/assets/form.min.js', { 'loading': 'defer', 'group': 'bottom'  }) %}
+    {% do assets.addCss('plugin://form/assets/dropzone.min.css', { 'group': 'form'}) %}
     {{ assets.css('form')|raw }}
     {% do assets.addInlineJs("
     window.GravForm = window.GravForm || {};
