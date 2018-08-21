@@ -1,3 +1,11 @@
+# v2.16.2
+## mm/dd/2018
+
+1. [](#improved)
+    * Simple styling fixes for `array` field
+1. [](#bugfix)
+    * Fixed issue with translations of placeholder text in `array` field
+
 # v2.16.1
 ## 08/20/2018
 
