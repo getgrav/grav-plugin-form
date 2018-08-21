@@ -74,7 +74,6 @@ export default class PageMedia extends FilesField {
         data.append('__form-name__', this.container.closest('form').find('[name="__form-name__"]').val());
         data.append('name', this.options.dotNotation);
         data.append('form-nonce', config.form_nonce);
-        data.append('uri', this.getURI());
 
         if (file.sessionParams) {
             data.append('__form-file-remover__', '1');
@@ -101,22 +100,20 @@ export default class PageMedia extends FilesField {
 
     fetchMedia() {
         const order = this.container.closest('.form-field').find('[name="data[header][media_order]"]').val();
-        const data = { uri: this.getURI(), order };
+        const data = { order };
         let url = this.urls.fetch;
 
-        console.log(this.urls.fetch, url, {
-            url,
-            method: 'POST',
-            data});
         $.ajax({
             url,
             method: 'POST',
             data,
             success: (response) => {
-                let results = response;
+                if (!Array.isArray(response)) {
+                    return false;
+                }
 
-                Object.keys(results).forEach((name) => {
-                    let data = results[name];
+                Object.keys(response).forEach((name) => {
+                    let data = response[name];
                     let mock = { name, size: data.size, accepted: true, extras: data };
 
                     this.dropzone.files.push(mock);
@@ -154,7 +151,6 @@ export default class PageMedia extends FilesField {
 
         formData.append('name', this.options.dotNotation);
         formData.append('admin-nonce', config.admin_nonce);
-        formData.append('uri', this.getURI());
     }
 
     onDropzoneComplete(file) {
