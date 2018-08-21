@@ -1,3 +1,9 @@
+# v2.16.1
+## 08/20/2018
+
+1. [](#new)
+    * Fixed a regression issue with `file` & `array` field
+
 # v2.16.0
 ## 08/20/2018
 
