@@ -52,6 +52,7 @@
   {% block inner_markup_fields_start %}{% endblock %}
 
   {% set data = data ?? form.data %}
+  {% set context = context ?? data %}
   {% for field in form.fields %}
     {% set value = form.value(field.name) %}
     {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
