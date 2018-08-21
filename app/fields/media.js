@@ -3,7 +3,7 @@ import FilesField from './file';
 import { config, translations } from 'grav-form';
 import Sortable from 'sortablejs';
 
-const previewTemplate = `
+const template = `
     <div class="dz-preview dz-file-preview">
       <div class="dz-details">
         <div class="dz-filename"><span data-dz-name></span></div>
@@ -15,13 +15,11 @@ const previewTemplate = `
       <div class="dz-error-mark"><span>✘</span></div>
       <div class="dz-error-message"><span data-dz-errormessage></span></div>
       <a class="dz-remove" title="${translations.PLUGIN_FORM.DELETE}" href="javascript:undefined;" data-dz-remove>${translations.PLUGIN_FORM.DELETE}</a>
-      <a class="dz-metadata" title="${translations.PLUGIN_FORM.METADATA}" href="#" target="_blank" data-dz-metadata>${translations.PLUGIN_FORM.METADATA}</a>
-      <a class="dz-view" title="${translations.PLUGIN_FORM.VIEW}" href="#" target="_blank" data-dz-view>${translations.PLUGIN_FORM.VIEW}</a>
-      <a class="dz-insert" title="${translations.PLUGIN_FORM.INSERT}" href="javascript:undefined;" data-dz-insert>${translations.PLUGIN_FORM.INSERT}</a>
     </div>`.trim();
 
 export default class PageMedia extends FilesField {
     constructor({ container = '#grav-dropzone', options = {} } = {}) {
+        const previewTemplate = $('#dropzone-media-template').html() || template;
         options = Object.assign(options, { previewTemplate });
         super({ container, options });
         if (!this.container.length) { return; }
