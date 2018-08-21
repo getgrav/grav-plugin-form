@@ -215,6 +215,7 @@ export default class FilesField {
     }
 }
 
+/*
 export function UriToMarkdown(uri) {
     uri = uri.replace(/@3x|@2x|@1x/, '');
     uri = uri.replace(/\(/g, '%28');
@@ -222,6 +223,7 @@ export function UriToMarkdown(uri) {
 
     return uri.match(/\.(jpe?g|png|gif|svg)$/i) ? `![](${uri})` : `[${decodeURI(uri)}](${uri})`;
 }
+*/
 
 let instances = [];
 let cache = $();
