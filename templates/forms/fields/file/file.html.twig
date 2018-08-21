@@ -87,7 +87,7 @@
     {{ assets.css('form')|raw }}
     {% do assets.addInlineJs("
     window.GravForm = window.GravForm || {};
-    window.GravForm = jQuery.extend({}, {
+    window.GravForm = jQuery.extend({}, window.GravForm, {
         translations: {
             PLUGIN_FORM: {
                 'DROPZONE_CANCEL_UPLOAD': " ~ 'PLUGIN_FORM.DROPZONE_CANCEL_UPLOAD'|t|json_encode ~ ",
@@ -106,4 +106,5 @@
             }
         }
     });
+    ", { 'group': 'bottom' }) %}
 {% endblock %}
