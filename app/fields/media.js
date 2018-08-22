@@ -106,10 +106,11 @@ export default class PageMedia extends FilesField {
             method: 'POST',
             data,
             success: (response) => {
-                if (!Array.isArray(response)) {
+                if (typeof response === 'string' || response instanceof String) {
                     return false;
                 }
 
+                response = response.results;
                 Object.keys(response).forEach((name) => {
                     let data = response[name];
                     let mock = { name, size: data.size, accepted: true, extras: data };
