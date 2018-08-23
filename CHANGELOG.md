@@ -1,3 +1,12 @@
+# v2.16.2
+## 08/23/2018
+
+1. [](#improved)
+    * Switched to new Grav `Yaml` class to support Native + Fallback YAML libraries
+    * Simple styling fixes for `array` field
+1. [](#bugfix)
+    * Fixed issue with translations of placeholder text in `array` field
+
 # v2.16.1
 ## 08/20/2018
 

@@ -11,10 +11,10 @@ use Grav\Common\Plugin;
 use Grav\Common\Twig\Twig;
 use Grav\Common\Utils;
 use Grav\Common\Uri;
+use Grav\Common\Yaml;
 use Grav\Plugin\Form\Form;
 use RocketTheme\Toolbox\File\JsonFile;
 use RocketTheme\Toolbox\File\YamlFile;
-use Symfony\Component\Yaml\Yaml;
 use RocketTheme\Toolbox\File\File;
 use RocketTheme\Toolbox\Event\Event;
 

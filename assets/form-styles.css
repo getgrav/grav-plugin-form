@@ -23,8 +23,6 @@
     margin: 0;
 }
 
-
-
 .form-input-file input {
     display: none;
 }
@@ -122,3 +120,17 @@
     justify-content: space-between;
     margin-top: 8px;
 }
+
+[data-grav-field="array"] .form-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+[data-grav-field="array"] .form-row > input,
+[data-grav-field="array"] .form-row > textarea
+{
+    margin: 0 0.5rem;
+    display: inline-block;
+}
+
