@@ -1,5 +1,5 @@
 name: Form
-version: 2.16.1
+version: 2.16.2
 description: Enables the forms handling
 icon: check-square
 author:
@@ -12,7 +12,7 @@ bugs: https://github.com/getgrav/grav-plugin-form/issues
 license: MIT
 
 dependencies:
-    - { name: grav, version: '>=1.4.5' }
+    - { name: grav, version: '>=1.5.1' }
 
 form:
   validation: strict
