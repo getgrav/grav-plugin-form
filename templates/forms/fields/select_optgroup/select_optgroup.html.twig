@@ -32,7 +32,7 @@
                 {%for subkey, suboption in field.options[key][optgroup_label] %}
                 {% set selected = field.selectize ? suboption : subkey %}
                 {% set item_value = field.selectize and field.multiple ? suboption : subkey %}
-                    <option {% if selectedoption == false subkey == value or (field.multiple and selected in value) %}{% set selectedoption = true %}selected="selected"{% endif %} value="{{ suboption }}">
+                    <option {% if selectedoption == false and subkey == value or (field.multiple and selected in value) %}{% set selectedoption = true %}selected="selected"{% endif %} value="{{ suboption }}">
                         {% if grav.twig.twig.filters['tu'] is defined %}
                         {{ suboption|tu|raw }}{% else %}{{ suboption|t|raw }}
                         {% endif %}
