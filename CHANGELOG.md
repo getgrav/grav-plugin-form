@@ -1,3 +1,9 @@
+# v2.16.3
+## mm/dd/2018
+
+1. [](#bugfix)
+    * Fixed issue where `select` set up as `multiple` and with `selectize: create: true` would not properly merge newly created values on rendering.
+ 
 # v2.16.2
 ## 08/23/2018
 
