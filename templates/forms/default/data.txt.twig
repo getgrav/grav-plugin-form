@@ -7,7 +7,7 @@
     {%- else %}
         {%- if field.fields %}
         {%- set new_scope = field.nest_id ? scope ~ field.name ~ '.' : scope -%}
-        {{- _self.render_field(form, field.fields, new_scope) }}
+        {{- macro.render_field(form, field.fields, new_scope) }}
         {%- endif %}
     {%- endif %}
 {%- endfor %}
