@@ -40,5 +40,7 @@
     {% endfor %}
 {% endmacro %}
 
-{{ _self.render_field(form, form.fields, '') }}
+{% import _self as macro %}
+
+{{ macro.render_field(form, form.fields, '') }}
 

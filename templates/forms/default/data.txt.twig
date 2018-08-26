@@ -12,6 +12,7 @@
     {%- endif %}
 {%- endfor %}
 {%- endmacro %}
+{%- import _self as macro %}
 {%- autoescape false %}
-{{- _self.render_field(form, form.fields, '') ~ "\r\n" }}
+{{- macro.render_field(form, form.fields, '') ~ "\r\n" }}
 {%- endautoescape %}
