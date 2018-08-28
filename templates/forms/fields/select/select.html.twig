@@ -26,7 +26,7 @@
 
             {% set options = field.options %}
             {% if field.selectize.create and field.multiple %}
-                {% set options = options|merge(value|default([])) %}
+                {% set options = options|merge(value|default([]))|array_unique %}
             {% endif %}
 
             {% for key, item_value in options %}
