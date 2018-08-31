@@ -1,0 +1,76 @@
+form:
+  fields:
+    
+    # - Flexible Content Field -
+    #
+    # The Flexible Content Field is used to let a user
+    # define groups of sub fields (layouts) that he/she can add, edit,
+    # and re-order to create highly customized content.
+
+    fieldSeletion:
+      type: fieldset
+      title: Field selection
+      text: Flexible Content Fields
+      icon: puzzle-piece
+      collapsed: false
+      collapsible: false
+      fields:
+
+        # Flexible Content Field - Repeater
+        header.fieldselection:
+          type: fieldselection # new type - uses list field type
+          style: vertical
+          select: # integrated select
+            label: Select the type of field you would like to add
+            placeholder: Choose a component # The default text for the select option
+            default: null
+            options: # FORMAT: "reference for the user selected option in frontmatter" : "Human readable text for the select option"
+              tinymce: Text editor
+              slideshow: Fancy slideshow
+              testimonial: Product testimonial
+              video: Responsive youtube video
+          fields:
+
+            # User defined fields
+            # !! fields can't be named '.select'
+            # as this will overwrite the integrated select field !!
+
+            .tinymce:
+              type: fieldset
+              title: Text Editor
+              collapsed: true
+              collapsible: true
+              fields:
+                .tinymce.title:
+                  type: text
+                  label: title
+
+            .slideshow:
+              type: fieldset
+              title: Slideshow
+              collapsed: true
+              collapsible: true
+              fields:
+                .slideshow.title:
+                  type: text
+                  label: title
+
+            .testimonial:
+              type: fieldset
+              title: Testimonial
+              collapsed: true
+              collapsible: true
+              fields:
+                .testimonial.title:
+                  type: text
+                  label: title
+
+            .video:
+              type: fieldset
+              title: Video
+              collapsed: true
+              collapsible: true
+              fields:
+                .video.title:
+                  type: text
+                  label: title

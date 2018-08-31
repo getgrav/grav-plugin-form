@@ -1,0 +1,143 @@
+{% extends "forms/field.html.twig" %}
+
+{% set value = (value is null ? field.default : value) %}
+{% set name = field.name %}
+{% set btnLabel = field.btnLabel is defined ? field.btnLabel : "PLUGIN_ADMIN.ADD_ITEM" %}
+{% set btnSortLabel = field.btnSortLabel is defined ? field.btnSortLabel : "PLUGIN_ADMIN.SORT_BY" %}
+{% set fieldControls = field.controls|default('bottom') %}
+
+{# fieldselection variables #}
+{% set select = field.select %}
+{% set select = select|merge({'type':'select','classes':'flexible-form-field__select','name':'.select'}) %}
+{% set selectJSON = {'.select':select} %}
+{% set options = select.options %}
+{% set thefields = field.fields %}
+{% set thefields = selectJSON|merge(thefields) %}
+
+{% block contents %}
+    {# Block contents head #}
+    {% include 'forms/fields/fieldselection/blocks/block-contents-head.html.twig' %}
+
+            {# added class flexible-form-field by default #}
+            <ul  class="flexible-form-field {% if field.classes is defined %}{{ field.classes }}{% endif %}" data-collection-holder="{{ name }}"
+                {% if field.sort is same as(false) %}
+                    data-collection-nosort
+                {% endif %}>
+
+                {% if thefields %}
+                {% set collapsible = thefields|length > 1 and (field.collapsible is not defined or field.collapsible)  %}
+                {% for key, val in value %}
+                    {% set itemName = name ? name ~ '.' ~ key : key %}
+
+                    <li data-collection-item="{{ itemName }}" data-collection-key="{{ key }}" class="flexible-form-field__item {{ collapsible and field.collapsed ? 'collection-collapsed' : '' }}">
+                        <div class="collection-sort"><i class="fa fa-fw fa-bars"></i></div>
+
+                        {% for childName, child in thefields %}
+
+                            {%- if childName == 'value' -%}
+                                {% set childKey = '' %}
+                                {% set childValue = val %}
+                                {% set childName = itemName -%}
+                            {%- elseif childName starts with '.' -%}
+                                {% set childKey = childName|trim('.') %}
+                                {% set childValue = val[childName[1:]] %}
+                                {% set childName = itemName ~ childName %}
+                            {% else %}
+                                {% set childKey = childName %}
+                                {% set childValue = data.value(scope ~ childName) %}
+                                {% set childName = childName|replace({'*': key}) %}
+                            {% endif %}
+                            {% set child = child|merge({ name: childName }) %}
+
+                            <div class="flexible-form-field__{{ childKey }}">
+                            {% if child.type == 'key' %}
+                                {%
+                                    include 'forms/fields/key/key.html.twig'
+                                    with { field: child, value: key }
+                                %}
+                            {% elseif child.key == true %}
+                                {% include [
+                                        "forms/fields/#{child.type}/#{child.type}.html.twig",
+                                        'forms/fields/key/key.html.twig'
+                                    ] with { field: child, value: key }
+                                %}
+                            {% elseif child.type %}
+                                {% set originalValue = childValue %}
+                                {%
+                                    include [
+                                        "forms/fields/#{child.type}/#{child.type}.html.twig",
+                                        'forms/fields/text/text.html.twig'
+                                    ] with { field: child, value: childValue }
+                                %}
+                            {% endif %}
+                            </div>
+                        {% endfor %}
+                        <div class="item-actions">
+                            {% if collapsible %}
+                                <i class="fa fa-chevron-circle-{{ field.collapsed ? 'right' : 'down' }}" data-action="{{ field.collapsed ? 'expand' : 'collapse' }}"></i>
+                                <br />
+                            {% endif %}
+                            <i class="fa fa-trash-o" data-action="delete"></i>
+                        </div>
+                    </li>
+                {% endfor %}
+                {% endif %}
+            </ul>
+
+            {%- set itemName = name ? name ~ '.*' : '*' -%}
+            <div style="display: none;" data-collection-template="new" data-collection-template-html="{%- filter replace({'   ': ' ', '\n': ' '})|e('html_attr') -%}
+                <li data-collection-item="{{ itemName }}" class="flexible-form-field__item">
+                    {% if field.sort is not same as(false) %}
+                    <div class="collection-sort"><i class="fa fa-fw fa-bars"></i></div>
+                    {% endif %}
+                    {%- if thefields -%}
+                    {%- for childName, child in thefields -%}
+                        {%- if childName == 'value' -%}
+                            {%- set childKey = '' -%}
+                            {%- set childName = itemName -%}
+                        {%- elseif childName starts with '.' -%}
+                            {%- set childKey = childName|trim('.') -%}
+                            {%- set childName = itemName ~ childName -%}
+                        {%- else %}
+                            {%- set childKey = childName -%}
+                            {%- set childName = childName|replace({'*': key}) -%}
+                        {%- endif %}
+                        {%- set child = child|merge({ name: childName }) -%}
+                        {# added a wrapper for the reference class #}
+                        <div class="flexible-form-field__{{ childKey }}">
+                        {%- if child.type == 'key' -%}
+                            {%-
+                                include 'forms/fields/key/key.html.twig'
+                                with { field: child, value: null }
+                            -%}
+                        {%- elseif child.key == true -%}
+                            {%-
+                            include [
+                                "forms/fields/#{child.type}/#{child.type}.html.twig",
+                                'forms/fields/key/key.html.twig'
+                                ] with { field: child, value: null }
+                            -%}
+                        {%- elseif child.type -%}
+                            {%-
+                                include [
+                                    "forms/fields/#{child.type}/#{child.type}.html.twig",
+                                    'forms/fields/text/text.html.twig'
+                                ] with { field: child, value: null }
+                            -%}
+                        {%- endif -%}
+                        </div>
+                    {%- endfor %}
+                    <div class="item-actions">
+                        {% if collapsible %}
+                            <i class="fa fa-chevron-circle-down" data-action="collapse"></i>
+                            <br />
+                        {% endif %}
+                        <i class="fa fa-trash-o" data-action="delete"></i>
+                    </div>
+                    {%- endif -%}
+                </li>
+            {%- endfilter -%}"></div>
+
+    {# Block contents foot #}
+    {% include 'forms/fields/fieldselection/blocks/block-contents-foot.html.twig' %}
+{% endblock %}
