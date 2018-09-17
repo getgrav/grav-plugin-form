@@ -27,6 +27,7 @@
     * Added `array` field for frontend use
 1. [](#improved)
     * Improving compatibility `autocomplete` spec [#274](https://github.com/getgrav/grav-plugin-form/pull/274)    
+    * Use `Url:post()` to get the `$_POST` variable (allows common security checks/filtering for the POST data)
 
 # v2.15.1
 ## 06/20/2018
