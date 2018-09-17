@@ -1,6 +1,8 @@
 # v2.16.3
 ## mm/dd/2018
 
+1. [](#improved)
+    * Use `Url:post()` to get the `$_POST` variable (allows common security checks/filtering for the POST data)
 1. [](#bugfix)
     * Fixed issue where `select` set up as `multiple` and with `selectize: create: true` would not properly merge newly created values on rendering.
  
@@ -26,8 +28,7 @@
     * Added new `form.keep_alive` option to keep session alive [#275](https://github.com/getgrav/grav-plugin-form/issues/275)
     * Added `array` field for frontend use
 1. [](#improved)
-    * Improving compatibility `autocomplete` spec [#274](https://github.com/getgrav/grav-plugin-form/pull/274)    
-    * Use `Url:post()` to get the `$_POST` variable (allows common security checks/filtering for the POST data)
+    * Improving compatibility `autocomplete` spec [#274](https://github.com/getgrav/grav-plugin-form/pull/274)
 
 # v2.15.1
 ## 06/20/2018
