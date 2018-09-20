@@ -23,8 +23,8 @@
 {% endif %}
 
 {% if form.keep_alive %}
-    {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'group': 'bottom' }) %}
-    {% do assets.addJs('plugin://form/assets/form.min.js', { 'group': 'bottom' }) %}
+    {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'group': 'bottom', 'loading': 'defer' }) %}
+    {% do assets.addJs('plugin://form/assets/form.min.js', { 'group': 'bottom', 'loading': 'defer' }) %}
 {% endif %}
 
 {% if not grav.config.get('form.inline_js') %}

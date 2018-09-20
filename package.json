@@ -7,7 +7,7 @@
   "scripts": {
     "watch": "NODE_ENV=development webpack --watch --progress --colors --mode development --config webpack.conf.js",
     "dev": "NODE_ENV=development webpack --progress --colors --config webpack.conf.js",
-    "prod": "NODE_ENV=production webpack --mode production --config webpack.conf.js"
+    "prod": "NODE_ENV=production-wip webpack --mode development --config webpack.conf.js"
   },
   "author": "Team Grav",
   "license": "MIT",
