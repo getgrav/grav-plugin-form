@@ -290,8 +290,10 @@ const addNode = (container) => {
 };
 
 export let Instances = (() => {
-    $('.dropzone.files-upload').each((i, container) => addNode(container));
-    $('body').on('mutation._grav', onAddedNodes);
+    $(document).ready(() => {
+        $('.dropzone.files-upload').each((i, container) => addNode(container));
+        $('body').on('mutation._grav', onAddedNodes);
+    });
 
     return instances;
 })();
