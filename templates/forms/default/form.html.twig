@@ -27,20 +27,17 @@
     {% do assets.addJs('plugin://form/assets/form.min.js', { 'group': 'bottom', 'loading': 'defer' }) %}
 {% endif %}
 
-{% if not grav.config.get('form.inline_js') %}
-  <script type="application/javascript">
-      window.GravForm = window.GravForm || {};
-      window.GravForm.config = {
-          current_url: '" ~ uri.route(true) ~"',
-          base_url_relative: '" ~ base_url_relative ~ "',
-          param_sep: '"~ config.system.param_sep ~ "',
-          form_nonce: '" ~ form.getNonce ~ "',
-          session_timeout: " ~ config.system.session.timeout ~ "
-      };
-      window.GravForm.translations = jQuery.extend({}, window.GravForm.translations || {}, { PLUGIN_FORM: {} });
-  </script>
-  {% do grav.config.set('form.inline_js', true) %}
-{% endif %}
+{% do assets.addInlineJs("
+    window.GravForm = window.GravForm || {};
+    window.GravForm.config = {
+        current_url: '" ~ uri.route(true) ~"',
+        base_url_relative: '" ~ base_url_relative ~ "',
+        param_sep: '"~ config.system.param_sep ~ "',
+        form_nonce: '" ~ form.getNonce ~ "',
+        session_timeout: " ~ config.system.session.timeout ~ "
+    };
+    window.GravForm.translations = jQuery.extend({}, window.GravForm.translations || {}, { PLUGIN_FORM: {} });
+", {'group': 'bottom'}) %}
 
 
 <form name="{{ form.name }}"
