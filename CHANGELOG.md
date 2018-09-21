@@ -3,6 +3,7 @@
 
 1. [](#improved)
     * Use `Url:post()` to get the `$_POST` variable (allows common security checks/filtering for the POST data)
+    * Various JS tweaks and enhancements
 1. [](#bugfix)
     * Fixed issue where `select` set up as `multiple` and with `selectize: create: true` would not properly merge newly created values on rendering.
  
