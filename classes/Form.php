@@ -384,11 +384,12 @@ class Form extends Iterator implements \Serializable
      */
     public function uploadFiles()
     {
-        $post = $_POST;
         $grav = Grav::instance();
-        $uri = $grav['uri']->url;
         $config = $grav['config'];
         $session = $grav['session'];
+        $uri = $grav['uri'];
+        $url = $uri->url;
+        $post = $uri->post();
 
         $settings = $this->data->blueprints()->schema()->getProperty($post['name']);
         $settings = (object) array_merge(
@@ -497,7 +498,7 @@ class Form extends Iterator implements \Serializable
 
         // Retrieve the current session of the uploaded files for the field
         // and initialize it if it doesn't exist
-        $sessionField = base64_encode($uri);
+        $sessionField = base64_encode($url);
         $flash = $session->getFlashObject('files-upload');
         if (!$flash) {
             $flash = [];
@@ -547,7 +548,7 @@ class Form extends Iterator implements \Serializable
         $json_response = [
             'status' => 'success',
             'session' => \json_encode([
-                'sessionField' => base64_encode($uri),
+                'sessionField' => base64_encode($url),
                 'path' => $upload->file->path,
                 'field' => $settings->name
             ])
@@ -567,8 +568,10 @@ class Form extends Iterator implements \Serializable
     public function filesSessionRemove()
     {
         $grav = Grav::instance();
-        $post = $_POST;
         $session = $grav['session'];
+        $uri = $grav['uri'];
+        $post = $uri->post();
+
         // Retrieve the current session of the uploaded files for the field
         // and initialize it if it doesn't exist
         $sessionField = base64_encode($grav['uri']->url(true));
@@ -628,10 +631,9 @@ class Form extends Iterator implements \Serializable
     public function post()
     {
         $grav = Grav::instance();
+        $session = $grav['session'];
         $uri = $grav['uri'];
         $url = $uri->url;
-        $session = $grav['session'];
-
         $post = $uri->post();
 
         if ($post) {

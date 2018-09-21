@@ -1,7 +1,7 @@
 {% extends "forms/field.html.twig" %}
 
-{% do assets.addJs('plugin://form/assets/form.vendor.js', { 'loading': 'defer', 'group': 'bottom' }) %}
-{% do assets.addJs('plugin://form/assets/form.min.js', { 'loading': 'defer', 'group': 'bottom' }) %}
+{% do assets.addJs('plugin://form/assets/form.vendor.js', { 'group': 'bottom', 'loading': 'defer' }) %}
+{% do assets.addJs('plugin://form/assets/form.min.js', { 'group': 'bottom', 'loading': 'defer' }) %}
 
 {% block global_attributes %}
     data-grav-array-name="{{ (scope ~ field.name)|fieldName }}"

@@ -81,8 +81,8 @@
     </div>
 
     {% do assets.addJs('jquery', 101) %}
-    {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'loading': 'defer', 'group': 'bottom'  }) %}
-    {% do assets.addJs('plugin://form/assets/form.min.js', { 'loading': 'defer', 'group': 'bottom'  }) %}
+    {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'group': 'bottom', 'loading': 'defer' }) %}
+    {% do assets.addJs('plugin://form/assets/form.min.js', { 'group': 'bottom', 'loading': 'defer'  }) %}
     {% do assets.addCss('plugin://form/assets/dropzone.min.css', { 'group': 'form'}) %}
     {{ assets.css('form')|raw }}
     {% do assets.addInlineJs("
@@ -106,5 +106,5 @@
             }
         }
     });
-    ", { 'group': 'bottom' }) %}
+    ", {'group': 'bottom'}) %}
 {% endblock %}
