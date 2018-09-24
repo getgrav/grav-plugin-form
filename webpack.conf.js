@@ -1,7 +1,7 @@
 var webpack = require('webpack'),
     path = require('path'),
     UglifyJsPlugin = require('uglifyjs-webpack-plugin'),
-    isProd = process.env.NODE_ENV === 'production';
+    isProd = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'production-wip';
 
 module.exports = {
     entry: {
