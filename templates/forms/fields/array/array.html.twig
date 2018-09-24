@@ -1,16 +1,5 @@
 {% extends "forms/field.html.twig" %}
 
-{% do assets.addJs('plugin://form/assets/form.vendor.js', { 'loading': 'defer', 'group': 'bottom' }) %}
-{% do assets.addJs('plugin://form/assets/form.min.js', { 'loading': 'defer', 'group': 'bottom' }) %}
-
-{% block global_attributes %}
-    data-grav-array-name="{{ (scope ~ field.name)|fieldName }}"
-    data-grav-array-keyname="{{ field.placeholder_key|e|t }}"
-    data-grav-array-valuename="{{ field.placeholder_value|e|t }}"
-    data-grav-array-textarea="{{ field.value_type == 'textarea' }}"
-    {{ parent() }}
-{% endblock %}
-
 {% macro renderer(key, text, field, scope) %}
 
     {% if text is not iterable %}

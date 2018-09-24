@@ -1,3 +1,6 @@
+{% extends "forms/field.html.twig" %}
+
+{% block field %}
 {% set value = evaluate(field.condition) %}
 {% set value = value == 'true' ? 1 : value %}
 {% set value = value == 'false' ? 0 : value %}
@@ -8,10 +11,10 @@
     {% endif %}
 
     {% if field.fields %}
-        {% for field in field.fields %}
-            {% if field.type %}
-                {% set value = data.value(field.name) %}
-                {% include ["forms/fields/#{field.type}/#{field.type}.html.twig", 'forms/fields/text/text.html.twig'] %}
+        {% for child in field.fields %}
+            {% if child.type %}
+                {% set value = data.value(child.name) %}
+                {% include ["forms/fields/#{child.type}/#{child.type}.html.twig", 'forms/fields/text/text.html.twig'] %}
             {% endif %}
         {% endfor %}
     {% endif %}
@@ -20,3 +23,4 @@
     </div>
     {% endif %}
 {% endif %}
+{% endblock %}
