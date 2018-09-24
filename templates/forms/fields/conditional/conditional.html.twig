@@ -14,7 +14,7 @@
         {% for child in field.fields %}
             {% if child.type %}
                 {% set value = data.value(child.name) %}
-                {% include ["forms/fields/#{child.type}/#{child.type}.html.twig", 'forms/fields/text/text.html.twig'] %}
+                {% include ["forms/fields/#{child.type}/#{child.type}.html.twig", 'forms/fields/text/text.html.twig'] with {field: child} %}
             {% endif %}
         {% endfor %}
     {% endif %}

@@ -6,7 +6,7 @@
     {% set cols = field.fields|length %}
     {% for child in field.fields %}
         {% set value = child.value(child.name) %}
-        {% include ["forms/fields/#{child.type}/#{child.type}.html.twig", 'forms/fields/column/column.html.twig'] with {'cols':cols}  %}
+        {% include ["forms/fields/#{child.type}/#{child.type}.html.twig", 'forms/fields/column/column.html.twig'] with {field: child, cols: cols}  %}
     {% endfor %}
 {% endif %}
 </div>
