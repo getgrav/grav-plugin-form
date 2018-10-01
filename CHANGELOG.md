@@ -1,10 +1,10 @@
-# v2.16.4
-## mm/dd/2018   
+# v3.0.0-beta.1
+## 10/01/2018   
 
 1. [](#new)
     * Added proper support for hiding form fields in blueprints by using dynamic property like `security@: admin.foobar` to any field
 1. [](#improved)
-    * Make all form fields to extend field.html.twig
+    * Make all form fields to extend `field.html.twig`
 
 # v2.16.3
 ## 09/21/2018
