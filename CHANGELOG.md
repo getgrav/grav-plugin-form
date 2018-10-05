@@ -1,3 +1,10 @@
+# v2.16.4
+## mm/dd/2018
+
+1. [](#improved)
+    * Better handling of invalid file names during upload
+    * Better MIME type checking of files during file upload
+
 # v2.16.3
 ## 09/21/2018
 

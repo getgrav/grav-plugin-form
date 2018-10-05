@@ -53,6 +53,9 @@ en:
     INLINE_ERRORS_HELP: "Useful with 'client-side validation' off, shows inline contextual form errors"
     RESOLUTION_MIN: "The {{attr}} was less than the minimum of {{min}}px <br />"
     RESOLUTION_MAX: "The {{attr}} was more than the maximum of {{max}}px <br />"
+    DESTINATION_NOT_SPECIFIED: "Destination not specified"
+    INVALID_MIME_TYPE: "The MIME type %s for the file %s is not an accepted."
+    INVALID_FILE_EXTENSION: "The File Extension for the file %s is not an accepted."
 de:
   PLUGIN_FORM:
     NOT_VALIDATED: "Formularwerte nicht gültig. Für ein oder mehrere erforderliche Felder fehlen Werte."
