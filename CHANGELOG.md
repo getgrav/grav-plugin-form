@@ -3,6 +3,8 @@
 
 1. [](#new)
     * Added proper support for hiding form fields in blueprints by using dynamic property like `security@: admin.foobar` to any field
+    * Better handling of invalid file names during upload
+    * Better MIME type checking of files during file upload
 1. [](#improved)
     * Make all form fields to extend field.html.twig
 
