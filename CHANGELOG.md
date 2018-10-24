@@ -1,5 +1,5 @@
 # v3.0.0-beta.2
-## mm/dd/2018   
+## 10/24/2018   
 
 1. [](#improved)
     * Better filename and mime type handling
