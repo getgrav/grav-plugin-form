@@ -1,3 +1,10 @@
+# v3.0.0-beta.2
+## mm/dd/2018   
+
+1. [](#improved)
+    * Better filename and mime type handling
+    * Now using the new core Grav language prefix
+
 # v3.0.0-beta.1
 ## 10/01/2018   
 
