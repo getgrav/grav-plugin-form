@@ -64,6 +64,7 @@
     {% set settings = {name: field.name, paramName: (scope ~ field.name)|fieldName ~ (files.multiple ? '[]' : ''), limit: limit, filesize: form_max_filesize, accept: files.accept, resolution: files.resolution, resizeWidth: files.resizeWidth, resizeHeight: files.resizeHeight, resizeQuality: files.resizeQuality } %}
     {% set dropzoneSettings = field.dropzone %}
     <div class="{{ form_field_wrapper_classes ?: 'form-input-wrapper' }} dropzone files-upload form-input-file {{ field.size }}" data-grav-file-settings="{{ settings|json_encode|e('html_attr') }}" data-dropzone-options="{{ dropzoneSettings|json_encode|e('html_attr') }}">
+        {% block file_extras %}{% endblock %}
         <input
                 {# required attribute structures #}
                 {% block input_attributes %}
