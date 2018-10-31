@@ -1,6 +1,9 @@
 # v3.0.0-beta.3
 ## mm/dd/2018   
 
+1. [](#improved)
+    * Added some extra blocks to `file` field to make it more extensible
+    * Added `field.classes` to form field to allow customization
 1. [](#bugfix)
     * Fixed error responses when file actions fail in the form
     

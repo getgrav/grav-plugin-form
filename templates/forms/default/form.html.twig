@@ -56,7 +56,9 @@
   {% set context = context ?? data %}
   {% for field in form.fields %}
     {% set value = form.value(field.name) %}
+    {% block process_field %}
     {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
+    {% endblock %}
   {% endfor %}
 
   {% include "forms/fields/formname/formname.html.twig" %}
