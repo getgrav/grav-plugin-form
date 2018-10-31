@@ -174,11 +174,13 @@ class FormPlugin extends Plugin
             $this->saveCachedForms();
         }
 
+        $page = $this->grav['page'];
+
         // Force rebuild form when form has not been built and form cache expired.
         // This happens when form cache expires before the page cache
         // and then does not trigger 'onPageProcessed' event.
         if (!$this->forms) {
-            $this->onPageProcessed(new Event(['page' => $this->grav['page']]));
+            $this->onPageProcessed(new Event(['page' => $page]));
         }
 
         // Enable form events if there's a POST
@@ -201,6 +203,16 @@ class FormPlugin extends Plugin
                 } else {
                     $this->form->post();
                     $submitted = true;
+                }
+
+                // Return JSON if we're not in form template.
+                if ($this->json_response && $page->template() !== 'form') {
+                    header('Content-Type: application/json');
+                    if (isset($this->json_response['status']) && $this->json_response['status'] === 'error') {
+                        http_response_code(400);
+                    }
+                    echo json_encode($this->json_response);
+                    exit;
                 }
             }
 

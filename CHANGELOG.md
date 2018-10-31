@@ -1,3 +1,9 @@
+# v3.0.0-beta.3
+## mm/dd/2018   
+
+1. [](#bugfix)
+    * Fixed error responses when file actions fail in the form
+    
 # v3.0.0-beta.2
 ## 10/24/2018   
 

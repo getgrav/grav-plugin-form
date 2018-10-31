@@ -411,7 +411,7 @@ class Form extends Iterator implements \Serializable
         $upload = $this->normalizeFiles($_FILES['data'], $settings->name);
 
         // Handle errors and breaks without proceeding further
-        if ($upload->file->error != UPLOAD_ERR_OK) {
+        if ($upload->file->error !== UPLOAD_ERR_OK) {
             // json_response
             return [
                 'status' => 'error',
@@ -541,7 +541,7 @@ class Form extends Iterator implements \Serializable
 
         // Generate random name if required
         if ($settings->random_name) {
-            $extension = pathinfo($upload->file->name)['extension'];
+            $extension = pathinfo($upload->file->name, PATHINFO_EXTENSION);
             $upload->file->name = Utils::generateRandomString(15) . '.' . $extension;
         }
 
