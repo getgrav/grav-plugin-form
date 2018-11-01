@@ -6,6 +6,7 @@
     * Added `field.classes` to form field to allow customization
 1. [](#bugfix)
     * Fixed error responses when file actions fail in the form
+    * Pass unique_id when uploading files if available 
     
 # v3.0.0-beta.2
 ## 10/24/2018   
