@@ -20,12 +20,17 @@
     "docs": "https://github.com/getgrav/grav-plugin-form/blob/master/README.md"
   },
   "require": {
-    "php": ">=5.4.0"
+    "php": ">=5.5.9",
+    "ext-json": "*"
   },
-
   "autoload": {
     "psr-4": {
       "Grav\\Plugin\\Form\\": "classes/"
+    }
+  },
+  "config": {
+    "platform": {
+      "php": "5.5.9"
     }
   }
 }

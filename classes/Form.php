@@ -1,6 +1,7 @@
 <?php
 namespace Grav\Plugin\Form;
 
+use Grav\Common\Config\Config;
 use Grav\Common\Data\Data;
 use Grav\Common\Data\Blueprint;
 use Grav\Common\Data\ValidationException;
@@ -8,9 +9,13 @@ use Grav\Common\Filesystem\Folder;
 use Grav\Common\Grav;
 use Grav\Common\Inflector;
 use Grav\Common\Iterator;
+use Grav\Common\Language\Language;
 use Grav\Common\Page\Page;
+use Grav\Common\Session;
+use Grav\Common\Uri;
 use Grav\Common\Utils;
 use RocketTheme\Toolbox\Event\Event;
+use RocketTheme\Toolbox\File\YamlFile;
 
 class Form extends Iterator implements \Serializable
 {
@@ -385,12 +390,17 @@ class Form extends Iterator implements \Serializable
     public function uploadFiles()
     {
         $grav = Grav::instance();
+        /** @var Language $language */
         $language = $grav['language'];
+        /** @var Config $config */
         $config = $grav['config'];
+        /** @var Session $session */
         $session = $grav['session'];
+        /** @var Uri $uri */
         $uri = $grav['uri'];
         $url = $uri->url;
         $post = $uri->post();
+
         $task = isset($post['task']) ? $post['task'] : null;
 
         $settings = $this->data->blueprints()->schema()->getProperty($post['name']);
@@ -501,9 +511,9 @@ class Form extends Iterator implements \Serializable
         // we need to move the file at this stage or else
         // it won't be available upon save later on
         // since php removes it from the upload location
-        $tmp_dir = $grav['locator']->findResource('tmp://', true, true);
+        $tmp_dir = $grav['locator']->findResource('tmp://', true, true) . '/uploaded-files/' . $session->getId();
         $tmp_file = $upload->file->tmp_name;
-        $tmp = $tmp_dir . '/uploaded-files/' . basename($tmp_file);
+        $tmp = $tmp_dir . '/' . basename($tmp_file);
 
         Folder::create(dirname($tmp));
         if (!move_uploaded_file($tmp_file, $tmp)) {
@@ -556,14 +566,24 @@ class Form extends Iterator implements \Serializable
         $path = $destination . '/' . $filename;
         $upload->file->name = $filename;
         $upload->file->path = $path;
-        // $upload->file->route = $page ? $path : null;
 
         // Prepare data to be saved later
         $flash[$sessionField][$upload->field][$path] = (array) $upload->file;
 
+        $meta = YamlFile::instance($tmp . '.yaml');
+        $meta->save(
+            [
+                'url' => $url,
+                'post' => $post,
+                'files' => json_decode(json_encode($upload), true)
+            ]
+        );
+
+        $flash_file = YamlFile::instance($tmp_dir . '/flash.yaml');
+        $flash_file->save(json_decode(json_encode($flash), true));
+
         // Finally store the new uploaded file in the field session
         $session->setFlashObject('files-upload', $flash);
-
 
         // json_response
         $json_response = [
@@ -589,45 +609,48 @@ class Form extends Iterator implements \Serializable
     public function filesSessionRemove()
     {
         $grav = Grav::instance();
+        /** @var Session $session */
         $session = $grav['session'];
+        /** @var Uri $uri */
         $uri = $grav['uri'];
         $post = $uri->post();
 
         // Retrieve the current session of the uploaded files for the field
         // and initialize it if it doesn't exist
         $sessionField = base64_encode($grav['uri']->url(true));
-        $request      = \json_decode($post['session']);
+        $request      = $post['session'] ? json_decode($post['session']) : null;
 
         // Ensure the URI requested matches the current one, otherwise fail
-        if ($request->sessionField !== $sessionField) {
+        if (!isset($request->sessionField, $request->field, $request->path) || $request->sessionField !== $sessionField) {
             return false;
         }
 
         // Retrieve the flash object and remove the requested file from it
         $flash    = $session->getFlashObject('files-upload');
-        $endpoint = $flash[$request->sessionField][$request->field][$request->path];
+        $endpoint = isset($flash[$request->sessionField][$request->field][$request->path]) ? $flash[$request->sessionField][$request->field][$request->path] : null;
 
-        if (isset($endpoint)) {
+        if (null !== $endpoint) {
             if (file_exists($endpoint['tmp_name'])) {
                 unlink($endpoint['tmp_name']);
             }
-
-            unset($endpoint);
+            if (file_exists($endpoint['tmp_name'] . '.yaml')) {
+                unlink($endpoint['tmp_name'] . '.yaml');
+            }
         }
 
         // Walk backward to cleanup any empty field that's left
-        // Field
+        // Path
         if (isset($flash[$request->sessionField][$request->field][$request->path])) {
             unset($flash[$request->sessionField][$request->field][$request->path]);
         }
 
         // Field
-        if (isset($flash[$request->sessionField][$request->field]) && empty($flash[$request->sessionField][$request->field])) {
+        if (empty($flash[$request->sessionField][$request->field])) {
             unset($flash[$request->sessionField][$request->field]);
         }
 
         // Session Field
-        if (isset($flash[$request->sessionField]) && empty($flash[$request->sessionField])) {
+        if (empty($flash[$request->sessionField])) {
             unset($flash[$request->sessionField]);
         }
 
@@ -652,7 +675,9 @@ class Form extends Iterator implements \Serializable
     public function post()
     {
         $grav = Grav::instance();
+        /** @var Session $session */
         $session = $grav['session'];
+        /** @var Uri $uri */
         $uri = $grav['uri'];
         $url = $uri->url;
         $post = $uri->post();
@@ -733,6 +758,10 @@ class Form extends Iterator implements \Serializable
                 foreach ($files as $destination => $file) {
                     if (!rename($file['tmp_name'], $destination)) {
                         throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $file['tmp_name'] . '"', $destination));
+                    }
+
+                    if (file_exists($file['tmp_name'] . '.yaml')) {
+                        unlink($file['tmp_name'] . '.yaml');
                     }
 
                     unset($files[$destination]['tmp_name']);
