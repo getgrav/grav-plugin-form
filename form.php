@@ -306,39 +306,26 @@ class FormPlugin extends Plugin
 
                 $captcha_config = $this->config->get('plugins.form.recaptcha');
 
-                if (isset($params['recaptcha_secret'])) {
-                    $recaptchaSecret = $params['recaptcha_secret'];
-                } elseif (isset($params['recatpcha_secret'])) {
-                    // Included for backwards compatibility with typo (issue #51)
-                    $recaptchaSecret = $params['recatpcha_secret'];
-                } else {
-                    $recaptchaSecret = $captcha_config['secret_key'];
-                }
-
-                if ($captcha_config['version'] == 3) {
-                    $token = $form->value('token');
-                } else {
-                    $token = $form->value('g-recaptcha-response', true);
-                }
+                $secret = $params['recaptcha_secret'] ?? $params['recatpcha_secret'] ?? $captcha_config['secret_key'];
 
                 /** @var Uri $uri */
                 $uri = $this->grav['uri'];
-
                 $action = $form->value('action');
                 $hostname = $uri->host();
                 $ip = Uri::ip();
 
-                $recaptcha = new \ReCaptcha\ReCaptcha($recaptchaSecret);
-                ;
+                $recaptcha = new \ReCaptcha\ReCaptcha($secret);
 
                 // Add version 3 specific options
                 if ($captcha_config['version'] == 3) {
+                    $token = $form->value('token');
                     $resp = $recaptcha
                         ->setExpectedHostname($hostname)
                         ->setExpectedAction($action)
                         ->setScoreThreshold(0.5)
                         ->verify($token, $ip);
                 } else {
+                    $token = $form->value('g-recaptcha-response', true);
                     $resp = $recaptcha
                         ->setExpectedHostname($hostname)
                         ->verify($token, $ip);
@@ -348,9 +335,11 @@ class FormPlugin extends Plugin
                     $errors = $resp->getErrorCodes();
                     $this->grav->fireEvent('onFormValidationError', new Event([
                         'form'    => $form,
-                        'message' => "reCAPTCHA Errors: " . json_encode($errors)
+                        'message' => $this->grav['language']->translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA')
                     ]));
                     $event->stopPropagation();
+
+                    $this->grav['log']->addWarning("Form reCAPTCHA Errors: [" . $uri->route() . "] " . json_encode($errors));
 
                     return;
                 }
