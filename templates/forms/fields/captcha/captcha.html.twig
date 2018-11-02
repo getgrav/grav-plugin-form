@@ -2,6 +2,7 @@
 
 {% set site_key = field.recaptcha_site_key ?: config.plugins.form.recaptcha.site_key %}
 {% set action = (page.route|trim('/') ~ '-' ~ form.name)|underscorize %}
+{% set formName = form.name|underscorize %}
 
 {% block label %}{% endblock %}
 
@@ -23,7 +24,6 @@
           });
       </script>
   {% elseif config.plugins.form.recaptcha.version == '2-invisible' %}
-      {% set formName = form.name|underscorize %}
       <script>
           function captchaOnloadCallback_{{ formName }}() {
               var form = jQuery('form#{{ form.id }}');
@@ -47,7 +47,6 @@
               async defer></script>
   {% else %}
     <script>
-        {% set formName = form.name|underscorize %}
         var captchaOnloadCallback_{{ formName }} = function captchaOnloadCallback_{{ formName }}() {
             grecaptcha.render('g-recaptcha-{{ formName }}', {
                 'sitekey': "{{ site_key }}",
