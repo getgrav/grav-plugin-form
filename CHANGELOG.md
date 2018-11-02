@@ -3,10 +3,12 @@
 
 1. [](#new)
     * Google reCAPTCHA v3 support added
+    * Google reCAPTCHA v2 Invisible support added
+    * Added mutliple forms with reCAPTCHA support
 1. [](#improved)
     * Added some extra blocks to `file` field to make it more extensible
     * Added `field.classes` to form field to allow customization
-    * Used Google reCAPTCHA API vor v2 and v3 token validation
+    * Used Google reCAPTCHA API all token validation
 1. [](#bugfix)
     * Fixed error responses when file actions fail in the form
     * Pass unique_id when uploading files if available 

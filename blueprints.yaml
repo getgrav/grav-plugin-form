@@ -175,7 +175,8 @@ form:
           default: 2-checkbox
           options:
             2-checkbox: v2 - Checkbox
-            3: v3 - Latests
+            2-invsiible: v2 - Invisible
+            3: v3 - Latest
         recaptcha.site_key:
           type: text
           label: PLUGIN_FORM.RECAPTCHA_SITE_KEY

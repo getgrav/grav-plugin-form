@@ -1,6 +1,6 @@
 {% extends "forms/field.html.twig" %}
 
-{% set site_key = field.recaptcha_site_key ?: field.recaptcha_site_key ?: config.plugins.form.recaptcha.site_key %}
+{% set site_key = field.recaptcha_site_key ?: config.plugins.form.recaptcha.site_key %}
 {% set action = (page.route|trim('/') ~ '-' ~ form.name)|underscorize %}
 
 {% block label %}{% endblock %}
