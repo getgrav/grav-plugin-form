@@ -144,12 +144,14 @@ export default class FilesField {
 
     onDropzoneRemovedFile(file, ...extra) {
         if (!file.accepted || file.rejected) { return; }
+        const form = this.container.closest('form');
+        const unique_id = form.find('[name="__unique_form_id__"]');
         let url = file.removeUrl || this.urls.delete || `${location.href}.json`;
         let path = (url || '').match(/path:(.*)\//);
         let data = new FormData();
 
         data.append('filename', file.name);
-        data.append('__form-name__', this.container.closest('form').find('[name="__form-name__"]').val());
+        data.append('__form-name__', form.find('[name="__form-name__"]').val());
         data.append('name', this.options.dotNotation);
         data.append('form-nonce', config.form_nonce);
         data.append('uri', this.getURI());
@@ -157,6 +159,10 @@ export default class FilesField {
         if (file.sessionParams) {
             data.append('__form-file-remover__', '1');
             data.append('session', file.sessionParams);
+        }
+
+        if (unique_id.length) {
+            data.append('__unique_form_id__', unique_id.val());
         }
 
         $.ajax({
