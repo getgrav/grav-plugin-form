@@ -6,6 +6,7 @@
 1. [](#improved)
     * Added some extra blocks to `file` field to make it more extensible
     * Added `field.classes` to form field to allow customization
+    * Used Google reCAPTCHA API vor v2 and v3 token validation
 1. [](#bugfix)
     * Fixed error responses when file actions fail in the form
     * Pass unique_id when uploading files if available 
