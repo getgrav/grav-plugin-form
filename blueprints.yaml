@@ -169,6 +169,13 @@ form:
       title: PLUGIN_FORM.RECAPTCHA
 
       fields:
+        recaptcha.version:
+          type: select
+          label: Version
+          default: 2-checkbox
+          options:
+            2-checkbox: v2 - Checkbox
+            3: v3 - Latests
         recaptcha.site_key:
           type: text
           label: PLUGIN_FORM.RECAPTCHA_SITE_KEY

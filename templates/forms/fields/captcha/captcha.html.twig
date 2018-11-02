@@ -1,19 +1,38 @@
 {% extends "forms/field.html.twig" %}
 
+{% set site_key = field.recaptcha_site_key ?: field.recaptcha_site_key ?: config.plugins.form.recaptcha.site_key %}
+{% set action = (page.route|trim('/') ~ '-' ~ form.name)|underscorize %}
+
+{% block label %}{% endblock %}
+
 {% block input %}
+  {% if config.plugins.form.recaptcha.version == 3 %}
+      {#{% do assets.addJs('https://www.google.com/recaptcha/api.js?render='~site_key) %}#}
+      <script src='https://www.google.com/recaptcha/api.js?render={{ site_key }}'></script>
+      <script>
+          $('form').submit(function() {
+              event.preventDefault();
+              grecaptcha.ready(function () {
+                  grecaptcha.execute('{{ site_key }}', {action: '{{ action }}'}).then(function(token) {
+                      $('form').prepend('<input type="hidden" name="data[token]" value="' + token + '">');
+                      $('form').prepend('<input type="hidden" name="data[action]" value="{{ action }}">');
+                      $('form').unbind('submit').submit();
+                  });
+              });
+
+          });
+      </script>
+  {% else %}
     <script>
         var captchaOnloadCallback = function captchaOnloadCallback() {
             grecaptcha.render('g-recaptcha', {
-                'sitekey': "{{field.recaptcha_site_key ?: field.recaptcha_site_key ?: config.plugins.form.recaptcha.site_key }}",
+                'sitekey': "{{ site_key }}",
                 'callback': captchaValidatedCallback,
                 'expired-callback': captchaExpiredCallback
             });
         };
 
-        var captchaValidatedCallback = function captchaValidatedCallback() {
-
-        };
-
+        var captchaValidatedCallback = function captchaValidatedCallback() {};
         var captchaExpiredCallback = function captchaExpiredCallback() {
             grecaptcha.reset();
         };
@@ -29,4 +48,5 @@
         async defer>
     </script>
     <div class="g-recaptcha" id="g-recaptcha"></div>
+  {% endif %}
 {% endblock %}
