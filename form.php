@@ -753,7 +753,11 @@ class FormPlugin extends Plugin
 
             if ($refresh_prevention && $unique_form_id) {
                 if ($this->grav['session']->unique_form_id !== $unique_form_id) {
-                    $this->grav['session']->unique_form_id = $unique_form_id;
+                    $isJson = $uri->extension() === 'json';
+                    // AJAX tasks aren't submitting
+                    if (!$isJson || !($uri->post('__form-file-uploader__') || $uri->post('__form-file-remover__'))) {
+                        $this->grav['session']->unique_form_id = $unique_form_id;
+                    }
                 } else {
                     $status = false;
                     $this->form->message = $this->grav['language']->translate('PLUGIN_FORM.FORM_ALREADY_SUBMITTED');

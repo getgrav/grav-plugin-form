@@ -13,6 +13,7 @@ use Grav\Common\Language\Language;
 use Grav\Common\Page\Page;
 use Grav\Common\Session;
 use Grav\Common\Uri;
+use Grav\Common\User\User;
 use Grav\Common\Utils;
 use RocketTheme\Toolbox\Event\Event;
 use RocketTheme\Toolbox\File\YamlFile;
@@ -124,6 +125,9 @@ class Form extends Iterator implements \Serializable
         if (empty($this->items['id'])) {
             $inflector = new Inflector();
             $this->items['id'] = $inflector->hyphenize($this->items['name']);
+        }
+        if (empty($this->items['uniqueid'])) {
+            $this->items['uniqueid'] = Utils::generateRandomString(20);
         }
 
         // Reset and initialize the form
@@ -394,8 +398,6 @@ class Form extends Iterator implements \Serializable
         $language = $grav['language'];
         /** @var Config $config */
         $config = $grav['config'];
-        /** @var Session $session */
-        $session = $grav['session'];
         /** @var Uri $uri */
         $uri = $grav['uri'];
         $url = $uri->url;
@@ -511,11 +513,11 @@ class Form extends Iterator implements \Serializable
         // we need to move the file at this stage or else
         // it won't be available upon save later on
         // since php removes it from the upload location
-        $tmp_dir = $grav['locator']->findResource('tmp://', true, true) . '/uploaded-files/' . $session->getId();
+        $tmp_dir = $this->getTmpDir();
         $tmp_file = $upload->file->tmp_name;
         $tmp = $tmp_dir . '/' . basename($tmp_file);
 
-        Folder::create(dirname($tmp));
+        Folder::create($tmp_dir);
         if (!move_uploaded_file($tmp_file, $tmp)) {
             // json_response
             return [
@@ -524,20 +526,24 @@ class Form extends Iterator implements \Serializable
             ];
         }
 
-        $upload->file->tmp_name = $tmp;
+        $upload->file->tmp_name = basename($tmp_file);
 
         // Retrieve the current session of the uploaded files for the field
         // and initialize it if it doesn't exist
-        $sessionField = base64_encode($url);
-        $flash = $session->getFlashObject('files-upload');
-        if (!$flash) {
-            $flash = [];
-        }
-        if (!isset($flash[$sessionField])) {
-            $flash[$sessionField] = [];
-        }
-        if (!isset($flash[$sessionField][$upload->field])) {
-            $flash[$sessionField][$upload->field] = [];
+        $file = $this->getTmpFile();
+        $flash = $file->content();
+
+        /** @var User $user */
+        $user = $grav['user'];
+        $flash['url'] = $url;
+        $flash['form'] = isset($post['__form-name__']) ? $post['__form-name__'] : null;
+        $flash['user'] = [
+            'username' => $user->username,
+            'email' => $user->email
+        ];
+
+        if (!isset($flash['fields'][$upload->field])) {
+            $flash['fields'][$upload->field] = [];
         }
 
         // Set destination
@@ -568,22 +574,12 @@ class Form extends Iterator implements \Serializable
         $upload->file->path = $path;
 
         // Prepare data to be saved later
-        $flash[$sessionField][$upload->field][$path] = (array) $upload->file;
+        $flash['fields'][$upload->field][$filename] = (array) $upload->file;
 
-        $meta = YamlFile::instance($tmp . '.yaml');
-        $meta->save(
-            [
-                'url' => $url,
-                'post' => $post,
-                'files' => json_decode(json_encode($upload), true)
-            ]
-        );
+        $file->save(json_decode(json_encode($flash), true));
 
-        $flash_file = YamlFile::instance($tmp_dir . '/flash.yaml');
-        $flash_file->save(json_decode(json_encode($flash), true));
-
-        // Finally store the new uploaded file in the field session
-        $session->setFlashObject('files-upload', $flash);
+        $formName = isset($post['__form-name__']) ? $post['__form-name__'] : null;
+        $uniqueId = isset($post['__unique_form_id__']) ? $post['__unique_form_id__'] : null;
 
         // json_response
         $json_response = [
@@ -591,7 +587,8 @@ class Form extends Iterator implements \Serializable
             'session' => \json_encode([
                 'sessionField' => base64_encode($url),
                 'path' => $upload->file->path,
-                'field' => $settings->name
+                'field' => $settings->name,
+                'uniqueid' => $uniqueId ?: $formName ?: 'unknown'
             ])
         ];
 
@@ -599,6 +596,34 @@ class Form extends Iterator implements \Serializable
         header('Content-Type: application/json');
         echo json_encode($json_response);
         exit;
+    }
+
+    protected function getTmpDir($id = null)
+    {
+        $grav = Grav::instance();
+
+        /** @var Session $session */
+        $session = $grav['session'];
+
+        /** @var Uri $uri */
+        $uri = $grav['uri'];
+
+        $post = $uri->post();
+        $formName = isset($post['__form-name__']) ? $post['__form-name__'] : null;
+        $uniqueId = isset($post['__unique_form_id__']) ? $post['__unique_form_id__'] : $id;
+
+        $location = [
+            'forms',
+            $session->getId(),
+            $uniqueId ?: $formName ?: 'unknown'
+        ];
+
+        return Grav::instance()['locator']->findResource('tmp://', true, true) . '/' . implode('/', $location);
+    }
+
+    protected function getTmpFile($uniqueid = null)
+    {
+        return YamlFile::instance($this->getTmpDir($uniqueid) . '/meta.yaml');
     }
 
     /**
@@ -609,56 +634,46 @@ class Form extends Iterator implements \Serializable
     public function filesSessionRemove()
     {
         $grav = Grav::instance();
-        /** @var Session $session */
-        $session = $grav['session'];
         /** @var Uri $uri */
-        $uri = $grav['uri'];
+        $uri  = $grav['uri'];
         $post = $uri->post();
 
-        // Retrieve the current session of the uploaded files for the field
-        // and initialize it if it doesn't exist
-        $sessionField = base64_encode($grav['uri']->url(true));
-        $request      = $post['session'] ? json_decode($post['session']) : null;
-
-        // Ensure the URI requested matches the current one, otherwise fail
-        if (!isset($request->sessionField, $request->field, $request->path) || $request->sessionField !== $sessionField) {
+        if (!isset($post['filename'], $post['name'])) {
             return false;
         }
 
+        $data = json_decode(isset($post['session']) ? $post['session'] : [], true);
+        $uniqueid = isset($data['uniqueid']) ? $data['uniqueid'] : null;
+
+        $file = $this->getTmpFile($uniqueid);
+        if (!$file->exists()) {
+            return false;
+        }
+
+        $field = $post['name'];
+        $filename = $post['filename'];
+
         // Retrieve the flash object and remove the requested file from it
-        $flash    = $session->getFlashObject('files-upload');
-        $endpoint = isset($flash[$request->sessionField][$request->field][$request->path]) ? $flash[$request->sessionField][$request->field][$request->path] : null;
+        $flash    = $file->content();
+        $endpoint = isset($flash['fields'][$field][$filename]) ? $flash['fields'][$field][$filename] : null;
 
         if (null !== $endpoint) {
-            if (file_exists($endpoint['tmp_name'])) {
-                unlink($endpoint['tmp_name']);
-            }
-            if (file_exists($endpoint['tmp_name'] . '.yaml')) {
-                unlink($endpoint['tmp_name'] . '.yaml');
+            $tmp_dir = $this->getTmpDir($uniqueid);
+
+            if (file_exists($tmp_dir. '/' . $endpoint['tmp_name'])) {
+                unlink($tmp_dir. '/' . $endpoint['tmp_name']);
             }
         }
 
         // Walk backward to cleanup any empty field that's left
-        // Path
-        if (isset($flash[$request->sessionField][$request->field][$request->path])) {
-            unset($flash[$request->sessionField][$request->field][$request->path]);
+        if (isset($flash['fields'][$field][$filename])) {
+            unset($flash['fields'][$field][$filename]);
+        }
+        if (empty($flash['fields'][$field])) {
+            unset($flash['fields'][$field]);
         }
 
-        // Field
-        if (empty($flash[$request->sessionField][$request->field])) {
-            unset($flash[$request->sessionField][$request->field]);
-        }
-
-        // Session Field
-        if (empty($flash[$request->sessionField])) {
-            unset($flash[$request->sessionField]);
-        }
-
-
-        // If there's anything left to restore in the flash object, do so
-        if (count($flash)) {
-            $session->setFlashObject('files-upload', $flash);
-        }
+        $file->save($flash);
 
         // json_response
         $json_response = ['status' => 'success'];
