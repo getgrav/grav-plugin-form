@@ -1,6 +1,8 @@
 # v3.0.0-beta.3
 ## mm/dd/2018   
 
+1. [](#new)
+    * Google reCAPTCHA v3 support added
 1. [](#improved)
     * Added some extra blocks to `file` field to make it more extensible
     * Added `field.classes` to form field to allow customization

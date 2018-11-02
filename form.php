@@ -298,47 +298,77 @@ class FormPlugin extends Plugin
         $action = $event['action'];
         $params = $event['params'];
 
+
         $this->process($form);
 
         switch ($action) {
             case 'captcha':
+
+                $captcha_config = $this->config->get('plugins.form.recaptcha');
+
                 if (isset($params['recaptcha_secret'])) {
                     $recaptchaSecret = $params['recaptcha_secret'];
                 } elseif (isset($params['recatpcha_secret'])) {
                     // Included for backwards compatibility with typo (issue #51)
                     $recaptchaSecret = $params['recatpcha_secret'];
                 } else {
-                    $recaptchaSecret = $this->config->get('plugins.form.recaptcha.secret_key');
+                    $recaptchaSecret = $captcha_config['secret_key'];
                 }
 
-                // Validate the captcha
-                $query = http_build_query([
-                    'secret'   => $recaptchaSecret,
-                    'response' => $form->value('g-recaptcha-response', true)
-                ]);
+                if ($captcha_config['version'] == 3) {
+                    /** @var Uri $uri */
+                    $uri = $this->grav['uri'];
 
-                $url = 'https://www.google.com/recaptcha/api/siteverify';
-                if (ini_get('allow_url_fopen')) {
-                    $response = json_decode(file_get_contents($url . '?' . $query), true);
+                    $token = $form->value('token');
+                    $action = $form->value('action');
+                    $hostname = $uri->host();
+                    $ip = Uri::ip();
+
+                    $recaptcha = new \ReCaptcha\ReCaptcha($recaptchaSecret);
+                    $resp = $recaptcha->setExpectedHostname($hostname)
+                        ->setExpectedAction($action)
+                        ->setScoreThreshold(0.5)
+                        ->verify($token, $ip);
+                    if (!$resp->isSuccess()) {
+                        $this->grav->fireEvent('onFormValidationError', new Event([
+                            'form'    => $form,
+                            'message' => "reCAPTCHA Errors: " . explode(',', $resp->getErrorCodes())
+                        ]));
+                        $event->stopPropagation();
+
+                        return;
+                    }
                 } else {
-                    $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, $url);
-                    curl_setopt($ch, CURLOPT_POST, true);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
-                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    $response = json_decode(curl_exec($ch), true);
+                    // Validate the captcha
+                    $query = http_build_query([
+                        'secret'   => $recaptchaSecret,
+                        'response' => $form->value('g-recaptcha-response', true)
+                    ]);
+
+                    $url = 'https://www.google.com/recaptcha/api/siteverify';
+                    if (ini_get('allow_url_fopen')) {
+                        $response = json_decode(file_get_contents($url . '?' . $query), true);
+                    } else {
+                        $ch = curl_init();
+                        curl_setopt($ch, CURLOPT_URL, $url);
+                        curl_setopt($ch, CURLOPT_POST, true);
+                        curl_setopt($ch, CURLOPT_POSTFIELDS, $query);
+                        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        $response = json_decode(curl_exec($ch), true);
+                    }
+
+                    if (!isset($response['success']) || $response['success'] !== true) {
+                        $this->grav->fireEvent('onFormValidationError', new Event([
+                            'form'    => $form,
+                            'message' => $this->grav['language']->translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA')
+                        ]));
+                        $event->stopPropagation();
+
+                        return;
+                    }
                 }
 
-                if (!isset($response['success']) || $response['success'] !== true) {
-                    $this->grav->fireEvent('onFormValidationError', new Event([
-                        'form'    => $form,
-                        'message' => $this->grav['language']->translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA')
-                    ]));
-                    $event->stopPropagation();
-
-                    return;
-                }
                 break;
             case 'timestamp':
                 $label = isset($params['label']) ? $params['label'] : 'Timestamp';
@@ -804,7 +834,7 @@ class FormPlugin extends Plugin
             if (null === $this->form && $page) {
                 $header = $page->header();
 
-                if (isset($header->form)) {
+                if (isset($header->form) || isset($header->forms)) {
                     $this->form = new Form($page);
                 }
             }
