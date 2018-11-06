@@ -90,8 +90,8 @@ class Form extends Iterator implements \Serializable
         $this->page = $page->route();
 
         $header = $page->header();
-        $this->rules = isset($header->rules) ? $header->rules : [];
-        $this->header_data = isset($header->data) ? $header->data : [];
+        $this->rules = $header->rules ?? [];
+        $this->header_data = $header->data ?? [];
 
         if ($form) {
             // If form is given, use it.
@@ -110,12 +110,12 @@ class Form extends Iterator implements \Serializable
         }
 
         // Add form specific rules.
-        if (!empty($this->items['rules']) && is_array($this->items['rules'])) {
+        if (!empty($this->items['rules']) && \is_array($this->items['rules'])) {
             $this->rules += $this->items['rules'];
         }
 
         // Set form name if not set.
-        if ($name && !is_int($name)) {
+        if ($name && !\is_int($name)) {
             $this->items['name'] = $name;
         } elseif (empty($this->items['name'])) {
             $this->items['name'] = $page->slug();
@@ -257,7 +257,7 @@ class Form extends Iterator implements \Serializable
             if (is_numeric($key) && isset($value['name'])) {
                 $key = $value['name'];
             }
-            if (isset($value['fields']) && is_array($value['fields'])) {
+            if (isset($value['fields']) && \is_array($value['fields'])) {
                 $value['fields'] = $this->processFields($value['fields']);
             }
             $return[$key] = $value;
@@ -403,7 +403,7 @@ class Form extends Iterator implements \Serializable
         $url = $uri->url;
         $post = $uri->post();
 
-        $task = isset($post['task']) ? $post['task'] : null;
+        $task = $post['task'] ?? null;
 
         $settings = $this->data->blueprints()->schema()->getProperty($post['name']);
         $settings = (object) array_merge(
@@ -578,8 +578,8 @@ class Form extends Iterator implements \Serializable
 
         $file->save(json_decode(json_encode($flash), true));
 
-        $formName = isset($post['__form-name__']) ? $post['__form-name__'] : null;
-        $uniqueId = isset($post['__unique_form_id__']) ? $post['__unique_form_id__'] : null;
+        $formName = $post['__form-name__'] ?? null;
+        $uniqueId = $post['__unique_form_id__'] ?? null;
 
         // json_response
         $json_response = [
@@ -609,8 +609,8 @@ class Form extends Iterator implements \Serializable
         $uri = $grav['uri'];
 
         $post = $uri->post();
-        $formName = isset($post['__form-name__']) ? $post['__form-name__'] : null;
-        $uniqueId = isset($post['__unique_form_id__']) ? $post['__unique_form_id__'] : $id;
+        $formName = $post['__form-name__'] ?? null;
+        $uniqueId = $post['__unique_form_id__'] ?? $id;
 
         $location = [
             'forms',
@@ -642,8 +642,8 @@ class Form extends Iterator implements \Serializable
             return false;
         }
 
-        $data = json_decode(isset($post['session']) ? $post['session'] : [], true);
-        $uniqueid = isset($data['uniqueid']) ? $data['uniqueid'] : null;
+        $data = isset($post['session']) ? json_decode($post['session'], true) : [];
+        $uniqueid = $data['uniqueid'] ?? null;
 
         $file = $this->getTmpFile($uniqueid);
         if (!$file->exists()) {
@@ -655,7 +655,7 @@ class Form extends Iterator implements \Serializable
 
         // Retrieve the flash object and remove the requested file from it
         $flash    = $file->content();
-        $endpoint = isset($flash['fields'][$field][$filename]) ? $flash['fields'][$field][$filename] : null;
+        $endpoint = $flash['fields'][$field][$filename] ?? null;
 
         if (null !== $endpoint) {
             $tmp_dir = $this->getTmpDir($uniqueid);
@@ -666,9 +666,7 @@ class Form extends Iterator implements \Serializable
         }
 
         // Walk backward to cleanup any empty field that's left
-        if (isset($flash['fields'][$field][$filename])) {
-            unset($flash['fields'][$field][$filename]);
-        }
+        unset($flash['fields'][$field][$filename]);
         if (empty($flash['fields'][$field])) {
             unset($flash['fields'][$field]);
         }
@@ -720,7 +718,7 @@ class Form extends Iterator implements \Serializable
 
             $i = 0;
             foreach ($this->items['fields'] as $key => $field) {
-                $name = isset($field['name']) ? $field['name'] : $key;
+                $name = $field['name'] ?? $key;
                 if (!isset($field['name'])) {
                     if (isset($data[$i])) { //Handle input@ false fields
                         $data[$name] = $data[$i];
@@ -764,7 +762,7 @@ class Form extends Iterator implements \Serializable
         // and finally store them. Everything else will get discarded
         $queue = $session->getFlashObject('files-upload');
         $queue = $queue[base64_encode($url)];
-        if (is_array($queue)) {
+        if (\is_array($queue)) {
             // Allow plugins to implement additional / alternative logic
             // Add post to event data
             $grav->fireEvent('onFormStoreUploads', new Event(['queue' => &$queue, 'form' => $this, 'post' => $post]));
@@ -786,8 +784,8 @@ class Form extends Iterator implements \Serializable
             }
         }
 
-        $process = isset($this->items['process']) ? $this->items['process'] : [];
-        if (is_array($process)) {
+        $process = $this->items['process'] ?? [];
+        if (\is_array($process)) {
             $event = null;
             foreach ($process as $action => $data) {
                 if (is_numeric($action)) {
