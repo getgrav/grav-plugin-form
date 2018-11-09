@@ -36,7 +36,7 @@
         form_nonce: '" ~ form.getNonce ~ "',
         session_timeout: " ~ config.system.session.timeout ~ "
     };
-    window.GravForm.translations = jQuery.extend({}, window.GravForm.translations || {}, { PLUGIN_FORM: {} });
+    window.GravForm.translations = Object.assign({}, window.GravForm.translations || {}, { PLUGIN_FORM: {} });
 ", {'group': 'bottom'}) %}
 
 
