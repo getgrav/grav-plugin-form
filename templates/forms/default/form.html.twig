@@ -56,6 +56,9 @@
       {% endblock %}
       {% if form.novalidate %}novalidate{% endif %}
       {% if form.keep_alive %}data-grav-keepalive="true"{% endif %}
+      {% for k, v in form.data.blueprints.form %}
+        {% if k starts with 'data-' %}{{ k }}="{{ v|e }}"{% endif %}
+      {% endfor %}
 >
 
   {% block inner_markup_fields_start %}{% endblock %}
