@@ -30,7 +30,14 @@
             {% endif %}
 
             {% for key, item_value in options %}
-                {% if item_value is iterable %}
+                {% if item_value is iterable and item_value.value %}
+                    {% set akey = field.selectize and field.multiple ? item_value : key %}
+                    {% set avalue = grav.twig.twig.filters['tu'] is defined ? item_value.value|tu : item_value.value|t %}
+                    <option {{ item_value.disabled ? 'disabled="disabled"' : '' }}
+			    {{ item_value.selected ? 'selected="selected"' : '' }}
+			    {{ item_value.label    ? 'label=' ~ item_value.label : '' }}
+			    value="{{ item_value.akey }}">{{ avalue|raw }}</option>
+                {% elseif item_value is iterable %}
                     <optgroup label="{{ key }}">
                         {%for subkey, suboption in item_value %}
                             {% set selected = field.selectize ? suboption : subkey %}
