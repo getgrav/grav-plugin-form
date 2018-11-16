@@ -17,7 +17,11 @@
     {% endif %}
 {% endfor %}
 
-{% set action = form.action ? base_url ~ form.action : base_url ~ page.route ~ uri.params %}
+{% if form.action %}
+  {% set action = form.action starts with 'http://' or form.action starts with 'https://' ? form.action : base_url ~ form.action %}
+{% else %}
+  {% set action = base_url ~ page.route ~ uri.params %}
+{% endif %}
 
 {% if (action == base_url_relative) %}
     {% set action = base_url_relative ~ '/' ~ page.slug %}
