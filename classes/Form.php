@@ -585,7 +585,6 @@ class Form extends Iterator implements \Serializable
                     $this->removeTmpImage($oldUpload['tmp_name']);
                     $upload['file']['original'] = $oldUpload['original'];
                 } else {
-                    echo "New original\n";
                     $upload['file']['original'] = $oldUpload;
                 }
                 $upload['file']['crop'] = $post['crop'];
