@@ -404,6 +404,8 @@ class Form extends Iterator implements \Serializable
         $post = $uri->post();
 
         $task = $post['task'] ?? null;
+        $formName = $post['__form-name__'] ?? 'undefined';
+        $uniqueId = $post['__unique_form_id__'] ?? $formName;
 
         $settings = $this->data->blueprints()->schema()->getProperty($post['name']);
         $settings = (object) array_merge(
@@ -421,15 +423,16 @@ class Form extends Iterator implements \Serializable
         // Useful if schema retrieval is not an option, e.g. dynamically created forms
         $grav->fireEvent('onFormUploadSettings', new Event(['settings' => &$settings, 'post' => $post]));
         
-        $upload = $this->normalizeFiles($_FILES['data'], $settings->name);
-        $filename = !empty($post['filename']) ? $post['filename'] : $upload->file->name;
+        $upload = json_decode(json_encode($this->normalizeFiles($_FILES['data'], $settings->name)), true);
+        $filename = !empty($post['filename']) ? $post['filename'] : $upload['file']['name'];
+        $field = $upload['field'];
 
         // Handle errors and breaks without proceeding further
-        if ($upload->file->error !== UPLOAD_ERR_OK) {
+        if ($upload['file']['error'] !== UPLOAD_ERR_OK) {
             // json_response
             return [
                 'status' => 'error',
-                'message' => sprintf($language->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_UPLOAD', null, true), $filename, $this->upload_errors[$upload->file->error])
+                'message' => sprintf($language->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_UPLOAD', null, true), $filename, $this->upload_errors[$upload['file']['error']])
             ];
         }
 
@@ -450,7 +453,7 @@ class Form extends Iterator implements \Serializable
         }
 
         // Remove the error object to avoid storing it
-        unset($upload->file->error);
+        unset($upload['file']['error']);
 
 
         // Handle Accepted file types
@@ -501,7 +504,7 @@ class Form extends Iterator implements \Serializable
 
         // Handle file size limits
         $settings->filesize *= self::BYTES_TO_MB; // 1024 * 1024 [MB in Bytes]
-        if ($settings->filesize > 0 && $upload->file->size > $settings->filesize) {
+        if ($settings->filesize > 0 && $upload['file']['size'] > $settings->filesize) {
             // json_response
             return [
                 'status'  => 'error',
@@ -514,7 +517,7 @@ class Form extends Iterator implements \Serializable
         // it won't be available upon save later on
         // since php removes it from the upload location
         $tmp_dir = $this->getTmpDir();
-        $tmp_file = $upload->file->tmp_name;
+        $tmp_file = $upload['file']['tmp_name'];
         $tmp = $tmp_dir . '/' . basename($tmp_file);
 
         Folder::create($tmp_dir);
@@ -526,24 +529,24 @@ class Form extends Iterator implements \Serializable
             ];
         }
 
-        $upload->file->tmp_name = basename($tmp_file);
+        $upload['file']['tmp_name'] = basename($tmp_file);
 
         // Retrieve the current session of the uploaded files for the field
         // and initialize it if it doesn't exist
         $file = $this->getTmpFile();
-        $flash = $file->content();
+        $flash = (array)$file->content();
 
         /** @var User $user */
         $user = $grav['user'];
         $flash['url'] = $url;
-        $flash['form'] = isset($post['__form-name__']) ? $post['__form-name__'] : null;
+        $flash['form'] = $formName;
         $flash['user'] = [
             'username' => $user->username,
             'email' => $user->email
         ];
 
-        if (!isset($flash['fields'][$upload->field])) {
-            $flash['fields'][$upload->field] = [];
+        if (!isset($flash['fields'][$field])) {
+            $flash['fields'][$field] = [];
         }
 
         // Set destination
@@ -570,25 +573,42 @@ class Form extends Iterator implements \Serializable
 
         // Prepare object for later save
         $path = $destination . '/' . $filename;
-        $upload->file->name = $filename;
-        $upload->file->path = $path;
+        $upload['file']['name'] = $filename;
+        $upload['file']['path'] = $path;
+
+        $remove = null;
+        if (isset($flash['fields'][$field][$filename])) {
+            $oldUpload = $flash['fields'][$field][$filename];
+            if ($task === 'cropupload') {
+                if (isset($oldUpload['original'])) {
+                    // Replace old resized file
+                    $this->removeTmpImage($oldUpload['tmp_name']);
+                    $upload['file']['original'] = $oldUpload['original'];
+                } else {
+                    echo "New original\n";
+                    $upload['file']['original'] = $oldUpload;
+                }
+                $upload['file']['crop'] = $post['crop'];
+            } else {
+                // Replace old file, including original
+                $this->removeTmpImage($oldUpload['original']['tmp_name'] ?? '');
+                $this->removeTmpImage($oldUpload['tmp_name']);
+            }
+        }
 
         // Prepare data to be saved later
-        $flash['fields'][$upload->field][$filename] = (array) $upload->file;
+        $flash['fields'][$field][$filename] = (array) $upload['file'];
 
-        $file->save(json_decode(json_encode($flash), true));
-
-        $formName = $post['__form-name__'] ?? null;
-        $uniqueId = $post['__unique_form_id__'] ?? null;
+        $file->save($flash);
 
         // json_response
         $json_response = [
             'status' => 'success',
             'session' => \json_encode([
                 'sessionField' => base64_encode($url),
-                'path' => $upload->file->path,
+                'path' => $path,
                 'field' => $settings->name,
-                'uniqueid' => $uniqueId ?: $formName ?: 'unknown'
+                'uniqueid' => $uniqueId
             ])
         ];
 
@@ -596,6 +616,14 @@ class Form extends Iterator implements \Serializable
         header('Content-Type: application/json');
         echo json_encode($json_response);
         exit;
+    }
+
+    protected function removeTmpImage($name, $uniqueid = null)
+    {
+        $filepath = $this->getTmpDir($uniqueid) . '/' . $name;
+        if ($name && is_file($filepath)) {
+            unlink($filepath);
+        }
     }
 
     protected function getTmpDir($id = null)
@@ -658,11 +686,8 @@ class Form extends Iterator implements \Serializable
         $endpoint = $flash['fields'][$field][$filename] ?? null;
 
         if (null !== $endpoint) {
-            $tmp_dir = $this->getTmpDir($uniqueid);
-
-            if (file_exists($tmp_dir. '/' . $endpoint['tmp_name'])) {
-                unlink($tmp_dir. '/' . $endpoint['tmp_name']);
-            }
+            $this->removeTmpImage($endpoint['original']['tmp_name'] ?? '', $uniqueid);
+            $this->removeTmpImage($endpoint['tmp_name'] ?? '', $uniqueid);
         }
 
         // Walk backward to cleanup any empty field that's left
