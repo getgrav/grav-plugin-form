@@ -697,7 +697,7 @@ class Form extends Iterator
         // Get flash object in order to save the files.
         $flash = new FormFlashObject($formName, $uniqueId);
         $queue = $flash->hasFiles() ? $flash->getFiles() : $queue;
-        print_r($queue);die();
+
         if ($queue) {
             // Allow plugins to implement additional / alternative logic
             $grav->fireEvent('onFormStoreUploads', new Event(['flash' => $flash, 'queue' => &$queue, 'form' => $this, 'post' => $post]));
