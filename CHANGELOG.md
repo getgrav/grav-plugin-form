@@ -1,3 +1,9 @@
+# v3.0.0-beta.4
+## mm/dd/2018
+
+1. [](#new)
+    * Added new `FormFlashObject` class to contain AJAX uploaded files in more reliable way
+
 # v3.0.0-beta.3
 ## 11/05/2018
 
