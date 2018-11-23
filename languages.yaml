@@ -528,3 +528,58 @@ nl:
     AVOID_OVERWRITING_HELP: "Voorkom dat bestanden met dezelfde naam worden overschreven. Datum prefix wordt toegevoegd"
     RANDOM_NAME: "Willekeurige naam"
     RANDOM_NAME_HELP: "Genereer een willekeurige naam van 15 karakters voor de geuploade bestanden"
+pt:
+  PLUGIN_FORM:
+    NOT_VALIDATED: "Formulário não validado. Falta preencher um ou mais campos obrigatórios."
+    NONCE_NOT_VALIDATED: "Oops, houve um problema. Por favor verifique os dados informados e envie o formulário novamente."
+    FILES: "Envio de Arquivos"
+    FORM_ALREADY_SUBMITTED: "Este formulário já foi enviado."
+    ALLOW_MULTIPLE: "Permitir mais de um arquivo"
+    ALLOW_MULTIPLE_HELP: "Permite selecionar mais de um arquivo para enviar."
+    DESTINATION: "Destino"
+    DESTINATION_HELP: "O local para onde os arquivos devem ser enviados"
+    ACCEPT: "Tipos MIME Permitidos"
+    ACCEPT_HELP: "Uma lista de tipos MIME permitidos no upload"
+    ERROR_VALIDATING_CAPTCHA: "Erro ao validar o captcha"
+    DATA_SUMMARY: "Aqui está um resumo do que você escreveu:"
+    NO_FORM_DATA: "Nenhum dado de formulário disponível"
+    RECAPTCHA: "ReCaptcha"
+    RECAPTCHA_SITE_KEY: "Site key"
+    RECAPTCHA_SITE_KEY_HELP: "Para mais informações visite https://developers.google.com/recaptcha"
+    RECAPTCHA_SECRET_KEY: "Secret key"
+    RECAPTCHA_SECRET_KEY_HELP: "Para mais informações visite https://developers.google.com/recaptcha"
+    GENERAL: "Geral"
+    USE_BUILT_IN_CSS: "Usar CSS built-in"
+    USE_INLINE_CSS: "Usar CSS inline"
+    FILEUPLOAD_PREVENT_SELF: 'Não é permitido usar "%s" fora de páginas.'
+    FILEUPLOAD_UNABLE_TO_UPLOAD: 'Não foi possível enviar o arquivo %s: %s'
+    FILEUPLOAD_UNABLE_TO_MOVE: 'Não foi possível mover o arquivo %s para "%s"'
+    DROPZONE_CANCEL_UPLOAD: 'Cancelar envio'
+    DROPZONE_CANCEL_UPLOAD_CONFIRMATION: 'Tem certeza de que deseja cancelar este envio?'
+    DROPZONE_DEFAULT_MESSAGE: 'Arraste seus arquivos para cá ou <strong>clique nesta área</strong>'
+    DROPZONE_FALLBACK_MESSAGE: 'Seu navegador não suporta arrastar e soltar arquivos.'
+    DROPZONE_FALLBACK_TEXT: 'Por favor use o formulário abaixo para enviar seus arquivos como antigamente.'
+    DROPZONE_FILE_TOO_BIG: 'O arquivo é muito grande ({{filesize}}MiB). Tamanho máximo: {{maxFilesize}}MiB.'
+    DROPZONE_INVALID_FILE_TYPE: "Você não pode enviar arquivos deste tipo."
+    DROPZONE_MAX_FILES_EXCEEDED: "Você não pode enviar mais arquivos."
+    DROPZONE_REMOVE_FILE: "Remover arquivo"
+    DROPZONE_REMOVE_FILE_CONFIRMATION: 'Tem certeza de que deseja excluir este arquivo?'
+    DROPZONE_RESPONSE_ERROR: "O servidor respondeu com código {{statusCode}}."
+    YES: "Sim"
+    NO: "Não"
+    REFRESH_PREVENTION: "Evitar recarregamento"
+    REFRESH_PREVENTION_HELP: "Usar o ID do formulário para garantir que ele não seja reprocessado se o usuário recarregar a página"
+    LIMIT: "Limite"
+    LIMIT_HELP: "Número máximo de arquivos permitidos por campo (deve ser múltiplo)"
+    FILESIZE: "Tamanho máximo"
+    FILESIZE_HELP: "Tamanho máximo de arquivo permitido (em MB), 0 = Use o default do sistema"
+    AVOID_OVERWRITING: "Evitar sobrescrita"
+    AVOID_OVERWRITING_HELP: "Prevenir que arquivos com o mesmo nome sejam sobrescritos. Serão adicionados prefixos com a data"
+    RANDOM_NAME: "Nome aleatório"
+    RANDOM_NAME_HELP: "Gerar um nome aleatório de 15 caracteres para os arquivos recebidos"
+    CLIENT_SIDE_VALIDATION: "Validação no cliente"
+    CLIENT_SIDE_VALIDATION_HELP: "Por padrão os formulários usarão a validação HTML5 no cliente como primeira linha de defesa"
+    INLINE_ERRORS: "Erros inline"
+    INLINE_ERRORS_HELP: "Útil se a validação no cliente estiver desabilitada. Mostra os erros próximo aos respectivos campos"
+    RESOLUTION_MIN: "A {{attr}} é menor que o mínimo de {{min}}px <br />"
+    RESOLUTION_MAX: "A {{attr}} é maior que o máximo de {{max}}px <br />"
