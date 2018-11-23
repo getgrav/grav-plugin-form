@@ -214,13 +214,15 @@ ru:
     ERROR_VALIDATING_CAPTCHA: "Ошибка проверки Captcha"
     DATA_SUMMARY: "Вот краткое изложение того, что вы нам написали:"
     NO_FORM_DATA: "Данные формы отсутствуют"
-    RECAPTCHA: "ReCaptcha"
+    RECAPTCHA: "reCAPTCHA"
+    RECPATCHA_VERSION: "Версия"
     RECAPTCHA_SITE_KEY: "Site key"
     RECAPTCHA_SITE_KEY_HELP: "Для получения дополнительной информации посетите https://developers.google.com/recaptcha"
     RECAPTCHA_SECRET_KEY: "Secret key"
     RECAPTCHA_SECRET_KEY_HELP: "Для получения дополнительной информации посетите https://developers.google.com/recaptcha"
     GENERAL: "Общие"
     USE_BUILT_IN_CSS: "Использовать встроенный CSS"
+    USE_INLINE_CSS: "Использовать inline CSS"
     FILEUPLOAD_PREVENT_SELF: 'Нельзя использовать "%s" за пределами страниц.'
     FILEUPLOAD_UNABLE_TO_UPLOAD: 'Не удалось загрузить файл %s: %s'
     FILEUPLOAD_UNABLE_TO_MOVE: 'Не удалось переместить файл %s в "%s"'
@@ -247,6 +249,15 @@ ru:
     AVOID_OVERWRITING_HELP: "Не допускать перезаписи файлов с тем же именем. Будет добавлен префикс с датой"
     RANDOM_NAME: "Случайное имя"
     RANDOM_NAME_HELP: "Создавать случайное строковое имя из 15 символов для загруженных файлов"
+    CLIENT_SIDE_VALIDATION: "Проверка на стороне клиента"
+    CLIENT_SIDE_VALIDATION_HELP: "По умолчанию формы будут использовать HTML5 проверку клиента как первую степень защиты"
+    INLINE_ERRORS: "Встроенные ошибки"
+    INLINE_ERRORS_HELP: "Полезно с отключенной «проверкой на стороне клиента», отображает встроенные контекстные ошибки формы"
+    RESOLUTION_MIN: "{{attr}} меньше минимума {{min}}px <br />"
+    RESOLUTION_MAX: "The {{attr}} больше, чем максимум {{max}}px <br />"
+    DESTINATION_NOT_SPECIFIED: "Назначение не указано"
+    INVALID_MIME_TYPE: "Тип MIME %s для файла %s не принимается."
+    INVALID_FILE_EXTENSION: "Расширение файла %s не является допустимым для файла."
 
 hr:
   PLUGIN_FORM:
