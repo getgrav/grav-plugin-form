@@ -4,6 +4,10 @@
 1. [](#improved)
     * Better handling of invalid file names during upload
     * Better MIME type checking of files during file upload
+2. [](#bugfix)
+    * Remove jQuery dependency in form.html.twig (#290)
+3. [](#new)
+    * Added Object.assing-polyfill (#291)
 
 # v2.16.3
 ## 09/21/2018
