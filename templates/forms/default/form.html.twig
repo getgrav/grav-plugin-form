@@ -4,7 +4,7 @@
 
 {% include 'partials/form-messages.html.twig' %}
 
-{% set scope = scope ? : form.scope is not none ? form.scope : 'data.' %}
+{% set scope = scope ? : form.scope is defined ? form.scope : 'data.' %}
 {% set multipart = '' %}
 {% set blueprints = blueprints ?? form.blueprint() %}
 {% set method = form.method|upper|default('POST') %}
@@ -18,7 +18,7 @@
 {% endfor %}
 
 {% if form.action %}
-  {% set action = form.action starts with 'http://' or form.action starts with 'https://' ? form.action : base_url ~ form.action %}
+  {% set action = grav.uri.isExternal(form.action) ? form.action : base_url ~ form.action %}
 {% else %}
   {% set action = base_url ~ page.route ~ uri.params %}
 {% endif %}
