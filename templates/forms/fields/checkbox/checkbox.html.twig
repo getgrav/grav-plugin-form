@@ -1,10 +1,18 @@
 {% extends "forms/field.html.twig" %}
 
 {% block label %}
+    {% set id = field.id|default(field.name) ~ '-' ~ key %}
+        <label style="display:inline;" class="inline" for="{{ id|e }}">
+            {% if field.markdown %}
+                {{ field.label|t|markdown(false) }}
+            {% else %}
+                {{ field.label|t|e }}
+            {% endif %}
+            {{ field.validate.required in ['on', 'true', 1] ? '<span class="required">*</span>' }}
+        </label>
 {% endblock %}
 
 {% block input %}
-    {% set id = field.id|default(field.name) ~ '-' ~ key %}
     <div class="{{ form_field_wrapper_classes ?: 'form-input-wrapper' }} {{ field.size }} {{ field.wrapper_classes }}">
         <input
             {# required attribute structures #}
@@ -24,13 +32,5 @@
                 {% if required %}required="required"{% endif %}
             {% endblock %}
             />
-        <label style="display:inline;" class="inline" for="{{ id|e }}">
-            {% if field.markdown %}
-                {{ field.label|t|markdown(false) }}
-            {% else %}
-                {{ field.label|t|e }}
-            {% endif %}
-            {{ field.validate.required in ['on', 'true', 1] ? '<span class="required">*</span>' }}
-        </label>
     </div>
 {% endblock %}
