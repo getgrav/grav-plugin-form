@@ -543,7 +543,11 @@ class Form extends Iterator
         $flash->setUrl($url)->setUser($grav['user']);
 
         if ($task === 'cropupload') {
-            $success = $flash->cropFile($field, $filename, $upload, $post['crop']);
+            $crop = $post['crop'];
+            if (\is_string($crop)) {
+                $crop = json_decode($crop, true);
+            }
+            $success = $flash->cropFile($field, $filename, $upload, $crop);
         } else {
             $success = $flash->uploadFile($field, $filename, $upload);
         }

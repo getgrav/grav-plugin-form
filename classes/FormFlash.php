@@ -155,6 +155,7 @@ class FormFlash implements \JsonSerializable
             }
             $this->uploadObjects[$field] = $objects;
         }
+
         return $this->uploadObjects[$field];
     }
 
@@ -165,6 +166,9 @@ class FormFlash implements \JsonSerializable
     {
         $list = [];
         foreach ($this->uploads as $field => $values) {
+            if (strpos($field, '/')) {
+                continue;
+            }
             $list[$field] = $this->getFilesByField($field);
         }
 
@@ -173,12 +177,15 @@ class FormFlash implements \JsonSerializable
 
     /**
      * @return array
-     * @deprecated 1.6 For backwards compatibility, do not use.
+     * @deprecated 1.6 For backwards compatibility only, do not use.
      */
     public function getLegacyFiles() : array
     {
         $fields = [];
         foreach ($this->uploads as $field => $files) {
+            if (strpos($field, '/')) {
+                continue;
+            }
             foreach ($files as $file) {
                 $file['tmp_name'] = $this->getTmpDir() . '/' . $file['tmp_name'];
                 $fields[$field][$file['path'] ?? $file['name']] = $file;
@@ -216,16 +223,20 @@ class FormFlash implements \JsonSerializable
         // Prepare object for later save
         $upload['file']['name'] = $filename;
 
-        if (isset($this->uploads[$field][$filename])) {
-            $oldUpload = $this->uploads[$field][$filename];
-
-            // Replace old file, including original
-            $this->removeTmpFile($oldUpload['original']['tmp_name'] ?? '');
+        // Replace old file, including original
+        $oldUpload = $this->uploads[$field][$filename] ?? null;
+        if (isset($oldUpload['tmp_name'])) {
             $this->removeTmpFile($oldUpload['tmp_name']);
         }
 
+        $originalUpload = $this->uploads[$field . '/original'][$filename] ?? null;
+        if (isset($originalUpload['tmp_name'])) {
+            $this->removeTmpFile($originalUpload['tmp_name']);
+            unset($this->uploads[$field . '/original'][$filename]);
+        }
+
         // Prepare data to be saved later
-        $this->uploads[$field][$filename] = (array) $upload['file'];
+        $this->uploads[$field][$filename] = $upload['file'];
 
         return true;
     }
@@ -259,20 +270,19 @@ class FormFlash implements \JsonSerializable
         // Prepare object for later save
         $upload['file']['name'] = $filename;
 
-        if (isset($this->uploads[$field][$filename])) {
-            $oldUpload = $this->uploads[$field][$filename];
-            if (isset($oldUpload['original'])) {
-                // Replace old resized file
+        $oldUpload = $this->uploads[$field][$filename] ?? null;
+        if ($oldUpload) {
+            $originalUpload = $this->uploads[$field . '/original'][$filename] ?? null;
+            if ($originalUpload) {
                 $this->removeTmpFile($oldUpload['tmp_name']);
-                $upload['file']['original'] = $oldUpload['original'];
             } else {
-                $upload['file']['original'] = $oldUpload;
+                $oldUpload['crop'] = $crop;
+                $this->uploads[$field . '/original'][$filename] = $oldUpload;
             }
-            $upload['file']['crop'] = $crop;
         }
 
         // Prepare data to be saved later
-        $this->uploads[$field][$filename] = (array) $upload['file'];
+        $this->uploads[$field][$filename] = $upload['file'];
 
         return true;
     }
@@ -293,17 +303,27 @@ class FormFlash implements \JsonSerializable
             return false;
         }
 
-        $endpoint = $this->uploads[$field][$filename] ?? null;
-
-        if (null !== $endpoint) {
-            $this->removeTmpFile($endpoint['original']['tmp_name'] ?? '');
-            $this->removeTmpFile($endpoint['tmp_name'] ?? '');
+        $upload = $this->uploads[$field][$filename] ?? null;
+        if (null !== $upload) {
+            $this->removeTmpFile($upload['tmp_name'] ?? '');
+        }
+        $upload = $this->uploads[$field . '/original'][$filename] ?? null;
+        if (null !== $upload) {
+            $this->removeTmpFile($upload['tmp_name'] ?? '');
         }
 
         // Walk backward to cleanup any empty field that's left
-        unset($this->uploadObjects[$field][$filename], $this->uploads[$field][$filename]);
+        unset(
+            $this->uploadObjects[$field][$filename],
+            $this->uploads[$field][$filename],
+            $this->uploadObjects[$field . '/original'][$filename],
+            $this->uploads[$field . '/original'][$filename]
+        );
         if (empty($this->uploads[$field])) {
             unset($this->uploads[$field]);
+        }
+        if (empty($this->uploads[$field . '/original'])) {
+            unset($this->uploads[$field . '/original']);
         }
 
         return true;

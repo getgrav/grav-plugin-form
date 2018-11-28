@@ -76,9 +76,18 @@ class FormFlashFile implements UploadedFileInterface, \JsonSerializable
         return $this->upload['type'] ?? 'application/octet-stream';
     }
 
-    public function isMoved()
+    public function isMoved() : bool
     {
         return $this->moved;
+    }
+
+    public function getMetaData() : array
+    {
+        if (isset($this->upload['crop'])) {
+            return ['crop' => $this->upload['crop']];
+        }
+
+        return [];
     }
 
     public function getDestination()
