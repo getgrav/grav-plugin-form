@@ -2,7 +2,11 @@
 ## mm/dd/2018
 
 1. [](#new)
-    * Added new `FormFlashObject` class to contain AJAX uploaded files in more reliable way
+    * Added `FormFlash` class to contain AJAX uploaded files in more reliable way
+    * Added `FormFlashFile` class which implements `UploadedFileInterface` from PSR-7
+1. [](#bugfix)
+    * Fixed files uploading before captcha check
+    * Fixed files uploading before data has been stored
 
 # v3.0.0-beta.3
 ## 11/05/2018

@@ -11,7 +11,6 @@ use Grav\Common\Inflector;
 use Grav\Common\Iterator;
 use Grav\Common\Language\Language;
 use Grav\Common\Page\Page;
-use Grav\Common\Session;
 use Grav\Common\Uri;
 use Grav\Common\Utils;
 use RocketTheme\Toolbox\Event\Event;
@@ -58,6 +57,11 @@ class Form extends Iterator
      * @var Data $items
      */
     protected $items = [];
+
+    /**
+     * @var FormFlash
+     */
+    protected $flash;
 
     /**
      * All the form data values, including non-data
@@ -405,8 +409,8 @@ class Form extends Iterator
 
         $name = $post['name'] ?? null;
         $task = $post['task'] ?? null;
-        $formName = $post['__form-name__'] ?? 'undefined';
-        $uniqueId = $post['__unique_form_id__'] ?? $formName;
+        $this->items['name'] = $formName = $post['__form-name__'] ?? $this->items['name'];
+        $this->items['uniqueid'] = $uniqueId = $post['__unique_form_id__'] ?? $formName;
 
         $settings = $this->data->blueprints()->schema()->getProperty($name);
         $settings = (object) array_merge(
@@ -535,7 +539,7 @@ class Form extends Iterator
         $upload['file']['path'] = $path;
 
         // We need to store the file into flash object or it will not be available upon save later on.
-        $flash = new FormFlashObject($formName, $uniqueId);
+        $flash = $this->getFlash();
         $flash->setUrl($url)->setUser($grav['user']);
 
         if ($task === 'cropupload') {
@@ -590,11 +594,11 @@ class Form extends Iterator
             return false;
         }
 
-        $formName = $post['__form-name__'] ?? null;
-        $uniqueId = $post['__unique_form_id__'] ?? null;
+        $this->items['name'] = $post['__form-name__'] ?? $this->items['name'];
+        $this->items['uniqueid'] = $post['__unique_form_id__'] ?? $this->items['name'];
 
         // Remove image from flash object
-        $flash = new FormFlashObject($formName, $uniqueId);
+        $flash = $this->getFlash();
         $flash->removeFile($field, $filename);
         $flash->save();
 
@@ -617,10 +621,12 @@ class Form extends Iterator
         /** @var Uri $uri */
         $uri = $grav['uri'];
 
+        // Get POST data and decode JSON fields into arrays
         $post = $uri->post();
+        $post['data'] = $this->decodeData($post['data'] ?? []);
 
-        $formName = $post['__form-name__'] ?? 'undefined';
-        $uniqueId = $post['__unique_form_id__'] ?? $formName;
+        $this->items['name'] = $post['__form-name__'] ?? $this->items['name'];
+        $this->items['uniqueid'] = $post['__unique_form_id__'] ?? $this->items['name'];
 
         if ($post) {
             $this->values = new Data((array)$post);
@@ -631,7 +637,6 @@ class Form extends Iterator
                 $data = $this->values->toArray();
             }
 
-
             if (!$this->values->get('form-nonce') || !Utils::verifyNonce($this->values->get('form-nonce'), 'form')) {
                 $this->status = 'error';
                 $event = new Event(['form' => $this,
@@ -641,7 +646,6 @@ class Form extends Iterator
 
                 return;
             }
-
 
             $i = 0;
             foreach ($this->items['fields'] as $key => $field) {
@@ -685,65 +689,145 @@ class Form extends Iterator
             }
         }
 
-        // TODO: remove at some point:
-        // Handle old session flash objects
-        /** @var Session $session */
-        $session = $grav['session'];
-        /** @var Uri $uri */
-        $uri = $grav['uri'];
-        $oldFlash = $session->getFlashObject('files-upload');
-        $queue = $oldFlash[base64_encode($uri->url)] ?? null;
+        $this->legacyUploads();
 
-        // Get flash object in order to save the files.
-        $flash = new FormFlashObject($formName, $uniqueId);
-        $queue = $flash->hasFiles() ? $flash->getFiles() : $queue;
-
-        if ($queue) {
-            // Allow plugins to implement additional / alternative logic
-            $grav->fireEvent('onFormStoreUploads', new Event(['flash' => $flash, 'queue' => &$queue, 'form' => $this, 'post' => $post]));
-
-            foreach ((array)$queue as $key => $files) {
-                // TODO: Deal with original image + crop meta!
-                foreach ($files as $destination => $file) {
-                    if (!rename($file['tmp_name'], $destination)) {
-                        throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $file['tmp_name'] . '"', $destination));
-                    }
-
-                    if (file_exists($file['tmp_name'] . '.yaml')) {
-                        unlink($file['tmp_name'] . '.yaml');
-                    }
-
-                    unset($files[$destination]['tmp_name']);
-                }
-
-                $this->data->merge([$key => $files]);
-            }
-        }
-        $flash->delete();
-
+        $redirect = $redirect_code = null;
         $process = $this->items['process'] ?? [];
         if (\is_array($process)) {
-            $event = null;
             foreach ($process as $action => $data) {
                 if (is_numeric($action)) {
                     $action = \key($data);
                     $data = $data[$action];
                 }
 
-                $previousEvent = $event;
                 $event = new Event(['form' => $this, 'action' => $action, 'params' => $data]);
+                $grav->fireEvent('onFormProcessed', $event);
 
-                if ($previousEvent) {
-                    if (!$previousEvent->isPropagationStopped()) {
-                        $grav->fireEvent('onFormProcessed', $event);
-                    } else {
-                        break;
-                    }
-                } else {
-                    $grav->fireEvent('onFormProcessed', $event);
+                if ($event['redirect']) {
+                    $redirect = $event['redirect'];
+                    $redirect_code = $event['redirect_code'];
+                }
+                if ($event->isPropagationStopped()) {
+                    break;
                 }
             }
         }
+
+        $this->copyFiles();
+
+        if ($redirect) {
+            $grav->redirect($redirect, $redirect_code);
+        }
+    }
+
+    protected function legacyUploads()
+    {
+        // Get flash object in order to save the files.
+        $flash = $this->getFlash();
+        $queue = $verify = $flash->getLegacyFiles();
+
+        if (!$queue) {
+            return;
+        }
+
+        $grav = Grav::instance();
+
+        /** @var Uri $uri */
+        $uri = $grav['uri'];
+
+        // Get POST data and decode JSON fields into arrays
+        $post = $uri->post();
+        $post['data'] = $this->decodeData($post['data'] ?? []);
+
+        // Allow plugins to implement additional / alternative logic
+        $grav->fireEvent('onFormStoreUploads', new Event(['form' => $this, 'queue' => &$queue, 'post' => $post]));
+
+        $modified = $queue !== $verify;
+
+        if (!$modified) {
+            // Fill file fields just like before.
+            foreach ($queue as $key => $files) {
+                foreach ($files as $destination => $file) {
+                    unset($files[$destination]['tmp_name']);
+                }
+
+                $this->data->merge([$key => $files]);
+            }
+        } else {
+            user_error('Event onFormStoreUploads is deprecated.', E_USER_DEPRECATED);
+
+            if (\is_array($queue)) {
+                foreach ($queue as $key => $files) {
+                    foreach ($files as $destination => $file) {
+                        if (!rename($file['tmp_name'], $destination)) {
+                            $grav = Grav::instance();
+                            throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $file['tmp_name'] . '"', $destination));
+                        }
+
+                        if (file_exists($file['tmp_name'] . '.yaml')) {
+                            unlink($file['tmp_name'] . '.yaml');
+                        }
+
+                        unset($files[$destination]['tmp_name']);
+                    }
+
+                    $this->data->merge([$key => $files]);
+                }
+            }
+
+            $flash->delete();
+        }
+    }
+
+    /**
+     * Store form uploads to the final location.
+     */
+    public function copyFiles()
+    {
+        // Get flash object in order to save the files.
+        $flash = $this->getFlash();
+        $fields = $flash->getFilesByFields();
+
+        foreach ($fields as $key => $uploads) {
+            /** @var FormFlashFile $upload */
+            foreach ($uploads as $upload) {
+                if ($upload->isMoved()) {
+                    continue;
+                }
+
+                $destination = $upload->getDestination();
+                try {
+                    $upload->moveTo($destination);
+                } catch (\RuntimeException $e) {
+                    $grav = Grav::instance();
+                    throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $upload->getClientFilename() . '"', $destination));
+                }
+
+                if (isset($file['crop'])) {
+
+                }
+
+                if (isset($file['original']['tmp_name'])) {
+
+                }
+            }
+        }
+
+        $flash->delete();
+    }
+
+    /**
+     * Get flash object
+     *
+     * @return FormFlash
+     */
+    public function getFlash()
+    {
+        if (null === $this->flash) {
+            $this->flash = new FormFlash($this->items['name'], $this->items['uniqueid']);
+        }
+
+        return $this->flash;
     }
 
     public function getPagePathFromToken($path)
@@ -757,6 +841,73 @@ class Form extends Iterator
             $this->response_code = $code;
         }
         return $this->response_code;
+    }
+
+    /**
+     * Decode data
+     *
+     * @param array $data
+     * @return array
+     */
+    protected function decodeData($data)
+    {
+        if (!\is_array($data)) {
+            return [];
+        }
+
+        // Decode JSON encoded fields and merge them to data.
+        if (isset($data['_json'])) {
+            $data = array_replace_recursive($data, $this->jsonDecode($data['_json']));
+            unset($data['_json']);
+        }
+
+        $data = $this->cleanDataKeys($data);
+
+        return $data;
+    }
+
+    /**
+     * Recursively JSON decode data.
+     *
+     * @param  array $data
+     *
+     * @return array
+     */
+    protected function jsonDecode(array $data)
+    {
+        foreach ($data as &$value) {
+            if (\is_array($value)) {
+                $value = $this->jsonDecode($value);
+            } else {
+                $value = json_decode($value, true);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Decode [] in the data keys
+     *
+     * @param array $source
+     * @return array
+     */
+    protected function cleanDataKeys($source = [])
+    {
+        $out = [];
+
+        if (\is_array($source)) {
+            foreach ($source as $key => $value) {
+                $key = str_replace(['%5B', '%5D'], ['[', ']'], $key);
+                if (\is_array($value)) {
+                    $out[$key] = $this->cleanDataKeys($value);
+                } else {
+                    $out[$key] = $value;
+                }
+            }
+        }
+
+        return $out;
     }
 
     /**
@@ -818,5 +969,4 @@ class Form extends Iterator
 
         return $filesize_mb  / static::BYTES_TO_MB;
     }
-
 }

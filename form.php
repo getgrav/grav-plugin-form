@@ -298,7 +298,6 @@ class FormPlugin extends Plugin
         $action = $event['action'];
         $params = $event['params'];
 
-
         $this->process($form);
 
         switch ($action) {
@@ -337,9 +336,10 @@ class FormPlugin extends Plugin
                         'form'    => $form,
                         'message' => $this->grav['language']->translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA')
                     ]));
-                    $event->stopPropagation();
 
                     $this->grav['log']->addWarning('Form reCAPTCHA Errors: [' . $uri->route() . '] ' . json_encode($errors));
+
+                    $event->stopPropagation();
 
                     return;
                 }
@@ -382,7 +382,9 @@ class FormPlugin extends Plugin
                 /** @var Twig $twig */
                 $twig = $this->grav['twig'];
                 $url = $twig->processString($url, $vars);
-                $this->grav->redirect($url);
+
+                $event['redirect'] = $url;
+                $event->stopPropagation();
                 break;
             case 'reset':
                 if (Utils::isPositive($params)) {
@@ -417,6 +419,9 @@ class FormPlugin extends Plugin
                     $field_cookie = 'forms-'.$form['name'].'-'.$remember_field;
                     setcookie($field_cookie, $form->value($remember_field), time()+60*60*24*60);
                 }
+                break;
+            case 'upload':
+                $form->copyFiles();
                 break;
             case 'save':
                 $prefix = !empty($params['fileprefix']) ? $params['fileprefix'] : '';
@@ -469,11 +474,15 @@ class FormPlugin extends Plugin
                         'content' => $form->getData()->toArray()
                     ];
 
+                    $file->lock();
+                    $form->copyFiles();
                     $file->save(array_filter($data));
                     break;
                 }
 
                 $file = File::instance($fullFileName);
+                $file->lock();
+                $form->copyFiles();
 
                 if ($operation === 'create') {
                     $body = $twig->processString(!empty($params['body']) ? $params['body'] : '{% include "forms/data.txt.twig" %}',
@@ -526,7 +535,7 @@ class FormPlugin extends Plugin
                     throw new \RuntimeException('Form cannot be processed (function does not exist)');
                 }
 
-                call_user_func($callable, $form);
+                $callable($form);
                 break;
         }
     }

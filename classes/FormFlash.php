@@ -7,7 +7,7 @@ use Grav\Common\Grav;
 use Grav\Common\Session;
 use Grav\Common\User\User;
 
-class FormFlashObject implements \JsonSerializable
+class FormFlash implements \JsonSerializable
 {
     /** @var string */
     protected $form;
@@ -19,15 +19,17 @@ class FormFlashObject implements \JsonSerializable
     protected $user;
     /** @var array */
     protected $uploads;
+    /** @var array */
+    protected $uploadObjects;
     /** @var bool */
     protected $exists;
 
     /**
      * FormFlashObject constructor.
-     * @param string $name
+     * @param string $form
      * @param string $uniqueId
      */
-    public function __construct($form, $uniqueId = null)
+    public function __construct(string $form, $uniqueId = null)
     {
         $this->form = $form;
         $this->uniqueId = $uniqueId;
@@ -44,7 +46,7 @@ class FormFlashObject implements \JsonSerializable
     /**
      * @return string
      */
-    public function getFormName()
+    public function getFormName() : string
     {
         return $this->form;
     }
@@ -52,7 +54,7 @@ class FormFlashObject implements \JsonSerializable
     /**
      * @return string
      */
-    public function getUniqieId()
+    public function getUniqieId() : string
     {
         return $this->uniqueId ?? $this->getFormName();
     }
@@ -60,7 +62,7 @@ class FormFlashObject implements \JsonSerializable
     /**
      * @return bool
      */
-    public function exists()
+    public function exists() : bool
     {
         return $this->exists;
     }
@@ -68,7 +70,7 @@ class FormFlashObject implements \JsonSerializable
     /**
      * @return $this
      */
-    public function save()
+    public function save() : self
     {
         $file = $this->getTmpIndex();
         $file->save($this->jsonSerialize());
@@ -77,15 +79,19 @@ class FormFlashObject implements \JsonSerializable
         return $this;
     }
 
-    public function delete()
+    public function delete() : self
     {
         $this->removeTmpDir();
+        $this->uploads = [];
+        $this->exists = false;
+
+        return $this;
     }
 
     /**
      * @return string
      */
-    public function getUrl()
+    public function getUrl() : string
     {
         return $this->url ?? '';
     }
@@ -94,9 +100,9 @@ class FormFlashObject implements \JsonSerializable
      * @param string $url
      * @return $this
      */
-    public function setUrl($url)
+    public function setUrl(string $url) : self
     {
-        $this->url = (string)$url;
+        $this->url = $url;
 
         return $this;
     }
@@ -104,7 +110,7 @@ class FormFlashObject implements \JsonSerializable
     /**
      * @return string
      */
-    public function getUsername()
+    public function getUsername() : string
     {
         return $this->user['username'] ?? '';
     }
@@ -112,7 +118,7 @@ class FormFlashObject implements \JsonSerializable
     /**
      * @return string
      */
-    public function getUserEmail()
+    public function getUserEmail() : string
     {
         return $this->user['email'] ?? '';
     }
@@ -121,7 +127,7 @@ class FormFlashObject implements \JsonSerializable
      * @param User|null $user
      * @return $this
      */
-    public function setUser(User $user = null)
+    public function setUser(?User $user = null) : self
     {
         if ($user && $user->username) {
             $this->user = [
@@ -135,14 +141,44 @@ class FormFlashObject implements \JsonSerializable
         return $this;
     }
 
+
+    /**
+     * @param string $field
+     * @return array
+     */
+    public function getFilesByField(string $field) : array
+    {
+        if (!isset($this->uploadObjects[$field])) {
+            $objects = [];
+            foreach ($this->uploads[$field] ?? [] as $filename => $upload) {
+                $objects[$filename] = new FormFlashFile($field, $upload, $this);
+            }
+            $this->uploadObjects[$field] = $objects;
+        }
+        return $this->uploadObjects[$field];
+    }
+
     /**
      * @return array
      */
-    public function getFiles()
+    public function getFilesByFields() : array
+    {
+        $list = [];
+        foreach ($this->uploads as $field => $values) {
+            $list[$field] = $this->getFilesByField($field);
+        }
+
+        return $list;
+    }
+
+    /**
+     * @return array
+     * @deprecated 1.6 For backwards compatibility, do not use.
+     */
+    public function getLegacyFiles() : array
     {
         $fields = [];
-        $old = $this->getFilesByField();
-        foreach ($old as $field => $files) {
+        foreach ($this->uploads as $field => $files) {
             foreach ($files as $file) {
                 $file['tmp_name'] = $this->getTmpDir() . '/' . $file['tmp_name'];
                 $fields[$field][$file['path'] ?? $file['name']] = $file;
@@ -153,21 +189,12 @@ class FormFlashObject implements \JsonSerializable
     }
 
     /**
-     * @param string|null $field
-     * @return bool
-     */
-    public function hasFiles($field = null)
-    {
-        return (bool)$this->getFilesByField($field);
-    }
-
-    /**
      * @param string $field
      * @param string $filename
      * @param array $upload
      * @return bool
      */
-    public function uploadFile($field, $filename, array $upload)
+    public function uploadFile(string $field, string $filename, array $upload) : bool
     {
         $tmp_dir = $this->getTmpDir();
 
@@ -210,7 +237,7 @@ class FormFlashObject implements \JsonSerializable
      * @param array $crop
      * @return bool
      */
-    public function cropFile($field, $filename, array $upload, array $crop)
+    public function cropFile(string $field, string $filename, array $upload, array $crop) : bool
     {
         $tmp_dir = $this->getTmpDir();
 
@@ -255,7 +282,7 @@ class FormFlashObject implements \JsonSerializable
      * @param string $filename
      * @return bool
      */
-    public function removeFile($field, $filename)
+    public function removeFile(string $field, string $filename) : bool
     {
         if (!$field || !$filename) {
             return false;
@@ -274,7 +301,7 @@ class FormFlashObject implements \JsonSerializable
         }
 
         // Walk backward to cleanup any empty field that's left
-        unset($this->uploads[$field][$filename]);
+        unset($this->uploadObjects[$field][$filename], $this->uploads[$field][$filename]);
         if (empty($this->uploads[$field])) {
             unset($this->uploads[$field]);
         }
@@ -285,7 +312,7 @@ class FormFlashObject implements \JsonSerializable
     /**
      * @return array
      */
-    public function jsonSerialize()
+    public function jsonSerialize() : array
     {
         return [
             'form' => $this->form,
@@ -299,7 +326,7 @@ class FormFlashObject implements \JsonSerializable
     /**
      * @return string
      */
-    public function getTmpDir()
+    public function getTmpDir() : string
     {
         $grav = Grav::instance();
 
@@ -318,7 +345,7 @@ class FormFlashObject implements \JsonSerializable
     /**
      * @return CompiledYamlFile
      */
-    protected function getTmpIndex()
+    protected function getTmpIndex() : CompiledYamlFile
     {
         return CompiledYamlFile::instance($this->getTmpDir() . '/index.yaml');
     }
@@ -326,7 +353,7 @@ class FormFlashObject implements \JsonSerializable
     /**
      * @param string $name
      */
-    protected function removeTmpFile($name)
+    protected function removeTmpFile(string $name) : void
     {
         $filename = $this->getTmpDir() . '/' . $name;
         if ($name && is_file($filename)) {
@@ -334,24 +361,11 @@ class FormFlashObject implements \JsonSerializable
         }
     }
 
-    protected function removeTmpDir()
+    protected function removeTmpDir() : void
     {
         $tmpDir = $this->getTmpDir();
         if (file_exists($tmpDir)) {
             Folder::delete($tmpDir);
         }
-    }
-
-    /**
-     * @param string|null $field
-     * @return array
-     */
-    public function getFilesByField($field = null)
-    {
-        if ($field) {
-            return $this->uploads[$field] ?? [];
-        }
-
-        return $this->uploads ?? [];
     }
 }
