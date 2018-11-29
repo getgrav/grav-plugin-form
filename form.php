@@ -588,6 +588,16 @@ class FormPlugin extends Plugin
     }
 
     /**
+     * function to get initialized forms
+     *
+     * @return array
+     */
+    public function getForms()
+    {
+      return $this->forms;
+    }
+
+    /**
      * function to get a specific form
      *
      * @param null|array|string $data optional form `name`
