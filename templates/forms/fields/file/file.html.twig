@@ -33,8 +33,8 @@
             {% set blueprint_name = type ~ '/' ~ blueprint_name %}
         {% endif %}
         {% set blueprint = base64_encode(blueprint_name) %}
-        {% set real_path = (global.context.media[path].relativePath ?? global.form.getPagePathFromToken(path))|trim('/') %}
-        {% set remove = global.form.getFileDeleteAjaxRoute() ? '' : uri.addNonce(global.base_url_relative ~
+        {% set real_path = global.context.media[path].relativePath ?? global.form.getPagePathFromToken(path) %}
+        {% set remove = global.form.getFileDeleteAjaxRoute(files.name, path)|string ?: uri.addNonce(global.base_url_relative ~
             '/media.json' ~
             '/route' ~ config.system.param_sep ~ base64_encode(global.base_path ~ '/' ~ real_path) ~
             '/task' ~ config.system.param_sep ~ 'removeFileFromBlueprint' ~
@@ -63,7 +63,7 @@
     {% block prepend %}{% endblock %}
     {% set settings = {name: field.name, paramName: (scope ~ field.name)|fieldName ~ (files.multiple ? '[]' : ''), limit: limit, filesize: form_max_filesize, accept: files.accept, resolution: files.resolution, resizeWidth: files.resizeWidth, resizeHeight: files.resizeHeight, resizeQuality: files.resizeQuality } %}
     {% set dropzoneSettings = field.dropzone %}
-    <div class="{{ form_field_wrapper_classes ?: 'form-input-wrapper' }} {{ field.classes }} dropzone files-upload form-input-file {{ field.size }}" data-grav-file-settings="{{ settings|json_encode|e('html_attr') }}" data-dropzone-options="{{ dropzoneSettings|json_encode|e('html_attr') }}" {% if form.getFileUploadAjaxRoute %}data-file-url-add="{{ form.getFileUploadAjaxRoute() }}"{% endif %} {% if form.getFileDeleteAjaxRoute() %}data-file-url-remove="{{ form.getFileDeleteAjaxRoute() }}"{% endif %}>
+    <div class="{{ form_field_wrapper_classes ?: 'form-input-wrapper' }} {{ field.classes }} dropzone files-upload form-input-file {{ field.size }}" data-grav-file-settings="{{ settings|json_encode|e('html_attr') }}" data-dropzone-options="{{ dropzoneSettings|json_encode|e('html_attr') }}" {% if form.getFileUploadAjaxRoute %}data-file-url-add="{{ form.getFileUploadAjaxRoute() }}"{% endif %}>
         {% block file_extras %}{% endblock %}
         <input
                 {# required attribute structures #}
