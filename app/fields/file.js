@@ -67,7 +67,8 @@ export default class FilesField {
                 status: Dropzone.ADDED,
                 accepted: true,
                 url: this.options.url,
-                removeUrl: data.remove
+                removeUrl: data.remove,
+                data
             };
 
             dropzone.files.push(mock);
