@@ -80,6 +80,9 @@
         {% include 'forms/fields/hidden/hidden.html.twig' with {field: {name: '_json.' ~ field.name}, value:value|json_encode|e('html_attr')} %}
     </div>
 
+    {% if grav.browser.browser == 'msie' and grav.browser.version < 12 %}
+        {% do assets.addJs('plugin://form/assets/object.assign.polyfill.js') %}
+    {% endif %}
     {% do assets.addJs('jquery', 101) %}
     {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'group': 'bottom', 'loading': 'defer' }) %}
     {% do assets.addJs('plugin://form/assets/form.min.js', { 'group': 'bottom', 'loading': 'defer'  }) %}
@@ -87,7 +90,7 @@
     {{ assets.css('form')|raw }}
     {% do assets.addInlineJs("
     window.GravForm = window.GravForm || {};
-    window.GravForm = jQuery.extend({}, window.GravForm, {
+    window.GravForm = Object.assign({}, window.GravForm, {
         translations: {
             PLUGIN_FORM: {
                 'DROPZONE_CANCEL_UPLOAD': " ~ 'PLUGIN_FORM.DROPZONE_CANCEL_UPLOAD'|t|json_encode ~ ",
