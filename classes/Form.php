@@ -132,6 +132,14 @@ class Form extends Iterator
             $this->items['uniqueid'] = Utils::generateRandomString(20);
         }
 
+        if (empty($this->items['nonce']['name'])) {
+            $this->items['nonce']['name'] = 'form-nonce';
+        }
+
+        if (empty($this->items['nonce']['action'])) {
+            $this->items['nonce']['action'] = 'form';
+        }
+
         // Reset and initialize the form
         $this->reset();
     }
@@ -208,6 +216,32 @@ class Form extends Iterator
     public function name()
     {
         return $this->items['name'];
+    }
+
+    /**
+     * Get the nonce value for a form
+     *
+     * @return string
+     */
+    public function getNonce()
+    {
+        return Utils::getNonce($this->getNonceAction());
+    }
+
+    /**
+     * @return string
+     */
+    public function getNonceName()
+    {
+        return $this->items['nonce']['name'];
+    }
+
+    /**
+     * @return string
+     */
+    public function getNonceAction()
+    {
+        return $this->items['nonce']['action'];
     }
 
     /**
@@ -938,17 +972,6 @@ class Form extends Iterator
         }
 
         return $files;
-    }
-
-    /**
-     * Get the nonce for a form
-     *
-     * @return string
-     */
-    public static function getNonce()
-    {
-        $action = 'form-plugin';
-        return Utils::getNonce($action);
     }
 
     /**

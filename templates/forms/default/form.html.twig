@@ -36,7 +36,7 @@
         current_url: '" ~ uri.route(true) ~"',
         base_url_relative: '" ~ base_url_relative ~ "',
         param_sep: '"~ config.system.param_sep ~ "',
-        form_nonce: '" ~ form.getNonce ~ "',
+        form_nonce: '" ~ form.getNonce() ~ "',
         session_timeout: " ~ config.system.session.timeout ~ "
     };
     window.GravForm.translations = Object.assign({}, window.GravForm.translations || {}, { PLUGIN_FORM: {} });
@@ -103,7 +103,7 @@
   {% endblock %}
 
   {% include 'forms/fields/uniqueid/uniqueid.html.twig' %}
-  {{ nonce_field('form', 'form-nonce')|raw }}
+  {{ nonce_field(form.getNonceAction() ?? 'form', form.getNonceName() ?? 'form-nonce')|raw }}
 </form>
 
 {% if config.forms.dropzone.enabled %}
