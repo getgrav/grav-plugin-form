@@ -2,6 +2,7 @@
 ## mm/dd/2018
 
 1. [](#new)
+    * Requires Grav 1.6 and Admin 1.9
     * Backwards incompatibility: Do not allow static `Form::getNonce()` call, only `$form->getNonce()` works now
     * Allow using custom nonce field/action by setting `nonce.name` and `nonce.action` inside the form YAML
     * Added `FormFlash` class to contain AJAX uploaded files in more reliable way
