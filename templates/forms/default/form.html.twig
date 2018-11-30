@@ -90,7 +90,11 @@
                     name="task" value="{{ button.task }}"
                 {% endif %}
             >
+              {% if button.html %}
+                {{ button.value|t|default('Submit')|raw }}
+              {% else %}
                 {{ button.value|t|default('Submit') }}
+              {% endif %}
           </button>
           {% if button.url %}
               </a>
