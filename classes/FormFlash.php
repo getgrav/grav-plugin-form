@@ -1,11 +1,11 @@
 <?php
 namespace Grav\Plugin\Form;
 
-use Grav\Common\File\CompiledYamlFile;
 use Grav\Common\Filesystem\Folder;
 use Grav\Common\Grav;
 use Grav\Common\Session;
 use Grav\Common\User\User;
+use RocketTheme\Toolbox\File\YamlFile;
 
 class FormFlash implements \JsonSerializable
 {
@@ -363,11 +363,12 @@ class FormFlash implements \JsonSerializable
     }
 
     /**
-     * @return CompiledYamlFile
+     * @return YamlFile
      */
-    protected function getTmpIndex() : CompiledYamlFile
+    protected function getTmpIndex() : YamlFile
     {
-        return CompiledYamlFile::instance($this->getTmpDir() . '/index.yaml');
+        // Do not use CompiledYamlFile as the file can change multiple times per second.
+        return YamlFile::instance($this->getTmpDir() . '/index.yaml');
     }
 
     /**
