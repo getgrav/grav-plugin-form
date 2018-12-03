@@ -13,6 +13,8 @@ use Grav\Common\Language\Language;
 use Grav\Common\Page\Page;
 use Grav\Common\Uri;
 use Grav\Common\Utils;
+use Grav\Framework\Form\FormFlash;
+use Grav\Framework\Form\FormFlashFile;
 use RocketTheme\Toolbox\Event\Event;
 
 class Form extends Iterator
@@ -839,14 +841,6 @@ class Form extends Iterator
                 } catch (\RuntimeException $e) {
                     $grav = Grav::instance();
                     throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $upload->getClientFilename() . '"', $destination));
-                }
-
-                if (isset($file['crop'])) {
-
-                }
-
-                if (isset($file['original']['tmp_name'])) {
-
                 }
             }
         }

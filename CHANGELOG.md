@@ -6,8 +6,6 @@
     * Backwards incompatibility: Do not allow static `Form::getNonce()` call, only `$form->getNonce()` works now
     * Backwards incompatibility: All form field twig files are required to extend `field.html.twig` to work properly
     * Allow using custom nonce field/action by setting `nonce.name` and `nonce.action` inside the form YAML
-    * Added `FormFlash` class to contain AJAX uploaded files in more reliable way
-    * Added `FormFlashFile` class which implements `UploadedFileInterface` from PSR-7
     * Added `html: true` support for form buttons (will not escape the button value)
 1. [](#bugfix)
     * Fixed files uploading before captcha check
