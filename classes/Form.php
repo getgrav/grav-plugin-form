@@ -6,6 +6,7 @@ use Grav\Common\Data\Data;
 use Grav\Common\Data\Blueprint;
 use Grav\Common\Data\ValidationException;
 use Grav\Common\Filesystem\Folder;
+use Grav\Common\Form\FormFlash;
 use Grav\Common\Grav;
 use Grav\Common\Inflector;
 use Grav\Common\Iterator;
@@ -14,7 +15,6 @@ use Grav\Common\Page\Page;
 use Grav\Common\Session;
 use Grav\Common\Uri;
 use Grav\Common\Utils;
-use Grav\Framework\Form\FormFlash;
 use Grav\Framework\Form\FormFlashFile;
 use RocketTheme\Toolbox\Event\Event;
 
@@ -640,7 +640,7 @@ class Form extends Iterator
 
         // Remove image from flash object
         $flash = $this->getFlash();
-        $flash->removeFile($field, $filename);
+        $flash->removeFile($filename, $field);
         $flash->save();
 
         // json_response
@@ -832,7 +832,7 @@ class Form extends Iterator
         foreach ($fields as $key => $uploads) {
             /** @var FormFlashFile $upload */
             foreach ($uploads as $upload) {
-                if ($upload->isMoved()) {
+                if (null === $upload || $upload->isMoved()) {
                     continue;
                 }
 
