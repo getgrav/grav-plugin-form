@@ -11,6 +11,7 @@ use Grav\Common\Inflector;
 use Grav\Common\Iterator;
 use Grav\Common\Language\Language;
 use Grav\Common\Page\Page;
+use Grav\Common\Session;
 use Grav\Common\Uri;
 use Grav\Common\Utils;
 use Grav\Framework\Form\FormFlash;
@@ -856,7 +857,9 @@ class Form extends Iterator
     public function getFlash()
     {
         if (null === $this->flash) {
-            $this->flash = new FormFlash($this->items['name'], $this->items['uniqueid']);
+            /** @var Session $session */
+            $session = Grav::instance()['session'];
+            $this->flash = new FormFlash($session->getId(), $this->items['uniqueid'] ?? $this->items['name'], $this->items['name']);
         }
 
         return $this->flash;
