@@ -1,3 +1,18 @@
+# v3.0.0-beta.4
+## mm/dd/2018
+
+1. [](#new)
+    * Requires Grav 1.6.0-beta.7 (and optionally Admin 1.9.0-beta.7)
+    * Backwards incompatibility: Do not allow static `Form::getNonce()` call, only `$form->getNonce()` works now
+    * Backwards incompatibility: All form field twig files are required to extend `field.html.twig` to work properly
+    * Allow using custom nonce field/action by setting `nonce.name` and `nonce.action` inside the form YAML
+    * Added `html: true` support for form buttons (will not escape the button value)
+1. [](#improved)
+    * Updated code to use PHP 7.1 features    
+1. [](#bugfix)
+    * Fixed files uploading before captcha check
+    * Fixed files uploading before data has been stored
+
 # v3.0.0-beta.3
 ## 11/05/2018
 
@@ -34,6 +49,11 @@
 1. [](#improved)
     * Better handling of invalid file names during upload
     * Better MIME type checking of files during file upload
+    * Do not rely on jQuery for merging languages from form fields [#290](https://github.com/getgrav/grav-plugin-form/issues/290) [#291](https://github.com/getgrav/grav-plugin-form/issues/291)
+2. [](#bugfix)
+    * Remove jQuery dependency in form.html.twig (#290)
+3. [](#new)
+    * Added Object.assing-polyfill (#291)
 
 # v2.16.3
 ## 09/21/2018

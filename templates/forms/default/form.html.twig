@@ -23,6 +23,9 @@
 {% endif %}
 
 {% if form.keep_alive %}
+    {% if grav.browser.browser == 'msie' and grav.browser.version < 12 %}
+        {% do assets.addJs('plugin://form/assets/object.assign.polyfill.js') %}
+    {% endif %}
     {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'group': 'bottom', 'loading': 'defer' }) %}
     {% do assets.addJs('plugin://form/assets/form.min.js', { 'group': 'bottom', 'loading': 'defer' }) %}
 {% endif %}
@@ -33,10 +36,10 @@
         current_url: '" ~ uri.route(true) ~"',
         base_url_relative: '" ~ base_url_relative ~ "',
         param_sep: '"~ config.system.param_sep ~ "',
-        form_nonce: '" ~ form.getNonce ~ "',
+        form_nonce: '" ~ form.getNonce() ~ "',
         session_timeout: " ~ config.system.session.timeout ~ "
     };
-    window.GravForm.translations = jQuery.extend({}, window.GravForm.translations || {}, { PLUGIN_FORM: {} });
+    window.GravForm.translations = Object.assign({}, window.GravForm.translations || {}, { PLUGIN_FORM: {} });
 ", {'group': 'bottom'}) %}
 
 <form name="{{ form.name }}"
@@ -87,7 +90,11 @@
                     name="task" value="{{ button.task }}"
                 {% endif %}
             >
+              {% if button.html %}
+                {{ button.value|t|default('Submit')|raw }}
+              {% else %}
                 {{ button.value|t|default('Submit') }}
+              {% endif %}
           </button>
           {% if button.url %}
               </a>
@@ -100,7 +107,7 @@
   {% endblock %}
 
   {% include 'forms/fields/uniqueid/uniqueid.html.twig' %}
-  {{ nonce_field('form', 'form-nonce')|raw }}
+  {{ nonce_field(form.getNonceAction() ?? 'form', form.getNonceName() ?? 'form-nonce')|raw }}
 </form>
 
 {% if config.forms.dropzone.enabled %}

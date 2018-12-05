@@ -67,7 +67,8 @@ export default class FilesField {
                 status: Dropzone.ADDED,
                 accepted: true,
                 url: this.options.url,
-                removeUrl: data.remove
+                removeUrl: data.remove,
+                data
             };
 
             dropzone.files.push(mock);
@@ -271,10 +272,10 @@ const addNode = (container) => {
         resizeQuality: settings.resizeQuality || null,
         accept: function(file, done) {
             const resolution = settings.resolution;
+            let error = '';
             if (!resolution) return done();
 
             setTimeout(() => {
-                let error = '';
                 if (resolution.min) {
                     Object.keys(resolution.min).forEach((attr) => {
                         if (file[attr] < resolution.min[attr]) {
