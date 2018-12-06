@@ -315,8 +315,11 @@ class FormPlugin extends Plugin
 
                 $recaptcha = new \ReCaptcha\ReCaptcha($secret);
 
+                // get captcha vesrion
+                $captcha_version = $captcha_config['version'] ?? 2;
+
                 // Add version 3 specific options
-                if ($captcha_config['version'] == 3) {
+                if ($captcha_version == 3) {
                     $token = $form->value('token');
                     $resp = $recaptcha
                         ->setExpectedHostname($hostname)
