@@ -315,7 +315,7 @@ class FormPlugin extends Plugin
 
                 $recaptcha = new \ReCaptcha\ReCaptcha($secret);
 
-                // get captcha vesrion
+                // get captcha version
                 $captcha_version = $captcha_config['version'] ?? 2;
 
                 // Add version 3 specific options
