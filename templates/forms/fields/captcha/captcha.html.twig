@@ -11,14 +11,18 @@
       {#{% do assets.addJs('https://www.google.com/recaptcha/api.js?render='~site_key) %}#}
       <script src='https://www.google.com/recaptcha/api.js?render={{ site_key }}'></script>
       <script>
-          $(document).on('submit', 'form', function() {
-              event.preventDefault();
-              var form = $(this);
-              grecaptcha.ready(function () {
-                  grecaptcha.execute('{{ site_key }}', {action: '{{ action }}'}).then(function(token) {
-                      form.prepend('<input type="hidden" name="data[token]" value="' + token + '">');
-                      form.prepend('<input type="hidden" name="data[action]" value="{{ action }}">');
-                      form.unbind('submit').submit();
+          jQuery('form').each(function(index, form) {
+              form = jQuery(form);
+
+              form.on('submit', function() {
+                  event.preventDefault();
+                  var form = jQuery(this);
+                  grecaptcha.ready(function () {
+                      grecaptcha.execute('{{ site_key }}', {action: '{{ action }}'}).then(function (token) {
+                          form.prepend('<input type="hidden" name="data[token]" value="' + token + '">');
+                          form.prepend('<input type="hidden" name="data[action]" value="{{ action }}">');
+                          form.off('submit').submit();
+                      });
                   });
               });
           });
