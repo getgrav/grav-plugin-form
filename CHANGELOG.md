@@ -8,7 +8,7 @@
 2. [](#bugfix)
     * Remove jQuery dependency in form.html.twig (#290)
 3. [](#new)
-    * Added Object.assing-polyfill (#291)
+    * Added Object.assign-polyfill (#291)
 
 # v2.16.3
 ## 09/21/2018
