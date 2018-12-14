@@ -1,3 +1,15 @@
+# v2.16.4
+## 12/14/2018
+
+1. [](#improved)
+    * Better handling of invalid file names during upload
+    * Better MIME type checking of files during file upload
+    * Do not rely on jQuery for merging languages from form fields [#290](https://github.com/getgrav/grav-plugin-form/issues/290) [#291](https://github.com/getgrav/grav-plugin-form/issues/291)
+2. [](#bugfix)
+    * Remove jQuery dependency in form.html.twig (#290)
+3. [](#new)
+    * Added Object.assign-polyfill (#291)
+
 # v2.16.3
 ## 09/21/2018
 
