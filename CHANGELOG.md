@@ -1,5 +1,5 @@
 # v3.0.0-beta.4
-## mm/dd/2018
+## 12/14/2018
 
 1. [](#new)
     * Requires Grav 1.6.0-beta.7 (and optionally Admin 1.9.0-beta.7)
@@ -12,6 +12,7 @@
 1. [](#bugfix)
     * Fixed files uploading before captcha check
     * Fixed files uploading before data has been stored
+    * Fixed some issues with reCAPTCHA v3
 
 # v3.0.0-beta.3
 ## 11/05/2018
