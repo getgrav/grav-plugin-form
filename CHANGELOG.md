@@ -13,6 +13,8 @@
     * Fixed files uploading before captcha check
     * Fixed files uploading before data has been stored
     * Fixed some issues with reCAPTCHA v3
+    * Fixed container fields breaking values from the child fields
+    * Fixed form fields not accepting object values
 
 # v3.0.0-beta.3
 ## 11/05/2018
