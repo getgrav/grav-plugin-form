@@ -25,11 +25,22 @@
 {% endif %}
 
 {% block field %}
-    <div class="{{ form_field_outer_classes ?: 'form-field' }} {{ field.outerclasses }} {% if errors %} has-errors{% endif %} {% block outer_field_classes %}{% endblock %}">
+    <div class="{{ form_field_outer_classes ?: 'form-field' }} {{ field.outerclasses }} {% if field.toggleable %} form-field-toggleable{% endif %} {% if errors %} has-errors{% endif %} {% block outer_field_classes %}{% endblock %}">
         {% block contents %}
             {% if field.label is not same as(false) and field.display_label is not same as(false) %}
                 <div class="{{ form_field_outer_label_classes ?: 'form-label' }} {{ field.labelclasses }}">
-                    <label class="{{ form_field_label_classes ?: 'inline' }}" {% if field.id is defined %}for="{{ field.id|e }}" {% endif %} >
+                    {% if field.toggleable %}
+                        <span class="checkboxes toggleable" data-grav-field="toggleable" data-grav-field-name="{{ field_name }}">
+                        <input type="checkbox"
+                               id="toggleable_{{ field.name }}"
+                               {% if toggleableChecked %}value="1"{% endif %}
+                               name="toggleable_{{ field_name }}"
+                               {% if toggleableChecked %}checked="checked"{% endif %}
+                        >
+                        <label for="toggleable_{{ field.name }}"></label>
+                    </span>
+                    {% endif %}
+                    <label class="{{ form_field_label_classes ?: 'inline' }} {{ field.toggleable ? 'toggleable' }}" {% if field.id is defined %}for="{{ field.toggleable ? 'toggleable_' ~ field.name : field.id|e }}" {% endif %} >
                     {% block label %}
                         {% if field.help %}
                             {% if field.markdown %}
@@ -53,7 +64,7 @@
             <div class="{{ form_field_outer_data_classes ?: 'form-data' }} {{ field.dataclasses }}"
                 {% block global_attributes %}
                 data-grav-field="{{ field.type }}"
-                data-grav-disabled="{{ originalValue is null ? 'true' : 'false' }}"
+                data-grav-disabled="{{ toggleableChecked }}"
                 data-grav-default="{{ field.default|json_encode()|e('html_attr') }}"
                 {% endblock %}
             >
