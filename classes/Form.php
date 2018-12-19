@@ -58,7 +58,7 @@ class Form extends Iterator implements FormInterface
     /**
      * Form header items
      *
-     * @var Data $items
+     * @var array $items
      */
     protected $items = [];
 
@@ -102,17 +102,17 @@ class Form extends Iterator implements FormInterface
         if ($form) {
             // If form is given, use it.
             $this->items = $form;
-        } elseif ($name && isset($header->forms[$name])) {
-            // If form with that name was found, use that.
-             $this->items = $header->forms[$name];
-        } elseif (isset($header->form)) {
-            // For backwards compatibility.
-            $this->items = $header->form;
-        } elseif (!empty($header->forms)) {
-            // Pick up the first form.
-            $form = reset($header->forms);
-            $name = key($header->forms);
-            $this->items = $form;
+        } else {
+            // Otherwise get all forms in the page.
+            $forms = $page->forms();
+            if ($name) {
+                // If form with given name was found, use that.
+                $this->items = $forms[$name] ?? [];
+            } else {
+                // Otherwise pick up the first form.
+                $this->items = reset($forms) ?: [];
+                $name = key($forms);
+            }
         }
 
         // Add form specific rules.
