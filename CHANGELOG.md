@@ -1,3 +1,13 @@
+# v3.0.0-beta.5
+## mm/dd/2018
+
+1. [](#new)
+    * Added `toggle`, `tabs` and `tab` form fields
+    * Added support for toggleable inputs, which can be disabled/enabled by user
+1. [](#bugfix)
+    * Fixed container fields breaking values from the child fields
+    * Fixed form fields not accepting object values
+
 # v3.0.0-beta.4
 ## 12/14/2018
 
@@ -7,6 +17,8 @@
     * Backwards incompatibility: All form field twig files are required to extend `field.html.twig` to work properly
     * Allow using custom nonce field/action by setting `nonce.name` and `nonce.action` inside the form YAML
     * Added `html: true` support for form buttons (will not escape the button value)
+    * Added `toggle`, `tabs` and `tab` form fields
+    * Added support for toggleable inputs, which can be disabled/enabled by user
 1. [](#improved)
     * Updated code to use PHP 7.1 features    
 1. [](#bugfix)
