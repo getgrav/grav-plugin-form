@@ -3,7 +3,7 @@
 
 1. [](#new)
     * Added `toggle`, `tabs` and `tab` form fields
-    * Added support for toggleable inputs, which can be disabled/enabled by user
+    * Added support for `toggleable` inputs, which can be disabled/enabled by user
 1. [](#bugfix)
     * Fixed container fields breaking values from the child fields
     * Fixed form fields not accepting object values
