@@ -177,9 +177,46 @@ $form-active-color: #000;
         margin-right: 5px;
         vertical-align: middle;
     }
-    .form-label {
+    .checkboxes + label {
         display: inline-block;
     }
+}
+
+// Toggles
+.switch-toggle {
+    display: inline-flex;
+    overflow: hidden;
+    border-radius: 3px;
+    line-height: 35px;
+    border: 1px solid $form-border-color;
+
+    input[type=radio] {
+        position: absolute;
+        visibility: hidden;
+        display: none;
+    }
+
+    label {
+        display: inline-block;
+        cursor: pointer;
+        padding: 0 15px;
+        margin: 0;
+        white-space: nowrap;
+        color: inherit;
+        transition: background-color 0.5s ease;
+    }
+
+    input.highlight:checked + label {
+        background: #333;
+        color: #fff;
+    }
+
+    input:checked + label {
+        color: #fff;
+        background: #999;
+    }
+
+
 }
 
 /* Signature Pad */
