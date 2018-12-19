@@ -16,11 +16,12 @@ use Grav\Common\Session;
 use Grav\Common\Uri;
 use Grav\Common\Utils;
 use Grav\Framework\Form\FormFlashFile;
+use Grav\Framework\Form\Interfaces\FormInterface;
 use RocketTheme\Toolbox\Event\Event;
 
-class Form extends Iterator
+class Form extends Iterator implements FormInterface
 {
-    const BYTES_TO_MB = 1048576;
+    public const BYTES_TO_MB = 1048576;
 
     /**
      * @var string
@@ -86,7 +87,7 @@ class Form extends Iterator
      *
      * @param Page $page
      * @param string|int|null $name
-     * @param null $form
+     * @param array|null $form
      */
     public function __construct(Page $page, $name = null, $form = null)
     {
@@ -129,7 +130,7 @@ class Form extends Iterator
         // Set form id if not set.
         if (empty($this->items['id'])) {
             $inflector = new Inflector();
-            $this->items['id'] = $inflector->hyphenize($this->items['name']);
+            $this->items['id'] = $inflector::hyphenize($this->items['name']);
         }
         if (empty($this->items['uniqueid'])) {
             $this->items['uniqueid'] = Utils::generateRandomString(20);
@@ -148,109 +149,113 @@ class Form extends Iterator
     }
 
     /**
-     * Custom serializer for this complex object
+     * @inheritdoc
+     */
+    public function getId(): string
+    {
+        return $this->items['id'];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setId(string $id): void
+    {
+        $this->items['id'] = $id;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getUniqueId(): string
+    {
+        return $this->items['uniqueid'];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setUniqueId(string $uniqueId): void
+    {
+        $this->items['uniqueid'] = $uniqueId;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getName(): string
+    {
+        return $this->getFormName();
+    }
+
+    /**
+     * Alias of $this->getName()
      *
      * @return string
+     * @deprecated 3.0
      */
-    public function serialize()
+    public function name(): string
     {
-        $data = [
-            'items' => $this->items,
-            'message' => $this->message,
-            'status' => $this->status,
-            'header_data' => $this->header_data,
-            'rules' => $this->rules,
-            'data' => $this->data->toArray(),
-            'values' => $this->values->toArray(),
-            'page' => $this->page
-        ];
-        return serialize($data);
+        return $this->getName();
     }
 
     /**
-     * Custom unserializer for this complex object
-     *
-     * @param string $data
+     * @return string
      */
-    public function unserialize($data)
-    {
-        $data = unserialize($data);
-
-        $this->items = $data['items'];
-        $this->message = $data['message'];
-        $this->status = $data['status'];
-        $this->header_data = $data['header_data'];
-        $this->rules = $data['rules'];
-
-        $name = $this->items['name'];
-        $items = $this->items;
-        $rules = $this->rules;
-
-        $blueprint  = function () use ($name, $items, $rules) {
-            $blueprint = new Blueprint($name, ['form' => $items, 'rules' => $rules]);
-            return $blueprint->load()->init();
-        };
-
-        $this->data = new Data($data['data'], $blueprint);
-        $this->values = new Data($data['values']);
-        $this->page = $data['page'];
-    }
-
-    /**
-     * Allow overriding of fields.
-     *
-     * @param array $fields
-     */
-    public function setFields(array $fields = [])
-    {
-        // Make sure blueprints are updated, otherwise validation may fail.
-        $blueprint = $this->data->blueprints();
-        $blueprint->set('form/fields', $fields);
-        $blueprint->undef('form/field');
-
-        $this->fields = $fields;
-    }
-
-    /**
-     * Get the name of this form.
-     *
-     * @return String
-     */
-    public function name()
+    public function getFormName(): string
     {
         return $this->items['name'];
     }
 
     /**
-     * Get the nonce value for a form
-     *
-     * @return string
+     * @inheritdoc
      */
-    public function getNonce()
-    {
-        return Utils::getNonce($this->getNonceAction());
-    }
-
-    /**
-     * @return string
-     */
-    public function getNonceName()
+    public function getNonceName(): string
     {
         return $this->items['nonce']['name'];
     }
 
     /**
-     * @return string
+     * @inheritdoc
      */
-    public function getNonceAction()
+    public function getNonceAction(): string
     {
         return $this->items['nonce']['action'];
     }
 
     /**
-     * Reset data.
+     * @inheritdoc
      */
-    public function reset()
+    public function getAction(): string
+    {
+        return '';
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getData()
+    {
+        return $this->data;
+    }
+
+    public function getFiles(): array
+    {
+        return [];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getValue(string $name)
+    {
+        return $this->values->get($name);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function reset(): void
     {
         $name = $this->items['name'];
         $grav = Grav::instance();
@@ -270,10 +275,75 @@ class Form extends Iterator
 
         $this->data = new Data($this->header_data, $blueprint);
         $this->values = new Data();
-        $this->fields = $this->fields(true);
+        $this->fields = $this->getFields(true);
 
         // Fire event
         $grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getFields($reset = false): array
+    {
+        if ($reset || null === $this->fields) {
+            $blueprint = $this->data->blueprints();
+
+            if (method_exists($blueprint, 'load')) {
+                // init the form to process directives
+                $blueprint->load()->init();
+
+                // fields set to processed blueprint fields
+                $this->fields = $blueprint->fields() ?? [];
+            }
+        }
+
+        return $this->fields;
+    }
+
+    /**
+     * Alias of $this->getFields()
+     *
+     * @param bool $reset
+     * @return array
+     * @deprecated 3.0
+     */
+    public function fields($reset = false): array
+    {
+        return $this->getFields($reset);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getBlueprint(): Blueprint
+    {
+        return $this->getData()->blueprints();
+    }
+
+    /**
+     * Allow overriding of fields.
+     *
+     * @param array $fields
+     */
+    public function setFields(array $fields = [])
+    {
+        // Make sure blueprints are updated, otherwise validation may fail.
+        $blueprint = $this->data->blueprints();
+        $blueprint->set('form/fields', $fields);
+        $blueprint->undef('form/field');
+
+        $this->fields = $fields;
+    }
+
+    /**
+     * Get the nonce value for a form
+     *
+     * @return string
+     */
+    public function getNonce()
+    {
+        return Utils::getNonce($this->getNonceAction());
     }
 
     protected function processFields($fields)
@@ -302,24 +372,6 @@ class Form extends Iterator
             $return[$key] = $value;
         }
         return $return;
-    }
-
-    public function fields($reset = false)
-    {
-
-        if ($reset || null === $this->fields) {
-            $blueprint = $this->data->blueprints();
-
-            if (method_exists($blueprint, 'load')) {
-                // init the form to process directives
-                $blueprint->load()->init();
-
-                // fields set to processed blueprint fields
-                $this->fields = $blueprint->fields();
-            }
-        }
-
-        return $this->fields;
     }
 
     /**
@@ -372,32 +424,11 @@ class Form extends Iterator
     }
 
     /**
-     * Get a value from the form
-     *
-     * @param $name
-     * @return mixed
-     */
-    public function getValue($name)
-    {
-        return $this->values->get($name);
-    }
-
-    /**
      * @return Data
      */
     public function getValues()
     {
         return $this->values;
-    }
-
-    /**
-     * Get all data
-     *
-     * @return Data
-     */
-    public function getData()
-    {
-        return $this->data;
     }
 
     /**
@@ -876,6 +907,55 @@ class Form extends Iterator
             $this->response_code = $code;
         }
         return $this->response_code;
+    }
+
+    /**
+     * Custom serializer for this complex object
+     *
+     * @return string
+     */
+    public function serialize()
+    {
+        $data = [
+            'items' => $this->items,
+            'message' => $this->message,
+            'status' => $this->status,
+            'header_data' => $this->header_data,
+            'rules' => $this->rules,
+            'data' => $this->data->toArray(),
+            'values' => $this->values->toArray(),
+            'page' => $this->page
+        ];
+        return serialize($data);
+    }
+
+    /**
+     * Custom unserializer for this complex object
+     *
+     * @param string $data
+     */
+    public function unserialize($data)
+    {
+        $data = unserialize($data);
+
+        $this->items = $data['items'];
+        $this->message = $data['message'];
+        $this->status = $data['status'];
+        $this->header_data = $data['header_data'];
+        $this->rules = $data['rules'];
+
+        $name = $this->items['name'];
+        $items = $this->items;
+        $rules = $this->rules;
+
+        $blueprint  = function () use ($name, $items, $rules) {
+            $blueprint = new Blueprint($name, ['form' => $items, 'rules' => $rules]);
+            return $blueprint->load()->init();
+        };
+
+        $this->data = new Data($data['data'], $blueprint);
+        $this->values = new Data($data['values']);
+        $this->page = $data['page'];
     }
 
     /**

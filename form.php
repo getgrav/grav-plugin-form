@@ -147,7 +147,7 @@ class FormPlugin extends Plugin
 
             // Store the page forms in the forms instance
             foreach ($page_forms as $name => $page_form) {
-                $form = new Form($page, $name, $page_form);
+                $form = $this->createForm($page, $name, $page_form);
                 $this->addForm($page_route, $form);
             }
         }
@@ -657,7 +657,7 @@ class FormPlugin extends Plugin
                 $form_name = $first_form['name'];
             } else {
                 //No form on this route. Try looking up in the current page first
-                return new Form($this->grav['page']);
+                return $this->createForm($this->grav['page']);
             }
         }
 
@@ -825,12 +825,23 @@ class FormPlugin extends Plugin
                 $header = $page->header();
 
                 if (isset($header->form) || isset($header->forms)) {
-                    $this->form = new Form($page);
+                    $this->form = $this->createForm($page);
                 }
             }
         }
 
         return $this->form;
+    }
+
+    /**
+     * @param Page $page
+     * @param string|int|null $name
+     * @param array $form
+     * @return Form
+     */
+    protected function createForm(Page $page, $name = null, $form = null)
+    {
+        return new Form($page, $name, $form);
     }
 
     /**
