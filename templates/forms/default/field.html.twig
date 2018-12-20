@@ -1,20 +1,19 @@
 {% if not field.validate.ignore %}
 
+{% set field_name = (scope ~ field.name)|fieldName %}
+{% set vertical = field.style == 'vertical' %}
 {% set cookie_name = 'forms-' ~ form.name ~ '-' ~ field.name %}
 
 {% if not blueprints or (blueprints.schema.type(field.type)['input@'] ?? true) is sameas(true) %}
     {% set originalValue = originalValue is defined ? originalValue : value %}
     {% set toggleableChecked = field.toggleable and (originalValue is not null and originalValue is not empty) %}
     {% set isDisabledToggleable = field.toggleable and not toggleableChecked %}
-    {% set value = value is null ? (get_cookie(cookie_name) is null ? field.default : get_cookie(cookie_name)) : value %}
+    {% set value = value ?? (get_cookie(cookie_name) is not null ? get_cookie(cookie_name) : field.default) %}
 
     {% if (field.yaml or field.validate.type == 'yaml') and value is iterable %}
         {% set value = value|toYaml %}
     {% endif %}
 {% endif %}
-
-{% set vertical = field.style == 'vertical' %}
-{% set field_name = (scope ~ field.name)|fieldName %}
 
 {% set errors = attribute(form.messages, field.name) %}
 {% set required = client_side_validation and field.validate.required in ['on', 'true', 1] %}
@@ -25,20 +24,12 @@
 {% endif %}
 
 {% block field %}
-    <div class="form-field {{ form_field_outer_classes }} {{ field.outerclasses }} {% if field.toggleable %} form-field-toggleable{% endif %} {% if errors %} has-errors{% endif %} {% block outer_field_classes %}{% endblock %}">
+    <div class="form-field {{ form_field_outer_classes }} {{ field.outerclasses }} {% if errors %} has-errors{% endif %} {% block outer_field_classes %}{% endblock %} {% if field.toggleable %} form-field-toggleable{% endif %}">
         {% block contents %}
             {% if field.label is not same as(false) and field.display_label is not same as(false) %}
                 <div class="{{ form_field_outer_label_classes ?: 'form-label' }} {{ field.labelclasses }}">
                     {% if field.toggleable %}
-                        <span class="checkboxes toggleable" data-grav-field="toggleable" data-grav-field-name="{{ field_name }}">
-                        <input type="checkbox"
-                               id="toggleable_{{ field.name }}"
-                               {% if toggleableChecked %}value="1"{% endif %}
-                               name="toggleable_{{ field_name }}"
-                               {% if toggleableChecked %}checked="checked"{% endif %}
-                        >
-                        <label for="toggleable_{{ field.name }}"></label>
-                    </span>
+                        {% include 'forms/default/toggleable.html.twig' with {field_name: field_name, field: field, checked: toggleableChecked} %}
                     {% endif %}
                     <label class="{{ form_field_label_classes ?: 'inline' }} {{ field.toggleable ? 'toggleable' }}" {% if field.id is defined %}for="{{ field.toggleable ? 'toggleable_' ~ field.name : field.id|e }}" {% endif %} >
                     {% block label %}
