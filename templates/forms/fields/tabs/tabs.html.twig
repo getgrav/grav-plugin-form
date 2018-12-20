@@ -9,7 +9,7 @@
 {% if field.fields %}
 
     {% set tabsKey = field.fields|keys|join('.') %}
-    {% set storedValue = get_cookie('grav-tabs-state')|default('{}')|json_decode %}
+    {% set storedValue = grav['admin'] is defined ? get_cookie('grav-tabs-state')|default('{}')|json_decode : [] %}
     {% set storedTab = attribute(storedValue, 'tab-' ~ tabsKey) %}
 
     {% if storedTab is empty %}
