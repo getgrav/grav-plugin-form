@@ -7,7 +7,7 @@
             name="{{ (scope ~ field.name)|fieldName }}"
             {# input attribute structures #}
             {% block input_attributes %}
-                class="{{ form_field_textarea_classes }} {{ field.classes }}"
+                class="{{ form_field_textarea_classes }} {{ field.classes }} {{ field.size }}"
                 {% if field.id is defined %}id="{{ field.id|e }}" {% endif %}
                 {% if field.style is defined %}style="{{ field.style|e }}" {% endif %}
                 {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}

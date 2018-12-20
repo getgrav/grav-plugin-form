@@ -8,7 +8,7 @@
 {% block input %}
     <div class="{{ form_field_wrapper_classes ?: 'form-select-wrapper' }} {{ field.size }} {{ field.wrapper_classes }}">
         <select name="{{ (scope ~ field.name)|fieldName ~ (field.multiple ? '[]' : '') }}"
-                class="{{ form_field_select_classes }} {{ field.classes }}"
+                class="{{ form_field_select_classes }} {{ field.classes }} {{ field.size }}"
                 {% if field.id is defined %}id="{{ field.id|e }}" {% endif %}
                 {% if field.style is defined %}style="{{ field.style|e }}" {% endif %}
                 {% if field.disabled %}disabled="disabled"{% endif %}
