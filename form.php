@@ -91,6 +91,16 @@ class FormPlugin extends Plugin
         // Backwards compatibility for plugins that use forms.
         class_alias(Form::class, 'Grav\Plugin\Form');
 
+        $this->grav['forms'] = function () {
+            $forms = new Forms();
+
+            $grav = Grav::instance();
+            $event = new Event(['forms' => $forms]);
+            $grav->fireEvent('onFormRegisterTypes', $event);
+
+            return $forms;
+        };
+
         if ($this->isAdmin()) {
             $this->enable([
                 'onPageInitialized' => ['onPageInitialized', 0],
@@ -114,17 +124,6 @@ class FormPlugin extends Plugin
             'onTwigSiteVariables' => ['onTwigVariables', 0],
             'onFormValidationProcessed' => ['onFormValidationProcessed', 0],
         ]);
-
-        $this->grav['forms'] = function () {
-            $forms = new Forms();
-
-            $grav = Grav::instance();
-            $event = new Event(['forms' => $forms]);
-            $grav->fireEvent('onFormRegisterTypes', $event);
-
-            return $forms;
-        };
-
     }
 
     public function onGetPageTemplates(Event $event)
