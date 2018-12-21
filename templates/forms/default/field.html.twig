@@ -17,7 +17,7 @@
 {% else %}
     {% set toggleable = false %}
 {% endif %}
-{{ dump(blueprints) }}
+
 {% set errors = attribute(form.messages, field.name) %}
 {% set required = client_side_validation and field.validate.required in ['on', 'true', 1] %}
 {% set autofocus = (inline_errors == false) and field.autofocus in ['on', 'true', 1] %}

@@ -9,6 +9,7 @@
 1. [](#bugfix)
     * Fixed container fields breaking values from the child fields
     * Fixed form fields not accepting object values
+    * Fixed some form fields having no value for nested field sets
 
 # v3.0.0-beta.4
 ## 12/14/2018

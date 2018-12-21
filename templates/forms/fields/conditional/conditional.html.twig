@@ -11,12 +11,7 @@
     {% endif %}
 
     {% if field.fields %}
-        {% for child in field.fields %}
-            {% if child.type %}
-                {% set value = data.value(child.name) %}
-                {% include ["forms/fields/#{child.type}/#{child.type}.html.twig", 'forms/fields/text/text.html.twig'] with {field: child} %}
-            {% endif %}
-        {% endfor %}
+        {% include 'forms/default/fields.html.twig' with {name: field.name, fields: field.fields} %}
     {% endif %}
 
     {% if field.classes %}

@@ -1,14 +1,9 @@
 {% extends "forms/field.html.twig" %}
 
 {% block field %}
-{% if field.fields %}
-    <div class="form-column {{ field.classes }}">
-    {% for child in field.fields %}
-        {% if child.type %}
-            {% set value = form.value(child.name) %}
-            {% include ["forms/fields/#{child.type}/#{child.type}.html.twig", 'forms/fields/text/text.html.twig'] with {field: child} %}
-        {% endif %}
-    {% endfor %}
-    </div>
-{% endif %}
+    {% if field.fields %}
+        <div class="form-column {{ field.classes }}">
+            {% include 'forms/default/fields.html.twig' with {name: field.name, fields: field.fields} %}
+        </div>
+    {% endif %}
 {% endblock %}

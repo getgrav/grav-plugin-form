@@ -672,6 +672,9 @@ class FormPlugin extends Plugin
     public function getFormFieldTypes()
     {
         return [
+            'avatar' => [
+                'input@' => false
+            ],
             'captcha' => [
                 'input@' => false
             ],

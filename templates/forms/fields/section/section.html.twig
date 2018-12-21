@@ -13,13 +13,7 @@
 
     {% if field.fields %}
         <div class="form-section">
-        {% for child in field.fields %}
-            {% if child.type %}
-                {% set value = child.name ? data.value(child.name) : data.toArray %}
-
-                {% include ["forms/fields/#{child.type}/#{child.type}.html.twig", 'forms/fields/text/text.html.twig'] with {field: child} %}
-            {% endif %}
-        {% endfor %}
+            {% include 'forms/default/fields.html.twig' with {name: field.name, fields: field.fields} %}
         </div>
     {% endif %}
 </div>
