@@ -52,6 +52,7 @@ const attachDisabledFields = (form) => {
     });
 };
 
+/*
 const submitUncheckedFields = (forms) => {
     forms = $(forms);
     let submitted = false;
@@ -79,6 +80,7 @@ const submitUncheckedFields = (forms) => {
         });
     });
 };
+*/
 
 $(document).ready(() => {
     const forms = $('form').filter((form) => $(form).find('[name="__form-name__"]'));
@@ -87,6 +89,6 @@ $(document).ready(() => {
     forms.each((index, form) => {
         attachToggleables(form);
         attachDisabledFields(form);
-        submitUncheckedFields(form);
+        // submitUncheckedFields(form);
     });
 });
