@@ -687,10 +687,22 @@ class FormPlugin extends Plugin
             'display' => [
                 'input@' => false
             ],
+            'tab' => [
+                'input@' => false
+            ],
+            'tabs' => [
+                'input@' => false
+            ],
+            'key' => [
+                'input@' => false
+            ],
             'spacer' => [
                 'input@' => false
             ],
             'captcha' => [
+                'input@' => false
+            ],
+            'value' => [
                 'input@' => false
             ]
         ];

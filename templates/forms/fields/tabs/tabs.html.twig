@@ -7,44 +7,60 @@
 <div class="form-tabs {{ field.class }} {{ field.classes }}">
 
 {% if field.fields %}
-
-    {% set tabsKey = field.fields|keys|join('.') %}
-    {% set storedValue = grav['admin'] is defined ? get_cookie('grav-tabs-state')|default('{}')|json_decode : [] %}
-    {% set storedTab = attribute(storedValue, 'tab-' ~ tabsKey) %}
-
-    {% if storedTab is empty %}
-        {% if uri.params.tab %}
-            {% set active = uri.params.tab %}
-        {% elseif field.active %}
-            {% set active = field.active %}
-        {% else %}
-            {% set active = 1 %}
-        {% endif %}
-    {% endif %}
-
-    <div class="tabs-nav">
+    {% set tabs = {} %}
     {% for tab in field.fields %}
-        {% if tab.type == 'tab' and not tab.validate.ignore and (tab.security is empty or authorize(array(tab.security))) %}
-            <a class="tab__link {{ (storedTab == scope ~ tab.name) or active == loop.index ? 'active' : '' }}" data-tabid="tab-{{ tabsKey ~ loop.index }}" data-tabkey="tab-{{ tabsKey }}" data-scope="{{ scope ~ tab.name }}">
+        {% if tab.type == 'tab' and (tab.security is empty or authorize(array(tab.security))) %}
+        {% set tabs = tabs|merge([tab]) %}
+        {% endif %}
+    {% endfor %}
+    {% set count = tabs|count %}
+
+    {% if count == 0 %}
+        {# Nothing to display #}
+    {% elseif count == 1 %}
+        {% for field in (tabs|first).fields %}
+            {% if field.type %}
+                {% set value = field.name ? data.value(field.name) : data.toArray %}
+                {% include ["forms/fields/#{field.type}/#{field.type}.html.twig", 'forms/fields/text/text.html.twig'] %}
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        {% set tabsKey = field.fields|keys|join('.') %}
+        {% set storedValue = grav['admin'] is defined ? get_cookie('grav-tabs-state')|default('{}')|json_decode : [] %}
+        {% set storedTab = attribute(storedValue, 'tab-' ~ tabsKey) %}
+
+        {% if storedTab is empty %}
+            {% if uri.params.tab %}
+                {% set active = uri.params.tab %}
+            {% elseif field.active %}
+                {% set active = field.active %}
+            {% else %}
+                {% set active = 1 %}
+            {% endif %}
+        {% endif %}
+
+        <div class="tabs-nav">
+            {% for tab in tabs %}
+                {% if tab.type == 'tab' and not tab.validate.ignore %}
+                <a class="tab__link {{ (storedTab == scope ~ tab.name) or active == loop.index ? 'active' : '' }}" data-tabid="tab-{{ tabsKey ~ loop.index }}" data-tabkey="tab-{{ tabsKey }}" data-scope="{{ scope ~ tab.name }}">
                 <span>
                 {% if grav.twig.twig.filters['tu'] is defined %}{{ tab.title|tu }}{% else %}{{ tab.title|t }}{% endif %}
                 </span>
-            </a>
-        {% endif %}
-    {% endfor %}
-    </div>
-    <div class="tabs-content">
-        {% for child in field.fields %}
-            {% if child.type == 'tab' and not tab.validate.ignore %}
-                {% if child.security is empty or authorize(array(child.security)) %}
-                    {% set value = child.name ? data.value(child.name) : data.toArray %}
-                    <div id="tab-{{ tabsKey ~ loop.index }}" class="tab__content {{ (storedTab == scope ~ child.name) or active == loop.index ? 'active' : '' }}">
-                        {% include ["forms/fields/#{child.type}/#{child.type}.html.twig", 'forms/fields/text/text.html.twig'] with {field: child} %}
-                    </div>
                 {% endif %}
-            {% endif %}
+            </a>
         {% endfor %}
-    </div>
+        </div>
+        <div class="tabs-content">
+            {% for child in tabs %}
+                {% if child.type == 'tab' and not tab.validate.ignore %}
+                {% set value = child.name ? data.value(child.name) : data.toArray %}
+                <div id="tab-{{ tabsKey ~ loop.index }}" class="tab__content {{ (storedTab == scope ~ child.name) or active == loop.index ? 'active' : '' }}">
+                    {% include ["forms/fields/#{child.type}/#{child.type}.html.twig", 'forms/fields/text/text.html.twig'] with {field: child} %}
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
 {% endif %}
 </div>
 {% endblock %}
