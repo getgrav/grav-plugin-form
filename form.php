@@ -690,6 +690,9 @@ class FormPlugin extends Plugin
             'display' => [
                 'input@' => false
             ],
+            'ignore' => [
+                'input@' => false
+            ],
             'key' => [
                 'input@' => false
             ],
