@@ -515,6 +515,7 @@ class FormPlugin extends Plugin
                         }
 
                         // append data to existing file
+                        $file->unlock();
                         file_put_contents($fullFileName, $body, FILE_APPEND | LOCK_EX);
                     } else {
                         // serialize YAML out to file for easier parsing as data sets
