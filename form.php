@@ -770,12 +770,8 @@ class FormPlugin extends Plugin
         $status = $nonce ? true : false; // php72 quirk?
         $refresh_prevention = null;
 
-        if ($status && $this->form()) {
-            /** @var Forms $forms */
-            $forms = $this->grav['forms'];
-
+        if ($status && $form = $this->form()) {
             // Make sure form is something we recognize.
-            $form = $forms->getActiveForm();
             if (!$form instanceof Form) {
                 return false;
             }
@@ -791,7 +787,7 @@ class FormPlugin extends Plugin
                 $refresh_prevention = $this->config->get('plugins.form.refresh_prevention', false);
             }
 
-            $unique_form_id = $uri->post('__unique_form_id__', FILTER_SANITIZE_STRING);
+            $unique_form_id = $form->getUniqueId();
 
             if ($refresh_prevention && $unique_form_id) {
                 if ($this->grav['session']->unique_form_id !== $unique_form_id) {
