@@ -2,7 +2,7 @@
 ## mm/dd/2018
 
 1. [](#new)
-    * Added `key`, `toggle`, `tabs` and `tab` form fields
+    * Added `key`, `section`, `toggle`, `tabs` and `tab` form fields
     * Added support for `toggleable` inputs, which can be disabled/enabled by user
     * Added `$grav['forms']` to allow plugins to better use forms [#307](https://github.com/getgrav/grav-plugin-form/pull/307)
     * Added support for custom form types

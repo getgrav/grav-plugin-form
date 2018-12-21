@@ -1,0 +1,27 @@
+{% extends "forms/field.html.twig" %}
+
+{% block field %}
+{% if field.security is empty or authorize(array(field.security)) %}
+<div class="{{ field.classes }}">
+    {% if field.title or field.underline %}
+    <h1 class="{% if not field.underline %}no_underline{% endif %}">{% if grav.twig.twig.filters['tu'] is defined %}{{ field.title|tu }}{% else %}{{ field.title|t }}{% endif %}</h1>
+    {% endif %}
+
+    {% if field.text %}
+    <p>{% if grav.twig.twig.filters['tu'] is defined %}{{ field.text|tu|raw }}{% else %}{{ field.text|t|raw }}{% endif %}</p>
+    {% endif %}
+
+    {% if field.fields %}
+        <div class="form-section">
+        {% for child in field.fields %}
+            {% if child.type %}
+                {% set value = child.name ? data.value(child.name) : data.toArray %}
+
+                {% include ["forms/fields/#{child.type}/#{child.type}.html.twig", 'forms/fields/text/text.html.twig'] with {field: child} %}
+            {% endif %}
+        {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

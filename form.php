@@ -672,34 +672,37 @@ class FormPlugin extends Plugin
     public function getFormFieldTypes()
     {
         return [
-            'column' => [
+            'captcha' => [
                 'input@' => false
             ],
             'columns' => [
                 'input@' => false
             ],
-            'fieldset' => [
+            'column' => [
                 'input@' => false
             ],
             'conditional' => [
                 'input@' => false
             ],
+            'fieldset' => [
+                'input@' => false
+            ],
             'display' => [
-                'input@' => false
-            ],
-            'tab' => [
-                'input@' => false
-            ],
-            'tabs' => [
                 'input@' => false
             ],
             'key' => [
                 'input@' => false
             ],
+            'section'  => [
+                'input@' => false
+            ],
             'spacer' => [
                 'input@' => false
             ],
-            'captcha' => [
+            'tabs' => [
+                'input@' => false
+            ],
+            'tab' => [
                 'input@' => false
             ],
             'value' => [
