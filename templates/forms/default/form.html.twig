@@ -58,12 +58,25 @@
 
   {% set data = data ?? form.data %}
   {% set context = context ?? data %}
-  {% for field in form.fields %}
-    {% set value = form.value(field.name) %}
-    {% block process_field %}
-    {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
-    {% endblock %}
+
+  {% block inner_markup_fields %}
+  {% for field_name, field in form.fields %}
+    {% set field_name = field.name ?? field_name %}
+    {% if field_name and not field.validate.ignore %}
+      {%- if field_name starts with '.' -%}
+        {% set field_name = field_name[1:] %}
+        {% set field = field|merge({ name: field_name }) %}
+      {% endif %}
+
+      {% set value = form ? form.value(field_name) : data.value(field_name) %}
+      {% block inner_markup_field_open %}{% endblock %}
+      {% block process_field %}
+        {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
+      {% endblock %}
+      {% block inner_markup_field_close %}{% endblock %}
+    {% endif %}
   {% endfor %}
+  {% endblock %}
 
   {% include "forms/fields/formname/formname.html.twig" %}
 
