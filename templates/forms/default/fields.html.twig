@@ -1,13 +1,15 @@
-{% for child_name, child in fields %}
-    {% if child.type and not child.validate.ignore %}
-        {%- if child_name starts with '.' -%}
-            {% set child_name = name ? name ~ child_name : child_name[1:] %}
-            {% set child = child|merge({ name: child_name }) %}
+{% for field_name, field in fields %}
+    {% if field.type and not field.validate.ignore %}
+        {%- if field_name starts with '.' -%}
+            {% set field_name = name ? name ~ field_name : field_name[1:] %}
+            {% set field = field|merge({ name: field_name }) %}
         {% endif %}
 
-        {% set child_value = form ? form.value(child_name) : data.value(child_name) %}
-        {% block child_open %}{% endblock %}
-        {% include ["forms/fields/#{child.type}/#{child.type}.html.twig", 'forms/fields/text/text.html.twig'] with {field: child, value: child_value} %}
-        {% block child_close %}{% endblock %}
+        {% set value = form ? form.value(field_name) : data.value(field_name) %}
+        {% block field_open %}{% endblock %}
+        {% block field %}
+            {% include ["forms/fields/#{field.type}/#{field.type}.html.twig", 'forms/fields/text/text.html.twig'] %}
+        {% endblock %}
+        {% block field_close %}{% endblock %}
     {% endif %}
 {% endfor %}
