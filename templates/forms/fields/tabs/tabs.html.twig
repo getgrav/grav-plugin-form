@@ -20,9 +20,9 @@
     {% if count == 0 %}
         {# Nothing to display #}
     {% elseif count == 1 %}
-        {% for child in (tabs|first).fields %}
-            {% if child.type %}
-                {% set value = child.name ? data.value(child.name) : data.toArray %}
+        {% for field in (tabs|first).fields %}
+            {% if field.type %}
+                {% set value = field.name ? data.value(field.name) : data.toArray %}
                 {% include ["forms/fields/#{field.type}/#{field.type}.html.twig", 'forms/fields/text/text.html.twig'] %}
             {% endif %}
         {% endfor %}
