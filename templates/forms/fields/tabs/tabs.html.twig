@@ -1,12 +1,14 @@
 {% extends "forms/field.html.twig" %}
 
+{% if grav.admin is not defined %}
 {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'group': 'bottom', 'loading': 'defer' }) %}
 {% do assets.addJs('plugin://form/assets/form.min.js', { 'group': 'bottom', 'loading': 'defer' }) %}
+{% endif %}
 
 {% block field %}
 <div class="form-tabs {{ field.class }} {{ field.classes }}">
 
-{% if field.fields %}
+  {% if field.fields %}
     {% set tabs = {} %}
     {% for tab in field.fields %}
         {% if tab.type == 'tab' and not tab.validate.ignore and (tab.security is empty or authorize(array(tab.security))) %}
@@ -18,15 +20,15 @@
     {% if count == 0 %}
         {# Nothing to display #}
     {% elseif count == 1 %}
-        {% for field in (tabs|first).fields %}
-            {% if field.type %}
-                {% set value = field.name ? data.value(field.name) : data.toArray %}
+        {% for child in (tabs|first).fields %}
+            {% if child.type %}
+                {% set value = child.name ? data.value(child.name) : data.toArray %}
                 {% include ["forms/fields/#{field.type}/#{field.type}.html.twig", 'forms/fields/text/text.html.twig'] %}
             {% endif %}
         {% endfor %}
     {% else %}
         {% set tabsKey = field.fields|keys|join('.') %}
-        {% set storedValue = grav['admin'] is defined ? get_cookie('grav-tabs-state')|default('{}')|json_decode : [] %}
+        {% set storedValue = grav.admin is defined ? get_cookie('grav-tabs-state')|default('{}')|json_decode : [] %}
         {% set storedTab = attribute(storedValue, 'tab-' ~ tabsKey) %}
 
         {% if storedTab is empty %}
@@ -53,7 +55,7 @@
         <div class="tabs-content">
             {% embed 'forms/default/fields.html.twig' with {name: field.name, fields: field.fields} %}
                 {% block field_open %}
-                    <div id="tab-{{ tabsKey ~ loop.index }}" class="tab__content {{ (storedTab == scope ~ child.name) or active == loop.index ? 'active' : '' }}">
+                    <div id="tab-{{ tabsKey ~ loop.index }}" class="tab__content {{ (storedTab == scope ~ field.name) or active == loop.index ? 'active' : '' }}">
                 {% endblock %}
                 {% block field_close %}
                     </div>
