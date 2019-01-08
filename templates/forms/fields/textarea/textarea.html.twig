@@ -23,6 +23,11 @@
                 {% if field.cols is defined %}cols="{{ field.cols }}"{% endif %}
                 {% if field.minlength is defined %}minlength="{{ field.minlength }}"{% endif %}
                 {% if field.maxlength is defined %}maxlength="{{ field.maxlength }}"{% endif %}
+                {% if field.datasets %}
+                    {% for datakey, datavalue in field.datasets %}
+                        data-{{ datakey }}="{{ datavalue|e('html_attr') }}"
+                    {% endfor %}
+                {% endif %}
             {% endblock %}
             >{{ value|trim|e('html') }}</textarea>
     </div>

@@ -21,6 +21,11 @@
                 {% if field.key %}
                     data-key-observe="{{ (scope ~ field.name)|fieldName }}"
                 {% endif %}
+                {% if field.datasets %}
+                    {% for datakey, datavalue in field.datasets %}
+                        data-{{ datakey }}="{{ datavalue|e('html_attr') }}"
+                    {% endfor %}
+                {% endif %}
                 >
             {% if field.placeholder %}<option value="" disabled selected>{% if grav.twig.twig.filters['tu'] is defined %}{{ field.placeholder|tu|raw }}{% else %}{{ field.placeholder|t|raw }}{% endif %}</option>{% endif %}
 

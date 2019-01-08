@@ -6,6 +6,8 @@
     * Added support for `toggleable` inputs, which can be disabled/enabled by user
     * Added `$grav['forms']` to allow plugins to better use forms [#307](https://github.com/getgrav/grav-plugin-form/pull/307)
     * Added support for custom form types
+1. [](#improved)
+    * Added support for data-sets in `textarea` and `select` fields
 1. [](#bugfix)
     * Fixed container fields breaking values from the child fields
     * Fixed form fields not accepting object values
