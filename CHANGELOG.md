@@ -1,5 +1,5 @@
 # v3.0.0-beta.5
-## mm/dd/2018
+## mm/dd/2019
 
 1. [](#new)
     * Added `key`, `ignore`, `section`, `toggle`, `tabs` and `tab` form fields
@@ -10,6 +10,7 @@
     * Fixed container fields breaking values from the child fields
     * Fixed form fields not accepting object values
     * Fixed some form fields having no value for nested field sets
+    * Fixed double escaping of `file` type input value JSON
 
 # v3.0.0-beta.4
 ## 12/14/2018
