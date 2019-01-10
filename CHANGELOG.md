@@ -2,6 +2,8 @@
 ## mm/dd/2019
 
 1. [](#new)
+    * Form no longer extends Iterator (may have some backward compatibility issues with plugins, likely not)
+    * Form now uses `NestedArrayAccessWithGetters` (with '/' separator) and `FormTrait` traits
     * Added `key`, `ignore`, `section`, `toggle`, `tabs` and `tab` form fields
     * Added support for `toggleable` inputs, which can be disabled/enabled by user
     * Added `$grav['forms']` to allow plugins to better use forms [#307](https://github.com/getgrav/grav-plugin-form/pull/307)
@@ -9,11 +11,12 @@
 1. [](#improved)
     * Added support for data-sets in `textarea` and `select` fields
     * Do not cache flat forms list, regenerate it instead
+    * Fixed some inconsistencies on how blueprints are handled
 1. [](#bugfix)
     * Fixed container fields breaking values from the child fields
     * Fixed form fields not accepting object values
     * Fixed some form fields having no value for nested field sets
-    * Fixed double escaping of `file` type input value JSON
+    * Fixed double escaping of `file` type input JSON value
 
 # v3.0.0-beta.4
 ## 12/14/2018

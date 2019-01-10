@@ -6,21 +6,30 @@ use Grav\Common\Data\Data;
 use Grav\Common\Data\Blueprint;
 use Grav\Common\Data\ValidationException;
 use Grav\Common\Filesystem\Folder;
-use Grav\Common\Form\FormFlash;
 use Grav\Common\Grav;
 use Grav\Common\Inflector;
-use Grav\Common\Iterator;
 use Grav\Common\Language\Language;
 use Grav\Common\Page\Page;
-use Grav\Common\Session;
 use Grav\Common\Uri;
 use Grav\Common\Utils;
 use Grav\Framework\Form\FormFlashFile;
 use Grav\Framework\Form\Interfaces\FormInterface;
+use Grav\Framework\Form\Traits\FormTrait;
+use RocketTheme\Toolbox\ArrayTraits\NestedArrayAccessWithGetters;
 use RocketTheme\Toolbox\Event\Event;
 
-class Form extends Iterator implements FormInterface
+class Form implements FormInterface, \ArrayAccess
 {
+    use NestedArrayAccessWithGetters {
+        NestedArrayAccessWithGetters::get as private traitGet;
+        NestedArrayAccessWithGetters::set as private traitSet;
+    }
+    use FormTrait {
+        FormTrait::reset as private traitReset;
+        FormTrait::doSerialize as private doTraitSerialize;
+        FormTrait::doUnserialize as private doTraitUnserialize;
+    }
+
     public const BYTES_TO_MB = 1048576;
 
     /**
@@ -49,23 +58,11 @@ class Form extends Iterator implements FormInterface
     protected $rules = [];
 
     /**
-     * Data values of the form (values to be stored)
-     *
-     * @var Data $data
-     */
-    protected $data;
-
-    /**
      * Form header items
      *
      * @var array $items
      */
     protected $items = [];
-
-    /**
-     * @var FormFlash
-     */
-    protected $flash;
 
     /**
      * All the form data values, including non-data
@@ -75,12 +72,11 @@ class Form extends Iterator implements FormInterface
     protected $values;
 
     /**
-     * The form page object
+     * The form page route
      *
-     * @var Page $page
+     * @var string $page
      */
     protected $page;
-
 
     /**
      * Create form for the given page.
@@ -91,7 +87,7 @@ class Form extends Iterator implements FormInterface
      */
     public function __construct(Page $page, $name = null, $form = null)
     {
-        parent::__construct();
+        $this->nestedSeparator = '/';
 
         $this->page = $page->route();
 
@@ -129,8 +125,7 @@ class Form extends Iterator implements FormInterface
 
         // Set form id if not set.
         if (empty($this->items['id'])) {
-            $inflector = new Inflector();
-            $this->items['id'] = $inflector::hyphenize($this->items['name']);
+            $this->items['id'] = Inflector::hyphenize($this->items['name']);
         }
         if (empty($this->items['uniqueid'])) {
             $this->items['uniqueid'] = Utils::generateRandomString(20);
@@ -144,67 +139,88 @@ class Form extends Iterator implements FormInterface
             $this->items['nonce']['action'] = 'form';
         }
 
+        // Initialize form properties.
+        $this->name = $this->items['name'];
+        $this->setId($this->items['id']);
+        $this->setUniqueId($this->items['uniqueid']);
+        $this->errors = [];
+        $this->submitted = false;
+
+        // Remember form state.
+        $flash = $this->getFlash();
+        $data = $flash->exists() ? $flash->getData() : $this->header_data;
+
         // Reset and initialize the form
-        $this->reset();
+        $this->setAllData($data);
+        $this->values = new Data();
+
+        // Fire event
+        $grav = Grav::instance();
+        $grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
     }
 
     /**
-     * @inheritdoc
+     * Reset form.
+     *
+     * @param array|null $data
      */
-    public function getId(): string
+    public function reset(): void
     {
-        return $this->items['id'];
+        $this->traitReset();
+
+        // Reset and initialize the form
+        $this->blueprint = null;
+        $this->setAllData($this->header_data);
+        $this->values = new Data();
+
+        // Fire event
+        $grav = Grav::instance();
+        $grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
+    }
+
+    public function get($name, $default = null, $separator = null)
+    {
+        switch (strtolower($name)) {
+            case 'id':
+            case 'uniqueid':
+            case 'name':
+            case 'noncename':
+            case 'nonceaction':
+            case 'action':
+            case 'data':
+            case 'files':
+            case 'value':
+            case 'errors';
+            case 'fields':
+            case 'blueprint':
+            case 'page':
+                $method = 'get' . $name;
+                return $this->{$method}();
+        }
+
+        return $this->traitGet($name, $default, $separator);
+    }
+
+    public function set($name, $default, $separator = null)
+    {
+        switch (strtolower($name)) {
+            case 'id':
+            case 'uniqueid':
+                $method = 'set' . $name;
+                return $this->{$method}();
+        }
+
+        return $this->traitSet($name, $default, $separator);
     }
 
     /**
-     * @inheritdoc
-     */
-    public function setId(string $id): void
-    {
-        $this->items['id'] = $id;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getUniqueId(): string
-    {
-        return $this->items['uniqueid'];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setUniqueId(string $uniqueId): void
-    {
-        $this->items['uniqueid'] = $uniqueId;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getName(): string
-    {
-        return $this->getFormName();
-    }
-
-    /**
-     * Alias of $this->getName()
+     * Get the nonce value for a form
      *
      * @return string
-     * @deprecated 3.0
      */
-    public function name(): string
+    public function getNonce(): string
     {
-        return $this->getName();
-    }
-
-    /**
-     * @return string
-     */
-    public function getFormName(): string
-    {
-        return $this->items['name'];
+        return Utils::getNonce($this->getNonceAction());
     }
 
     /**
@@ -226,91 +242,35 @@ class Form extends Iterator implements FormInterface
     /**
      * @inheritdoc
      */
-    public function getAction(): string
-    {
-        return '';
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getData()
-    {
-        return $this->data;
-    }
-
-    public function getFiles(): array
-    {
-        return [];
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getValue(string $name)
     {
         return $this->values->get($name);
     }
 
     /**
-     * @inheritdoc
+     * @return Data
      */
-    public function reset(): void
+    public function getValues(): Data
     {
-        $name = $this->items['name'];
-        $grav = Grav::instance();
-
-        // Fix naming for fields (supports nested fields now!)
-        if (isset($this->items['fields'])) {
-            $this->items['fields'] = $this->processFields($this->items['fields']);
-        }
-
-        $items = $this->items;
-        $rules = $this->rules;
-
-        $blueprint = function() use ($name, $items, $rules) {
-            $blueprint = new Blueprint($name, ['form' => $items, 'rules' => $rules]);
-            return $blueprint->load()->init();
-        };
-
-        $this->data = new Data($this->header_data, $blueprint);
-        $this->values = new Data();
-        $this->fields = $this->getFields(true);
-
-        // Fire event
-        $grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
+        return $this->values;
     }
 
     /**
      * @inheritdoc
      */
-    public function getFields($reset = false): array
+    public function getFields(): array
     {
-        if ($reset || null === $this->fields) {
-            $blueprint = $this->data->blueprints();
-
-            if (method_exists($blueprint, 'load')) {
-                // init the form to process directives
-                $blueprint->load()->init();
-
-                // fields set to processed blueprint fields
-                $this->fields = $blueprint->fields() ?? [];
-            }
-        }
-
-        return $this->fields;
+        return $this->getBlueprint()->fields();
     }
 
     /**
-     * Alias of $this->getFields()
+     * Return page object for the form.
      *
-     * @param bool $reset
-     * @return array
-     * @deprecated 3.0
+     * @return Page
      */
-    public function fields($reset = false): array
+    public function getPage(): Page
     {
-        return $this->getFields($reset);
+        return Grav::instance()['pages']->dispatch($this->page);
     }
 
     /**
@@ -318,7 +278,19 @@ class Form extends Iterator implements FormInterface
      */
     public function getBlueprint(): Blueprint
     {
-        return $this->getData()->blueprints();
+        if (null === $this->blueprint) {
+            // Fix naming for fields (supports nested fields now!)
+            if (isset($this->items['fields'])) {
+                $this->items['fields'] = $this->processFields($this->items['fields']);
+            }
+
+            $blueprint = new Blueprint($this->name, ['form' => $this->items, 'rules' => $this->rules]);
+            $blueprint->load()->init();
+
+            $this->blueprint = $blueprint;
+        }
+
+        return $this->blueprint;
     }
 
     /**
@@ -328,60 +300,14 @@ class Form extends Iterator implements FormInterface
      */
     public function setFields(array $fields = [])
     {
-        // Make sure blueprints are updated, otherwise validation may fail.
-        $blueprint = $this->data->blueprints();
-        $blueprint->set('form/fields', $fields);
-        $blueprint->undef('form/field');
+        $this->items['fields'] = $fields;
+        unset($this->items['field']);
 
-        $this->fields = $fields;
-    }
+        // Reset blueprint.
+        $this->blueprint = null;
 
-    /**
-     * Get the nonce value for a form
-     *
-     * @return string
-     */
-    public function getNonce()
-    {
-        return Utils::getNonce($this->getNonceAction());
-    }
-
-    protected function processFields($fields)
-    {
-        $types = Grav::instance()['plugins']->formFieldTypes;
-
-        $return = array();
-        foreach ($fields as $key => $value) {
-            // default to text if not set
-            if (!isset($value['type'])) {
-                $value['type'] = 'text';
-            }
-
-            // manually merging the field types
-            if ($types !== null && array_key_exists($value['type'], $types)) {
-                $value += $types[$value['type']];
-            }
-
-            // Fix numeric indexes
-            if (is_numeric($key) && isset($value['name'])) {
-                $key = $value['name'];
-            }
-            if (isset($value['fields']) && \is_array($value['fields'])) {
-                $value['fields'] = $this->processFields($value['fields']);
-            }
-            $return[$key] = $value;
-        }
-        return $return;
-    }
-
-    /**
-     * Return page object for the form.
-     *
-     * @return Page
-     */
-    public function page()
-    {
-        return Grav::instance()['pages']->dispatch($this->page);
+        // Update data to contain the new blueprints.
+        $this->setAllData($this->data->toArray());
     }
 
     /**
@@ -389,7 +315,7 @@ class Form extends Iterator implements FormInterface
      * First look in the $data array, fallback to the $values array
      *
      * @param string $name
-     *
+     * @param bool $fallback
      * @return mixed
      */
     public function value($name = null, $fallback = false)
@@ -398,12 +324,12 @@ class Form extends Iterator implements FormInterface
             return $this->data;
         }
 
-        if ($this->data->get($name)) {
-            return $this->data->get($name);
+        if (isset($this->data[$name])) {
+            return $this->data[$name];
         }
 
         if ($fallback) {
-            return $this->values->get($name);
+            return $this->values[$name];
         }
 
         return null;
@@ -413,6 +339,7 @@ class Form extends Iterator implements FormInterface
      * Set value of given variable in the values array
      *
      * @param string $name
+     * @param mixed $value
      */
     public function setValue($name = null, $value = '')
     {
@@ -421,14 +348,6 @@ class Form extends Iterator implements FormInterface
         }
 
         $this->values->set($name, $value);
-    }
-
-    /**
-     * @return Data
-     */
-    public function getValues()
-    {
-        return $this->values;
     }
 
     /**
@@ -450,9 +369,13 @@ class Form extends Iterator implements FormInterface
         return true;
     }
 
-    public function setAllData($array)
+    public function setAllData($array): void
     {
-        $this->data = new Data($array);
+        $callable = function () {
+            return $this->getBlueprint();
+        };
+
+        $this->data = new Data($array, $callable);
     }
 
     /**
@@ -480,14 +403,14 @@ class Form extends Iterator implements FormInterface
         $this->items['name'] = $formName = $post['__form-name__'] ?? $this->items['name'];
         $this->items['uniqueid'] = $uniqueId = $post['__unique_form_id__'] ?? $formName;
 
-        $settings = $this->data->blueprints()->schema()->getProperty($name);
+        $settings = $this->getBlueprint()->schema()->getProperty($name);
         $settings = (object) array_merge(
             ['destination' => $config->get('plugins.form.files.destination', 'self@'),
-             'avoid_overwriting' => $config->get('plugins.form.files.avoid_overwriting', false),
-             'random_name' => $config->get('plugins.form.files.random_name', false),
-             'accept' => $config->get('plugins.form.files.accept', ['image/*']),
-             'limit' => $config->get('plugins.form.files.limit', 10),
-             'filesize' => static::getMaxFilesize(),
+                'avoid_overwriting' => $config->get('plugins.form.files.avoid_overwriting', false),
+                'random_name' => $config->get('plugins.form.files.random_name', false),
+                'accept' => $config->get('plugins.form.files.accept', ['image/*']),
+                'limit' => $config->get('plugins.form.files.limit', 10),
+                'filesize' => static::getMaxFilesize(),
             ],
             (array) $settings,
             ['name' => $name]
@@ -495,7 +418,7 @@ class Form extends Iterator implements FormInterface
         // Allow plugins to adapt settings for a given post name
         // Useful if schema retrieval is not an option, e.g. dynamically created forms
         $grav->fireEvent('onFormUploadSettings', new Event(['settings' => &$settings, 'post' => $post]));
-        
+
         $upload = json_decode(json_encode($this->normalizeFiles($_FILES['data'], $settings->name)), true);
         $filename = $post['filename'] ?? $upload['file']['name'];
         $field = $upload['field'];
@@ -792,6 +715,70 @@ class Form extends Iterator implements FormInterface
         }
     }
 
+    /**
+     * @return string
+     * @deprecated 3.0 Use $this->getName() instead
+     */
+    public function name(): string
+    {
+        return $this->getName();
+    }
+
+    /**
+     * @return array
+     * @deprecated 3.0 Use $this->getFields() instead
+     */
+    public function fields(): array
+    {
+        return $this->getFields();
+    }
+
+    /**
+     * @return Page
+     * @deprecated 3.0 Use $this->getPage() instead
+     */
+    public function page(): Page
+    {
+        return $this->getPage();
+    }
+
+    protected function doSubmit(array $data, array $files)
+    {
+        return;
+    }
+
+    protected function processFields($fields)
+    {
+        $types = Grav::instance()['plugins']->formFieldTypes;
+
+        $return = [];
+        foreach ($fields as $key => $value) {
+            // Default to text if not set
+            if (!isset($value['type'])) {
+                $value['type'] = 'text';
+            }
+
+            // Manually merging the field types
+            if ($types !== null && array_key_exists($value['type'], $types)) {
+                $value += $types[$value['type']];
+            }
+
+            // Fix numeric indexes
+            if (is_numeric($key) && isset($value['name'])) {
+                $key = $value['name'];
+            }
+
+            // Recursively process children
+            if (isset($value['fields']) && \is_array($value['fields'])) {
+                $value['fields'] = $this->processFields($value['fields']);
+            }
+
+            $return[$key] = $value;
+        }
+
+        return $return;
+    }
+
     protected function legacyUploads()
     {
         // Get flash object in order to save the files.
@@ -880,22 +867,6 @@ class Form extends Iterator implements FormInterface
         $flash->delete();
     }
 
-    /**
-     * Get flash object
-     *
-     * @return FormFlash
-     */
-    public function getFlash()
-    {
-        if (null === $this->flash) {
-            /** @var Session $session */
-            $session = Grav::instance()['session'];
-            $this->flash = new FormFlash($session->getId(), $this->items['uniqueid'] ?? $this->items['name'], $this->items['name']);
-        }
-
-        return $this->flash;
-    }
-
     public function getPagePathFromToken($path)
     {
         return Utils::getPagePathFromToken($path, $this->page());
@@ -909,53 +880,38 @@ class Form extends Iterator implements FormInterface
         return $this->response_code;
     }
 
-    /**
-     * Custom serializer for this complex object
-     *
-     * @return string
-     */
-    public function serialize()
+    public function doSerialize()
     {
-        $data = [
-            'items' => $this->items,
-            'message' => $this->message,
-            'status' => $this->status,
-            'header_data' => $this->header_data,
-            'rules' => $this->rules,
-            'data' => $this->data->toArray(),
-            'values' => $this->values->toArray(),
-            'page' => $this->page
-        ];
-        return serialize($data);
+        return $this->doTraitSerialize() + [
+                'items' => $this->items,
+                'message' => $this->message,
+                'status' => $this->status,
+                'header_data' => $this->header_data,
+                'rules' => $this->rules,
+                'values' => $this->values->toArray(),
+                'page' => $this->page
+            ];
     }
 
-    /**
-     * Custom unserializer for this complex object
-     *
-     * @param string $data
-     */
-    public function unserialize($data)
+    public function doUnserialize(array $data)
     {
-        $data = unserialize($data);
-
         $this->items = $data['items'];
         $this->message = $data['message'];
         $this->status = $data['status'];
         $this->header_data = $data['header_data'];
         $this->rules = $data['rules'];
-
-        $name = $this->items['name'];
-        $items = $this->items;
-        $rules = $this->rules;
-
-        $blueprint  = function () use ($name, $items, $rules) {
-            $blueprint = new Blueprint($name, ['form' => $items, 'rules' => $rules]);
-            return $blueprint->load()->init();
-        };
-
-        $this->data = new Data($data['data'], $blueprint);
         $this->values = new Data($data['values']);
         $this->page = $data['page'];
+
+        // Backwards compatibility.
+        $defaults = [
+            'name' => $this->items['name'],
+            'id' => $this->items['id'],
+            'uniqueid' => $this->items['uniqueid'],
+            'data' => []
+        ];
+
+        $this->doTraitUnserialize($data + $defaults);
     }
 
     /**
@@ -977,26 +933,6 @@ class Form extends Iterator implements FormInterface
         }
 
         $data = $this->cleanDataKeys($data);
-
-        return $data;
-    }
-
-    /**
-     * Recursively JSON decode data.
-     *
-     * @param  array $data
-     *
-     * @return array
-     */
-    protected function jsonDecode(array $data)
-    {
-        foreach ($data as &$value) {
-            if (\is_array($value)) {
-                $value = $this->jsonDecode($value);
-            } else {
-                $value = json_decode($value, true);
-            }
-        }
 
         return $data;
     }
