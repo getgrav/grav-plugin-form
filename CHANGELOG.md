@@ -8,6 +8,7 @@
     * Added support for custom form types
 1. [](#improved)
     * Added support for data-sets in `textarea` and `select` fields
+    * Do not cache flat forms list, regenerate it instead
 1. [](#bugfix)
     * Fixed container fields breaking values from the child fields
     * Fixed form fields not accepting object values

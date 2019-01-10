@@ -884,16 +884,21 @@ class FormPlugin extends Plugin
     protected function loadCachedForms()
     {
         // Get and set the cache of forms if it exists
-        [$forms, $flat_forms] = $this->grav['cache']->fetch($this->getFormCacheId());
-
-        // Only store the forms if they are an array
-        if (\is_array($forms)) {
-            $this->forms = array_merge($this->forms, $forms);
+        try {
+            [$forms] = $this->grav['cache']->fetch($this->getFormCacheId());
+        } catch (\Exception $e) {
+            // Couldn't fetch cached forms.
+            $forms = null;
         }
 
-        // Only store the flat_forms if they are an array
-        if (\is_array($flat_forms)) {
-            $this->flat_forms = array_merge($this->flat_forms, $flat_forms);
+        if (!\is_array($forms)) {
+            return;
+        }
+
+        // Only update the forms if it's not empty
+        if (!empty($forms)) {
+            $this->forms = array_merge($this->forms, $forms);
+            $this->flattenForms();
         }
     }
 
@@ -905,7 +910,7 @@ class FormPlugin extends Plugin
         // Save the current state of the forms to cache
         if ($this->recache_forms) {
             $this->recache_forms = false;
-            $this->grav['cache']->save($this->getFormCacheId(), [$this->forms, $this->flat_forms]);
+            $this->grav['cache']->save($this->getFormCacheId(), [$this->forms]);
         }
     }
 
