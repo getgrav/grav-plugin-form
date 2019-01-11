@@ -18,6 +18,24 @@ use Grav\Framework\Form\Traits\FormTrait;
 use RocketTheme\Toolbox\ArrayTraits\NestedArrayAccessWithGetters;
 use RocketTheme\Toolbox\Event\Event;
 
+/**
+ * Class Form
+ * @package Grav\Plugin\Form
+ *
+ * @property string $id
+ * @property string $uniqueid
+ * @property-read string $name
+ * @property-read string $noncename
+ * @property-read $string nonceaction
+ * @property-read string $action
+ * @property-read Data $data
+ * @property-read array $files
+ * @property-read Data $value
+ * @property-read array $errors
+ * @property-read array $fields
+ * @property-read Blueprint $blueprint
+ * @property-read Page $page
+ */
 class Form implements FormInterface, \ArrayAccess
 {
     use NestedArrayAccessWithGetters {
@@ -400,8 +418,8 @@ class Form implements FormInterface, \ArrayAccess
 
         $name = $post['name'] ?? null;
         $task = $post['task'] ?? null;
-        $this->items['name'] = $formName = $post['__form-name__'] ?? $this->items['name'];
-        $this->items['uniqueid'] = $uniqueId = $post['__unique_form_id__'] ?? $formName;
+        $this->name = $this->items['name'] = $post['__form-name__'] ?? $this->name;
+        $this->uniqueid = $this->items['uniqueid'] = $post['__unique_form_id__'] ?? $this->name;
 
         $settings = $this->getBlueprint()->schema()->getProperty($name);
         $settings = (object) array_merge(
@@ -560,7 +578,7 @@ class Form implements FormInterface, \ArrayAccess
                 'sessionField' => base64_encode($url),
                 'path' => $path,
                 'field' => $settings->name,
-                'uniqueid' => $uniqueId
+                'uniqueid' => $this->uniqueid
             ])
         ];
 
@@ -589,8 +607,8 @@ class Form implements FormInterface, \ArrayAccess
             return false;
         }
 
-        $this->items['name'] = $post['__form-name__'] ?? $this->items['name'];
-        $this->items['uniqueid'] = $post['__unique_form_id__'] ?? $this->items['name'];
+        $this->name = $this->items['name'] = $post['__form-name__'] ?? $this->name;
+        $this->uniqueid = $this->items['uniqueid'] = $post['__unique_form_id__'] ?? $this->name;
 
         // Remove image from flash object
         $flash = $this->getFlash();
@@ -599,6 +617,48 @@ class Form implements FormInterface, \ArrayAccess
 
         // json_response
         $json_response = ['status' => 'success'];
+
+        // Return JSON
+        header('Content-Type: application/json');
+        echo json_encode($json_response);
+        exit;
+    }
+
+    public function storeState()
+    {
+        $grav = Grav::instance();
+
+        /** @var Uri $uri */
+        $uri = $grav['uri'];
+
+        // Get POST data and decode JSON fields into arrays
+        $post = $uri->post();
+        $post['data'] = $this->decodeData($post['data'] ?? []);
+
+        $this->name = $this->items['name'] = $post['__form-name__'] ?? $this->name;
+        $this->uniqueid = $this->items['uniqueid'] = $post['__unique_form_id__'] ?? $this->name;
+
+        $this->status = 'error';
+        if ($post) {
+            $this->values = new Data((array)$post);
+            if (!$this->values->get('form-nonce') || !Utils::verifyNonce($this->values->get('form-nonce'), 'form')) {
+                return;
+            }
+
+            // Store updated data into flash.
+            $flash = $this->getFlash();
+            $this->setAllData($flash->getData());
+
+            $this->data->merge($this->values->get('data') ?? []);
+
+            $flash->setData($this->data->toArray());
+            $flash->save();
+
+            $this->status = 'success';
+        }
+
+        // json_response
+        $json_response = ['status' => $this->status];
 
         // Return JSON
         header('Content-Type: application/json');
@@ -620,8 +680,8 @@ class Form implements FormInterface, \ArrayAccess
         $post = $uri->post();
         $post['data'] = $this->decodeData($post['data'] ?? []);
 
-        $this->items['name'] = $post['__form-name__'] ?? $this->items['name'];
-        $this->items['uniqueid'] = $post['__unique_form_id__'] ?? $this->items['name'];
+        $this->name = $this->items['name'] = $post['__form-name__'] ?? $this->name;
+        $this->uniqueid = $this->items['uniqueid'] = $post['__unique_form_id__'] ?? $this->name;
 
         if ($post) {
             $this->values = new Data((array)$post);
@@ -742,6 +802,105 @@ class Form implements FormInterface, \ArrayAccess
         return $this->getPage();
     }
 
+    /**
+     * Store form uploads to the final location.
+     */
+    public function copyFiles()
+    {
+        // Get flash object in order to save the files.
+        $flash = $this->getFlash();
+        $fields = $flash->getFilesByFields();
+
+        foreach ($fields as $key => $uploads) {
+            /** @var FormFlashFile $upload */
+            foreach ($uploads as $upload) {
+                if (null === $upload || $upload->isMoved()) {
+                    continue;
+                }
+
+                $destination = $upload->getDestination();
+                try {
+                    $upload->moveTo($destination);
+                } catch (\RuntimeException $e) {
+                    $grav = Grav::instance();
+                    throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $upload->getClientFilename() . '"', $destination));
+                }
+            }
+        }
+
+        $flash->delete();
+    }
+
+    public function getPagePathFromToken($path)
+    {
+        return Utils::getPagePathFromToken($path, $this->page());
+    }
+
+    public function responseCode($code = null)
+    {
+        if ($code) {
+            $this->response_code = $code;
+        }
+        return $this->response_code;
+    }
+
+    public function doSerialize()
+    {
+        return $this->doTraitSerialize() + [
+                'items' => $this->items,
+                'message' => $this->message,
+                'status' => $this->status,
+                'header_data' => $this->header_data,
+                'rules' => $this->rules,
+                'values' => $this->values->toArray(),
+                'page' => $this->page
+            ];
+    }
+
+    public function doUnserialize(array $data)
+    {
+        $this->items = $data['items'];
+        $this->message = $data['message'];
+        $this->status = $data['status'];
+        $this->header_data = $data['header_data'];
+        $this->rules = $data['rules'];
+        $this->values = new Data($data['values']);
+        $this->page = $data['page'];
+
+        // Backwards compatibility.
+        $defaults = [
+            'name' => $this->items['name'],
+            'id' => $this->items['id'],
+            'uniqueid' => $this->items['uniqueid'],
+            'data' => []
+        ];
+
+        $this->doTraitUnserialize($data + $defaults);
+    }
+
+    /**
+     * Get the configured max file size in bytes
+     *
+     * @param bool $mbytes return size in MB
+     * @return int
+     */
+    public static function getMaxFilesize($mbytes = false)
+    {
+        $config = Grav::instance()['config'];
+
+        $filesize_mb = (int)($config->get('plugins.form.files.filesize', 0) * static::BYTES_TO_MB);
+        $system_filesize = $config->get('system.media.upload_limit', 0);
+        if ($filesize_mb > $system_filesize || $filesize_mb === 0) {
+            $filesize_mb = $system_filesize;
+        }
+
+        if ($mbytes) {
+            return $filesize_mb;
+        }
+
+        return $filesize_mb  / static::BYTES_TO_MB;
+    }
+
     protected function doSubmit(array $data, array $files)
     {
         return;
@@ -839,82 +998,6 @@ class Form implements FormInterface, \ArrayAccess
     }
 
     /**
-     * Store form uploads to the final location.
-     */
-    public function copyFiles()
-    {
-        // Get flash object in order to save the files.
-        $flash = $this->getFlash();
-        $fields = $flash->getFilesByFields();
-
-        foreach ($fields as $key => $uploads) {
-            /** @var FormFlashFile $upload */
-            foreach ($uploads as $upload) {
-                if (null === $upload || $upload->isMoved()) {
-                    continue;
-                }
-
-                $destination = $upload->getDestination();
-                try {
-                    $upload->moveTo($destination);
-                } catch (\RuntimeException $e) {
-                    $grav = Grav::instance();
-                    throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $upload->getClientFilename() . '"', $destination));
-                }
-            }
-        }
-
-        $flash->delete();
-    }
-
-    public function getPagePathFromToken($path)
-    {
-        return Utils::getPagePathFromToken($path, $this->page());
-    }
-
-    public function responseCode($code = null)
-    {
-        if ($code) {
-            $this->response_code = $code;
-        }
-        return $this->response_code;
-    }
-
-    public function doSerialize()
-    {
-        return $this->doTraitSerialize() + [
-                'items' => $this->items,
-                'message' => $this->message,
-                'status' => $this->status,
-                'header_data' => $this->header_data,
-                'rules' => $this->rules,
-                'values' => $this->values->toArray(),
-                'page' => $this->page
-            ];
-    }
-
-    public function doUnserialize(array $data)
-    {
-        $this->items = $data['items'];
-        $this->message = $data['message'];
-        $this->status = $data['status'];
-        $this->header_data = $data['header_data'];
-        $this->rules = $data['rules'];
-        $this->values = new Data($data['values']);
-        $this->page = $data['page'];
-
-        // Backwards compatibility.
-        $defaults = [
-            'name' => $this->items['name'],
-            'id' => $this->items['id'],
-            'uniqueid' => $this->items['uniqueid'],
-            'data' => []
-        ];
-
-        $this->doTraitUnserialize($data + $defaults);
-    }
-
-    /**
      * Decode data
      *
      * @param array $data
@@ -985,28 +1068,5 @@ class Form implements FormInterface, \ArrayAccess
         }
 
         return $files;
-    }
-
-    /**
-     * Get the configured max file size in bytes
-     *
-     * @param bool $mbytes return size in MB
-     * @return int
-     */
-    public static function getMaxFilesize($mbytes = false)
-    {
-        $config = Grav::instance()['config'];
-
-        $filesize_mb = (int)($config->get('plugins.form.files.filesize', 0) * static::BYTES_TO_MB);
-        $system_filesize = $config->get('system.media.upload_limit', 0);
-        if ($filesize_mb > $system_filesize || $filesize_mb === 0) {
-            $filesize_mb = $system_filesize;
-        }
-
-        if ($mbytes) {
-            return $filesize_mb;
-        }
-
-        return $filesize_mb  / static::BYTES_TO_MB;
     }
 }

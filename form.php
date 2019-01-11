@@ -210,10 +210,15 @@ class FormPlugin extends Plugin
             if ($form instanceof Form) {
                 // Post the form
                 $isJson = $uri->extension() === 'json';
-                if ($isJson && $uri->post('__form-file-uploader__')) {
-                    $this->json_response = $form->uploadFiles();
-                } elseif ($isJson && $uri->post('__form-file-remover__')) {
-                    $this->json_response = $form->filesSessionRemove();
+                if ($isJson) {
+                    $task = $uri->post('task');
+                    if ($task === 'store-state') {
+                        $this->json_response = $form->storeState();
+                    } elseif ($uri->post('__form-file-uploader__')) {
+                        $this->json_response = $form->uploadFiles();
+                    } elseif ($uri->post('__form-file-remover__')) {
+                        $this->json_response = $form->filesSessionRemove();
+                    }
                 } else {
                     $form->post();
                     $submitted = true;

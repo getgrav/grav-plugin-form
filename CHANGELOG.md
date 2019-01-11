@@ -8,6 +8,7 @@
     * Added support for `toggleable` inputs, which can be disabled/enabled by user
     * Added `$grav['forms']` to allow plugins to better use forms [#307](https://github.com/getgrav/grav-plugin-form/pull/307)
     * Added support for custom form types
+    * Forms can now remember their state after page reload with YAML `datasets: store-state: true` set in the fields
 1. [](#improved)
     * Added support for data-sets in `textarea` and `select` fields
     * Do not cache flat forms list, regenerate it instead
