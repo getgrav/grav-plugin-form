@@ -1,5 +1,21 @@
 {% extends "forms/field.html.twig" %}
 
+{% block label %}
+    {% if field.markdown %}
+        {% if grav.twig.twig.filters['tu'] is defined %}
+            {{ field.label|tu|markdown(false) }}
+        {% else %}
+            {{ field.label|t|markdown(false) }}
+        {% endif %}
+    {% else %}
+        {% if grav.twig.twig.filters['tu'] is defined %}
+            {{ field.label|tu|e }}
+        {% else %}
+            {{ field.label|t|e }}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
 {% block input_attributes %}
     type="date"
     {% if field.validate.min %}min="{{ field.validate.min }}"{% endif %}

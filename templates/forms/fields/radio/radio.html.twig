@@ -3,6 +3,22 @@
 {% set originalValue = value %}
 {% set value = (value is null ? field.default : value) %}
 
+{% block label %}
+    {% if field.markdown %}
+        {% if grav.twig.twig.filters['tu'] is defined %}
+            {{ field.label|tu|markdown(false) }}
+        {% else %}
+            {{ field.label|t|markdown(false) }}
+        {% endif %}
+    {% else %}
+        {% if grav.twig.twig.filters['tu'] is defined %}
+            {{ field.label|tu|e }}
+        {% else %}
+            {{ field.label|t|e }}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
 {% block input %}
     {% for key, text in field.options %}
         {% set id = field.id|default(field.name) ~ '-' ~ key %}

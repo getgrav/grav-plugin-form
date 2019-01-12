@@ -10,7 +10,19 @@
                 {% block field %}
                     <div>
                         {% block field_label %}
-                            <strong>{{ field.label|t|e }}</strong>:
+                            {% if field.markdown %}
+                                {% if grav.twig.twig.filters['tu'] is defined %}
+                                    <strong>{{ field.label|tu|markdown(false) }}</strong>:
+                                {% else %}
+                                    <strong>{{ field.label|t|markdown(false) }}</strong>:
+                                {% endif %}
+                            {% else %}
+                                {% if grav.twig.twig.filters['tu'] is defined %}
+                                    <strong>{{ field.label|tu|e }}</strong>:
+                                {% else %}
+                                    <strong>{{ field.label|t|e }}</strong>:
+                                {% endif %}
+                            {% endif %}
                         {% endblock %}
 
                         {% block field_value %}

@@ -1,5 +1,21 @@
 {% extends "forms/field.html.twig" %}
 
+{% block label %}
+    {% if field.markdown %}
+        {% if grav.twig.twig.filters['tu'] is defined %}
+            {{ field.label|tu|markdown(false) }}
+        {% else %}
+            {{ field.label|t|markdown(false) }}
+        {% endif %}
+    {% else %}
+        {% if grav.twig.twig.filters['tu'] is defined %}
+            {{ field.label|tu|e }}
+        {% else %}
+            {{ field.label|t|e }}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
 {% block input %}
     <div class="{{ form_field_wrapper_classes ?: 'form-textarea-wrapper' }} {{ field.size }} {{ field.wrapper_classes }}">
         {% block prepend %}{% endblock prepend %}
