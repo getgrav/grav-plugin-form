@@ -166,7 +166,7 @@ class Form implements FormInterface, \ArrayAccess
 
         // Remember form state.
         $flash = $this->getFlash();
-        $data = $flash->exists() ? $flash->getData() : $this->header_data;
+        $data = ($flash->exists() ? $flash->getData() : null) ?? $this->header_data;
 
         // Reset and initialize the form
         $this->setAllData($data);
@@ -647,7 +647,7 @@ class Form implements FormInterface, \ArrayAccess
 
             // Store updated data into flash.
             $flash = $this->getFlash();
-            $this->setAllData($flash->getData());
+            $this->setAllData($flash->getData() ?? []);
 
             $this->data->merge($this->values->get('data') ?? []);
 
