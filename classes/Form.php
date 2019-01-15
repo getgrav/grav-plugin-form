@@ -187,19 +187,28 @@ class Form implements FormInterface, \ArrayAccess
 
         /** @var Uri $url */
         $url = Grav::instance()['uri'];
-        $fields = $flash->getLegacyFiles();
+        $fields = $flash->getFilesByFields(true);
         foreach ($fields as $field => $files) {
+            if (strpos($field, '/') !== false) {
+                continue;
+            }
+
             $list = [];
+            /**
+             * @var string $filename
+             * @var FormFlashFile $file
+             */
             foreach ($files as $filename => $file) {
+                $original = $fields["{$field}/original"][$filename] ?? $file;
                 $basename = basename($filename);
                 if ($file) {
                     $list[$basename] = [
-                        'name' => $basename,
-                        'type' => $file['type'],
-                        'size' => $file['size'],
-                        'image_url' => $url->rootUrl() . '/' . Folder::getRelativePath($file['tmp_name']),
-                        'thumb_url' => Folder::getRelativePath($file['tmp_name']),
-                        'cropData' => []
+                        'name' => $file->getClientFilename(),
+                        'type' => $file->getClientMediaType(),
+                        'size' => $file->getSize(),
+                        'image_url' => $url->rootUrl() . '/' . Folder::getRelativePath($original->getTmpFile()),
+                        'thumb' => Folder::getRelativePath($file->getTmpFile()),
+                        'cropData' => $original->getMetaData()['crop'] ?? []
                     ];
                 }
             }
