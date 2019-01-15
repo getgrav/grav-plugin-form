@@ -677,6 +677,41 @@ class Form implements FormInterface, \ArrayAccess
         exit;
     }
 
+    public function clearState()
+    {
+        $grav = Grav::instance();
+
+        /** @var Uri $uri */
+        $uri = $grav['uri'];
+
+        // Get POST data and decode JSON fields into arrays
+        $post = $uri->post();
+
+        $this->name = $this->items['name'] = $post['__form-name__'] ?? $this->name;
+        $this->uniqueid = $this->items['uniqueid'] = $post['__unique_form_id__'] ?? $this->name;
+
+        $this->status = 'error';
+        if ($post) {
+            $this->values = new Data((array)$post);
+            if (!$this->values->get('form-nonce') || !Utils::verifyNonce($this->values->get('form-nonce'), 'form')) {
+                return;
+            }
+
+            // Delete form flash.
+            $this->getFlash()->delete();
+
+            $this->status = 'success';
+        }
+
+        // json_response
+        $json_response = ['status' => $this->status];
+
+        // Return JSON
+        header('Content-Type: application/json');
+        echo json_encode($json_response);
+        exit;
+    }
+
     /**
      * Handle form processing on POST action.
      */

@@ -214,6 +214,8 @@ class FormPlugin extends Plugin
                     $task = $uri->post('task');
                     if ($task === 'store-state') {
                         $this->json_response = $form->storeState();
+                    } elseif ($task === 'clear-state') {
+                        $this->json_response = $form->clearState();
                     } elseif ($uri->post('__form-file-uploader__')) {
                         $this->json_response = $form->uploadFiles();
                     } elseif ($uri->post('__form-file-remover__')) {
