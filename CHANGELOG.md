@@ -68,7 +68,7 @@
     * Make all form fields to extend `field.html.twig`
 
 # v2.16.4
-## mm/dd/2018
+## 12/14/2018
 
 1. [](#improved)
     * Better handling of invalid file names during upload
@@ -77,7 +77,7 @@
 2. [](#bugfix)
     * Remove jQuery dependency in form.html.twig (#290)
 3. [](#new)
-    * Added Object.assing-polyfill (#291)
+    * Added Object.assign-polyfill (#291)
 
 # v2.16.3
 ## 09/21/2018
