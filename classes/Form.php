@@ -354,6 +354,17 @@ class Form implements FormInterface, \ArrayAccess
     }
 
     /**
+     * Get value of given variable (or all values).
+     *
+     * @param string $name
+     * @return mixed
+     */
+    public function data($name = null)
+    {
+        return $this->value($name);
+    }
+
+    /**
      * Set value of given variable in the values array
      *
      * @param string $name
@@ -800,6 +811,15 @@ class Form implements FormInterface, \ArrayAccess
     public function page(): Page
     {
         return $this->getPage();
+    }
+
+    /**
+     * Backwards compatibility
+     *
+     * @deprecated 3.0
+     */
+    public function filter(): void
+    {
     }
 
     /**
