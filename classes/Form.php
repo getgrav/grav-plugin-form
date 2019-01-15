@@ -6,6 +6,7 @@ use Grav\Common\Data\Data;
 use Grav\Common\Data\Blueprint;
 use Grav\Common\Data\ValidationException;
 use Grav\Common\Filesystem\Folder;
+use Grav\Common\Form\FormFlash;
 use Grav\Common\Grav;
 use Grav\Common\Inflector;
 use Grav\Common\Language\Language;
@@ -170,11 +171,40 @@ class Form implements FormInterface, \ArrayAccess
 
         // Reset and initialize the form
         $this->setAllData($data);
+        $this->setAllFiles($flash);
         $this->values = new Data();
 
         // Fire event
         $grav = Grav::instance();
         $grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
+    }
+
+    protected function setAllFiles(FormFlash $flash)
+    {
+        if (!$flash->exists()) {
+            return;
+        }
+
+        /** @var Uri $url */
+        $url = Grav::instance()['uri'];
+        $fields = $flash->getLegacyFiles();
+        foreach ($fields as $field => $files) {
+            $list = [];
+            foreach ($files as $filename => $file) {
+                $basename = basename($filename);
+                if ($file) {
+                    $list[$basename] = [
+                        'name' => $basename,
+                        'type' => $file['type'],
+                        'size' => $file['size'],
+                        'image_url' => $url->rootUrl() . '/' . Folder::getRelativePath($file['tmp_name']),
+                        'cropData' => []
+                    ];
+                }
+            }
+
+            $this->setData($field, $list);
+        }
     }
 
     /**
@@ -417,10 +447,6 @@ class Form implements FormInterface, \ArrayAccess
     {
         $grav = Grav::instance();
 
-        /** @var Language $language */
-        $language = $grav['language'];
-        /** @var Config $config */
-        $config = $grav['config'];
         /** @var Uri $uri */
         $uri = $grav['uri'];
 
@@ -431,6 +457,12 @@ class Form implements FormInterface, \ArrayAccess
         $task = $post['task'] ?? null;
         $this->name = $this->items['name'] = $post['__form-name__'] ?? $this->name;
         $this->uniqueid = $this->items['uniqueid'] = $post['__unique_form_id__'] ?? $this->name;
+
+        /** @var Language $language */
+        $language = $grav['language'];
+
+        /** @var Config $config */
+        $config = $grav['config'];
 
         $settings = $this->getBlueprint()->schema()->getProperty($name);
         $settings = (object) array_merge(
@@ -600,116 +632,48 @@ class Form implements FormInterface, \ArrayAccess
     }
 
     /**
-     * Removes a file from the flash object session, before it gets saved
-     *
-     * @return bool True if the action was performed.
+     * Removes a file from the flash object session, before it gets saved.
      */
-    public function filesSessionRemove()
+    public function filesSessionRemove(): void
     {
-        $grav = Grav::instance();
+        $callable = function (): array {
+            $field = $this->values->get('name');
+            $filename = $this->values->get('filename');
 
-        /** @var Uri $uri */
-        $uri  = $grav['uri'];
-        $post = $uri->post();
-        $field = $post['name'] ?? null;
-        $filename = $post['filename'] ?? null;
-
-        if (!isset($field, $filename)) {
-            return false;
-        }
-
-        $this->name = $this->items['name'] = $post['__form-name__'] ?? $this->name;
-        $this->uniqueid = $this->items['uniqueid'] = $post['__unique_form_id__'] ?? $this->name;
-
-        // Remove image from flash object
-        $flash = $this->getFlash();
-        $flash->removeFile($filename, $field);
-        $flash->save();
-
-        // json_response
-        $json_response = ['status' => 'success'];
-
-        // Return JSON
-        header('Content-Type: application/json');
-        echo json_encode($json_response);
-        exit;
-    }
-
-    public function storeState()
-    {
-        $grav = Grav::instance();
-
-        /** @var Uri $uri */
-        $uri = $grav['uri'];
-
-        // Get POST data and decode JSON fields into arrays
-        $post = $uri->post();
-        $post['data'] = $this->decodeData($post['data'] ?? []);
-
-        $this->name = $this->items['name'] = $post['__form-name__'] ?? $this->name;
-        $this->uniqueid = $this->items['uniqueid'] = $post['__unique_form_id__'] ?? $this->name;
-
-        $this->status = 'error';
-        if ($post) {
-            $this->values = new Data((array)$post);
-            if (!$this->values->get('form-nonce') || !Utils::verifyNonce($this->values->get('form-nonce'), 'form')) {
-                return;
+            if (!isset($field, $filename)) {
+                throw new \RuntimeException('Bad Request: name and/or filename are missing', 400);
             }
 
-            // Store updated data into flash.
-            $flash = $this->getFlash();
-            $this->setAllData($flash->getData() ?? []);
+            $this->removeFlashUpload($filename, $field);
 
-            $this->data->merge($this->values->get('data') ?? []);
+            return ['status' => 'success'];
+        };
 
-            $flash->setData($this->data->toArray());
-            $flash->save();
-
-            $this->status = 'success';
-        }
-
-        // json_response
-        $json_response = ['status' => $this->status];
-
-        // Return JSON
-        header('Content-Type: application/json');
-        echo json_encode($json_response);
-        exit;
+        $this->sendJsonResponse($callable);
     }
 
-    public function clearState()
+
+    public function storeState(): void
     {
-        $grav = Grav::instance();
+        $callable = function (): array {
+            $this->updateFlashData($this->values->get('data') ?? []);
 
-        /** @var Uri $uri */
-        $uri = $grav['uri'];
+            return ['status' => 'success'];
+        };
 
-        // Get POST data and decode JSON fields into arrays
-        $post = $uri->post();
+        $this->sendJsonResponse($callable);
+    }
 
-        $this->name = $this->items['name'] = $post['__form-name__'] ?? $this->name;
-        $this->uniqueid = $this->items['uniqueid'] = $post['__unique_form_id__'] ?? $this->name;
 
-        $this->status = 'error';
-        if ($post) {
-            $this->values = new Data((array)$post);
-            if (!$this->values->get('form-nonce') || !Utils::verifyNonce($this->values->get('form-nonce'), 'form')) {
-                return;
-            }
+    public function clearState(): void
+    {
+        $callable = function (): array {
+            $this->clearFlash();
 
-            // Delete form flash.
-            $this->getFlash()->delete();
+            return ['status' => 'success'];
+        };
 
-            $this->status = 'success';
-        }
-
-        // json_response
-        $json_response = ['status' => $this->status];
-
-        // Return JSON
-        header('Content-Type: application/json');
-        echo json_encode($json_response);
-        exit;
+        $this->sendJsonResponse($callable);
     }
 
     /**
@@ -954,6 +918,71 @@ class Form implements FormInterface, \ArrayAccess
         }
 
         return $filesize_mb  / static::BYTES_TO_MB;
+    }
+
+    protected function sendJsonResponse(callable $callable)
+    {
+        $grav = Grav::instance();
+
+        /** @var Uri $uri */
+        $uri  = $grav['uri'];
+
+        // Get POST data and decode JSON fields into arrays
+        $post = $uri->post();
+        $post['data'] = $this->decodeData($post['data'] ?? []);
+
+        if (empty($post['form-nonce']) || !Utils::verifyNonce($post['form-nonce'], 'form')) {
+            throw new \RuntimeException('Bad Request: Nonce is missing or invalid', 400);
+        }
+
+        $this->name = $this->items['name'] = $post['__form-name__'] ?? $this->name;
+        $this->uniqueid = $this->items['uniqueid'] = $post['__unique_form_id__'] ?? $this->name;
+        $this->values = new Data($post);
+
+        $json_response = $callable($post);
+
+        // Return JSON
+        header('Content-Type: application/json');
+        echo json_encode($json_response);
+        exit;
+    }
+
+    /**
+     * Remove uploaded file from flash object.
+     *
+     * @param string $filename
+     * @param string|null $field
+     */
+    protected function removeFlashUpload(string $filename, string $field = null)
+    {
+        $flash = $this->getFlash();
+        $flash->removeFile($filename, $field);
+        $flash->save();
+    }
+
+    /**
+     * Store updated data into flash object.
+     *
+     * @param array $data
+     */
+    protected function updateFlashData(array $data)
+    {
+        // Store updated data into flash.
+        $flash = $this->getFlash();
+        $this->setAllData($flash->getData() ?? []);
+
+        $this->data->merge($data);
+
+        $flash->setData($this->data->toArray());
+        $flash->save();
+    }
+
+    /**
+     * Clear flash object.
+     */
+    protected function clearFlash()
+    {
+        $this->getFlash()->delete();
     }
 
     protected function doSubmit(array $data, array $files)
