@@ -198,6 +198,7 @@ class Form implements FormInterface, \ArrayAccess
                         'type' => $file['type'],
                         'size' => $file['size'],
                         'image_url' => $url->rootUrl() . '/' . Folder::getRelativePath($file['tmp_name']),
+                        'thumb_url' => Folder::getRelativePath($file['tmp_name']),
                         'cropData' => []
                     ];
                 }
