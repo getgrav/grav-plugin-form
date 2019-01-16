@@ -224,8 +224,14 @@ class FormPlugin extends Plugin
                         $this->json_response = $form->filesSessionRemove();
                     }
                 } else {
-                    $form->post();
-                    $submitted = true;
+                    $task = $uri->post('task');
+                    if ($task === 'clear-state') {
+                        $form->getFlash()->delete();
+                        $this->grav->redirect($page->route(), 303);
+                    } else {
+                        $form->post();
+                        $submitted = true;
+                    }
                 }
 
                 // Return JSON if we're not in form template.
