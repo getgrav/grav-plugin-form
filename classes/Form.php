@@ -247,7 +247,7 @@ class Form implements FormInterface, \ArrayAccess
             case 'action':
             case 'data':
             case 'files':
-            case 'value':
+//            case 'value':
             case 'errors';
             case 'fields':
             case 'blueprint':
