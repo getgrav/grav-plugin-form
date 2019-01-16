@@ -16,6 +16,7 @@ use Grav\Common\Utils;
 use Grav\Framework\Form\FormFlashFile;
 use Grav\Framework\Form\Interfaces\FormInterface;
 use Grav\Framework\Form\Traits\FormTrait;
+use Grav\Framework\Route\Route;
 use RocketTheme\Toolbox\ArrayTraits\NestedArrayAccessWithGetters;
 use RocketTheme\Toolbox\Event\Event;
 
@@ -862,6 +863,28 @@ class Form implements FormInterface, \ArrayAccess
     public function getPagePathFromToken($path)
     {
         return Utils::getPagePathFromToken($path, $this->page());
+    }
+
+    /**
+     * @return Route|null
+     */
+    public function getFileUploadAjaxRoute(): ?Route
+    {
+        $route = Uri::getCurrentRoute()->withExtension('json')->withGravParam('task', 'file-upload');
+
+        return $route;
+    }
+
+    /**
+     * @param $field
+     * @param $filename
+     * @return Route|null
+     */
+    public function getFileDeleteAjaxRoute($field, $filename): ?Route
+    {
+        $route = Uri::getCurrentRoute()->withExtension('.json')->withGravParam('task', 'file-remove');
+
+        return $route;
     }
 
     public function responseCode($code = null)

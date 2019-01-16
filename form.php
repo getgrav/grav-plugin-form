@@ -213,14 +213,14 @@ class FormPlugin extends Plugin
                 // Post the form
                 $isJson = $uri->extension() === 'json';
                 if ($isJson) {
-                    $task = $uri->post('task');
+                    $task = $uri->post('task') ?? $uri->param('task');
                     if ($task === 'store-state') {
                         $this->json_response = $form->storeState();
                     } elseif ($task === 'clear-state') {
                         $this->json_response = $form->clearState();
-                    } elseif ($uri->post('__form-file-uploader__')) {
+                    } elseif ($task === 'file-upload' || $uri->post('__form-file-uploader__')) {
                         $this->json_response = $form->uploadFiles();
-                    } elseif ($uri->post('__form-file-remover__')) {
+                    } elseif ($task === 'file-remove' || $uri->post('__form-file-remover__')) {
                         $this->json_response = $form->filesSessionRemove();
                     }
                 } else {
