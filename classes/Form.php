@@ -203,12 +203,14 @@ class Form implements FormInterface, \ArrayAccess
                 $original = $fields["{$field}/original"][$filename] ?? $file;
                 $basename = basename($filename);
                 if ($file) {
+                    $imagePath = $original->getTmpFile();
+                    $thumbPath = $file->getTmpFile();
                     $list[$basename] = [
                         'name' => $file->getClientFilename(),
                         'type' => $file->getClientMediaType(),
                         'size' => $file->getSize(),
-                        'image_url' => $url->rootUrl() . '/' . Folder::getRelativePath($original->getTmpFile()),
-                        'thumb' => Folder::getRelativePath($file->getTmpFile()),
+                        'image_url' => $url->rootUrl() . '/' . Folder::getRelativePath($imagePath) . '?' . filemtime($imagePath),
+                        'thumb' => Folder::getRelativePath($thumbPath) . '?' . filemtime($thumbPath),
                         'cropData' => $original->getMetaData()['crop'] ?? []
                     ];
                 }
