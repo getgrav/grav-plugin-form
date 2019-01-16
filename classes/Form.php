@@ -247,7 +247,6 @@ class Form implements FormInterface, \ArrayAccess
             case 'action':
             case 'data':
             case 'files':
-//            case 'value':
             case 'errors';
             case 'fields':
             case 'blueprint':
@@ -678,7 +677,7 @@ class Form implements FormInterface, \ArrayAccess
     public function clearState(): void
     {
         $callable = function (): array {
-            $this->clearFlash();
+            $this->getFlash()->delete();
 
             return ['status' => 'success'];
         };
@@ -985,14 +984,6 @@ class Form implements FormInterface, \ArrayAccess
 
         $flash->setData($this->data->toArray());
         $flash->save();
-    }
-
-    /**
-     * Clear flash object.
-     */
-    protected function clearFlash()
-    {
-        $this->getFlash()->delete();
     }
 
     protected function doSubmit(array $data, array $files)

@@ -184,6 +184,7 @@ class FormPlugin extends Plugin
             $this->saveCachedForms();
         }
 
+        /** @var Page $page */
         $page = $this->grav['page'];
 
         // Force rebuild form when form has not been built and form cache expired.
@@ -201,6 +202,7 @@ class FormPlugin extends Plugin
                 'onFormFieldTypes'      => ['onFormFieldTypes', 0],
             ]);
 
+            /** @var Uri $uri */
             $uri = $this->grav['uri'];
 
             /** @var Forms $forms */
@@ -697,6 +699,12 @@ class FormPlugin extends Plugin
             ],
             'fieldset' => [
                 'input@' => false
+            ],
+            'file' => [
+                'array' => true,
+                'validate' => [
+                    'type' => 'ignore'
+                ]
             ],
             'display' => [
                 'input@' => false
