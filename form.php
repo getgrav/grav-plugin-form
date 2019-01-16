@@ -227,7 +227,8 @@ class FormPlugin extends Plugin
                     $task = $uri->post('task');
                     if ($task === 'clear-state') {
                         $form->getFlash()->delete();
-                        $this->grav->redirect($page->route(), 303);
+                        $redirect = $form->getBlueprint()->get('form/clear_redirect_url') ?? $page->route();
+                        $this->grav->redirect($redirect, 303);
                     } else {
                         $form->post();
                         $submitted = true;
