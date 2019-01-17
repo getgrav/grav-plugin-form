@@ -210,7 +210,7 @@ class Form implements FormInterface, \ArrayAccess
                         'type' => $file->getClientMediaType(),
                         'size' => $file->getSize(),
                         'image_url' => $url->rootUrl() . '/' . Folder::getRelativePath($imagePath) . '?' . filemtime($imagePath),
-                        'thumb' => Folder::getRelativePath($thumbPath) . '?' . filemtime($thumbPath),
+                        'thumb_url' => $url->rootUrl() . '/' . Folder::getRelativePath($thumbPath) . '?' . filemtime($thumbPath),
                         'cropData' => $original->getMetaData()['crop'] ?? []
                     ];
                 }

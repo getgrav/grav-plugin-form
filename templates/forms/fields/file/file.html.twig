@@ -45,7 +45,7 @@
             '/field' ~ config.system.param_sep ~ files.name ~
             '/path' ~ config.system.param_sep ~ base64_encode(value.path), 'admin-form', 'admin-nonce') %}
 
-        {% set file = value|merge({remove: remove, path: (uri.rootUrl == '/' ? '/' : uri.rootUrl ~ '/' ~ real_path) }) %}
+        {% set file = value|merge({remove: remove, path: value.thumb_url ?? (uri.rootUrl == '/' ? '/' : uri.rootUrl ~ '/' ~ real_path) }) %}
         <div class="hidden" data-file="{{ file|json_encode|e('html_attr') }}"></div>
     {% endif %}
 {% endmacro %}
