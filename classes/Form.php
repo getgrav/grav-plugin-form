@@ -261,6 +261,16 @@ class Form implements FormInterface, \ArrayAccess
         return $this->traitGet($name, $default, $separator);
     }
 
+    /**
+     * @param $message
+     * @param string $type
+     * @todo Type not used
+     */
+    public function setMessage($message, $type = 'error')
+    {
+        $this->setError($message);
+    }
+
     public function set($name, $default, $separator = null)
     {
         switch (strtolower($name)) {
