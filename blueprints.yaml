@@ -13,7 +13,7 @@ bugs: https://github.com/getgrav/grav-plugin-form/issues
 license: MIT
 
 dependencies:
-  - { name: grav, version: '>=1.6.0-beta.7' }
+  - { name: grav, version: '>=1.6.0-beta.8' }
 
 form:
   validation: strict

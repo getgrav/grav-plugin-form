@@ -2,6 +2,7 @@
 ## mm/dd/2019
 
 1. [](#new)
+    * Requires Grav 1.6.0-beta.8 (and optionally Admin 1.9.0-beta.8)
     * Form no longer extends Iterator (may have some backward compatibility issues with plugins, likely not)
     * Form now uses `NestedArrayAccessWithGetters` (with '/' separator) and `FormTrait` traits
     * Added `key`, `ignore`, `section`, `toggle`, `tabs` and `tab` form fields
