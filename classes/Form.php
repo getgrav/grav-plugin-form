@@ -869,7 +869,7 @@ class Form implements FormInterface, \ArrayAccess
             }
         }
 
-        $flash->delete();
+        $flash->clearFiles();
     }
 
     public function getPagePathFromToken($path)
@@ -1113,7 +1113,7 @@ class Form implements FormInterface, \ArrayAccess
                 }
             }
 
-            $flash->delete();
+            $flash->clearFiles();
         }
     }
 
