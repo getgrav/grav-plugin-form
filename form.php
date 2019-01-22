@@ -454,7 +454,9 @@ class FormPlugin extends Plugin
                 }
                 break;
             case 'upload':
-                $form->copyFiles();
+                if ($params !== false) {
+                    $form->copyFiles();
+                }
                 break;
             case 'save':
                 $prefix = $params['fileprefix'] ?? '';

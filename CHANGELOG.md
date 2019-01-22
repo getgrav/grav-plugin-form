@@ -14,6 +14,7 @@
     * Added support for data-sets in `textarea` and `select` fields
     * Do not cache flat forms list, regenerate it instead
     * Fixed some inconsistencies on how blueprints are handled
+    * Improved uploads handling, added new `upload: true|false` process
 1. [](#bugfix)
     * Fixed container fields breaking values from the child fields
     * Fixed form fields not accepting object values

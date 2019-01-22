@@ -776,10 +776,14 @@ class Form implements FormInterface, \ArrayAccess
             }
         }
 
-        $this->legacyUploads();
-
         $redirect = $redirect_code = null;
         $process = $this->items['process'] ?? [];
+        $legacyUploads = !isset($process['upload']) || $process['upload'] !== false;
+
+        if ($legacyUploads) {
+            $this->legacyUploads();
+        }
+
         if (\is_array($process)) {
             foreach ($process as $action => $data) {
                 if (is_numeric($action)) {
@@ -800,7 +804,9 @@ class Form implements FormInterface, \ArrayAccess
             }
         }
 
-        $this->copyFiles();
+        if ($legacyUploads) {
+            $this->copyFiles();
+        }
 
         if ($redirect) {
             $grav->redirect($redirect, $redirect_code);
