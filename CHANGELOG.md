@@ -1,25 +1,41 @@
 # v3.0.0-beta.5
-## mm/dd/2019
+## 01/25/2019
 
 1. [](#new)
-    * Requires Grav 1.6.0-beta.8 (and optionally Admin 1.9.0-beta.8)
+    * Requires Grav `1.6.0-beta.8` (and optionally Admin `1.9.0-beta.8`)
     * Form no longer extends Iterator (may have some backward compatibility issues with plugins, likely not)
     * Form now uses `NestedArrayAccessWithGetters` (with '/' separator) and `FormTrait` traits
-    * Added `key`, `ignore`, `section`, `toggle`, `tabs` and `tab` form fields
+    * Added `view`, `key`, `ignore`, `section`, `toggle`, `tabs` and `tab` form fields
     * Added support for `toggleable` inputs, which can be disabled/enabled by user
     * Added `$grav['forms']` to allow plugins to better use forms [#307](https://github.com/getgrav/grav-plugin-form/pull/307)
     * Added support for custom form types
     * Forms can now remember their state after page reload with YAML `datasets: store-state: true` set in the fields
+    * Added `clear-state` AJAX task
+    * Added task to clear form flash
+    * Added support for file-upload and file-remove tasks
+    * Added ability to set a custom `clear_redirect_url` on a form
+    * Added `Form::setMessage()` method
+    * Added new form field templates for edit list table
 1. [](#improved)
     * Added support for data-sets in `textarea` and `select` fields
+    * Simplify `shouldProcessForm()` logic
     * Do not cache flat forms list, regenerate it instead
     * Fixed some inconsistencies on how blueprints are handled
     * Improved uploads handling, added new `upload: true|false` process
+    * Make `Form` implement `FormInterface`
+    * Added `field.size` in `array`, `select`, and `textarea` 
+    * Enable forms in admin plugin
+    * Removed submit of unchecked fields in frontend
+    * Make sure that the images in the file field are not cached in browser
 1. [](#bugfix)
     * Fixed container fields breaking values from the child fields
     * Fixed form fields not accepting object values
     * Fixed some form fields having no value for nested field sets
     * Fixed double escaping of `file` type input JSON value
+    * Fixed double locking of file when calling processor save 
+    * Fixed some missing backwards compatibility   
+    * Fixed some issues with flashed form
+    * Fixed Twig 2 compatibility issue
 
 # v3.0.0-beta.4
 ## 12/14/2018
