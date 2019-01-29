@@ -109,8 +109,7 @@ class Form implements FormInterface, \ArrayAccess
     {
         $this->nestedSeparator = '/';
 
-        $this->page = $page->route();
-
+        $slug = $page->slug();
         $header = $page->header();
         $this->rules = $header->rules ?? [];
         $this->header_data = $header->data ?? [];
@@ -131,6 +130,14 @@ class Form implements FormInterface, \ArrayAccess
             }
         }
 
+        if ($page->modular()) {
+            $header = $page->header();
+            $header->never_cache_twig = true;
+            $page = $page->parent();
+        }
+
+        $this->page = $page->route();
+
         // Add form specific rules.
         if (!empty($this->items['rules']) && \is_array($this->items['rules'])) {
             $this->rules += $this->items['rules'];
@@ -140,7 +147,7 @@ class Form implements FormInterface, \ArrayAccess
         if ($name && !\is_int($name)) {
             $this->items['name'] = $name;
         } elseif (empty($this->items['name'])) {
-            $this->items['name'] = $page->slug();
+            $this->items['name'] = $slug;
         }
 
         // Set form id if not set.

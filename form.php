@@ -143,22 +143,33 @@ class FormPlugin extends Plugin
         /** @var Page $page */
         $page = $e['page'];
 
-        $formsArray = $page->forms();
-        if ($formsArray) {
-            // Force never_cache_twig if modular form
-            if ($page->modular()) {
-                $header = $page->header();
-                $header->never_cache_twig = true;
+        $pageForms = $page->forms();
+        if (!$pageForms) {
+            return;
+        }
+
+        // Force never_cache_twig if modular form
+        if ($page->modular()) {
+            $header = $page->header();
+            $header->never_cache_twig = true;
+
+            $parent = $page->parent();
+            if ($parent) {
+                $parent->addForms($pageForms);
+                $parent_route = $parent->home() ? '/' : $parent->route();
             }
+        }
 
-            $page_route = $page->home() ? '/' : $page->route();
+        $page_route = $page->home() ? '/' : $page->route();
 
-            /** @var Forms $forms */
-            $forms = $this->grav['forms'];
+        /** @var Forms $forms */
+        $forms = $this->grav['forms'];
 
-            // Store the page forms in the forms instance
-            foreach ($formsArray as $name => $form) {
-                $this->addForm($page_route, $forms->createPageForm($page, $name, $form));
+        // Store the page forms in the forms instance
+        foreach ($pageForms as $name => $form) {
+            $this->addForm($page_route, $forms->createPageForm($page, $name, $form));
+            if (isset($parent, $parent_route)) {
+                $this->addForm($parent_route, $forms->createPageForm($parent, $name, $form));
             }
         }
     }
@@ -909,7 +920,8 @@ class FormPlugin extends Plugin
     {
         // Get and set the cache of forms if it exists
         try {
-            [$forms] = $this->grav['cache']->fetch($this->getFormCacheId());
+            //[$forms] = $this->grav['cache']->fetch($this->getFormCacheId());
+            $forms = null;
         } catch (\Exception $e) {
             // Couldn't fetch cached forms.
             $forms = null;

@@ -3,6 +3,7 @@
 
 1. [](#bugfix)
     * Regression: Fixed ignored form action [#318](https://github.com/getgrav/grav-plugin-form/issues/318)
+    * Regression: Fixed modular form submit not triggering the action sometimes
 
 # v3.0.0-beta.5
 ## 01/25/2019
