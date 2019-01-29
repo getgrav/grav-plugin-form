@@ -268,7 +268,7 @@ class Form implements FormInterface, \ArrayAccess
 
     public function getAction(): string
     {
-        return (string)$this->traitGet('action');
+        return $this->items['action'] ?? $this->page;
     }
 
     /**

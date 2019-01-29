@@ -167,10 +167,10 @@ class FormPlugin extends Plugin
 
         // Store the page forms in the forms instance
         foreach ($pageForms as $name => $form) {
-            $this->addForm($page_route, $forms->createPageForm($page, $name, $form));
             if (isset($parent, $parent_route)) {
                 $this->addForm($parent_route, $forms->createPageForm($parent, $name, $form));
             }
+            $this->addForm($page_route, $forms->createPageForm($page, $name, $form));
         }
     }
 
