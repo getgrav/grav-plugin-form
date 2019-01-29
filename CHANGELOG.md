@@ -1,9 +1,15 @@
+# v3.0.0-beta.6
+## mm/dd/2019
+
+1. [](#bugfix)
+    * Regression: Fixed ignored form action [#318](https://github.com/getgrav/grav-plugin-form/issues/318)
+
 # v3.0.0-beta.5
 ## 01/25/2019
 
 1. [](#new)
     * Requires Grav `1.6.0-beta.8` (and optionally Admin `1.9.0-beta.8`)
-    * Form no longer extends Iterator (may have some backward compatibility issues with plugins, likely not)
+    * Form no longer extends `Grav\Common\Iterator` (may have some backward compatibility issues with plugins, likely not)
     * Form now uses `NestedArrayAccessWithGetters` (with '/' separator) and `FormTrait` traits
     * Added `view`, `key`, `ignore`, `section`, `toggle`, `tabs` and `tab` form fields
     * Added support for `toggleable` inputs, which can be disabled/enabled by user

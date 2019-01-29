@@ -222,8 +222,6 @@ class Form implements FormInterface, \ArrayAccess
 
     /**
      * Reset form.
-     *
-     * @param array|null $data
      */
     public function reset(): void
     {
@@ -259,6 +257,11 @@ class Form implements FormInterface, \ArrayAccess
         }
 
         return $this->traitGet($name, $default, $separator);
+    }
+
+    public function getAction(): string
+    {
+        return (string)$this->traitGet('action');
     }
 
     /**
