@@ -170,14 +170,22 @@ class Form implements FormInterface, \ArrayAccess
         $this->name = $this->items['name'];
         $this->setId($this->items['id']);
         $this->setUniqueId($this->items['uniqueid']);
+
+        $this->initialize();
+    }
+
+    public function initialize()
+    {
+        // Reset and initialize the form
         $this->errors = [];
         $this->submitted = false;
+        $this->unsetFlash();
 
         // Remember form state.
         $flash = $this->getFlash();
         $data = ($flash->exists() ? $flash->getData() : null) ?? $this->header_data;
 
-        // Reset and initialize the form
+        // Remember data and files.
         $this->setAllData($data);
         $this->setAllFiles($flash);
         $this->values = new Data();
@@ -487,8 +495,6 @@ class Form implements FormInterface, \ArrayAccess
 
         $name = $post['name'] ?? null;
         $task = $post['task'] ?? null;
-        $this->name = $this->items['name'] = $post['__form-name__'] ?? $this->name;
-        $this->uniqueid = $this->items['uniqueid'] = $post['__unique_form_id__'] ?? $this->name;
 
         /** @var Language $language */
         $language = $grav['language'];
@@ -722,9 +728,6 @@ class Form implements FormInterface, \ArrayAccess
         $post = $uri->post();
         $post['data'] = $this->decodeData($post['data'] ?? []);
 
-        $this->name = $this->items['name'] = $post['__form-name__'] ?? $this->name;
-        $this->uniqueid = $this->items['uniqueid'] = $post['__unique_form_id__'] ?? $this->name;
-
         if ($post) {
             $this->values = new Data((array)$post);
             $data = $this->values->get('data');
@@ -910,7 +913,7 @@ class Form implements FormInterface, \ArrayAccess
      */
     public function getFileDeleteAjaxRoute($field, $filename): ?Route
     {
-        $route = Uri::getCurrentRoute()->withExtension('.json')->withGravParam('task', 'file-remove');
+        $route = Uri::getCurrentRoute()->withExtension('json')->withGravParam('task', 'file-remove');
 
         return $route;
     }
@@ -995,8 +998,6 @@ class Form implements FormInterface, \ArrayAccess
             throw new \RuntimeException('Bad Request: Nonce is missing or invalid', 400);
         }
 
-        $this->name = $this->items['name'] = $post['__form-name__'] ?? $this->name;
-        $this->uniqueid = $this->items['uniqueid'] = $post['__unique_form_id__'] ?? $this->name;
         $this->values = new Data($post);
 
         $json_response = $callable($post);

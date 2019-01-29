@@ -874,7 +874,9 @@ class FormPlugin extends Plugin
                 $page = $this->grav['page'];
             }
 
+            // Try to find the posted form if available.
             $form_name = $this->grav['uri']->post('__form-name__', FILTER_SANITIZE_STRING);
+            $unique_id = $this->grav['uri']->post('__unique_form_id__', FILTER_SANITIZE_STRING);
 
             if (!$form_name) {
                 $form_name = $page ? $page->slug() : null;
@@ -888,6 +890,12 @@ class FormPlugin extends Plugin
             }
 
             if ($form) {
+                // Only set posted unique id if the form name matches to the one that was posted.
+                if ($unique_id && $form_name === $form->getFormName()) {
+                    $form->setUniqueId($unique_id);
+                    $form->initialize();
+                }
+
                 $forms->setActiveForm($form);
             }
         }
