@@ -148,19 +148,23 @@ class FormPlugin extends Plugin
             return;
         }
 
-        // Force never_cache_twig if modular form
-        if ($page->modular()) {
-            $header = $page->header();
+        // Force never_cache_twig if modular form (recursively up)
+        $current = $page;
+        while ($current && $current->modular()) {
+            $header = $current->header();
             $header->never_cache_twig = true;
 
-            $parent = $page->parent();
-            if ($parent) {
-                $parent->addForms($pageForms);
-                $parent_route = $parent->home() ? '/' : $parent->route();
-            }
+            $current = $current->parent();
         }
+        $parent = $current && $current !== $page ? $current : null;
 
         $page_route = $page->home() ? '/' : $page->route();
+
+        // If the form was in the modular page, we need to add the form into the parent page as well.
+        if ($parent) {
+            $parent->addForms($pageForms);
+            $parent_route = $parent->home() ? '/' : $parent->route();
+        }
 
         /** @var Forms $forms */
         $forms = $this->grav['forms'];

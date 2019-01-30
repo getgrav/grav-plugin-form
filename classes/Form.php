@@ -130,13 +130,14 @@ class Form implements FormInterface, \ArrayAccess
             }
         }
 
-        if ($page->modular()) {
+        // If we're on a modular page, find the real page.
+        while ($page && $page->modular()) {
             $header = $page->header();
             $header->never_cache_twig = true;
             $page = $page->parent();
         }
 
-        $this->page = $page->route();
+        $this->page = $page ? $page->route() : '/';
 
         // Add form specific rules.
         if (!empty($this->items['rules']) && \is_array($this->items['rules'])) {

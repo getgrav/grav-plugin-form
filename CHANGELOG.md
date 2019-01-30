@@ -1,3 +1,9 @@
+# v3.0.0-rc.2
+## mm/dd/2019
+
+1. [](#bugfix)
+    * Fixed form processing in nested modular pages
+
 # v3.0.0-rc.1
 ## 01/29/2019
 
