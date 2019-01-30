@@ -1,5 +1,5 @@
-# v3.0.0-beta.6
-## mm/dd/2019
+# v3.0.0-rc.1
+## 01/29/2019
 
 1. [](#improved)
     * Improved logic for finding the current form
