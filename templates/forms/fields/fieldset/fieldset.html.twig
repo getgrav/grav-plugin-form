@@ -4,7 +4,7 @@
 {% block field %}
 <fieldset {% if field.id is defined %}id="{{ field.id }}"{% endif %} {% if field.classes is defined %}class="{{ field.classes }}" {% endif %}>
 {% if field.legend %}
-    <legend>{% if grav.twig.twig.filters['tu'] is defined %}{{ field.legend|tu }}{% else %}{{ field.legend|t }}{% endif %}</legend>
+    <legend>{{ field.legend|t }}</legend>
 {% endif %}
 
 {% if field.fields %}

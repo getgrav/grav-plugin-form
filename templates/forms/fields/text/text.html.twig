@@ -3,11 +3,7 @@
 {% block prepend %}
 {% if field.prepend %}
     <div class="form-input-addon form-input-prepend">
-        {% if grav.twig.twig.filters['tu'] is defined %}
-            {{- field.prepend|tu|raw -}}
-        {% else %}
-            {{- field.prepend|t|raw -}}
-        {% endif %}
+        {{- field.prepend|t|raw -}}
     </div>
 {% endif %}
 {% endblock %}
@@ -23,11 +19,7 @@
 {% block append %}
     {% if field.append %}
         <div class="form-input-addon form-input-append">
-            {% if grav.twig.twig.filters['tu'] is defined %}
-                {{- field.append|tu|raw -}}
-            {% else %}
-                {{- field.append|t|raw -}}
-            {% endif %}
+            {{- field.append|t|raw -}}
         </div>
     {% endif %}
 {% endblock %}

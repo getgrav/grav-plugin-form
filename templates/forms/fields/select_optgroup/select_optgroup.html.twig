@@ -22,7 +22,7 @@
                     data-key-observe="{{ (scope ~ field.name)|fieldName }}"
                 {% endif %}
                 >
-            {% if field.placeholder %}<option value="" disabled selected>{% if grav.twig.twig.filters['tu'] is defined %}{{ field.placeholder|tu|raw }}{% else %}{{ field.placeholder|t|raw }}{% endif %}</option>{% endif %}
+            {% if field.placeholder %}<option value="" disabled selected>{{ field.placeholder|t|raw }}</option>{% endif %}
 
             {% for key, optgroup in field.options %}
                 {% set optgroup_label = optgroup|keys|first %}
@@ -32,9 +32,7 @@
                 {% set selected = field.selectize ? suboption : subkey %}
                 {% set item_value = field.selectize and field.multiple ? suboption : subkey %}
                     <option {% if subkey == value or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ suboption }}">
-                        {% if grav.twig.twig.filters['tu'] is defined %}
-                        {{ suboption|tu|raw }}{% else %}{{ suboption|t|raw }}
-                        {% endif %}
+                        {{ suboption|t|raw }}
                     </option>
                 {% endfor %}
                 </optgroup>

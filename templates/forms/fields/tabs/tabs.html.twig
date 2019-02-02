@@ -45,9 +45,7 @@
             {% for tab in tabs %}
                 {% if tab.type == 'tab' %}
                 <a class="tab__link {{ (storedTab == scope ~ tab.name) or active == loop.index ? 'active' : '' }}" data-tabid="tab-{{ tabsKey ~ loop.index }}" data-tabkey="tab-{{ tabsKey }}" data-scope="{{ scope ~ tab.name }}">
-                <span>
-                {% if grav.twig.twig.filters['tu'] is defined %}{{ tab.title|tu }}{% else %}{{ tab.title|t }}{% endif %}
-                </span>
+                <span>{{ tab.title|t }}</span>
                 {% endif %}
             </a>
         {% endfor %}
