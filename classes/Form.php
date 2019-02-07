@@ -13,12 +13,14 @@ use Grav\Common\Language\Language;
 use Grav\Common\Page\Page;
 use Grav\Common\Uri;
 use Grav\Common\Utils;
+use Grav\Framework\Filesystem\Filesystem;
 use Grav\Framework\Form\FormFlashFile;
 use Grav\Framework\Form\Interfaces\FormInterface;
 use Grav\Framework\Form\Traits\FormTrait;
 use Grav\Framework\Route\Route;
 use RocketTheme\Toolbox\ArrayTraits\NestedArrayAccessWithGetters;
 use RocketTheme\Toolbox\Event\Event;
+use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
 
 /**
  * Class Form
@@ -615,7 +617,12 @@ class Form implements FormInterface, \ArrayAccess
         }
 
         // Look up for destination
-        $destination = $this->getPagePathFromToken(Folder::getRelativePath(rtrim($settings->destination, '/')));
+        /** @var UniformResourceLocator $locator */
+        $locator = $grav['locator'];
+        $destination = $settings->destination;
+        if (!$locator->isStream($destination)) {
+            $destination = $this->getPagePathFromToken(Folder::getRelativePath(rtrim($settings->destination, '/')));
+        }
 
         // Handle conflicting name if needed
         if ($settings->avoid_overwriting) {
@@ -882,7 +889,9 @@ class Form implements FormInterface, \ArrayAccess
                 }
 
                 $destination = $upload->getDestination();
-                $folder = dirname($destination);
+
+                $filesystem = Filesystem::getInstance();
+                $folder = $filesystem->dirname($destination);
 
                 if (!is_dir($folder) && !@mkdir($folder, true) && !is_dir($folder)) {
                     $grav = Grav::instance();
@@ -1124,7 +1133,8 @@ class Form implements FormInterface, \ArrayAccess
             if (\is_array($queue)) {
                 foreach ($queue as $key => $files) {
                     foreach ($files as $destination => $file) {
-                        $folder = dirname($destination);
+                        $filesystem = Filesystem::getInstance();
+                        $folder = $filesystem->dirname($destination);
 
                         if (!is_dir($folder) && !@mkdir($folder, true) && !is_dir($folder)) {
                             $grav = Grav::instance();

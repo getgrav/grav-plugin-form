@@ -1,3 +1,13 @@
+# v3.0.0-rc.2
+## mm/dd/2019
+
+1. [](#new)
+    * Allow streams in `file` field widget [#119](https://github.com/getgrav/grav-plugin-form/issues/119)
+1. [](#bugfix)
+    * Fixed file field saving with nested name
+    * Fixed file saving if destination folder does not exist
+    * Fixed FormFlash object not getting deleted on form post
+
 # v3.0.0-rc.1
 ## 01/30/2019
 
@@ -8,9 +18,6 @@
     * Regression: Fixed modular form submit not triggering the action sometimes
     * Fixed modular form submits without defined `action: /path` inside the form
     * Fixed form processing in nested modular pages
-    * Fixed file field saving with nested name
-    * Fixed file saving if destination folder does not exist
-    * Fixed FormFlash object not getting deleted on form post
 
 # v3.0.0-beta.5
 ## 01/25/2019
