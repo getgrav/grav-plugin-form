@@ -8,6 +8,7 @@
     * Regression: Fixed modular form submit not triggering the action sometimes
     * Fixed modular form submits without defined `action: /path` inside the form
     * Fixed form processing in nested modular pages
+    * Fixed file field saving with nested name
 
 # v3.0.0-beta.5
 ## 01/25/2019

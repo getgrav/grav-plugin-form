@@ -1107,7 +1107,7 @@ class Form implements FormInterface, \ArrayAccess
                     unset($files[$destination]['tmp_name']);
                 }
 
-                $this->data->merge([$key => $files]);
+                $this->setImageField($key, $files);
             }
         } else {
             user_error('Event onFormStoreUploads is deprecated.', E_USER_DEPRECATED);
@@ -1127,11 +1127,20 @@ class Form implements FormInterface, \ArrayAccess
                         unset($files[$destination]['tmp_name']);
                     }
 
-                    $this->data->merge([$key => $files]);
+                    $this->setImageField($key, $files);
                 }
             }
 
             $flash->clearFiles();
+        }
+    }
+
+    protected function setImageField($key, $files)
+    {
+        $field = $this->data->blueprints()->schema()->get($key);
+
+        if (isset($field['type']) && !empty($field['array'])) {
+            $this->data->set($key, $files);
         }
     }
 
