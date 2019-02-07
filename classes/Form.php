@@ -880,6 +880,13 @@ class Form implements FormInterface, \ArrayAccess
                 }
 
                 $destination = $upload->getDestination();
+                $folder = dirname($destination);
+
+                if (!is_dir($folder) && !@mkdir($folder, true) && !is_dir($folder)) {
+                    $grav = Grav::instance();
+                    throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $upload->getClientFilename() . '"', $destination));
+                }
+
                 try {
                     $upload->moveTo($destination);
                 } catch (\RuntimeException $e) {
@@ -1115,6 +1122,13 @@ class Form implements FormInterface, \ArrayAccess
             if (\is_array($queue)) {
                 foreach ($queue as $key => $files) {
                     foreach ($files as $destination => $file) {
+                        $folder = dirname($destination);
+
+                        if (!is_dir($folder) && !@mkdir($folder, true) && !is_dir($folder)) {
+                            $grav = Grav::instance();
+                            throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $file['tmp_name'] . '"', $destination));
+                        }
+
                         if (!rename($file['tmp_name'], $destination)) {
                             $grav = Grav::instance();
                             throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $file['tmp_name'] . '"', $destination));
