@@ -10,6 +10,7 @@
     * Fixed form processing in nested modular pages
     * Fixed file field saving with nested name
     * Fixed file saving if destination folder does not exist
+    * Fixed FormFlash object not getting deleted on form post
 
 # v3.0.0-beta.5
 ## 01/25/2019

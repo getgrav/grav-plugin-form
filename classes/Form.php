@@ -822,6 +822,8 @@ class Form implements FormInterface, \ArrayAccess
             $this->copyFiles();
         }
 
+        $this->getFlash()->delete();
+
         if ($redirect) {
             $grav->redirect($redirect, $redirect_code);
         }
