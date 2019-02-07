@@ -1,8 +1,9 @@
 # v3.0.0-rc.2
-## mm/dd/2019
+## 02/07/2019
 
 1. [](#new)
     * Allow streams in `file` field widget [#119](https://github.com/getgrav/grav-plugin-form/issues/119)
+    * Use new unified `|t` translate filter in all fields
 1. [](#bugfix)
     * Fixed file field saving with nested name
     * Fixed file saving if destination folder does not exist
