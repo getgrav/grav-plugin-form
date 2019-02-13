@@ -1,3 +1,9 @@
+# v3.0.0-rc.3
+## mm/dd/2019
+
+1. [](#bugfix)
+    * Fixed forms not being cached
+
 # v3.0.0-rc.2
 ## 02/07/2019
 
