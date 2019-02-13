@@ -932,8 +932,7 @@ class FormPlugin extends Plugin
     {
         // Get and set the cache of forms if it exists
         try {
-            //[$forms] = $this->grav['cache']->fetch($this->getFormCacheId());
-            $forms = null;
+            [$forms] = $this->grav['cache']->fetch($this->getFormCacheId());
         } catch (\Exception $e) {
             // Couldn't fetch cached forms.
             $forms = null;
