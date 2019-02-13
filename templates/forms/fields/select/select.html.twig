@@ -39,9 +39,12 @@
                     {% set akey = field.selectize and field.multiple ? item_value : key %}
                     {% set avalue = item_value.value|t %}
                     <option {{ item_value.disabled ? 'disabled="disabled"' : '' }}
-			    {{ item_value.selected ? 'selected="selected"' : '' }}
-			    {{ item_value.label    ? 'label=' ~ item_value.label : '' }}
-			    value="{{ item_value.akey }}">{{ avalue|raw }}</option>
+                        {{ item_value.selected ? 'selected="selected"' : '' }}
+                        {{ item_value.label    ? 'label=' ~ item_value.label : '' }}
+                        value="{{ item_value.akey }}"
+                    >
+                        {{ avalue|raw }}
+                    </option>
                 {% elseif item_value is iterable %}
                     <optgroup label="{{ key }}">
                         {%for subkey, suboption in item_value %}
@@ -55,7 +58,7 @@
                 {% else %}
                     {% set selected = field.selectize ? item_value : key %}
                     {% set val = field.selectize and field.multiple ? item_value : key %}
-                    <option {% if key == value or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ val }}">{{ item_value|t|raw }}</option>
+                    <option {% if val == value or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ val }}">{{ item_value|t|raw }}</option>
                 {% endif %}
             {% endfor %}
 

@@ -3,6 +3,7 @@
 
 1. [](#bugfix)
     * Fixed forms not being cached
+    * Fixed issue with selectize, automatically selecting an unintended value
 
 # v3.0.0-rc.2
 ## 02/07/2019
