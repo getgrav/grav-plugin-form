@@ -1,9 +1,12 @@
 # v3.0.0-rc.3
 ## mm/dd/2019
 
+1. [](#improved)
+    * Improved the `hidden` field logic to support `value` or `default` set
+    * Set the message globally on `messages` object when using a redirect in form
 1. [](#bugfix)
-    * Fixed forms not being cached
-    * Fixed issue with selectize, automatically selecting an unintended value
+    * Fixed forms not being cached properly
+    * Fixed issue with `selectize`, automatically selecting an unintended value
 
 # v3.0.0-rc.2
 ## 02/07/2019
