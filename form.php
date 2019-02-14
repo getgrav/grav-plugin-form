@@ -431,7 +431,10 @@ class FormPlugin extends Plugin
                 $twig = $this->grav['twig'];
                 $url = $twig->processString($url, $vars);
 
-                $this->grav['messages']->add($form->message, 'success');
+                $message = $form->message;
+                if ($message) {
+                    $this->grav['messages']->add($form->message, 'success');
+                }
 
                 $event['redirect'] = $url;
                 $event->stopPropagation();
