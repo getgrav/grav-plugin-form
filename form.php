@@ -488,6 +488,10 @@ class FormPlugin extends Plugin
                 $operation = $params['operation'] ?? 'create';
 
                 if (!$filename) {
+                    if ($operation === 'add') {
+                        throw new \RuntimeException('Form save: \'operation: add\' is only supported with a static filename');
+                    }
+
                     $filename = $prefix . $this->udate($format, $raw_format) . $postfix. $ext;
                 }
 
