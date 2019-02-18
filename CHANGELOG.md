@@ -1,5 +1,5 @@
 # v3.0.0-rc.3
-## mm/dd/2019
+## 02/18/2019
 
 1. [](#improved)
     * Improved the `hidden` field logic to support `value` or `default` set
