@@ -693,8 +693,13 @@ class FormPlugin extends Plugin
 
             if (!empty($this->forms[$page_route])) {
                 $forms = $this->forms[$page_route];
-                $first_form = reset($forms);
-                return $first_form;
+                $first_form = reset($forms) ?? null;
+                if ($first_form) {
+                    return $first_form;
+                }
+                else {
+                    $form_name = $first_form['name'] ?? null;
+                }
             } else {
                 //No form on this route. Try looking up in the current page first
                 /** @var Forms $forms */
@@ -730,6 +735,9 @@ class FormPlugin extends Plugin
             'conditional' => [
                 'input@' => false
             ],
+            'display' => [
+                'input@' => false
+            ],
             'fieldset' => [
                 'input@' => false
             ],
@@ -739,7 +747,10 @@ class FormPlugin extends Plugin
                     'type' => 'ignore'
                 ]
             ],
-            'display' => [
+            'formname' => [
+                'input@' => false
+            ],
+            'honeypot' => [
                 'input@' => false
             ],
             'ignore' => [
@@ -758,6 +769,9 @@ class FormPlugin extends Plugin
                 'input@' => false
             ],
             'tab' => [
+                'input@' => false
+            ],
+            'uniqueid' => [
                 'input@' => false
             ],
             'value' => [
