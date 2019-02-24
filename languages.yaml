@@ -180,7 +180,7 @@ ru:
     ERROR_VALIDATING_CAPTCHA: "Ошибка проверки Captcha"
     DATA_SUMMARY: "Вот краткое изложение того, что вы нам написали:"
     NO_FORM_DATA: "Данные формы отсутствуют"
-    RECAPTCHA: "ReCaptcha"
+    RECAPTCHA: "reCAPTCHA"
     RECAPTCHA_VERSION: "Версия"
     RECAPTCHA_SITE_KEY: "Ключ сайта"
     RECAPTCHA_SITE_KEY_HELP: "Для получения дополнительной информации посетите https://developers.google.com/recaptcha"
