@@ -171,7 +171,7 @@ form:
       fields:
         recaptcha.version:
           type: select
-          label: Version
+          label: PLUGIN_FORM.RECAPTCHA_VERSION
           default: 2-checkbox
           options:
             2-checkbox: v2 - Checkbox
