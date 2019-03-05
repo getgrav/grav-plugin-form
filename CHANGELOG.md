@@ -3,6 +3,7 @@
 
 1. [](#improved)
     * Make fields `formname`, `uniqueid` and `honeypot` non-inputs in form validation
+    * Update all Form classes to rely on `PageInterface` instead of `Page` class
 
 # v3.0.0-rc.3
 ## 02/18/2019

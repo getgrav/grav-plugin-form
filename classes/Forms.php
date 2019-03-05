@@ -1,6 +1,7 @@
 <?php
 namespace Grav\Plugin\Form;
 
+use Grav\Common\Page\Interfaces\PageInterface;
 use Grav\Common\Page\Page;
 use Grav\Framework\Form\Interfaces\FormFactoryInterface;
 use Grav\Framework\Form\Interfaces\FormInterface;
@@ -37,7 +38,7 @@ class Forms
         return array_keys($this->types);
     }
 
-    public function createPageForm(Page $page, string $name = null, array $form = null): ?FormInterface
+    public function createPageForm(PageInterface $page, string $name = null, array $form = null): ?FormInterface
     {
         if (null === $form) {
             [$name, $form] = $this->getPageParameters($page, $name);
@@ -50,7 +51,17 @@ class Forms
         $type = $form['type'] ?? 'form';
         $factory = $this->types[$type] ?? null;
 
-        return $factory ? $factory->createPageForm($page, $name, $form) : null;
+        if ($factory) {
+            if (method_exists($factory, 'createFormForPage')) {
+                return $factory->createFormForPage($page, $name, $form);
+            }
+
+            if ($page instanceof Page) {
+                return $factory->createPageForm($page, $name, $form);
+            }
+        }
+
+        return null;
     }
 
     public function getActiveForm(): ?FormInterface
@@ -63,7 +74,7 @@ class Forms
         $this->form = $form;
     }
 
-    protected function getPageParameters(Page $page, ?string $name): array
+    protected function getPageParameters(PageInterface $page, ?string $name): array
     {
         $forms = $page->forms();
 

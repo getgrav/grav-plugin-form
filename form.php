@@ -5,7 +5,7 @@ use Composer\Autoload\ClassLoader;
 use Grav\Common\Data\ValidationException;
 use Grav\Common\Filesystem\Folder;
 use Grav\Common\Grav;
-use Grav\Common\Page\Page;
+use Grav\Common\Page\Interfaces\PageInterface;
 use Grav\Common\Page\Pages;
 use Grav\Common\Page\Types;
 use Grav\Common\Plugin;
@@ -140,7 +140,7 @@ class FormPlugin extends Plugin
      */
     public function onPageProcessed(Event $e)
     {
-        /** @var Page $page */
+        /** @var PageInterface $page */
         $page = $e['page'];
 
         $pageForms = $page->forms();
@@ -199,7 +199,7 @@ class FormPlugin extends Plugin
             $this->saveCachedForms();
         }
 
-        /** @var Page $page */
+        /** @var PageInterface $page */
         $page = $this->grav['page'];
 
         // Force rebuild form when form has not been built and form cache expired.
@@ -876,10 +876,10 @@ class FormPlugin extends Plugin
     /**
      * Get the current form, should already be processed but can get it directly from the page if necessary
      *
-     * @param Page|null $page
+     * @param PageInterface|null $page
      * @return Form|null
      */
-    protected function form($page = null)
+    protected function form(PageInterface $page = null)
     {
         // Regenerate list of flat_forms if not already populated
         if (empty($this->flat_forms)) {
@@ -926,13 +926,13 @@ class FormPlugin extends Plugin
     }
 
     /**
-     * @param Page $page
+     * @param PageInterface $page
      * @param string|int|null $name
      * @param array $form
      * @return Form|null
      * @deprecated
      */
-    protected function createForm(Page $page, $name = null, $form = null)
+    protected function createForm(PageInterface $page, $name = null, $form = null)
     {
 
         $header = $page->header();
