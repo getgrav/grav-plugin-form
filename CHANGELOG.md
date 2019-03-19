@@ -5,6 +5,8 @@
     * Make fields `formname`, `uniqueid` and `honeypot` non-inputs in form validation
     * Update all Form classes to rely on `PageInterface` instead of `Page` class
     * Removed `media.upload_limit` references
+1. [](#bugfix)
+    * Fixed null date/time in list view
 
 # v3.0.0-rc.3
 ## 02/18/2019
