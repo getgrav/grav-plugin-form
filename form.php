@@ -396,7 +396,7 @@ class FormPlugin extends Plugin
                 $label = $params['label'] ?? 'Timestamp';
                 $format = $params['format'] ?? 'Y-m-d H:i:s';
                 $blueprint = $form->value()->blueprints();
-                $blueprint->set('form/fields/timestamp', ['name'=>'timestamp', 'label'=> $label]);
+                $blueprint->set('form/fields/timestamp', ['name'=>'timestamp', 'label'=> $label, 'type'=>'hidden']);
                 $now = new \DateTime('now');
                 $date_string = $now->format($format);
                 $form->setFields($blueprint->fields());
@@ -405,7 +405,7 @@ class FormPlugin extends Plugin
             case 'ip':
                 $label = $params['label'] ?? 'User IP';
                 $blueprint = $form->value()->blueprints();
-                $blueprint->set('form/fields/ip', ['name'=>'ip', 'label'=> $label]);
+                $blueprint->set('form/fields/ip', ['name'=>'ip', 'label'=> $label, 'type'=>'hidden']);
                 $form->setFields($blueprint->fields());
                 $form->setData('ip', Uri::ip());
                 break;
