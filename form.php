@@ -651,10 +651,10 @@ class FormPlugin extends Plugin
     /**
      * Add a form to the forms plugin
      *
-     * @param string $page_route
+     * @param string|null $page_route
      * @param FormInterface $form
      */
-    public function addForm(string $page_route, FormInterface $form)
+    public function addForm(?string $page_route, FormInterface $form)
     {
         $name = $form->getName();
 
