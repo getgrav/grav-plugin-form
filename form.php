@@ -651,12 +651,12 @@ class FormPlugin extends Plugin
     /**
      * Add a form to the forms plugin
      *
-     * @param $page_route
-     * @param $form
+     * @param string $page_route
+     * @param FormInterface $form
      */
-    public function addForm($page_route, $form)
+    public function addForm(string $page_route, FormInterface $form)
     {
-        $name = $form['name'] ?? '';
+        $name = $form->getName();
 
         if (!isset($this->forms[$page_route][$name])) {
             $this->forms[$page_route][$name] = $form;
