@@ -3,7 +3,7 @@
 
 1. [](#bugfix)
     * Fixed old way to access form name 
-
+    * Fixed minor bugs
 
 # v3.0.0-rc.4
 ## 03/20/2019

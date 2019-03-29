@@ -525,12 +525,13 @@ class FormPlugin extends Plugin
                             throw new \RuntimeException('Form save: Unsupported RAW file format, please use either yaml or json');
                     }
 
+                    $content = $form->getData();
                     $data = [
                         '_data_type' => 'form',
                         'template' => !empty($params['template']) ? $params['template'] : null,
                         'name' => $form->getName(),
                         'timestamp' => date('Y-m-d H:i:s'),
-                        'content' => $form->getData()->toArray()
+                        'content' => $content ? $content->toArray() : []
                     ];
 
                     $file->lock();
@@ -681,6 +682,9 @@ class FormPlugin extends Plugin
         } elseif (\is_string($data)) {
             $form_name = $data;
             $page_route = null;
+        } else {
+            $form_name = null;
+            $page_route = null;
         }
 
         // if no form name, use the first form found in the page
@@ -693,7 +697,7 @@ class FormPlugin extends Plugin
 
             if (!empty($this->forms[$page_route])) {
                 $forms = $this->forms[$page_route];
-                $first_form = reset($forms) ?? null;
+                $first_form = reset($forms) ?: null;
                 $form_name = $first_form['name'] ?? null;
             } else {
                 //No form on this route. Try looking up in the current page first
