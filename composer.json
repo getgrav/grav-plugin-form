@@ -27,7 +27,10 @@
   "autoload": {
     "psr-4": {
       "Grav\\Plugin\\Form\\": "classes/"
-    }
+    },
+    "classmap": [
+      "form.php"
+    ]
   },
   "config": {
     "platform": {
