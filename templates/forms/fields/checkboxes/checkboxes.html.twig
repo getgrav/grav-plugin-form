@@ -1,5 +1,6 @@
 {% extends "forms/field.html.twig" %}
 
+{% set originalValue = value %}
 {% set value = (value is null ? field.default : value) %}
 {% if field.use == 'keys' and field.default %}
     {% set value = field.default|merge(value) %}
