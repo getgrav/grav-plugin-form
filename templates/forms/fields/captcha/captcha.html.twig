@@ -1,32 +1,71 @@
 {% extends "forms/field.html.twig" %}
 
+{% set site_key = field.recaptcha_site_key ?: config.plugins.form.recaptcha.site_key %}
+{% set action = (page.route|trim('/') ~ '-' ~ form.name)|underscorize %}
+{% set formName = form.name|underscorize %}
+
+{% block label %}{% endblock %}
+
 {% block input %}
+  {% if config.plugins.form.recaptcha.version == 3 %}
+      {#{% do assets.addJs('https://www.google.com/recaptcha/api.js?render='~site_key) %}#}
+      <script src='https://www.google.com/recaptcha/api.js?render={{ site_key }}'></script>
+      <script>
+          jQuery('form').each(function(index, form) {
+              form = jQuery(form);
+
+              form.on('submit', function() {
+                  event.preventDefault();
+                  var form = jQuery(this);
+                  grecaptcha.ready(function () {
+                      grecaptcha.execute('{{ site_key }}', {action: '{{ action }}'}).then(function (token) {
+                          form.prepend('<input type="hidden" name="data[token]" value="' + token + '">');
+                          form.prepend('<input type="hidden" name="data[action]" value="{{ action }}">');
+                          form.off('submit').submit();
+                      });
+                  });
+              });
+          });
+      </script>
+  {% elseif config.plugins.form.recaptcha.version == '2-invisible' %}
+      <script>
+          function captchaOnloadCallback_{{ formName }}() {
+              var form = jQuery('form#{{ form.id }}');
+              form.find('[type="submit"]').on('click', function(event) {
+                  event.preventDefault();
+
+                  form.append('<div id="g-recaptcha-{{ formName }}"></div>');
+                  var widgetReference = grecaptcha.render('g-recaptcha-{{ formName }}', {
+                      sitekey: '{{ site_key }}', size: 'invisible',
+                      callback: function(/* token */) {
+                          form.submit();
+                      }
+                  });
+
+                  grecaptcha.execute(widgetReference);
+              });
+          }
+      </script>
+
+      <script src="https://www.google.com/recaptcha/api.js?onload=captchaOnloadCallback_{{ formName }}&hl={{ grav.language.language }}"
+              async defer></script>
+  {% else %}
     <script>
-        var captchaOnloadCallback = function captchaOnloadCallback() {
-            grecaptcha.render('g-recaptcha', {
-                'sitekey': "{{field.recaptcha_site_key ?: field.recaptcha_site_key ?: config.plugins.form.recaptcha.site_key }}",
-                'callback': captchaValidatedCallback,
-                'expired-callback': captchaExpiredCallback
+        var captchaOnloadCallback_{{ formName }} = function captchaOnloadCallback_{{ formName }}() {
+            grecaptcha.render('g-recaptcha-{{ formName }}', {
+                'sitekey': "{{ site_key }}",
+                'callback': captchaValidatedCallback_{{ formName }},
+                'expired-callback': captchaExpiredCallback_{{ formName }}
             });
         };
 
-        var captchaValidatedCallback = function captchaValidatedCallback() {
-
-        };
-
-        var captchaExpiredCallback = function captchaExpiredCallback() {
+        var captchaValidatedCallback_{{ formName }} = function captchaValidatedCallback_{{ formName }}() {};
+        var captchaExpiredCallback_{{ formName }} = function captchaExpiredCallback_{{ formName }}() {
             grecaptcha.reset();
         };
-
-        $('form').submit(function(event) {
-            if ($(this).has("#g-recaptcha-response").length && $("#g-recaptcha-response").val() === '') {
-                event.preventDefault();
-                alert("{{grav.language.translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA')}}");
-            }
-        });
     </script>
-    <script src="https://www.google.com/recaptcha/api.js?onload=captchaOnloadCallback&render=explicit&hl={{ grav.language.language }}"
-        async defer>
-    </script>
-    <div class="g-recaptcha" id="g-recaptcha"></div>
+    <script src="https://www.google.com/recaptcha/api.js?onload=captchaOnloadCallback_{{ formName }}&render=explicit&hl={{ grav.language.language }}"
+        async defer></script>
+    <div class="g-recaptcha" id="g-recaptcha-{{ formName }}"></div>
+  {% endif %}
 {% endblock %}

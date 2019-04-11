@@ -1,4 +1,5 @@
 {%- macro render_field(form, fields, scope) %}
+{%- import _self as self %}
 {%- for index, field in fields %}
     {%- set input = attribute(field, "input@") %}
         {%- if input is null or input == true %}
@@ -7,11 +8,12 @@
     {%- else %}
         {%- if field.fields %}
         {%- set new_scope = field.nest_id ? scope ~ field.name ~ '.' : scope -%}
-        {{- _self.render_field(form, field.fields, new_scope) }}
+        {{- self.render_field(form, field.fields, new_scope) }}
         {%- endif %}
     {%- endif %}
 {%- endfor %}
 {%- endmacro %}
+{%- import _self as macro %}
 {%- autoescape false %}
-{{- _self.render_field(form, form.fields, '') ~ "\r\n" }}
+{{- macro.render_field(form, form.fields, '') ~ "\r\n" }}
 {%- endautoescape %}

@@ -1,3 +1,6 @@
+{% extends "forms/field.html.twig" %}
+
+{% block field %}
 <input aria-hidden="true"
        type="text"
        {% if config.plugins.form.inline_css == true %}
@@ -6,3 +9,4 @@
        class="form-honeybear"
        name="{{ (scope ~ field.name)|fieldName }}"
        value="{{ value|join(', ') }}" />
+{% endblock %}

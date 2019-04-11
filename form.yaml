@@ -13,3 +13,7 @@ files:
   filesize: 0              # Maximum file size allowed (in MB)
   accept:                  # List of mime/types or file extensions allowed (ie, image/*,.zip,.mp4)
     - image/*
+recaptcha:
+  version: 2-checkbox
+  site_key:
+  secret_key:

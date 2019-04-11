@@ -1,3 +1,9 @@
-{% set value = (value is null ? (field.evaluate ? evaluate(field.default) : field.default) : value) %}
+{% extends "forms/field.html.twig" %}
 
-<input data-grav-field="hidden" data-grav-disabled="false" type="hidden" class="input" name="{{ (scope ~ field.name)|fieldName }}" value="{{ value|join(', ') }}" />
+{% block field %}
+
+{% set value = value ?: field.value|default(field.default) %}
+{% set value = field.evaluate ? evaluate(value) : value %}
+
+<input data-grav-field="hidden" data-grav-disabled="false" type="hidden" class="input" name="{{ (scope ~ field.name)|fieldName }}" value="{{ value|join(', ')|e('html_attr') }}" />
+{% endblock %}

@@ -1,33 +1,19 @@
+{% extends "forms/field.html.twig" %}
+
+{% block field %}
 <div class="form-spacer {{ field.classes }}">
     {% if field.title %}
-        <h3>
-            {% if grav.twig.twig.filters['tu'] is defined %}
-                {{- field.title|tu|raw -}}
-            {% else %}
-                {{- field.title|t|raw -}}
-            {% endif %}
-        </h3>
+        <h3>{{- field.title|t|raw -}}</h3>
     {% endif %}
 
     {% if field.markdown %}
-        <p>
-            {% if grav.twig.twig.filters['tu'] is defined %}
-                {{- field.text|tu|markdown|raw -}}
-            {% else %}
-                {{- field.text|t|markdown|raw -}}
-            {% endif %}
-        </p>
+        <p>{{- field.text|t|markdown|raw -}}</p>
     {% else %}
-        <p>
-            {% if grav.twig.twig.filters['tu'] is defined %}
-                {{- field.text|tu|raw -}}
-            {% else %}
-                {{- field.text|t|raw -}}
-            {% endif %}
-        </p>
+        <p>{{- field.text|t|raw -}}</p>
     {% endif %}
 
     {% if field.underline %}
     <hr />
     {% endif %}
 </div>
+{% endblock %}
