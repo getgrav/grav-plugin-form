@@ -1,59 +1,12 @@
-# v3.0.0-rc.5
-## mm/dd/2019
-
-1. [](#bugfix)
-    * Fixed old way to access form name 
-    * Fixed minor bugs
-
-# v3.0.0-rc.4
-## 03/20/2019
-
-1. [](#improved)
-    * Make fields `formname`, `uniqueid` and `honeypot` non-inputs in form validation
-    * Update all Form classes to rely on `PageInterface` instead of `Page` class
-    * Removed `media.upload_limit` references
-    * Added field type `hidden` to `ip` and `timestamp` actions
-1. [](#bugfix)
-    * Fixed null date/time in list view
-
-# v3.0.0-rc.3
-## 02/18/2019
-
-1. [](#improved)
-    * Improved the `hidden` field logic to support `value` or `default` set
-    * Set the message globally on `messages` object when using a redirect in form
-1. [](#bugfix)
-    * Fixed forms not being cached properly
-    * Fixed issue with `selectize`, automatically selecting an unintended value
-    * Throw exception if you try to `add` to a file and don't provide `filename` [#324](https://github.com/getgrav/grav-plugin-form/issues/324)
-
-# v3.0.0-rc.2
-## 02/07/2019
+# v3.0.0
+## 04/11/2019
 
 1. [](#new)
     * Allow streams in `file` field widget [#119](https://github.com/getgrav/grav-plugin-form/issues/119)
     * Use new unified `|t` translate filter in all fields
-1. [](#bugfix)
-    * Fixed file field saving with nested name
-    * Fixed file saving if destination folder does not exist
-    * Fixed FormFlash object not getting deleted on form post
-
-# v3.0.0-rc.1
-## 01/30/2019
-
-1. [](#improved)
-    * Improved logic for finding the current form
-1. [](#bugfix)
-    * Regression: Fixed ignored form action [#318](https://github.com/getgrav/grav-plugin-form/issues/318)
-    * Regression: Fixed modular form submit not triggering the action sometimes
-    * Fixed modular form submits without defined `action: /path` inside the form
-    * Fixed form processing in nested modular pages
-
-# v3.0.0-beta.5
-## 01/25/2019
-
-1. [](#new)
-    * Requires Grav `1.6.0-beta.8` (and optionally Admin `1.9.0-beta.8`)
+    * Google reCAPTCHA v3 support added
+    * Google reCAPTCHA v2 Invisible support added
+    * Added mutliple forms with reCAPTCHA support
     * Form no longer extends `Grav\Common\Iterator` (may have some backward compatibility issues with plugins, likely not)
     * Form now uses `NestedArrayAccessWithGetters` (with '/' separator) and `FormTrait` traits
     * Added `view`, `key`, `ignore`, `section`, `toggle`, `tabs` and `tab` form fields
@@ -67,7 +20,22 @@
     * Added ability to set a custom `clear_redirect_url` on a form
     * Added `Form::setMessage()` method
     * Added new form field templates for edit list table
+    * Requires Grav 1.6.0-beta.7 (and optionally Admin 1.9.0-beta.7)
+    * Backwards incompatibility: Do not allow static `Form::getNonce()` call, only `$form->getNonce()` works now
+    * Backwards incompatibility: All form field twig files are required to extend `field.html.twig` to work properly
+    * Allow using custom nonce field/action by setting `nonce.name` and `nonce.action` inside the form YAML
+    * Added `html: true` support for form buttons (will not escape the button value)
+    * Added `toggle`, `tabs` and `tab` form fields
+    * Added support for toggleable inputs, which can be disabled/enabled by user   
+    * Added proper support for hiding form fields in blueprints by using dynamic property like `security@: admin.foobar` to any field 
 1. [](#improved)
+    * Make fields `formname`, `uniqueid` and `honeypot` non-inputs in form validation
+    * Update all Form classes to rely on `PageInterface` instead of `Page` class
+    * Removed `media.upload_limit` references
+    * Added field type `hidden` to `ip` and `timestamp` actions
+    * Improved the `hidden` field logic to support `value` or `default` set
+    * Set the message globally on `messages` object when using a redirect in form
+    * Improved logic for finding the current form
     * Added support for data-sets in `textarea` and `select` fields
     * Simplify `shouldProcessForm()` logic
     * Do not cache flat forms list, regenerate it instead
@@ -78,7 +46,27 @@
     * Enable forms in admin plugin
     * Removed submit of unchecked fields in frontend
     * Make sure that the images in the file field are not cached in browser
+    * Updated code to use PHP 7.1 features 
+    * Added some extra blocks to `file` field to make it more extensible
+    * Added `field.classes` to form field to allow customization
+    * Used Google reCAPTCHA API all token validation  
+    * Better filename and mime type handling
+    * Now using the new core Grav language prefix  
+    * Make all form fields to extend `field.html.twig`
 1. [](#bugfix)
+    * Fixed old way to access form name 
+    * Fixed minor bugs
+    * Fixed null date/time in list view
+    * Fixed forms not being cached properly
+    * Fixed issue with `selectize`, automatically selecting an unintended value
+    * Throw exception if you try to `add` to a file and don't provide `filename` [#324](https://github.com/getgrav/grav-plugin-form/issues/324)
+    * Fixed file field saving with nested name
+    * Fixed file saving if destination folder does not exist
+    * Fixed FormFlash object not getting deleted on form post
+    * Regression: Fixed ignored form action [#318](https://github.com/getgrav/grav-plugin-form/issues/318)
+    * Regression: Fixed modular form submit not triggering the action sometimes
+    * Fixed modular form submits without defined `action: /path` inside the form
+    * Fixed form processing in nested modular pages
     * Fixed container fields breaking values from the child fields
     * Fixed form fields not accepting object values
     * Fixed some form fields having no value for nested field sets
@@ -87,54 +75,11 @@
     * Fixed some missing backwards compatibility   
     * Fixed some issues with flashed form
     * Fixed Twig 2 compatibility issue
-
-# v3.0.0-beta.4
-## 12/14/2018
-
-1. [](#new)
-    * Requires Grav 1.6.0-beta.7 (and optionally Admin 1.9.0-beta.7)
-    * Backwards incompatibility: Do not allow static `Form::getNonce()` call, only `$form->getNonce()` works now
-    * Backwards incompatibility: All form field twig files are required to extend `field.html.twig` to work properly
-    * Allow using custom nonce field/action by setting `nonce.name` and `nonce.action` inside the form YAML
-    * Added `html: true` support for form buttons (will not escape the button value)
-    * Added `toggle`, `tabs` and `tab` form fields
-    * Added support for toggleable inputs, which can be disabled/enabled by user
-1. [](#improved)
-    * Updated code to use PHP 7.1 features    
-1. [](#bugfix)
     * Fixed files uploading before captcha check
     * Fixed files uploading before data has been stored
     * Fixed some issues with reCAPTCHA v3
-
-# v3.0.0-beta.3
-## 11/05/2018
-
-1. [](#new)
-    * Google reCAPTCHA v3 support added
-    * Google reCAPTCHA v2 Invisible support added
-    * Added mutliple forms with reCAPTCHA support
-1. [](#improved)
-    * Added some extra blocks to `file` field to make it more extensible
-    * Added `field.classes` to form field to allow customization
-    * Used Google reCAPTCHA API all token validation
-1. [](#bugfix)
     * Fixed error responses when file actions fail in the form
-    * Pass unique_id when uploading files if available
-
-# v3.0.0-beta.2
-## 10/24/2018
-
-1. [](#improved)
-    * Better filename and mime type handling
-    * Now using the new core Grav language prefix
-
-# v3.0.0-beta.1
-## 10/01/2018
-
-1. [](#new)
-    * Added proper support for hiding form fields in blueprints by using dynamic property like `security@: admin.foobar` to any field
-1. [](#improved)
-    * Make all form fields to extend `field.html.twig`
+    * Pass unique_id when uploading files if available   
 
 # v2.16.4
 ## 12/14/2018
