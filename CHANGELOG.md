@@ -1,6 +1,8 @@
 # v3.0.1
 ## 04/15/2019
 
+1. [](#new)
+    * Added support for form task in blueprint
 1. [](#bugfix)
     * Fix url field output in list view
 

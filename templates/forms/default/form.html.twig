@@ -79,6 +79,7 @@
   {% endblock %}
 
   {% include "forms/fields/formname/formname.html.twig" %}
+  {% include "forms/fields/formtask/formtask.html.twig" %}
 
   {% block inner_markup_fields_end %}{% endblock %}
 
@@ -121,6 +122,7 @@
   {% endblock %}
 
   {% include 'forms/fields/uniqueid/uniqueid.html.twig' %}
+
   {{ nonce_field(form.getNonceAction() ?? 'form', form.getNonceName() ?? 'form-nonce')|raw }}
 </form>
 
