@@ -1,3 +1,9 @@
+# v3.0.2
+## mm/dd/2019
+
+1. [](#new)
+    * Support for Google Recaptcha theme (light/dark) doesn't work in v3 yet.
+
 # v3.0.1
 ## 04/15/2019
 

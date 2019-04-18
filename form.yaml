@@ -15,5 +15,6 @@ files:
     - image/*
 recaptcha:
   version: 2-checkbox
+  theme: light
   site_key:
   secret_key:
