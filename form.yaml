@@ -14,7 +14,7 @@ files:
   accept:                  # List of mime/types or file extensions allowed (ie, image/*,.zip,.mp4)
     - image/*
 recaptcha:
-  version: 2-checkbox
-  theme: light
-  site_key:
-  secret_key:
+    version: 2-checkbox
+    theme: light
+    site_key:
+    secret_key:
