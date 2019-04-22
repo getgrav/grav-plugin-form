@@ -1,5 +1,5 @@
 name: Form
-version: 3.0.1
+version: 3.0.2
 testing: false
 description: Enables the forms handling
 icon: check-square
@@ -177,6 +177,14 @@ form:
             2-checkbox: v2 - Checkbox
             2-invisible: v2 - Invisible
             3: v3 - Latest
+        recaptcha.theme:
+          type: select
+          label: Theme
+          default: light
+          options:
+            light: Light Theme
+            dark: Dark Theme
+          recaptcha.site_key:
         recaptcha.site_key:
           type: text
           label: PLUGIN_FORM.RECAPTCHA_SITE_KEY

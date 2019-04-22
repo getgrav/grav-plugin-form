@@ -113,7 +113,7 @@
                     {% endblock %}
                 {% endblock %}
                 {% if field.description %}
-                    <div class="form-extra-wrapper {{ field.size|e }} {{ field.wrapper_classes }}">
+                    <div class="form-extra-wrapper {{ field.wrapper_classes }}">
                         <span class="form-description">
                             {% if field.markdown %}
                                 {{ field.description|t|markdown(false)|raw }}
