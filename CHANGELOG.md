@@ -1,8 +1,10 @@
 # v3.0.2
-## mm/dd/2019
+## 04/22/2019
 
 1. [](#new)
     * Support for Google Recaptcha theme (light/dark) doesn't work in v3 yet.
+1. [](#improved)
+    * Visual upgrade for form field descriptions [#335](https://github.com/getgrav/grav-plugin-form/pull/335)
 1. [](#bugfix)
     * Fixed issue with `recaptcha_not_validated` property not being used    
 
