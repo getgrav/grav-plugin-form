@@ -380,9 +380,21 @@ class FormPlugin extends Plugin
 
                 if (!$resp->isSuccess()) {
                     $errors = $resp->getErrorCodes();
+                    $message = $this->grav['language']->translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA');
+
+                    $fields = $form->value()->blueprints()->get('form/fields');
+                    foreach ($fields as $field) {
+                        $type = $field['type'] ?? 'text';
+                        $field_message = $field['recaptcha_not_validated'] ?? null;
+                        if ($type == 'captcha' && $field_message) {
+                            $message =  $field_message;
+                            break;
+                        }
+                    }
+
                     $this->grav->fireEvent('onFormValidationError', new Event([
                         'form'    => $form,
-                        'message' => $this->grav['language']->translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA')
+                        'message' => $message
                     ]));
 
                     $this->grav['log']->addWarning('Form reCAPTCHA Errors: [' . $uri->route() . '] ' . json_encode($errors));

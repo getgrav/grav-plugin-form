@@ -3,6 +3,8 @@
 
 1. [](#new)
     * Support for Google Recaptcha theme (light/dark) doesn't work in v3 yet.
+1. [](#bugfix)
+    * Fixed issue with `recaptcha_not_validated` property not being used    
 
 # v3.0.1
 ## 04/15/2019
