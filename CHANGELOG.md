@@ -1,3 +1,9 @@
+# v3.0.3
+## mm/dd/2019
+
+1. [](#bugfix)
+    * Fixed Flex route issue in list page
+
 # v3.0.2
 ## 04/22/2019
 
