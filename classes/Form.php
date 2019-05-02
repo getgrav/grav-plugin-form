@@ -989,10 +989,15 @@ class Form implements FormInterface, \ArrayAccess
     {
         $config = Grav::instance()['config'];
 
+        $system_filesize = 0;
         $form_filesize = $config->get('plugins.form.files.filesize', 0);
-        $system_filesize = intval(Utils::getUploadLimit() / static::BYTES_TO_MB);
+        $upload_limit = (int) Utils::getUploadLimit();
 
-        if ($form_filesize > $system_filesize || $form_filesize === 0) {
+        if ($upload_limit > 0) {
+            $system_filesize = intval($upload_limit / static::BYTES_TO_MB);
+        }
+
+        if ($form_filesize > $system_filesize || $form_filesize == 0) {
             $form_filesize = $system_filesize;
         }
 
