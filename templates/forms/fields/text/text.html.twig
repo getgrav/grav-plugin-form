@@ -17,7 +17,16 @@
 {% endblock %}
 
 {% block append %}
-    {% if field.append %}
+    {% if field.copy_to_clipboard %}
+        <div class="form-input-addon form-input-append copy-to-clipboard">
+            {{ dump(field.copy_to_clipboard|t|raw) }}
+            {% if field.copy_to_clipboard in ['0', '1'] %}
+                <i class="fa fa-clipboard"></i>
+            {% else %}
+                {{- field.copy_to_clipboard|t|raw -}}
+            {% endif %}
+        </div>
+    {% elseif field.append %}
         <div class="form-input-addon form-input-append">
             {{- field.append|t|raw -}}
         </div>
@@ -25,7 +34,7 @@
 {% endblock %}
 
 {% block input %}
-{% if field.prepend or field.append %}
+{% if field.prepend or field.append or field.copy_to_clipboard %}
     {% set field = field|merge({'wrapper_classes': 'form-input-addon-wrapper'}) %}
 {% endif %}
 {{ parent() }}
