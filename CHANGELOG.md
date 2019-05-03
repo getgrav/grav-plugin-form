@@ -1,6 +1,8 @@
 # v3.0.3
 ## mm/dd/2019
 
+1. [](#new)
+    * Added Text `field.copy-to-clipboard` which can be used by admin plugin
 1. [](#bugfix)
     * Fixed Flex route issue in list page
 
