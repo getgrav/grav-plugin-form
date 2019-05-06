@@ -23,7 +23,7 @@
                                     {% endfor %}
                                 </ul>
                             {% elseif field.type == 'checkbox' %}
-                                {{ (form.value(scope ~ field.name) == 1) ? "PLUGIN_FORM.YES"|t|e : "PLUGIN_FORM.NO"|t|e }}
+                                {{ (form.value(scope ~ field.name) == 1) ? "GRAV.YES"|t|e : "GRAV.NO"|t|e }}
                             {% elseif field.type == 'select' %}
                                 {{ field.options[form.value(scope ~ field.name)]|e }}
                             {% else %}
