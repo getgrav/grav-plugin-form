@@ -6,6 +6,7 @@
 1. [](#bugfix)
     * Fixed Flex route issue in list page
     * Fix for broken `field.recaptcha_site_key` [#344](https://github.com/getgrav/grav-plugin-form/issues/344)
+    * Fix flex-height of signature field
 
 # v3.0.2
 ## 04/22/2019
