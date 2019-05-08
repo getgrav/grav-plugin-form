@@ -5,8 +5,8 @@
     * Added Text `field.copy-to-clipboard` which can be used by admin plugin
 1. [](#bugfix)
     * Fixed Flex route issue in list page
-    * Fix for broken `field.recaptcha_site_key` [#344](https://github.com/getgrav/grav-plugin-form/issues/344)
     * Fix flex-height of signature field
+    * Fix for broken `field.recaptcha_site_key` [#344](https://github.com/getgrav/grav-plugin-form/issues/344)    
     * Fix for checkbox data lang string [#343](https://github.com/getgrav/grav-plugin-form/issues/343)
     * Fix for duplicate inline error messages [#337](https://github.com/getgrav/grav-plugin-form/issues/337)
     * Fixed bad folder permissions when creating folder for file uploads
