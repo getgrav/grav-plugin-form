@@ -9,6 +9,7 @@
     * Fix flex-height of signature field
     * Fix for checkbox data lang string [#343](https://github.com/getgrav/grav-plugin-form/issues/343)
     * Fix for duplicate inline error messages [#337](https://github.com/getgrav/grav-plugin-form/issues/337)
+    * Fixed bad folder permissions when creating folder for file uploads
 
 # v3.0.2
 ## 04/22/2019
