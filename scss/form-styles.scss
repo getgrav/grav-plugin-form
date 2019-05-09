@@ -245,7 +245,7 @@ $form-active-color: #000;
     -ms-flex: 1;
     flex: 1;
     border: 1px solid #f6f6f6;
-    height: 100px;
+    min-height: 100px;
 }
 
 .signature-pad--body canvas {

@@ -1,7 +1,7 @@
 {% extends "forms/field.html.twig" %}
 
 {% set config = grav.config %}
-{% set site_key = field.recaptcha_site_key ?: config.plugins.form.recaptcha.site_key %}
+{% set site_key = field.recaptcha_site_key and field.recaptcha_site_key != 'ENTER_YOUR_CAPTCHA_SITE_KEY' ? field.recaptcha_site_key : config.plugins.form.recaptcha.site_key %}
 {% set action = (page.route|trim('/') ~ '-' ~ form.name)|underscorize %}
 {% set formName = form.name|underscorize %}
 {% set theme = config.plugins.form.recaptcha.theme ?? 'light' %}

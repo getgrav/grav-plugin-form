@@ -893,7 +893,7 @@ class Form implements FormInterface, \ArrayAccess
                 $filesystem = Filesystem::getInstance();
                 $folder = $filesystem->dirname($destination);
 
-                if (!is_dir($folder) && !@mkdir($folder, true) && !is_dir($folder)) {
+                if (!is_dir($folder) && !@mkdir($folder, 0777, true) && !is_dir($folder)) {
                     $grav = Grav::instance();
                     throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $upload->getClientFilename() . '"', $destination));
                 }
@@ -908,6 +908,73 @@ class Form implements FormInterface, \ArrayAccess
         }
 
         $flash->clearFiles();
+    }
+
+    public function legacyUploads()
+    {
+        // Get flash object in order to save the files.
+        $flash = $this->getFlash();
+        $queue = $verify = $flash->getLegacyFiles();
+
+        if (!$queue) {
+            return;
+        }
+
+        $grav = Grav::instance();
+
+        /** @var Uri $uri */
+        $uri = $grav['uri'];
+
+        // Get POST data and decode JSON fields into arrays
+        $post = $uri->post();
+        $post['data'] = $this->decodeData($post['data'] ?? []);
+
+        // Allow plugins to implement additional / alternative logic
+        $grav->fireEvent('onFormStoreUploads', new Event(['form' => $this, 'queue' => &$queue, 'post' => $post]));
+
+        $modified = $queue !== $verify;
+
+        if (!$modified) {
+            // Fill file fields just like before.
+            foreach ($queue as $key => $files) {
+                foreach ($files as $destination => $file) {
+                    unset($files[$destination]['tmp_name']);
+                }
+
+                $this->setImageField($key, $files);
+            }
+        } else {
+            user_error('Event onFormStoreUploads is deprecated.', E_USER_DEPRECATED);
+
+            if (\is_array($queue)) {
+                foreach ($queue as $key => $files) {
+                    foreach ($files as $destination => $file) {
+                        $filesystem = Filesystem::getInstance();
+                        $folder = $filesystem->dirname($destination);
+
+                        if (!is_dir($folder) && !@mkdir($folder, 0777, true) && !is_dir($folder)) {
+                            $grav = Grav::instance();
+                            throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $file['tmp_name'] . '"', $destination));
+                        }
+
+                        if (!rename($file['tmp_name'], $destination)) {
+                            $grav = Grav::instance();
+                            throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $file['tmp_name'] . '"', $destination));
+                        }
+
+                        if (file_exists($file['tmp_name'] . '.yaml')) {
+                            unlink($file['tmp_name'] . '.yaml');
+                        }
+
+                        unset($files[$destination]['tmp_name']);
+                    }
+
+                    $this->setImageField($key, $files);
+                }
+            }
+
+            $flash->clearFiles();
+        }
     }
 
     public function getPagePathFromToken($path)
@@ -989,10 +1056,15 @@ class Form implements FormInterface, \ArrayAccess
     {
         $config = Grav::instance()['config'];
 
+        $system_filesize = 0;
         $form_filesize = $config->get('plugins.form.files.filesize', 0);
-        $system_filesize = intval(Utils::getUploadLimit() / static::BYTES_TO_MB);
+        $upload_limit = (int) Utils::getUploadLimit();
 
-        if ($form_filesize > $system_filesize || $form_filesize === 0) {
+        if ($upload_limit > 0) {
+            $system_filesize = intval($upload_limit / static::BYTES_TO_MB);
+        }
+
+        if ($form_filesize > $system_filesize || $form_filesize == 0) {
             $form_filesize = $system_filesize;
         }
 
@@ -1093,73 +1165,6 @@ class Form implements FormInterface, \ArrayAccess
         }
 
         return $return;
-    }
-
-    protected function legacyUploads()
-    {
-        // Get flash object in order to save the files.
-        $flash = $this->getFlash();
-        $queue = $verify = $flash->getLegacyFiles();
-
-        if (!$queue) {
-            return;
-        }
-
-        $grav = Grav::instance();
-
-        /** @var Uri $uri */
-        $uri = $grav['uri'];
-
-        // Get POST data and decode JSON fields into arrays
-        $post = $uri->post();
-        $post['data'] = $this->decodeData($post['data'] ?? []);
-
-        // Allow plugins to implement additional / alternative logic
-        $grav->fireEvent('onFormStoreUploads', new Event(['form' => $this, 'queue' => &$queue, 'post' => $post]));
-
-        $modified = $queue !== $verify;
-
-        if (!$modified) {
-            // Fill file fields just like before.
-            foreach ($queue as $key => $files) {
-                foreach ($files as $destination => $file) {
-                    unset($files[$destination]['tmp_name']);
-                }
-
-                $this->setImageField($key, $files);
-            }
-        } else {
-            user_error('Event onFormStoreUploads is deprecated.', E_USER_DEPRECATED);
-
-            if (\is_array($queue)) {
-                foreach ($queue as $key => $files) {
-                    foreach ($files as $destination => $file) {
-                        $filesystem = Filesystem::getInstance();
-                        $folder = $filesystem->dirname($destination);
-
-                        if (!is_dir($folder) && !@mkdir($folder, true) && !is_dir($folder)) {
-                            $grav = Grav::instance();
-                            throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $file['tmp_name'] . '"', $destination));
-                        }
-
-                        if (!rename($file['tmp_name'], $destination)) {
-                            $grav = Grav::instance();
-                            throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $file['tmp_name'] . '"', $destination));
-                        }
-
-                        if (file_exists($file['tmp_name'] . '.yaml')) {
-                            unlink($file['tmp_name'] . '.yaml');
-                        }
-
-                        unset($files[$destination]['tmp_name']);
-                    }
-
-                    $this->setImageField($key, $files);
-                }
-            }
-
-            $flash->clearFiles();
-        }
     }
 
     protected function setImageField($key, $files)

@@ -1,5 +1,5 @@
 name: Form
-version: 3.0.2
+version: 3.0.3
 testing: false
 description: Enables the forms handling
 icon: check-square
@@ -39,8 +39,8 @@ form:
           highlight: 1
           default: 1
           options:
-            1: Enabled
-            0: Disabled
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
           validate:
             type: bool
 
@@ -50,8 +50,8 @@ form:
           highlight: 1
           default: 1
           options:
-            1: Enabled
-            0: Disabled
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
           validate:
             type: bool
 
@@ -62,8 +62,8 @@ form:
           highlight: 1
           default: 0
           options:
-            1: Enabled
-            0: Disabled
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
           validate:
             type: bool
 
@@ -74,8 +74,8 @@ form:
           highlight: 1
           default: 1
           options:
-            1: Enabled
-            0: Disabled
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
           validate:
             type: bool
 
@@ -86,8 +86,8 @@ form:
           highlight: 0
           default: 0
           options:
-            1: Enabled
-            0: Disabled
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
           validate:
             type: bool
 
@@ -171,19 +171,19 @@ form:
       fields:
         recaptcha.version:
           type: select
-          label: Version
+          label: PLUGIN_FORM.RECAPTCHA_VERSION
           default: 2-checkbox
           options:
-            2-checkbox: v2 - Checkbox
-            2-invisible: v2 - Invisible
-            3: v3 - Latest
+            2-checkbox: PLUGIN_FORM.RECAPTCHA_VERSION_V2_CHECKBOX
+            2-invisible: PLUGIN_FORM.RECAPTCHA_VERSION_V2_INVISIBLE
+            3: PLUGIN_FORM.RECAPTCHA_VERSION_V3_LATEST
         recaptcha.theme:
           type: select
-          label: Theme
+          label: PLUGIN_FORM.RECAPTCHA_THEME
           default: light
           options:
-            light: Light Theme
-            dark: Dark Theme
+            light: PLUGIN_FORM.RECAPTCHA_THEME_LIGHT
+            dark: PLUGIN_FORM.RECAPTCHA_THEME_DARK
           recaptcha.site_key:
         recaptcha.site_key:
           type: text
