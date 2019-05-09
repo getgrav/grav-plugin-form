@@ -1,5 +1,5 @@
 # v3.0.3
-## mm/dd/2019
+## 05/09/2019
 
 1. [](#new)
     * Added Text `field.copy-to-clipboard` which can be used by admin plugin
