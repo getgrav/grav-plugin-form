@@ -9,7 +9,7 @@
 {% block label %}{% endblock %}
 
 {% block input %}
-  {% if config.plugins.form.recaptcha.version is same as(3) %}
+  {% if config.plugins.form.recaptcha.version == 3 %}
       {#{% do assets.addJs('https://www.google.com/recaptcha/api.js?render='~site_key) %}#}
       <script src='https://www.google.com/recaptcha/api.js?render={{ site_key }}&theme={{ theme }}'></script>
       <script>
