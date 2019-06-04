@@ -1,6 +1,8 @@
 # v3.0.4
 ## mm/dd/2019
 
+1. [](#improved)
+    * Captcha field: fail silently and display error in console if site_key was not defined
 1. [](#bugfix)
     * Use less-strict comparison when checking version 3 [#344](https://github.com/getgrav/grav-plugin-form/issues/344)
 
