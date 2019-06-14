@@ -1,5 +1,5 @@
 {
-  "name": "grav-plugin-form",
+  "name": "getgrav/grav-plugin-form",
   "type": "grav-plugin",
   "description": "Grav Plugin Form",
   "keywords": ["form"],
@@ -16,7 +16,7 @@
   "support": {
     "issues": "https://github.com/getgrav/grav-plugin-form/issues",
     "irc": "https://chat.getgrav.org",
-    "forum": "http://getgrav.org/forum",
+    "forum": "https://discourse.getgrav.org",
     "docs": "https://github.com/getgrav/grav-plugin-form/blob/master/README.md"
   },
   "require": {
