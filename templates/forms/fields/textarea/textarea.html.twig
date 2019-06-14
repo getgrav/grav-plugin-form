@@ -2,6 +2,7 @@
 
 {% block input %}
     <div class="{{ form_field_wrapper_classes ?: 'form-textarea-wrapper' }} {{ field.size }} {{ field.wrapper_classes }}">
+        {% block prepend %}{% endblock prepend %}
         <textarea
             {# required attribute structures #}
             name="{{ (scope ~ field.name)|fieldName }}"
@@ -30,5 +31,11 @@
                 {% endif %}
             {% endblock %}
             >{{ value|trim|e('html') }}</textarea>
+            {% block append %}{% endblock append %}
+            {% if inline_errors and errors %}
+                <div class="{{ form_errors_classes ?: 'form-errors' }}">
+                    <p class="form-message"><i class="fa fa-exclamation-circle"></i> {{ errors|first }}</p>
+                </div>
+            {% endif %}
     </div>
 {% endblock %}

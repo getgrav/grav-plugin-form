@@ -9,7 +9,9 @@
 {% block label %}{% endblock %}
 
 {% block input %}
-  {% if config.plugins.form.recaptcha.version is same as(3) %}
+  {% if not site_key %}
+      <script>console && console.error('site_key was not defined for form "{{ form.name }}" (Grav Form Plugin)')</script>
+  {% elseif config.plugins.form.recaptcha.version == 3 %}
       {#{% do assets.addJs('https://www.google.com/recaptcha/api.js?render='~site_key) %}#}
       <script src='https://www.google.com/recaptcha/api.js?render={{ site_key }}&theme={{ theme }}'></script>
       <script>

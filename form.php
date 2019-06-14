@@ -16,6 +16,7 @@ use Grav\Common\Yaml;
 use Grav\Framework\Form\Interfaces\FormInterface;
 use Grav\Plugin\Form\Form;
 use Grav\Plugin\Form\Forms;
+use ReCaptcha\ReCaptcha;
 use RocketTheme\Toolbox\File\JsonFile;
 use RocketTheme\Toolbox\File\YamlFile;
 use RocketTheme\Toolbox\File\File;
@@ -358,7 +359,7 @@ class FormPlugin extends Plugin
                 $hostname = $uri->host();
                 $ip = Uri::ip();
 
-                $recaptcha = new \ReCaptcha\ReCaptcha($secret);
+                $recaptcha = new ReCaptcha($secret);
 
                 // get captcha version
                 $captcha_version = $captcha_config['version'] ?? 2;
