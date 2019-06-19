@@ -2,7 +2,7 @@
 ## mm/dd/2019
 
 1. [](#new)
-    * Added support for form state saving with dynamic unique id
+    * Added support for form state saving with dynamic unique id appended to the URL
 1. [](#bugfix)
     * Fixed missing check for maximum allowed files in `files` field
     * Fixed unique form ids getting cached, they should change on every page reload
