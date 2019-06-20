@@ -1124,6 +1124,12 @@ class Form implements FormInterface, \ArrayAccess
     {
         // Store updated data into flash.
         $flash = $this->getFlash();
+
+        // Check special case where there are no changes made to the form.
+        if (!$flash->exists() && $data === $this->header_data) {
+            return;
+        }
+
         $this->setAllData($flash->getData() ?? []);
 
         $this->data->merge($data);
