@@ -1,5 +1,5 @@
 # v3.0.5
-## mm/dd/2019
+## 06/21/2019
 
 1. [](#new)
     * Added support for form state saving with dynamic unique id appended to the URL
@@ -10,7 +10,7 @@
     * Fixed unique form ids getting cached, they should change on every page reload
 
 # v3.0.4
-## 03/14/2019
+## 06/14/2019
 
 1. [](#improved)
     * Captcha field: fail silently and display error in console if site_key was not defined
