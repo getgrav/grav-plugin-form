@@ -14,6 +14,7 @@ use Grav\Common\Utils;
 use Grav\Common\Uri;
 use Grav\Common\Yaml;
 use Grav\Framework\Form\Interfaces\FormInterface;
+use Grav\Framework\Route\Route;
 use Grav\Plugin\Form\Form;
 use Grav\Plugin\Form\Forms;
 use ReCaptcha\ReCaptcha;
@@ -276,6 +277,40 @@ class FormPlugin extends Plugin
                         }
                         @unlink($value);
                     }
+                }
+            }
+        } else {
+            // There is no active form to be posted.
+            // Check all the forms for the current page; we are looking for forms with remember state turned on with random unique id.
+
+            /** @var Route $route */
+            $route = $this->grav['route'];
+            $pageForms = $this->forms[$route->getRoute()] ?? [];
+
+            foreach ($pageForms as $formName => $form) {
+                if ($form->get('remember_redirect')) {
+                    // Found one; we need to check if unique id is set.
+                    $formParam = $form->get('uniqueid_param', 'fid');
+                    $uniqueId = $route->getGravParam($formParam);
+
+                    if ($uniqueId && preg_match('/[a-z\d]+/', $uniqueId)) {
+                        // URL contains unique id, initialize the current form.
+                        $form->setUniqueId($uniqueId);
+                        $form->initialize();
+
+                        /** @var Forms $forms */
+                        $forms = $this->grav['forms'];
+                        $forms->setActiveForm($form);
+
+                        break;
+                    }
+
+                    // Append unique id to the URL and redirect.
+                    $route = $route->withGravParam($formParam, $form->getUniqueId());
+                    $page->redirect((string)$route->toString());
+
+                    // TODO: Do we want to add support for multiple forms with remembered state?
+                    break;
                 }
             }
         }

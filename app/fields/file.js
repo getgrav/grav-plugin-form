@@ -276,6 +276,11 @@ const addNode = (container) => {
             if (!resolution) return done();
 
             setTimeout(() => {
+                if ((this.options.maxFiles != null) && (this.getAcceptedFiles().length >= this.options.maxFiles)) {
+                    done(this.options.dictMaxFilesExceeded.replace('{{maxFiles}}', this.options.maxFiles));
+                    return this.emit('maxfilesexceeded', file);
+                }
+
                 if (resolution.min) {
                     Object.keys(resolution.min).forEach((attr) => {
                         if (file[attr] < resolution.min[attr]) {
