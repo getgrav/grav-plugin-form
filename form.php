@@ -3,6 +3,7 @@ namespace Grav\Plugin;
 
 use Composer\Autoload\ClassLoader;
 use Grav\Common\Data\ValidationException;
+use Grav\Common\Debugger;
 use Grav\Common\Filesystem\Folder;
 use Grav\Common\Grav;
 use Grav\Common\Page\Interfaces\PageInterface;
@@ -91,7 +92,7 @@ class FormPlugin extends Plugin
     public function onPluginsInitialized()
     {
         // Backwards compatibility for plugins that use forms.
-        class_alias(Form::class, 'Grav\Plugin\Form');
+        class_alias(Form::class, \Grav\Plugin\Form::class);
 
         $this->grav['forms'] = function () {
             $forms = new Forms();
@@ -422,7 +423,7 @@ class FormPlugin extends Plugin
                     foreach ($fields as $field) {
                         $type = $field['type'] ?? 'text';
                         $field_message = $field['recaptcha_not_validated'] ?? null;
-                        if ($type == 'captcha' && $field_message) {
+                        if ($type === 'captcha' && $field_message) {
                             $message =  $field_message;
                             break;
                         }
@@ -1006,6 +1007,10 @@ class FormPlugin extends Plugin
         } catch (\Exception $e) {
             // Couldn't fetch cached forms.
             $forms = null;
+
+            /** @var Debugger $debugger */
+            $debugger = Grav::instance()['debugger'];
+            $debugger->addMessage(sprintf('Unserializing cached forms failed: %s', $e->getMessage()), 'error');
         }
 
         if (!\is_array($forms)) {

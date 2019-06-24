@@ -1,3 +1,10 @@
+# v3.0.6
+## 06/24/2019
+
+1. [](#bugfix)
+    * Fixed regression breaking forms external to the page in some sites
+    * Fixed regression with form action in sub-path folders
+
 # v3.0.5
 ## 06/21/2019
 
