@@ -1041,7 +1041,7 @@ class Form implements FormInterface, \ArrayAccess
         $defaults = [
             'name' => $this->items['name'],
             'id' => $this->items['id'],
-            'uniqueid' => $this->items['uniqueid'],
+            'uniqueid' => $this->items['uniqueid'] ?? null,
             'data' => []
         ];
 

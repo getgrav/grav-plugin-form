@@ -91,7 +91,7 @@ class FormPlugin extends Plugin
     public function onPluginsInitialized()
     {
         // Backwards compatibility for plugins that use forms.
-        class_alias(Form::class, 'Grav\Plugin\Form');
+        class_alias(Form::class, \Grav\Plugin\Form::class);
 
         $this->grav['forms'] = function () {
             $forms = new Forms();
@@ -422,7 +422,7 @@ class FormPlugin extends Plugin
                     foreach ($fields as $field) {
                         $type = $field['type'] ?? 'text';
                         $field_message = $field['recaptcha_not_validated'] ?? null;
-                        if ($type == 'captcha' && $field_message) {
+                        if ($type === 'captcha' && $field_message) {
                             $message =  $field_message;
                             break;
                         }

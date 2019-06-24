@@ -1,3 +1,9 @@
+# v3.0.6
+## mm/dd/2019
+
+1. [](#bugfix)
+    * Fixed regression breaking forms external to the page in some sites
+
 # v3.0.5
 ## 06/21/2019
 
