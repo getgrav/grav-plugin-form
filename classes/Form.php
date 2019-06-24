@@ -281,7 +281,7 @@ class Form implements FormInterface, \ArrayAccess
 
     public function getAction(): string
     {
-        return $this->items['action'] ?? Utils::url($this->page);
+        return $this->items['action'] ?? $this->page;
     }
 
     /**
