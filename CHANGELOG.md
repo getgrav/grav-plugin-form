@@ -1,5 +1,5 @@
 # v3.0.6
-## mm/dd/2019
+## 06/24/2019
 
 1. [](#bugfix)
     * Fixed regression breaking forms external to the page in some sites
