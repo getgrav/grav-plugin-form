@@ -3,6 +3,7 @@
 
 1. [](#bugfix)
     * Fixed regression breaking forms external to the page in some sites
+    * Fixed regression with the introduction of `getAction` method not working with sub-path folders
 
 # v3.0.5
 ## 06/21/2019
