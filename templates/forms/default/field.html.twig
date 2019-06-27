@@ -53,7 +53,7 @@
                             {% endif %}
                         {% else %}
                             {% if field.markdown %}
-                                {{ field.label|markdown(false)|default(field.name|capitalize)|t|e('html_attr') }}
+                                {{ field.label|markdown(false)|default(field.name|capitalize)|t }}
                             {% else %}
                                 {{ field.label|default(field.name|capitalize)|t|e('html_attr') }}
                             {% endif %}
