@@ -1,5 +1,5 @@
 # v3.0.7
-## mm/dd/2019
+## 07/01/2019
 
 1. [](#bugfix)
     * Fixed file upload when `$grav['user']` is not set [#352](https://github.com/getgrav/grav-plugin-form/issues/352)
