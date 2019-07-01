@@ -640,7 +640,7 @@ class Form implements FormInterface, \ArrayAccess
 
         // We need to store the file into flash object or it will not be available upon save later on.
         $flash = $this->getFlash();
-        $flash->setUrl($url)->setUser($grav['user']);
+        $flash->setUrl($url)->setUser($grav['user'] ?? null);
 
         if ($task === 'cropupload') {
             $crop = $post['crop'];
