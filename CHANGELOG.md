@@ -3,6 +3,8 @@
 
 1. [](#improved)
     * Change form save action location to `user-data://` stream [#353](https://github.com/getgrav/grav-plugin-form/issues/353)
+1. [](#bugfix)
+    * Fixed Submit & Redirect not working as expected [#355](https://github.com/getgrav/grav-plugin-form/issues/355)
 
 # v3.0.7
 ## 07/01/2019
