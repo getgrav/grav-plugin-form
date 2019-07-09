@@ -188,7 +188,11 @@ class Form implements FormInterface, \ArrayAccess
 
         // Remember form state.
         $flash = $this->getFlash();
-        $data = ($flash->exists() ? $flash->getData() : null) ?? $this->header_data;
+        if ($flash->exists()) {
+            $data = $flash->getData() ?? $this->header_data;
+        } else {
+            $data = $this->header_data;
+        }
 
         // Remember data and files.
         $this->setAllData($data);
@@ -251,6 +255,11 @@ class Form implements FormInterface, \ArrayAccess
         $this->blueprint = null;
         $this->setAllData($this->header_data);
         $this->values = new Data();
+
+        // Reset unique id (allow multiple form submits)
+        $uniqueid = $this->items['uniqueid'] ?? null;
+        $this->set('remember_redirect', null === $uniqueid && !empty($this->items['remember_state']));
+        $this->setUniqueId($uniqueid ?? strtolower(Utils::generateRandomString($this->items['uniqueid_len'] ?? 20)));
 
         // Fire event
         $grav = Grav::instance();

@@ -866,7 +866,17 @@ class FormPlugin extends Plugin
      */
     protected function getFormByName($form_name)
     {
-        return $this->flat_forms[$form_name] ?? null;
+        $form = $this->flat_forms[$form_name] ?? null;
+
+        if (!$form) {
+            return null;
+        }
+
+        // Reset form to change the cached unique id and to fire onFormInitialized event.
+        $form->setUniqueId('');
+        $form->reset();
+
+        return $form;
     }
 
     /**
