@@ -493,7 +493,9 @@ class FormPlugin extends Plugin
                 break;
             case 'reset':
                 if (Utils::isPositive($params)) {
+                    $message = $form->message;
                     $form->reset();
+                    $form->message = $message;
                 }
                 break;
             case 'display':
