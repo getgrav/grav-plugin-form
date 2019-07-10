@@ -45,6 +45,9 @@ class FormPlugin extends Plugin
     protected $flat_forms = [];
 
     /** @var array */
+    protected $active_forms = [];
+
+    /** @var array */
     protected $json_response = [];
 
     /** @var bool */
@@ -866,15 +869,21 @@ class FormPlugin extends Plugin
      */
     protected function getFormByName($form_name)
     {
-        $form = $this->flat_forms[$form_name] ?? null;
-
+        $form = $this->active_forms[$form_name] ?? null;
         if (!$form) {
-            return null;
-        }
+            $form = $this->flat_forms[$form_name] ?? null;
 
-        // Reset form to change the cached unique id and to fire onFormInitialized event.
-        $form->setUniqueId('');
-        $form->reset();
+            if (!$form) {
+                return null;
+            }
+
+            // Reset form to change the cached unique id and to fire onFormInitialized event.
+            $form->setUniqueId('');
+            $form->reset();
+
+            // Register form to the active forms to get the same instance back next time.
+            $this->active_forms[$form_name] = $form;
+        }
 
         return $form;
     }
