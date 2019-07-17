@@ -74,7 +74,7 @@
 
         {% set value = form ? form.value(field_name) : data.value(field_name) %}
         {% block inner_markup_field_open %}{% endblock %}
-        {% block process_field %}
+        {% block field %}
           {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
         {% endblock %}
         {% block inner_markup_field_close %}{% endblock %}
