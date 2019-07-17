@@ -11,6 +11,9 @@
 {% set client_side_validation = form.client_side_validation is not null ? form.client_side_validation : config.plugins.form.client_side_validation|default(true) %}
 {% set inline_errors = form.inline_errors is not null ? form.inline_errors : config.plugins.form.inline_errors(false) %}
 
+{% set data = data ?? form.data %}
+{% set context = context ?? data %}
+
 {% for field in form.fields %}
     {% if (method == 'POST' and field.type == 'file') %}
         {% set multipart = ' enctype="multipart/form-data"' %}
@@ -44,6 +47,55 @@
     window.GravForm.translations = Object.assign({}, window.GravForm.translations || {}, { PLUGIN_FORM: {} });
 ", {'group': 'bottom'}) %}
 
+{# Backwards Compatibility for block overrides #}
+{% set override_form_classes %}
+  {% block form_classes %}
+    class="{{ form_outer_classes }} {{ form.classes }}"
+  {% endblock %}
+{% endset %}
+
+{% set override_inner_markup_fields_start %}
+  {% block inner_markup_fields_start %}{% endblock %}
+{% endset %}
+
+{% set override_inner_markup_fields_end %}
+  {% block inner_markup_fields_end %}{% endblock %}
+{% endset %}
+
+{% set override_inner_markup_fields %}
+  {% block inner_markup_fields %}
+    {% for field_name, field in form.fields %}
+      {% set field_name = field.name ?? field_name %}
+      {% if field_name and not field.validate.ignore %}
+        {%- if field_name starts with '.' -%}
+          {% set field_name = field_name[1:] %}
+          {% set field = field|merge({ name: field_name }) %}
+        {% endif %}
+
+        {% set value = form ? form.value(field_name) : data.value(field_name) %}
+        {% block inner_markup_field_open %}{% endblock %}
+        {% block process_field %}
+          {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
+        {% endblock %}
+        {% block inner_markup_field_close %}{% endblock %}
+      {% endif %}
+    {% endfor %}
+  {% endblock %}
+{% endset %}
+
+{% set override_inner_markup_buttons_start %}
+  {% block inner_markup_buttons_start %}
+  <div class="{{ form_button_outer_classes ?: 'buttons'}}">
+  {% endblock %}
+{% endset %}
+
+{% set override_inner_markup_buttons_end %}
+  {% block inner_markup_buttons_end %}
+  </div>
+  {% endblock %}
+{% endset %}
+
+{# Embed for HTML layout #}
 {% embed 'forms/layouts/form.html.twig' %}
 
   {% block embed_form_core %}
@@ -56,49 +108,24 @@
   {% endblock %}
 
   {% block embed_form_classes %}
-    {% block form_classes %}
-      class="{{ form_outer_classes }} {{ form.classes }}"
-    {% endblock %}
+    {{- override_form_classes -}}
   {% endblock %}
 
   {% block embed_fields %}
-    {% block inner_markup_fields_start %}{% endblock %}
+    {{ override_inner_markup_fields_start }}
 
-    {% set data = data ?? form.data %}
-    {% set context = context ?? data %}
-
-    {% block inner_markup_fields %}
-      {% for field_name, field in form.fields %}
-        {% set field_name = field.name ?? field_name %}
-        {% if field_name and not field.validate.ignore %}
-          {%- if field_name starts with '.' -%}
-            {% set field_name = field_name[1:] %}
-            {% set field = field|merge({ name: field_name }) %}
-          {% endif %}
-
-          {% set value = form ? form.value(field_name) : data.value(field_name) %}
-          {% block inner_markup_field_open %}{% endblock %}
-          {% block process_field %}
-            {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
-          {% endblock %}
-          {% block inner_markup_field_close %}{% endblock %}
-        {% endif %}
-      {% endfor %}
-    {% endblock %}
+    {{ override_inner_markup_fields }}
 
     {% include "forms/fields/formname/formname.html.twig" %}
     {% include "forms/fields/formtask/formtask.html.twig" %}
     {% include 'forms/fields/uniqueid/uniqueid.html.twig' %}
-
     {{ nonce_field(form.getNonceAction() ?? 'form', form.getNonceName() ?? 'form-nonce')|raw }}
 
-    {% block inner_markup_fields_end %}{% endblock %}
+    {{ override_inner_markup_fields_end }}
   {% endblock %}
 
   {% block embed_buttons %}
-    {% block inner_markup_buttons_start %}
-      <div class="{{ form_button_outer_classes ?: 'buttons'}}">
-    {% endblock %}
+    {{ override_inner_markup_buttons_start }}
 
     {% for button in form.buttons %}
       {% if button.outerclasses is defined %}<div class=" {{ button.outerclasses }}">{% endif %}
@@ -130,9 +157,7 @@
       {% if button.outerclasses is defined %}</div>{% endif %}
     {% endfor %}
 
-    {% block inner_markup_buttons_end %}
-      </div>
-    {% endblock %}
+    {{ override_inner_markup_buttons_end }}
   {% endblock %}
 
 {% endembed %}
