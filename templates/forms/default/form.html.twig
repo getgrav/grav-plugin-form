@@ -108,7 +108,7 @@
   {% endblock %}
 
   {% block embed_form_classes %}
-    {{- override_form_classes -}}
+    {{ override_form_classes }}
   {% endblock %}
 
   {% block embed_fields %}
@@ -129,31 +129,32 @@
 
     {% for button in form.buttons %}
       {% if button.outerclasses is defined %}<div class=" {{ button.outerclasses }}">{% endif %}
-      {% if button.url %}
-      <a href="{{ button.url starts with 'http' ? button.url : base_url ~ button.url }}">
-      {% endif %}
-      <button
+
+      {% embed 'forms/layouts/button.html.twig' %}
+        {% block embed_button_core %}
           {% if button.id %}id="{{ button.id }}"{% endif %}
+          {% if button.disabled %}disabled="disabled"{% endif %}
+          {% if button.task %}name="task" value="{{ button.task }}"{% endif %}
+          type="{{ button.type|default('submit') }}"
+        {% endblock %}
+
+        {% block embed_button_classes %}
           {% block button_classes %}
             class="{{ form_button_classes ?: 'button' }} {{ button.classes }}"
           {% endblock %}
-          {% if button.disabled %}disabled="disabled"{% endif %}
+        {% endblock %}
 
-          type="{{ button.type|default('submit') }}"
-
-          {% if button.task %}
-            name="task" value="{{ button.task }}"
+        {% block embed_button_content %}
+          {% set button_value = button.value|t|default('Submit') %}
+          {% if button.html %}
+            {{ button_value|raw }}
+          {% else %}
+            {{ button_value }}
           {% endif %}
-      >
-        {% if button.html %}
-          {{ button.value|t|default('Submit')|raw }}
-        {% else %}
-          {{ button.value|t|default('Submit') }}
-        {% endif %}
-      </button>
-      {% if button.url %}
-      </a>
-      {% endif %}
+        {% endblock %}
+
+      {% endembed %}
+
       {% if button.outerclasses is defined %}</div>{% endif %}
     {% endfor %}
 
