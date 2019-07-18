@@ -1,5 +1,7 @@
 {% if not field.validate.ignore %}
 
+{% block field_override_variables_before %}{% endblock %}
+
 {% set field_name = (scope ~ field.name)|fieldName %}
 {% set vertical = field.style == 'vertical' %}
 
@@ -45,28 +47,34 @@
   {% block outer_field_classes %}{% endblock %}
 {% endset %}
 
+{# Get some default variables via overrides #}
+{% use 'forms/layouts/field-classes.html.twig' %}
+
 {# Field Classes #}
 {%- if errors %}{% set form_field_outer_core = form_field_outer_core ~ ' has-errors'  %}{% endif -%}
 {%- if toggleable %}{% set form_field_outer_core = form_field_outer_core ~ ' form-field-toggleable' %}{% endif -%}
 
-{%- if field.outerclasses %}{% set form_field_outer_classes = form_field_outer_classes ~ ' ' ~ field.outerclasses ~ ' ' %}{% endif -%}
-{%- if embed_outer_field_classes|trim %}{% set form_field_outer_classes = form_field_outer_classes ~ embed_outer_field_classes ~ ' ' %}{% endif -%}
+{% set layout_form_field_outer_classes = field.outerclasses ~ ' ' %}
+{%- if field.outerclasses %}{% set layout_form_field_outer_classes = layout_form_field_outer_classes ~ ' ' %}{% endif -%}
+{%- if embed_outer_field_classes|trim %}{% set layout_form_field_outer_classes = layout_form_field_outer_classes ~ embed_outer_field_classes ~ ' ' %}{% endif -%}
 
 {# Show Label logic #}
 {% set show_label = field.label is not same as(false) and field.display_label is not same as(false )%}
 
 {# Label Classes #}
-{% set form_field_outer_label_classes = ((form_field_outer_label_classes ?: 'form-label') ~ ' ' ~ field.labelclasses)|trim %}
-{% set form_field_label_classes = (form_field_label_classes ?: 'inline')|trim %}
+{% set layout_form_field_outer_label_classes = ((form_field_outer_label_classes ?: 'form-label') ~ ' ' ~ field.labelclasses)|trim %}
+{% set layout_form_field_label_classes = (form_field_label_classes ?: 'inline')|trim %}
 {% set form_field_label_trim = toggleable ? 'toggleable' %}
 
 {# Field Outer Data classes #}
-{% set form_field_outer_data_classes = ((form_field_outer_data_classes ?: ' form-data') ~ ' ' ~ field.dataclasses)|trim  %}
+{% set layout_form_field_outer_data_classes = ((form_field_outer_data_classes ?: ' form-data') ~ ' ' ~ field.dataclasses)|trim  %}
 
 {# Field Wrapper classes #}
-{% set form_field_wrapper_classes = ((form_field_wrapper_classes ?: ' form-input-wrapper') ~ ' ' ~ field.wrapper_classes)|trim %}
+{% set layout_form_field_wrapper_classes = ((form_field_wrapper_classes ?: ' form-input-wrapper') ~ ' ' ~ field.wrapper_classes)|trim %}
 
-{% set form_field_input_classes = (form_field_input_classes ~ ' ' ~ field.classes)|trim %}
+{# Field input classes #}
+
+{% set layout_form_field_input_classes = block('field_input_classes') ~ ' ' ~ (form_field_input_classes ~ ' ' ~ field.classes)|trim %}
 
 {# Inline error classes #}
 {% set form_field_inline_error_classes = form_field_inline_error_classes ?: ' form-errors' %}
@@ -117,9 +125,11 @@
   {% block input %}{% endblock %}
 {% endset %}
 
+{% block field_override_variables_after %}{% endblock %}
+
 {% set embed_field_input_attributes %}
   {% block input_attributes %}
-    class="{{ form_field_input_classes }} {{ field.size }}"
+    class="{{ layout_form_field_input_classes|trim }} {{ field.size }}"
     {% if field.id is defined %}id="{{ field.id|e }}" {% endif %}
     {% if field.style is defined %}style="{{ field.style|e }}" {% endif %}
     {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
@@ -165,7 +175,7 @@
 {% endset %}
 
 {% block field %}
-  {% embed layout_field_template|default('forms/layouts/field.html.twig') %}
+  {% embed field_layout_template|default('forms/layouts/field.html.twig') %}
 
     {% block contents %}
      {{ embed_field_contents|trim ? embed_field_contents|trim : parent() }}

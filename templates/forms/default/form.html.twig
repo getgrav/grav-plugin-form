@@ -49,9 +49,9 @@
 
 {# Backwards Compatibility for block overrides #}
 {% set override_form_classes %}
-  {% block form_classes %}
-    class="{{ form_outer_classes }} {{ form.classes }}"
-  {% endblock %}
+  {% block form_classes -%}
+    {{ form_outer_classes }} {{ form.classes }}
+  {%- endblock %}
 {% endset %}
 
 {% set override_inner_markup_fields_start %}
@@ -107,9 +107,9 @@
     {% if form.keep_alive %}data-grav-keepalive="true"{% endif %}
   {% endblock %}
 
-  {% block embed_form_classes %}
-    {{ override_form_classes }}
-  {% endblock %}
+  {% block embed_form_classes -%}
+    class="{{ parent() }} {{ override_form_classes|trim }}"
+  {%- endblock %}
 
   {% block embed_fields %}
     {{ override_inner_markup_fields_start }}
