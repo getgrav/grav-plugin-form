@@ -1,5 +1,7 @@
 {% if not field.validate.ignore %}
 
+{% use 'forms/layouts/field-variables.html.twig' %}
+
 {% block field_override_variables_before %}{% endblock %}
 
 {% set field_name = (scope ~ field.name)|fieldName %}
@@ -46,9 +48,6 @@
 {% set embed_outer_field_classes %}
   {% block outer_field_classes %}{% endblock %}
 {% endset %}
-
-{# Get some default variables via overrides #}
-{% use 'forms/layouts/field-classes.html.twig' %}
 
 {# Field Classes #}
 {%- if errors %}{% set form_field_outer_core = form_field_outer_core ~ ' has-errors'  %}{% endif -%}
@@ -175,6 +174,7 @@
 {% endset %}
 
 {% block field %}
+  {{ dump(field) }}
   {% embed field_layout_template|default('forms/layouts/field.html.twig') %}
 
     {% block contents %}
