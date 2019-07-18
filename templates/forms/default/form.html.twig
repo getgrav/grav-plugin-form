@@ -130,6 +130,10 @@
     {% for button in form.buttons %}
       {% if button.outerclasses is defined %}<div class=" {{ button.outerclasses }}">{% endif %}
 
+      {% if button.url %}
+      {% set button_url = button.url starts with 'http' ? button.url : base_url ~ button.url %}
+      {% endif %}
+
       {% embed 'forms/layouts/button.html.twig' %}
         {% block embed_button_core %}
           {% if button.id %}id="{{ button.id }}"{% endif %}
@@ -144,14 +148,14 @@
           {% endblock %}
         {% endblock %}
 
-        {% block embed_button_content %}
-          {% set button_value = button.value|t|default('Submit') %}
-          {% if button.html %}
-            {{ button_value|raw }}
-          {% else %}
-            {{ button_value }}
-          {% endif %}
-        {% endblock %}
+        {% block embed_button_content -%}
+          {%- set button_value = button.value|t|default('Submit') -%}
+          {%- if button.html -%}
+            {{- button_value|raw|trim -}}
+          {%- else -%}
+            {{- button_value|trim -}}
+          {%- endif -%}
+        {%- endblock %}
 
       {% endembed %}
 

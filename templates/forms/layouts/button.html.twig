@@ -2,13 +2,11 @@
   <button
       {% block embed_button_core %}{% endblock %}
       {% block embed_button_classes %}{% endblock %}
-  >
-    {% block embed_button_content %}{% endblock %}
-  </button>
+  >{%- block embed_button_content -%}{%- endblock -%}</button>
 {% endset %}
 
-{% if button.url %}
-<a href="{{ button.url starts with 'http' ? button.url : base_url ~ button.url }}">{{ button_tag }}</a>
+{% if button_url %}
+  <a href="{{ button_url }}">{{ button_tag|trim }}</a>
 {% else %}
-{{ button_tag }}
+  {{ button_tag|trim }}
 {% endif %}
