@@ -55,7 +55,7 @@
 {%- if toggleable %}{% set form_field_outer_core = form_field_outer_core ~ ' form-field-toggleable' %}{% endif -%}
 
 {% set layout_form_field_outer_classes = field.outerclasses ~ ' ' %}
-{%- if field.outerclasses %}{% set layout_form_field_outer_classes = layout_form_field_outer_classes ~ ' ' %}{% endif -%}
+{%- if field.outerclasses %}{% set layout_form_field_outer_classes = form_field_outer_classes ~ ' ' %}{% endif -%}
 {%- if embed_outer_field_classes|trim %}{% set layout_form_field_outer_classes = layout_form_field_outer_classes ~ embed_outer_field_classes ~ ' ' %}{% endif -%}
 
 {# Show Label logic #}
