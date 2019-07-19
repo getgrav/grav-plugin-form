@@ -179,6 +179,9 @@ class Form implements FormInterface, \ArrayAccess
         $this->initialize();
     }
 
+    /**
+     * @return $this
+     */
     public function initialize()
     {
         // Reset and initialize the form
@@ -202,6 +205,8 @@ class Form implements FormInterface, \ArrayAccess
         // Fire event
         $grav = Grav::instance();
         $grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
+
+        return $this;
     }
 
     protected function setAllFiles(FormFlash $flash)
