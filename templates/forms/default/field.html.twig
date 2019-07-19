@@ -72,8 +72,14 @@
 {% set layout_form_field_wrapper_classes = ((form_field_wrapper_classes ?: ' form-input-wrapper') ~ ' ' ~ field.wrapper_classes)|trim %}
 
 {# Field input classes #}
-
-{% set layout_form_field_input_classes = block('field_input_classes') ~ ' ' ~ (form_field_input_classes ~ ' ' ~ field.classes)|trim %}
+{% if field|of_type('array') %}
+  {% if field.classes %}
+    {% set field = field|merge({'classes': field.classes ~ ' ' ~ block('field_input_classes')|trim }) %}
+  {% else %}
+    {% set field = field|merge({'classes': block('field_input_classes') }) %}
+  {% endif %}
+{% endif %}
+{% set layout_form_field_input_classes = (form_field_input_classes ~ ' ' ~ field.classes)|trim %}
 
 {# Inline error classes #}
 {% set form_field_inline_error_classes = form_field_inline_error_classes ?: ' form-errors' %}
