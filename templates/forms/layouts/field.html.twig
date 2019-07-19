@@ -4,16 +4,16 @@
       <div class="{{- layout_form_field_outer_label_classes -}}">
         {{- form_field_toggleable -}}
         <label class="{{ layout_form_field_label_classes }}{{ form_field_label_trim }}" {% if field.id %}for="{{ form_field_for }}"{% endif %}>
-          {% block label %}
-            {% if form_field_help %}
+          {%- block label -%}
+            {%- if form_field_help -%}
               <span class="tooltip" data-tooltip="{{ form_field_help }}">{{ form_field_label }}</span>
-            {% else %}
-              {{ form_field_label }}
-            {% endif %}
-            {% if form_field_required %}
+            {%- else -%}
+              {{- form_field_label -}}
+            {%- endif -%}
+            {%- if form_field_required -%}
               <span class="required">*</span>
-            {% endif %}
-          {% endblock %}
+            {%- endif -%}
+          {%- endblock -%}
         </label>
       </div>
     {% endif %}
