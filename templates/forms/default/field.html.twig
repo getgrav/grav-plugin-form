@@ -53,9 +53,9 @@
 {%- if errors %}{% set form_field_outer_core = form_field_outer_core ~ ' has-errors'  %}{% endif -%}
 {%- if toggleable %}{% set form_field_outer_core = form_field_outer_core ~ ' form-field-toggleable' %}{% endif -%}
 
-{% set layout_form_field_outer_classes = field.outerclasses ~ ' ' %}
-{%- if field.outerclasses %}{% set layout_form_field_outer_classes = form_field_outer_classes ~ ' ' %}{% endif -%}
-{%- if embed_outer_field_classes|trim %}{% set layout_form_field_outer_classes = layout_form_field_outer_classes ~ embed_outer_field_classes ~ ' ' %}{% endif -%}
+{% set layout_form_field_outer_classes = field.outerclasses %}
+{% set layout_form_field_outer_classes = layout_form_field_outer_classes|trim ~ ' ' ~ form_field_outer_classes %}
+{% set layout_form_field_outer_classes = layout_form_field_outer_classes|trim ~ ' ' ~ embed_outer_field_classes %}
 
 {# Show Label logic #}
 {% set show_label = field.label is not same as(false) and field.display_label is not same as(false )%}

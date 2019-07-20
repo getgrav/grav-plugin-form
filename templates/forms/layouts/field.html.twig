@@ -1,4 +1,4 @@
-<div class="{{- layout_form_field_outer_classes -}} {{- form_field_outer_core -}}">
+<div class="form-field {{ layout_form_field_outer_classes|trim -}} {{- form_field_outer_core|trim -}}">
   {% block contents %}
     {% if show_label %}
       <div class="{{- layout_form_field_outer_label_classes -}}">
@@ -8,9 +8,9 @@
             {%- if form_field_help -%}
               <span class="tooltip" data-tooltip="{{ form_field_help }}">{{ form_field_label }}</span>
             {%- else -%}
-              {{- form_field_label -}}
+              {{ form_field_label }}
             {%- endif -%}
-            {%- if form_field_required -%}
+            {%- if form_field_required %}
               <span class="required">*</span>
             {%- endif -%}
           {%- endblock -%}
