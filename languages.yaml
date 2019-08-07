@@ -61,8 +61,8 @@ en:
     RESOLUTION_MIN: "The {{attr}} was less than the minimum of {{min}}px <br />"
     RESOLUTION_MAX: "The {{attr}} was more than the maximum of {{max}}px <br />"
     DESTINATION_NOT_SPECIFIED: "Destination not specified"
-    INVALID_MIME_TYPE: "The MIME type %s for the file %s is not an accepted."
-    INVALID_FILE_EXTENSION: "The File Extension for the file %s is not an accepted."
+    INVALID_MIME_TYPE: "The MIME type %s for the file %s is not accepted."
+    INVALID_FILE_EXTENSION: "The File Extension for the file %s is not accepted."
 eu:
   PLUGIN_FORM:
     NOT_VALIDATED: "Formularioa ez da baliozkotu. Beharrezkoa den eremu bat edo gehiago falta dira."
@@ -271,6 +271,27 @@ fr:
     DROPZONE_REMOVE_FILE: "Supprimer le fichier"
     DROPZONE_REMOVE_FILE_CONFIRMATION: "Êtes-vous sûr de vouloir supprimer ce fichier ?"
     DROPZONE_RESPONSE_ERROR: "Le serveur a répondu avec le code {{statusCode}}."
+    YES: "Oui"
+    NO: "Non"
+    REFRESH_PREVENTION: "Prévenir la redondance"
+    REFRESH_PREVENTION_HELP: "Utilise l’identifiant unique du formulaire pour s’assurer qu’il n’est pas pris deux fois en compte si l’on recharge le navigateur."
+    LIMIT: "Limite"
+    LIMIT_HELP: "Nombre maximum de fichiers par champ (quand multiple)"
+    FILESIZE: "Poids du fichier max."
+    FILESIZE_HELP: "Poids maximum autorisé pour le fichier (en MB), 0 = utiliser la valeur du système par défaut"
+    AVOID_OVERWRITING: "Éviter la réécriture"
+    AVOID_OVERWRITING_HELP: "Évite qu’un fichier avec le même nom soit écrasé. Le nom sera préfixé de la date."
+    RANDOM_NAME: "Nom aléatoire"
+    RANDOM_NAME_HELP: "Génère une chaîne de caractère aléatoire de quinze caractères pour le nom du fichier uploadé."
+    CLIENT_SIDE_VALIDATION: "Validation côté client"
+    CLIENT_SIDE_VALIDATION_HELP: "Par défaut, les formulaires utiliseront la validation en HTML5 avant tout autre validation."
+    INLINE_ERRORS: "Erreurs en ligne"
+    INLINE_ERRORS_HELP: "Utile avec « Validation côté client » désactivé ; affiche des erreurs contextuelles en ligne."
+    RESOLUTION_MIN: "{{attr}} est inférieur au minimum de {{min}}px <br />"
+    RESOLUTION_MAX: "{{attr}} est supérieur au minimum de  {{max}}px <br />"
+    DESTINATION_NOT_SPECIFIED: "La destination n’est pas indiquée."
+    INVALID_MIME_TYPE: "Le type MIME %s pour le fichier %s n’est pas accepté."
+    INVALID_FILE_EXTENSION: "L’extension pour le fichier %s n’est pas acceptée."
 
 ru:
   PLUGIN_FORM:
