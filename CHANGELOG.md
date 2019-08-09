@@ -9,6 +9,7 @@
     * Fixed issue with Form JS when pipeline is enabled [grav#2592](https://github.com/getgrav/grav/issues/2592)
     * Fixed form message not showing up after reset process
     * Fixed form fields inside a single tab not using value from the form object if it is available
+    * Fixed file form field failing resolution checks in certain circumstances
 
 # v3.0.7
 ## 07/01/2019

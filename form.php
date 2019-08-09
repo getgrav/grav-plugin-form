@@ -539,6 +539,7 @@ class FormPlugin extends Plugin
                 $postfix = $params['filepostfix'] ?? '';
                 $ext = !empty($params['extension']) ? '.' . trim($params['extension'], '.') : '.txt';
                 $filename = $params['filename'] ?? '';
+                $folder = !empty($params['folder']) ? $params['folder'] : $form->getName();
                 $operation = $params['operation'] ?? 'create';
 
                 if (!$filename) {
@@ -560,7 +561,7 @@ class FormPlugin extends Plugin
 
                 $locator = $this->grav['locator'];
                 $path = $locator->findResource('user-data://', true);
-                $dir = $path . DS . $form->getName();
+                $dir = $path . DS . $folder;
                 $fullFileName = $dir. DS . $filename;
 
                 if (!empty($params['raw']) || !empty($params['template'])) {
