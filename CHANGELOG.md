@@ -6,6 +6,7 @@
 1. [](#bugfix)
     * Fixed Submit & Redirect not working as expected [#355](https://github.com/getgrav/grav-plugin-form/issues/355)
     * Fixed oversensitive refresh prevention [#354](https://github.com/getgrav/grav-plugin-form/issues/354)
+    * Fixed issue with Form JS when pipeline is enabled [grav#2592](https://github.com/getgrav/grav/issues/2592)
     * Fixed form message not showing up after reset process
     * Fixed form fields inside a single tab not using value from the form object if it is available
 
