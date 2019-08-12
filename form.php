@@ -753,7 +753,7 @@ class FormPlugin extends Plugin
             if (!empty($this->forms[$page_route])) {
                 $forms = $this->forms[$page_route];
                 $first_form = reset($forms) ?: null;
-                $form_name = $first_form['name'] ?? null;
+                return $first_form;
             } else {
                 //No form on this route. Try looking up in the current page first
                 /** @var Forms $forms */
