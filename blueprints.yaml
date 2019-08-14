@@ -1,6 +1,6 @@
 name: Form
 version: 4.0.0-rc.1
-testing: false
+testing: true
 description: Enables the forms handling
 icon: check-square
 author:
