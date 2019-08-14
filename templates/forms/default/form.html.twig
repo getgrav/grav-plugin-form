@@ -17,7 +17,8 @@
     {% endif %}
 {% endfor %}
 
-{% set action = url(form.action ?: page.route ~ uri.params) %}
+{% set action = form.action ?: page.route ~ uri.params %}
+{% set action = action starts with 'http' ? action : base_url ~ action %}
 
 {% if (action == base_url_relative) %}
     {% set action = base_url_relative ~ '/' ~ page.slug %}
@@ -41,7 +42,7 @@
         session_timeout: " ~ config.system.session.timeout ~ "
     };
     window.GravForm.translations = Object.assign({}, window.GravForm.translations || {}, { PLUGIN_FORM: {} });
-", {'group': 'bottom'}) %}
+", {'group': 'bottom', 'position': 'before'}) %}
 
 <form name="{{ form.name }}"
       action="{{ action | trim('/', 'right') }}"
@@ -90,7 +91,7 @@
   {% for button in form.buttons %}
       {% if button.outerclasses is defined %}<div class=" {{ button.outerclasses }}">{% endif %}
           {% if button.url %}
-              <a href="{{ button.url starts with 'http' ? button.url : url(button.url) }}">
+              <a href="{{ button.url starts with 'http' ? button.url : base_url ~ button.url }}">
           {% endif %}
           <button
                 {% if button.id %}id="{{ button.id }}"{% endif %}
