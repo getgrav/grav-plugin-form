@@ -52,10 +52,10 @@
         </div>
         <div class="tabs-content">
             {% embed 'forms/default/fields.html.twig' with {name: field.name, fields: field.fields} %}
-                {% block field_open %}
+                {% block inner_markup_field_open %}
                     <div id="tab-{{ tabsKey ~ loop.index }}" class="tab__content {{ (storedTab == scope ~ field.name) or active == loop.index ? 'active' : '' }}">
                 {% endblock %}
-                {% block field_close %}
+                {% block inner_markup_field_close %}
                     </div>
                 {% endblock %}
             {% endembed %}
