@@ -1,5 +1,5 @@
 # v3.0.8
-## mm/dd/2019
+## 08/14/2019
 
 1. [](#improved)
     * Change form save action location to `user-data://` stream [#353](https://github.com/getgrav/grav-plugin-form/issues/353)
