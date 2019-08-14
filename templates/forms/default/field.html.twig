@@ -180,7 +180,7 @@
 {% endset %}
 
 {% block field %}
-  {{ dump(field) }}
+
   {% embed field_layout_template|default('forms/layouts/field.html.twig') %}
 
     {% block contents %}
