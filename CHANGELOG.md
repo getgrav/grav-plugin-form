@@ -1,3 +1,10 @@
+# v4.0.0-rc.1
+## mm/dd/2019
+
+1. [](#improved)
+    * Refactored the base `templates/forms/default` twig templates to make things more extensible
+    * Added a new `templates/forms/layouts` set of twit templates to allow for easier customization
+
 # v3.0.8
 ## mm/dd/2019
 
