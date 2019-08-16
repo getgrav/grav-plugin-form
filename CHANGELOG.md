@@ -6,6 +6,12 @@
     * Added a new `templates/forms/layouts` set of twit templates to allow for easier customization
     * Removed jQuery dependency for the reCaptcha field and VanillaJS-ified it instead
 
+# v3.0.9
+## mm/dd/2019
+
+1. [](#improved)
+    * Removed jQuery dependency for the reCaptcha field and VanillaJS-ified it instead
+
 # v3.0.8
 ## 08/14/2019
 
