@@ -15,38 +15,59 @@
       {#{% do assets.addJs('https://www.google.com/recaptcha/api.js?render='~site_key) %}#}
       <script src='https://www.google.com/recaptcha/api.js?render={{ site_key }}&theme={{ theme }}'></script>
       <script>
-          jQuery('form').each(function(index, form) {
-              form = jQuery(form);
-
-              form.on('submit', function() {
+          (document.querySelectorAll('form') || []).forEach(function(form, index) {
+              var submit = function(event) {
                   event.preventDefault();
-                  var form = jQuery(this);
                   grecaptcha.ready(function () {
-                      grecaptcha.execute('{{ site_key }}', {action: '{{ action }}'}).then(function (token) {
-                          form.prepend('<input type="hidden" name="data[token]" value="' + token + '">');
-                          form.prepend('<input type="hidden" name="data[action]" value="{{ action }}">');
-                          form.off('submit').submit();
+                      grecaptcha.execute('{{ site_key }}', { action: '{{ action }}' }).then(function(token) {
+                          var tokenElement = document.createElement('input');
+                          tokenElement.setAttribute('type', 'hidden');
+                          tokenElement.setAttribute('name', 'data[token]');
+                          tokenElement.setAttribute('value', token);
+
+                          var actionElement = document.createElement('input');
+                          actionElement.setAttribute('type', 'hidden');
+                          actionElement.setAttribute('name', 'data[action]');
+                          actionElement.setAttribute('value', '{{ action }}');
+
+                          form.insertBefore(tokenElement, form.firstChild);
+                          form.insertBefore(actionElement, form.firstChild);
+                          form.removeEventListener('submit', submit);
+                          form.submit();
                       });
                   });
-              });
+              };
+
+              form.addEventListener('submit', submit);
           });
       </script>
   {% elseif config.plugins.form.recaptcha.version == '2-invisible' %}
       <script>
           function captchaOnloadCallback_{{ formName }}() {
-              var form = jQuery('form#{{ form.id }}');
-              form.find('[type="submit"]').on('click', function(event) {
-                  event.preventDefault();
+              var form = document.querySelector('form#{{ form.id }}');
+              var submits = form.querySelectorAll('[type="submit"]') || [];
+              submits.forEach(function(submit) {
+                  submit.addEventListener('click', function(event) {
+                      event.preventDefault();
+                      var captchaElement = form.querySelector('#g-recaptcha-{{ formName }}');
 
-                  form.append('<div id="g-recaptcha-{{ formName }}"></div>');
-                  var widgetReference = grecaptcha.render('g-recaptcha-{{ formName }}', {
-                      sitekey: '{{ site_key }}', size: 'invisible',
-                      callback: function(/* token */) {
-                          form.submit();
+                      if (captchaElement) {
+                          captchaElement.remove();
                       }
-                  });
 
-                  grecaptcha.execute(widgetReference);
+                      captchaElement = document.createElement('div');
+                      captchaElement.setAttribute('id', 'g-recaptcha-{{ formName }}');
+                      form.appendChild(captchaElement);
+
+                      var widgetReference = grecaptcha.render('g-recaptcha-{{ formName }}', {
+                          sitekey: '{{ site_key }}', size: 'invisible',
+                          callback: function(/* token */) {
+                              form.submit();
+                          }
+                      });
+
+                      grecaptcha.execute(widgetReference);
+                  });
               });
           }
       </script>
