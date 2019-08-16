@@ -4,6 +4,7 @@
 1. [](#improved)
     * Refactored the base `templates/forms/default` twig templates to make things more extensible
     * Added a new `templates/forms/layouts` set of twit templates to allow for easier customization
+    * Removed jQuery dependency for the reCaptcha field and VanillaJS-ified it instead
 
 # v3.0.8
 ## 08/14/2019
