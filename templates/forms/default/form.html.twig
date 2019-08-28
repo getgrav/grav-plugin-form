@@ -112,23 +112,22 @@
   {%- endblock %}
 
   {% block embed_fields %}
-    {{ override_inner_markup_fields_start }}
-
-    {{ override_inner_markup_fields }}
+    {{ override_inner_markup_fields_start|raw }}
+    {{ override_inner_markup_fields|raw }}
 
     {% include "forms/fields/formname/formname.html.twig" %}
     {% include "forms/fields/formtask/formtask.html.twig" %}
     {% include 'forms/fields/uniqueid/uniqueid.html.twig' %}
     {{ nonce_field(form.getNonceAction() ?? 'form', form.getNonceName() ?? 'form-nonce')|raw }}
 
-    {{ override_inner_markup_fields_end }}
+    {{ override_inner_markup_fields_end|raw }}
   {% endblock %}
 
   {% block embed_buttons %}
-    {{ override_inner_markup_buttons_start }}
+    {{ override_inner_markup_buttons_start|raw }}
 
     {% for button in form.buttons %}
-      {% if button.outerclasses is defined %}<div class=" {{ button.outerclasses }}">{% endif %}
+      {% if button.outerclasses is defined %}<div class="{{ button.outerclasses }}">{% endif %}
 
       {% if button.url %}
       {% set button_url = button.url starts with 'http' ? button.url : base_url ~ button.url %}
@@ -151,9 +150,9 @@
         {% block embed_button_content -%}
           {%- set button_value = button.value|t|default('Submit') -%}
           {%- if button.html -%}
-            {{- button_value|raw|trim -}}
+            {{- button_value|trim|raw -}}
           {%- else -%}
-            {{- button_value|trim -}}
+            {{- button_value|trim|e -}}
           {%- endif -%}
         {%- endblock %}
 

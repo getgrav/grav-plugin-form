@@ -92,7 +92,7 @@
 
 {# Field Label #}
 {% set form_field_label = field.markdown ? field.label|markdown(false) : field.label %}
-{% set form_field_label = form_field_label|default(field.name|capitalize)|t|e('html_attr') %}
+{% set form_field_label = form_field_label|default(field.name|capitalize)|t|e %}
 
 {# Field Help #}
 {% if field.help %}
@@ -184,35 +184,35 @@
   {% embed field_layout_template|default('forms/layouts/field.html.twig') %}
 
     {% block contents %}
-     {{ embed_field_contents|trim ? embed_field_contents|trim : parent() }}
+     {{ embed_field_contents|trim ? embed_field_contents|trim|raw : parent() }}
     {% endblock %}
 
     {% block label %}
-      {{ embed_field_label|trim ? embed_field_label|trim : parent() }}
+      {{ embed_field_label|trim ? embed_field_label|trim|raw : parent() }}
     {% endblock %}
 
     {% block global_attributes %}
-      {{ embed_field_global_attributes|trim ? embed_field_global_attributes|trim : parent() }}
+      {{ embed_field_global_attributes|trim ? embed_field_global_attributes|trim|raw : parent() }}
     {% endblock %}
 
     {% block group %}
-      {{ embed_field_group|trim ? embed_field_group|trim : parent() }}
+      {{ embed_field_group|trim ? embed_field_group|trim|raw : parent() }}
     {% endblock %}
 
     {% block input %}
-      {{ embed_field_input|trim ? embed_field_input|trim : parent() }}
+      {{ embed_field_input|trim ? embed_field_input|trim|raw : parent() }}
     {% endblock %}
 
     {% block input_attributes %}
-      {{ embed_field_input_attributes|trim ? embed_field_input_attributes|trim : parent() }}
+      {{ embed_field_input_attributes|trim ? embed_field_input_attributes|trim|raw : parent() }}
     {% endblock %}
 
     {% block prepend %}
-      {{ embed_field_prepend|trim ? embed_field_prepend|trim : parent() }}
+      {{ embed_field_prepend|trim ? embed_field_prepend|trim|raw : parent() }}
     {% endblock %}
 
     {% block append %}
-      {{ embed_field_append|trim ? embed_field_append|trim : parent() }}
+      {{ embed_field_append|trim ? embed_field_append|trim|raw : parent() }}
     {% endblock %}
 
   {% endembed %}

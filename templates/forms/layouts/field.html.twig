@@ -6,7 +6,7 @@
         <label class="{{ layout_form_field_label_classes }}{{ form_field_label_trim }}" {% if field.id %}for="{{ form_field_for }}"{% endif %}>
           {%- block label -%}
             {%- if form_field_help -%}
-              <span class="tooltip" data-tooltip="{{ form_field_help }}">{{ form_field_label }}</span>
+              <span class="tooltip" data-tooltip="{{ form_field_help|e }}">{{ form_field_label }}</span>
             {%- else -%}
               {{ form_field_label }}
             {%- endif -%}
@@ -26,14 +26,13 @@
             {% block prepend %}{% endblock prepend %}
             <input
               name="{{ (scope ~ field.name)|fieldName }}"
-              value="{{ value|join(', ')|e('html_attr') }}"
-
+              value="{{ value|join(', ')|e }}"
               {% block input_attributes %}{% endblock %}
             />
             {% block append %}{% endblock append %}
             {% if inline_errors and errors %}
             <div class="{{ form_field_inline_error_classes }}">
-              <p class="form-message"><i class="fa fa-exclamation-circle"></i> {{ errors|first }}</p>
+              <p class="form-message"><i class="fa fa-exclamation-circle"></i> {{ errors|first|raw }}</p>
             </div>
             {% endif %}
           </div>
@@ -42,7 +41,7 @@
       {% if field.description %}
         <div class="{{ form_field_extra_wrapper_classes }}">
           <span class="form-description">
-            {{ form_field_description }}
+            {{ form_field_description|raw }}
           </span>
         </div>
       {% endif %}
