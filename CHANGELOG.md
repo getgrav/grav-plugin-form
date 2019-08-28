@@ -1,9 +1,15 @@
-# v4.0.0-rc.2
+# v4.0.0-rc.3
 ## 08/27/2019
 
 1. [](#improved)
     * Removed jQuery dependency for the reCaptcha field and VanillaJS-ified it instead
     * Removed a stray `dump()` command
+    
+# v4.0.0-rc.2
+## 08/16/2019   
+     
+1. [](#bugfix)
+    * Bug in release process
 
 # v4.0.0-rc.1
 ## 08/14/2019
