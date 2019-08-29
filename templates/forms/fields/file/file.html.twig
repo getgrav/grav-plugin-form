@@ -58,21 +58,7 @@
 
 {% do config.set('forms.dropzone.enabled', true) %}
 
-{% block label %}
-    {% if field.markdown %}
-        {% if grav.twig.twig.filters['tu'] is defined %}
-            {{ field.label|tu|markdown(false) }}
-        {% else %}
-            {{ field.label|t|markdown(false) }}
-        {% endif %}
-    {% else %}
-        {% if grav.twig.twig.filters['tu'] is defined %}
-            {{ field.label|tu|e }}
-        {% else %}
-            {{ field.label|t|e }}
-        {% endif %}
-    {% endif %}
-{% endblock %}
+{% use "forms/fields/label/label.html.twig" %}
 
 {% block input %}
     {% set page_can_upload = exists or (type == 'page' and not exists and not (field.destination starts with '@self' or field.destination starts with 'self@')) %}

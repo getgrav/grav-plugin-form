@@ -1,20 +1,6 @@
 {% extends "forms/field.html.twig" %}
 
-{% block label %}
-    {% if field.markdown %}
-        {% if grav.twig.twig.filters['tu'] is defined %}
-            {{ field.label|tu|markdown(false) }}
-        {% else %}
-            {{ field.label|t|markdown(false) }}
-        {% endif %}
-    {% else %}
-        {% if grav.twig.twig.filters['tu'] is defined %}
-            {{ field.label|tu|e }}
-        {% else %}
-            {{ field.label|t|e }}
-        {% endif %}
-    {% endif %}
-{% endblock %}
+{% use "forms/fields/label/label.html.twig" %}
 
 {% block input_attributes %}
     type="month"
