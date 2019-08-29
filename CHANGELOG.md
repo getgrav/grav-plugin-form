@@ -1,5 +1,5 @@
 # v4.0.0-rc.4
-## mm/dd/2019
+## 08/29/2019
 
 1. [](#bugfix)
     * Fixed a number of escaping issues [#368](https://github.com/getgrav/grav-plugin-form/issues/368)
