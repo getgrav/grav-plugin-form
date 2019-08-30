@@ -398,7 +398,14 @@ class FormPlugin extends Plugin
                 $hostname = $uri->host();
                 $ip = Uri::ip();
 
-                $recaptcha = new ReCaptcha($secret);
+                $captcha_request_method = $captcha_config['request_method'];
+                if ($captcha_request_method == 'curl') {
+                    $recaptcha = new ReCaptcha($secret, new \ReCaptcha\RequestMethod\CurlPost());
+                } elseif ($captcha_request_method == 'socket') {
+                    $recaptcha = new ReCaptcha($secret, new \ReCaptcha\RequestMethod\SocketPost());
+                } else {
+                    $recaptcha = new ReCaptcha($secret);
+                }
 
                 // get captcha version
                 $captcha_version = $captcha_config['version'] ?? 2;

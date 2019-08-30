@@ -184,7 +184,6 @@ form:
           options:
             light: PLUGIN_FORM.RECAPTCHA_THEME_LIGHT
             dark: PLUGIN_FORM.RECAPTCHA_THEME_DARK
-          recaptcha.site_key:
         recaptcha.site_key:
           type: text
           label: PLUGIN_FORM.RECAPTCHA_SITE_KEY
@@ -195,3 +194,11 @@ form:
           label: PLUGIN_FORM.RECAPTCHA_SECRET_KEY
           help: PLUGIN_FORM.RECAPTCHA_SECRET_KEY_HELP
           default: ''
+        recaptcha.request_method:
+          type: select
+          label: PLUGIN_FORM.RECAPTCHA_REQUEST_METHOD
+          default: file
+          options:
+            file: PLUGIN_FORM.RECAPTCHA_REQUEST_METHOD_POST_PER_FILE
+            curl: PLUGIN_FORM.RECAPTCHA_REQUEST_METHOD_POST_PER_CURL
+            socket: PLUGIN_FORM.RECAPTCHA_REQUEST_METHOD_POST_PER_SOCKET

@@ -18,3 +18,4 @@ recaptcha:
     theme: light
     site_key:
     secret_key:
+    request_method: file
