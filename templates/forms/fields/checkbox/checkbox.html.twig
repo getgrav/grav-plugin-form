@@ -26,17 +26,9 @@
             />
         <label style="display:inline;" class="inline" for="{{ id|e }}">
             {% if field.markdown %}
-                {% if grav.twig.twig.filters['tu'] is defined %}
-                    {{ field.label|tu|markdown(false) }}
-                {% else %}
-                    {{ field.label|t|markdown(false) }}
-                {% endif %}
+                {{ field.label|t|markdown(false) }}
             {% else %}
-                {% if grav.twig.twig.filters['tu'] is defined %}
-                    {{ field.label|tu|e }}
-                {% else %}
-                    {{ field.label|t|e }}
-                {% endif %}
+                {{ field.label|t|e }}
             {% endif %}
             {{ field.validate.required in ['on', 'true', 1] ? '<span class="required">*</span>' }}
         </label>

@@ -11,17 +11,9 @@
                     <div>
                         {% block field_label %}
                             {% if field.markdown %}
-                                {% if grav.twig.twig.filters['tu'] is defined %}
-                                    <strong>{{ field.label|tu|markdown(false) }}</strong>:
-                                {% else %}
-                                    <strong>{{ field.label|t|markdown(false) }}</strong>:
-                                {% endif %}
+                                <strong>{{ field.label|t|markdown(false) }}</strong>:
                             {% else %}
-                                {% if grav.twig.twig.filters['tu'] is defined %}
-                                    <strong>{{ field.label|tu|e }}</strong>:
-                                {% else %}
-                                    <strong>{{ field.label|t|e }}</strong>:
-                                {% endif %}
+                                <strong>{{ field.label|t|e }}</strong>:
                             {% endif %}
                         {% endblock %}
 
