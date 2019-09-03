@@ -654,7 +654,7 @@ class Form implements FormInterface, \ArrayAccess
         $upload['file']['path'] = $path;
 
         // Special Sanitization for SVG
-        if (method_exists('Grav\Common\Security', 'sanitizeSVG2') && Utils::contains($mime, 'svg', false)) {
+        if (method_exists('Grav\Common\Security', 'sanitizeSVG') && Utils::contains($mime, 'svg', false)) {
             Security::sanitizeSVG($upload['file']['tmp_name']);
         }
 
