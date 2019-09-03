@@ -1,3 +1,9 @@
+# v4.0.0-rc.5
+## mm/dd/2019
+
+1. [](#new)
+    * Add ability to Sanitize SVGs on upload (Grav 1.7+ required)
+
 # v4.0.0-rc.4
 ## 08/29/2019
 
