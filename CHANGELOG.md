@@ -36,6 +36,7 @@
 
 1. [](#improved)
     * Removed jQuery dependency for the reCaptcha field and VanillaJS-ified it instead
+    * Updated to ReCaptcha library version `1.2.3`
 
 # v3.0.8
 ## 08/14/2019
