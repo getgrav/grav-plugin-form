@@ -1,3 +1,7 @@
+{% if field.prepend or field.append or field.copy_to_clipboard %}
+    {% set field = field|merge({'wrapper_classes': 'form-input-addon-wrapper'}) %}
+{% endif %}
+
 {% extends "forms/field.html.twig" %}
 
 {% block prepend %}
@@ -33,9 +37,4 @@
     {% endif %}
 {% endblock %}
 
-{% block input %}
-{% if field.prepend or field.append or field.copy_to_clipboard %}
-    {% set field = field|merge({'wrapper_classes': 'form-input-addon-wrapper'}) %}
-{% endif %}
-{{ parent() }}
-{% endblock %}
+

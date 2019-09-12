@@ -3,7 +3,9 @@
 
 1. [](#new)
     * Add ability to Sanitize SVGs on upload (Grav 1.7+ required)
-
+1. [](#improved)
+    * Refactored field inheritance to make things more reliable
+    
 # v4.0.0-rc.4
 ## 08/29/2019
 

@@ -1,3 +1,4 @@
+{% block field %}
 <div class="form-field {{ layout_form_field_outer_classes|trim -}} {{- form_field_outer_core|trim -}}">
   {% block contents %}
     {% if show_label %}
@@ -48,3 +49,4 @@
     </div>
   {% endblock %}
 </div>
+{% endblock %}
