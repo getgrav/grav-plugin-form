@@ -1,28 +1,28 @@
 [
     {
         "name": "google/recaptcha",
-        "version": "1.2.1",
-        "version_normalized": "1.2.1.0",
+        "version": "1.2.3",
+        "version_normalized": "1.2.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/google/recaptcha.git",
-            "reference": "e7add3be59211482ecdb942288f52da64a35f61a"
+            "reference": "98c4a6573b27e8b0990ea8789c74ea378795134c"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/google/recaptcha/zipball/e7add3be59211482ecdb942288f52da64a35f61a",
-            "reference": "e7add3be59211482ecdb942288f52da64a35f61a",
+            "url": "https://api.github.com/repos/google/recaptcha/zipball/98c4a6573b27e8b0990ea8789c74ea378795134c",
+            "reference": "98c4a6573b27e8b0990ea8789c74ea378795134c",
             "shasum": ""
         },
         "require": {
             "php": ">=5.5"
         },
         "require-dev": {
-            "friendsofphp/php-cs-fixer": "^2.2.20|^2.12",
+            "friendsofphp/php-cs-fixer": "^2.2.20|^2.15",
             "php-coveralls/php-coveralls": "^2.1",
-            "phpunit/phpunit": "^4.8.36|^5.7.27|^6.59|^7"
+            "phpunit/phpunit": "^4.8.36|^5.7.27|^6.59|^7.5.11"
         },
-        "time": "2018-08-05T09:31:53+00:00",
+        "time": "2019-08-16T15:48:25+00:00",
         "type": "library",
         "extra": {
             "branch-alias": {
