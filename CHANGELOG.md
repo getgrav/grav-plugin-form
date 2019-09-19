@@ -1,5 +1,5 @@
 # v3.0.9
-## mm/dd/2019
+## 09/19/2019
 
 1. [](#improved)
     * Removed jQuery dependency for the reCaptcha field and VanillaJS-ified it instead
