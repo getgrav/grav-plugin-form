@@ -19,6 +19,7 @@ use Grav\Framework\Route\Route;
 use Grav\Plugin\Form\Form;
 use Grav\Plugin\Form\Forms;
 use ReCaptcha\ReCaptcha;
+use ReCaptcha\RequestMethod\CurlPost;
 use RocketTheme\Toolbox\File\JsonFile;
 use RocketTheme\Toolbox\File\YamlFile;
 use RocketTheme\Toolbox\File\File;
@@ -399,6 +400,9 @@ class FormPlugin extends Plugin
                 $ip = Uri::ip();
 
                 $recaptcha = new ReCaptcha($secret);
+                if(extension_loaded('curl')){
+                    $recaptcha = new ReCaptcha($secret, new CurlPost());
+                }
 
                 // get captcha version
                 $captcha_version = $captcha_config['version'] ?? 2;
