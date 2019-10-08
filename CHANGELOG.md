@@ -1,5 +1,7 @@
 # v4.0.0-rc.6
 ## 09/19/2019
+1. [](#improved)
+    * Deprecate `select_optgroup` as `select` can handle optgroups now
 1. [](#bugfix)
     * Fixed `Badly encoded JSON data` warning when uploading files [grav#2663](https://github.com/getgrav/grav/issues/2663)
 

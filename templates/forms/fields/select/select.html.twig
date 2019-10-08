@@ -46,14 +46,15 @@
                         {{ avalue|raw }}
                     </option>
                 {% elseif item_value is iterable %}
-                    <optgroup label="{{ key }}">
-                        {%for subkey, suboption in item_value %}
-                            {% set selected = field.selectize ? suboption : subkey %}
-                            {% set item_value = field.selectize and field.multiple ? suboption : subkey %}
-                            <option {% if subkey == value or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ suboption }}">
-                                {{ suboption|t|raw }}
-                            </option>
-                        {% endfor %}
+                    {% set optgroup_label = item_value|keys|first %}
+                    <optgroup label="{{ optgroup_label }}">
+                      {% for subkey, suboption in field.options[key][optgroup_label] %}
+                          {% set selected = field.selectize ? suboption : subkey %}
+                          {% set item_value = field.selectize and field.multiple ? suboption : subkey %}
+                          <option {% if subkey == value or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ suboption }}">
+                            {{ suboption|t|raw }}
+                          </option>
+                      {% endfor %}
                     </optgroup>
                 {% else %}
                     {% set selected = field.selectize ? item_value : key %}
