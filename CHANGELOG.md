@@ -2,7 +2,7 @@
 ## 09/19/2019
 
 1. [](#new)
-    * Added `tabindex` to globalattributes of default field
+    * Added `tabindex` to global attributes of default field
 1. [](#improved)
     * Deprecate `select_optgroup` as `select` can handle optgroups now
 1. [](#bugfix)
