@@ -22,6 +22,7 @@
                 {% if field.autofocus in ['on', 'true', 1] %}autofocus="autofocus"{% endif %}
                 {% if field.novalidate in ['on', 'true', 1] %}novalidate="novalidate"{% endif %}
                 {% if required %}required="required"{% endif %}
+                {% if field.tabindex %}tabindex="{{ field.tabindex }}" %}{% endif %}
             {% endblock %}
             />
         <label style="display:inline;" class="inline" for="{{ id|e }}">

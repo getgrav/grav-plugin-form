@@ -6,10 +6,10 @@
         {% endif %}
 
         {% set value = form ? form.value(field_name) : data.value(field_name) %}
-        {% block field_open %}{% endblock %}
+        {% block inner_markup_field_open %}{% endblock %}
         {% block field %}
             {% include ["forms/fields/#{field.type}/#{field.type}.html.twig", 'forms/fields/text/text.html.twig'] %}
         {% endblock %}
-        {% block field_close %}{% endblock %}
+        {% block inner_markup_field_close %}{% endblock %}
     {% endif %}
 {% endfor %}

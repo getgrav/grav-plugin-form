@@ -1,3 +1,21 @@
+# v4.0.0
+## 10/06/2019
+
+1. [](#new)
+    * Added `tabindex` to global attributes of default field
+    * Add ability to Sanitize SVGs on upload (Grav 1.7+ required)    
+1. [](#improved)
+    * Deprecate `select_optgroup` as `select` can handle optgroups now
+    * Added missing tabindex checks
+    * Refactored field inheritance to make things more reliable
+    * Removed jQuery dependency for the reCaptcha field and VanillaJS-ified it instead
+    * Removed a stray `dump()` command
+    * Refactored the base `templates/forms/default` twig templates to make things more extensible
+    * Added a new `templates/forms/layouts` set of twit templates to allow for easier customization
+1. [](#bugfix)
+    * Fixed `Badly encoded JSON data` warning when uploading files [grav#2663](https://github.com/getgrav/grav/issues/2663)
+    * Fixed a number of escaping issues [#368](https://github.com/getgrav/grav-plugin-form/issues/368)
+
 # v3.0.9
 ## 09/19/2019
 

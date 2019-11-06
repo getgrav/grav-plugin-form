@@ -11,6 +11,9 @@
 {% set client_side_validation = form.client_side_validation is not null ? form.client_side_validation : config.plugins.form.client_side_validation|default(true) %}
 {% set inline_errors = form.inline_errors is not null ? form.inline_errors : config.plugins.form.inline_errors(false) %}
 
+{% set data = data ?? form.data %}
+{% set context = context ?? data %}
+
 {% for field in form.fields %}
     {% if (method == 'POST' and field.type == 'file') %}
         {% set multipart = ' enctype="multipart/form-data"' %}
@@ -44,88 +47,125 @@
     window.GravForm.translations = Object.assign({}, window.GravForm.translations || {}, { PLUGIN_FORM: {} });
 ", {'group': 'bottom', 'position': 'before'}) %}
 
-<form name="{{ form.name }}"
-      action="{{ action | trim('/', 'right') }}"
-      method="{{ method }}"{{ multipart }}
-      {% if form.id %}id="{{ form.id }}"{% endif %}
-      {% block form_classes %}
-      class="{{ form_outer_classes }} {{ form.classes }}"
-      {% endblock %}
-      {% if form.novalidate %}novalidate{% endif %}
-      {% if form.keep_alive %}data-grav-keepalive="true"{% endif %}
->
+{# Backwards Compatibility for block overrides #}
+{% set override_form_classes %}
+  {% block form_classes -%}
+    {{ form_outer_classes }} {{ form.classes }}
+  {%- endblock %}
+{% endset %}
 
+{% set override_inner_markup_fields_start %}
   {% block inner_markup_fields_start %}{% endblock %}
+{% endset %}
 
-  {% set data = data ?? form.data %}
-  {% set context = context ?? data %}
-
-  {% block inner_markup_fields %}
-  {% for field_name, field in form.fields %}
-    {% set field_name = field.name ?? field_name %}
-    {% if field_name and not field.validate.ignore %}
-      {%- if field_name starts with '.' -%}
-        {% set field_name = field_name[1:] %}
-        {% set field = field|merge({ name: field_name }) %}
-      {% endif %}
-
-      {% set value = form ? form.value(field_name) : data.value(field_name) %}
-      {% block inner_markup_field_open %}{% endblock %}
-      {% block process_field %}
-        {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
-      {% endblock %}
-      {% block inner_markup_field_close %}{% endblock %}
-    {% endif %}
-  {% endfor %}
-  {% endblock %}
-
-  {% include "forms/fields/formname/formname.html.twig" %}
-  {% include "forms/fields/formtask/formtask.html.twig" %}
-
+{% set override_inner_markup_fields_end %}
   {% block inner_markup_fields_end %}{% endblock %}
+{% endset %}
 
+{% set override_inner_markup_fields %}
+  {% block inner_markup_fields %}
+    {% for field_name, field in form.fields %}
+      {% set field_name = field.name ?? field_name %}
+      {% if field_name and not field.validate.ignore %}
+        {%- if field_name starts with '.' -%}
+          {% set field_name = field_name[1:] %}
+          {% set field = field|merge({ name: field_name }) %}
+        {% endif %}
+
+        {% set value = form ? form.value(field_name) : data.value(field_name) %}
+        {% block inner_markup_field_open %}{% endblock %}
+        {% block field %}
+          {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
+        {% endblock %}
+        {% block inner_markup_field_close %}{% endblock %}
+      {% endif %}
+    {% endfor %}
+  {% endblock %}
+{% endset %}
+
+{% set override_inner_markup_buttons_start %}
   {% block inner_markup_buttons_start %}
   <div class="{{ form_button_outer_classes ?: 'buttons'}}">
   {% endblock %}
+{% endset %}
 
-  {% for button in form.buttons %}
-      {% if button.outerclasses is defined %}<div class=" {{ button.outerclasses }}">{% endif %}
-          {% if button.url %}
-              <a href="{{ button.url starts with 'http' ? button.url : base_url ~ button.url }}">
-          {% endif %}
-          <button
-                {% if button.id %}id="{{ button.id }}"{% endif %}
-                {% block button_classes %}
-                class="{{ form_button_classes ?: 'button' }} {{ button.classes }}"
-                {% endblock %}
-                {% if button.disabled %}disabled="disabled"{% endif %}
-
-                type="{{ button.type|default('submit') }}"
-
-                {% if button.task %}
-                    name="task" value="{{ button.task }}"
-                {% endif %}
-            >
-              {% if button.html %}
-                {{ button.value|t|default('Submit')|raw }}
-              {% else %}
-                {{ button.value|t|default('Submit') }}
-              {% endif %}
-          </button>
-          {% if button.url %}
-              </a>
-          {% endif %}
-      {% if button.outerclasses is defined %}</div>{% endif %}
-  {% endfor %}
-
+{% set override_inner_markup_buttons_end %}
   {% block inner_markup_buttons_end %}
   </div>
   {% endblock %}
+{% endset %}
 
-  {% include 'forms/fields/uniqueid/uniqueid.html.twig' %}
+{# Embed for HTML layout #}
+{% embed 'forms/layouts/form.html.twig' %}
 
-  {{ nonce_field(form.getNonceAction() ?? 'form', form.getNonceName() ?? 'form-nonce')|raw }}
-</form>
+  {% block embed_form_core %}
+    name="{{ form.name }}"
+    action="{{ action | trim('/', 'right') }}"
+    method="{{ method }}"{{ multipart }}
+    {% if form.id %}id="{{ form.id }}"{% endif %}
+    {% if form.novalidate %}novalidate{% endif %}
+    {% if form.keep_alive %}data-grav-keepalive="true"{% endif %}
+  {% endblock %}
+
+  {% block embed_form_classes -%}
+    class="{{ parent() }} {{ override_form_classes|trim }}"
+  {%- endblock %}
+
+  {% block embed_fields %}
+    {{ override_inner_markup_fields_start|raw }}
+    {{ override_inner_markup_fields|raw }}
+
+    {% include "forms/fields/formname/formname.html.twig" %}
+    {% include "forms/fields/formtask/formtask.html.twig" %}
+    {% include 'forms/fields/uniqueid/uniqueid.html.twig' %}
+    {{ nonce_field(form.getNonceAction() ?? 'form', form.getNonceName() ?? 'form-nonce')|raw }}
+
+    {{ override_inner_markup_fields_end|raw }}
+  {% endblock %}
+
+  {% block embed_buttons %}
+    {{ override_inner_markup_buttons_start|raw }}
+
+    {% for button in form.buttons %}
+      {% if button.outerclasses is defined %}<div class="{{ button.outerclasses }}">{% endif %}
+
+      {% if button.url %}
+      {% set button_url = button.url starts with 'http' ? button.url : base_url ~ button.url %}
+      {% endif %}
+
+      {% embed 'forms/layouts/button.html.twig' %}
+        {% block embed_button_core %}
+          {% if button.id %}id="{{ button.id }}"{% endif %}
+          {% if button.disabled %}disabled="disabled"{% endif %}
+          {% if button.task %}name="task" value="{{ button.task }}"{% endif %}
+          type="{{ button.type|default('submit') }}"
+        {% endblock %}
+
+        {% block embed_button_classes %}
+          {% block button_classes %}
+            class="{{ form_button_classes ?: 'button' }} {{ button.classes }}"
+          {% endblock %}
+        {% endblock %}
+
+        {% block embed_button_content -%}
+          {%- set button_value = button.value|t|default('Submit') -%}
+          {%- if button.html -%}
+            {{- button_value|trim|raw -}}
+          {%- else -%}
+            {{- button_value|trim|e -}}
+          {%- endif -%}
+        {%- endblock %}
+
+      {% endembed %}
+
+      {% if button.outerclasses is defined %}</div>{% endif %}
+    {% endfor %}
+
+    {{ override_inner_markup_buttons_end }}
+  {% endblock %}
+
+{% endembed %}
+
 
 {% if config.forms.dropzone.enabled %}
 <div id="dropzone-template" style="display:none;">
