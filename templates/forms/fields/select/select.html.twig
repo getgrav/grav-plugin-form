@@ -17,6 +17,7 @@
                 {% if required %}required="required"{% endif %}
                 {% if field.multiple in ['on', 'true', 1] %}multiple="multiple"{% endif %}
                 {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
+                {% if field.tabindex %}tabindex="{{ field.tabindex }}" %}{% endif %}
                 {% if field.form %}form="{{ field.form }}"{% endif %}
                 {% if field.key %}
                     data-key-observe="{{ (scope ~ field.name)|fieldName }}"
@@ -46,14 +47,15 @@
                         {{ avalue|raw }}
                     </option>
                 {% elseif item_value is iterable %}
-                    <optgroup label="{{ key }}">
-                        {%for subkey, suboption in item_value %}
-                            {% set selected = field.selectize ? suboption : subkey %}
-                            {% set item_value = field.selectize and field.multiple ? suboption : subkey %}
-                            <option {% if subkey == value or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ suboption }}">
-                                {{ suboption|t|raw }}
-                            </option>
-                        {% endfor %}
+                    {% set optgroup_label = item_value|keys|first %}
+                    <optgroup label="{{ optgroup_label }}">
+                      {% for subkey, suboption in field.options[key][optgroup_label] %}
+                          {% set selected = field.selectize ? suboption : subkey %}
+                          {% set item_value = field.selectize and field.multiple ? suboption : subkey %}
+                          <option {% if subkey == value or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ suboption }}">
+                            {{ suboption|t|raw }}
+                          </option>
+                      {% endfor %}
                     </optgroup>
                 {% else %}
                     {% set selected = field.selectize ? item_value : key %}

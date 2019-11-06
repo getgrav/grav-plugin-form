@@ -17,6 +17,7 @@
                 {% if field.novalidate in ['on', 'true', 1] %}novalidate="novalidate"{% endif %}
                 {% if field.readonly in ['on', 'true', 1] %}readonly="readonly"{% endif %}
                 {% if field.autocomplete in ['on', 'off'] %}autocomplete="{{ field.autocomplete }}"{% endif %}
+                {% if field.tabindex %}tabindex="{{ field.tabindex }}" %}{% endif %}
                 {% if required %}required="required"{% endif %}
                 {% if field.validate.pattern %}pattern="{{ field.validate.pattern }}"{% endif %}
                 {% if field.validate.message %}title="{{ field.validate.message|t|e }}"{% endif %}
