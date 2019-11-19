@@ -157,7 +157,7 @@ class FormPlugin extends Plugin
 
         // Force never_cache_twig if modular form (recursively up)
         $current = $page;
-        while ($current && $current->modular()) {
+        while ($current && $current->modularTwig()) {
             $header = $current->header();
             $header->never_cache_twig = true;
 

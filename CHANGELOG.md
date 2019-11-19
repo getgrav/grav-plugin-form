@@ -1,3 +1,9 @@
+# v4.0.1
+## mm/dd/2019
+
+1. [](#new)
+    * Improve Grav 1.7 support by not using deprecated `$page->modular()` call
+
 # v4.0.0
 ## 11/06/2019
 

@@ -134,7 +134,7 @@ class Form implements FormInterface, \ArrayAccess
         }
 
         // If we're on a modular page, find the real page.
-        while ($page && $page->modular()) {
+        while ($page && $page->modularTwig()) {
             $header = $page->header();
             $header->never_cache_twig = true;
             $page = $page->parent();
