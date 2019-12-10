@@ -4,7 +4,7 @@
 
 {% include 'partials/form-messages.html.twig' %}
 
-{% set scope = scope ?: 'data.' %}
+{% set scope = scope ?: form.scope is defined ? form.scope : 'data.' %}
 {% set multipart = '' %}
 {% set blueprints = blueprints ?? form.blueprint() %}
 {% set method = form.method|upper|default('POST') %}
