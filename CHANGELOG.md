@@ -1,8 +1,12 @@
 # v4.0.1
 ## mm/dd/2019
 
-1. [](#new)
+1. [](#improved)
     * Improve Grav 1.7 support by not using deprecated `$page->modular()` call
+    * Use form scope if it is defined
+1. [](#bugfix)
+    * Fixed bad HTML in select, radio, key, toggle, checkbox ad textarea when using tabindex attribute
+    * Fixed bad looking `tabs` field with a single tab in admin
 
 # v4.0.0
 ## 11/06/2019
