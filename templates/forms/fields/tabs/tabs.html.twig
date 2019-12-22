@@ -15,7 +15,7 @@
         {% set tabs = tabs|merge([tab]) %}
         {% endif %}
     {% endfor %}
-    {% set count = tabs|count %}
+    {% set count = tabs|length %}
 
     {% if count == 0 %}
         {# Nothing to display #}
