@@ -19,7 +19,7 @@
 
     {% if count == 0 %}
         {# Nothing to display #}
-    {% elseif count == 1 %}
+    {% elseif count == 1 and not admin %}
         {% for field in (tabs|first).fields %}
             {% if field.type %}
                 {% set value = field.name ? (form ? form.value(field.name) : data.value(field.name)) : data.toArray %}

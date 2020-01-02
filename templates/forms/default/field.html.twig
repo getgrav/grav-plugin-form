@@ -124,7 +124,7 @@
   {% if field.autocomplete is defined %}autocomplete="{{ field.autocomplete }}"{% endif %}
   {% if field.autocapitalize in ['off', 'characters', 'words', 'sentences'] %}autocapitalize="{{ field.autocapitalize }}"{% endif %}
   {% if field.inputmode in ['none', 'text', 'decimal', 'numeric', 'tel', 'search', 'email', 'url'] %}inputmode="{{ field.inputmode }}"{% endif %}
-  {% if field.tabindex %}tabindex="{{ field.tabindex }}" %}{% endif %}
+  {% if field.tabindex %}tabindex="{{ field.tabindex }}"{% endif %}
   {% if field.spellcheck in ['true', 'false'] %}spellcheck="{{ field.spellcheck }}"{% endif %}
   {% if required %}required="required"{% endif %}
   {% if field.validate.pattern %}pattern="{{ field.validate.pattern|e }}"{% endif %}
