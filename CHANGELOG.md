@@ -2,7 +2,7 @@
 ## mm/dd/2020
 
 1. [](#improved)
-    * Allow checkbox field to have custom value
+    * Allow checkbox field to have custom value, default to 1
 
 # v4.0.1
 ## 01/02/2020
