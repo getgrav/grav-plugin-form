@@ -1,3 +1,9 @@
+# v4.0.2
+## mm/dd/2020
+
+1. [](#improved)
+    * Allow checkbox field to have custom value
+
 # v4.0.1
 ## 01/02/2020
 
