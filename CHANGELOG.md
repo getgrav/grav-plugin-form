@@ -3,7 +3,9 @@
 
 1. [](#improved)
     * Allow checkbox field to have custom value, default to 1
-
+1. [](#bugfix)
+    * Fixed `toggle` field not working with `toggleable: true`
+    
 # v4.0.1
 ## 01/02/2020
 
