@@ -5,6 +5,7 @@
     * Allow checkbox field to have custom value, default to 1
 1. [](#bugfix)
     * Fixed `toggle` field not working with `toggleable: true`
+    * Fixed fatal error when form type is disabled
     
 # v4.0.1
 ## 01/02/2020
