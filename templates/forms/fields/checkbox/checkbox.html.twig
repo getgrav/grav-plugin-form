@@ -9,9 +9,9 @@
         <input
             {# required attribute structures #}
             name="{{ (scope ~ field.name)|fieldName }}"
-            value="{{ value|join(', ') }}"
+            value="{{ field.value ?? '1' }}"
             type="checkbox"
-            {% if value == true %} checked="checked" {% endif %}
+            {% if value == field.value ?? '1' %} checked="checked" {% endif %}
 
             {# input attribute structures #}
             {% block input_attributes %}

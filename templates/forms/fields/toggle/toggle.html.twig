@@ -7,9 +7,6 @@
 
 {% import _self as macro %}
 
-{% set value = value ?? field.default %}
-{% set value = (value is same as(false) ? 0 : value) %}
-
 {% set has_hidden = false %}
 {% for key, text in field.options %}
   {% if key is empty %}
@@ -23,6 +20,7 @@
 {% endblock %}
 
 {% block input %}
+    {% set value = (value is same as(false) ? 0 : value) %}
 
   <div class="switch-toggle switch-grav {{ field.size }} switch-{{ field.options|length }} {{ field.classes }}">
     {% set maxLen = 0 %}
