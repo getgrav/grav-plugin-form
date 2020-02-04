@@ -36,7 +36,8 @@ use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
  * @property-read Data $data
  * @property-read array $files
  * @property-read Data $value
- * @property-read array $errors
+ * @property array $errors
+ * @property array $upload_errors
  * @property-read array $fields
  * @property-read Blueprint $blueprint
  * @property-read PageInterface $page
@@ -860,7 +861,7 @@ class Form implements FormInterface, \ArrayAccess
 
     /**
      * @return string
-     * @deprecated 3.0 Use $this->getName() instead
+     * @deprecated 3.0 Use $form->getName() instead
      */
     public function name(): string
     {
@@ -869,7 +870,7 @@ class Form implements FormInterface, \ArrayAccess
 
     /**
      * @return array
-     * @deprecated 3.0 Use $this->getFields() instead
+     * @deprecated 3.0 Use $form->getFields() instead
      */
     public function fields(): array
     {
@@ -878,7 +879,7 @@ class Form implements FormInterface, \ArrayAccess
 
     /**
      * @return PageInterface
-     * @deprecated 3.0 Use $this->getPage() instead
+     * @deprecated 3.0 Use $form->getPage() instead
      */
     public function page(): PageInterface
     {
@@ -888,7 +889,7 @@ class Form implements FormInterface, \ArrayAccess
     /**
      * Backwards compatibility
      *
-     * @deprecated 3.0
+     * @deprecated 3.0 Calling $form->filter() is not needed anymore (does nothing)
      */
     public function filter(): void
     {
@@ -1001,7 +1002,7 @@ class Form implements FormInterface, \ArrayAccess
 
     public function getPagePathFromToken($path)
     {
-        return Utils::getPagePathFromToken($path, $this->page());
+        return Utils::getPagePathFromToken($path, $this->getPage());
     }
 
     /**

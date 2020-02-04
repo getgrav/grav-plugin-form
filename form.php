@@ -96,7 +96,7 @@ class FormPlugin extends Plugin
     public function onPluginsInitialized()
     {
         // Backwards compatibility for plugins that use forms.
-        class_alias(Form::class, \Grav\Plugin\Form::class);
+        class_alias(Form::class, 'Grav\Plugin\Form');
 
         $this->grav['forms'] = function () {
             $forms = new Forms();

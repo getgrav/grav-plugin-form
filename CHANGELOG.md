@@ -1,3 +1,9 @@
+# v4.0.3
+## mm/dd/2020
+
+1. [](#new)
+    * Pass phpstan level 1 tests
+
 # v4.0.2
 ## 02/03/2020
 
