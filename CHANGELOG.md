@@ -1,11 +1,15 @@
 # v4.0.3
+## 02/25/2020
+
+1. [](#bugfix)
+    * Fix for `enctype` in multipart forms [#408](https://github.com/getgrav/grav-plugin-form/issues/408)
+
+# v4.0.3
 ## 02/11/2020
 
 1. [](#new)
     * Pass phpstan level 1 tests
-1. [](#bugfix)    
-    * Fix for `enctype` in multipart forms [#408](https://github.com/getgrav/grav-plugin-form/issues/408)
-
+   
 # v4.0.2
 ## 02/03/2020
 
