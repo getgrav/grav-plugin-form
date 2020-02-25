@@ -20,7 +20,9 @@
     {% endif %}
 {% endfor %}
 
-{% set action = form.action ?: page.route ~ uri.params %}
+{% if action is null %}
+    {% set action = form.action ?: page.route ~ uri.params %}
+{% endif  %}
 {% set action = action starts with 'http' ? action : base_url ~ action %}
 
 {% if (action == base_url_relative) %}
