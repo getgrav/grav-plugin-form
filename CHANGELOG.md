@@ -1,3 +1,9 @@
+# v4.0.5
+## mm/dd/2020
+
+1. [](#bugfix)
+    * form actions that post to page anchors should not have current base_url added (e.g. `#contact-us`)
+
 # v4.0.4
 ## 02/25/2020
 
