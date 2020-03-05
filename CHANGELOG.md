@@ -1,3 +1,10 @@
+# v4.0.5
+## 03/05/2020
+
+1. [](#bugfix)
+    * Fixed form actions that post to page anchors should not have current base_url added (e.g. `#contact-us`)
+    * Fixed toggleable buttons no longer holding false state [#406](https://github.com/getgrav/grav-plugin-form/issues/406)
+
 # v4.0.4
 ## 02/25/2020
 
