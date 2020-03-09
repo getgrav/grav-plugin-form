@@ -2,7 +2,9 @@
 ## mm/dd/2020
 
 1. [](#new)
-    * CHANGE: Form labels are now displayed in `raw` format so you can use HTML in them.
+    * CHANGE: Form labels are now displayed in `raw` format so you can use HTML in them
+1. [](#bugfix)
+    * Fixed password field outputting the contents to HTML (will now always be empty when loading the page)
 
 # v4.0.5
 ## 03/05/2020
