@@ -1,3 +1,9 @@
+# v4.0.6
+## mm/dd/2020
+
+1. [](#new)
+    * CHANGE: Form labels are now displayed in `raw` format so you can use HTML in them.
+
 # v4.0.5
 ## 03/05/2020
 

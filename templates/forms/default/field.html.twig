@@ -91,7 +91,7 @@
 
 {# Field Label #}
 {% set form_field_label = field.markdown ? field.label|markdown(false) : field.label %}
-{% set form_field_label = form_field_label|default(field.name|capitalize)|t|e %}
+{% set form_field_label = form_field_label|default(field.name|capitalize)|t %}
 
 {# Field Help #}
 {% if field.help %}
