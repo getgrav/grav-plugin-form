@@ -9,7 +9,7 @@
             {%- if form_field_help -%}
               <span class="tooltip" data-tooltip="{{ form_field_help|e }}">{{ form_field_label|raw }}</span>
             {%- else -%}
-              {{ form_field_label }}
+              {{ form_field_label|raw }}
             {%- endif -%}
             {%- if form_field_required %}
               <span class="required">*</span>
