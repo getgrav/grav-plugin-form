@@ -7,6 +7,7 @@
     * Added support for `classes` option in `avatar` field 
 1. [](#bugfix)
     * Fixed password field outputting the contents to HTML (will now always be empty when loading the page)
+    * Better JS rendering of captcha field scripts for VueJS template compatibility
 
 # v4.0.5
 ## 03/05/2020
