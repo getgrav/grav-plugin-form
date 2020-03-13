@@ -5,6 +5,7 @@
     * CHANGE: Form labels are now displayed in `raw` format so you can use HTML in them
 1. [](#bugfix)
     * Fixed password field outputting the contents to HTML (will now always be empty when loading the page)
+    * Escape default output in formdata.html.twig #384 [#384](https://github.com/getgrav/grav-plugin-form/issues/384)
 
 # v4.0.5
 ## 03/05/2020

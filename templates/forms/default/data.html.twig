@@ -27,7 +27,7 @@
                             {% elseif field.type == 'select' %}
                                 {{ field.options[form.value(scope ~ field.name)]|e }}
                             {% else %}
-                                {{ string(form.value(scope ~ field.name))|nl2br }}
+                                {{ string(form.value(scope ~ field.name))|e|nl2br }}
                             {% endif %}
                         {% endblock %}
                     </div>
