@@ -1,3 +1,16 @@
+# v4.0.6
+## 03/19/2020
+1. [](#new)
+    * CHANGE: Form labels are now displayed in `raw` format so you can use HTML in them
+    * Added support for `name` attribute on buttons [#411](https://github.com/getgrav/grav-plugin-form/issues/411)
+1. [](#improved)
+    * Added support for `classes` option in `avatar` field 
+    * Recompiled JS with latest NPM libraries
+1. [](#bugfix)
+    * Fixed password field outputting the contents to HTML (will now always be empty when loading the page)
+    * Escape default output in `formdata.html.twig` [#384](https://github.com/getgrav/grav-plugin-form/issues 
+    * Better JS rendering of captcha field scripts for VueJS template compatibility
+
 # v4.0.5
 ## 03/05/2020
 

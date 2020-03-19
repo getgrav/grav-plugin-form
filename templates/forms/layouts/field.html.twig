@@ -7,9 +7,9 @@
         <label class="{{ layout_form_field_label_classes }}{{ form_field_label_trim }}" {% if field.id %}for="{{ form_field_for }}"{% endif %}>
           {%- block label -%}
             {%- if form_field_help -%}
-              <span class="tooltip" data-tooltip="{{ form_field_help|e }}">{{ form_field_label }}</span>
+              <span class="tooltip" data-tooltip="{{ form_field_help|e }}">{{ form_field_label|raw }}</span>
             {%- else -%}
-              {{ form_field_label }}
+              {{ form_field_label|raw }}
             {%- endif -%}
             {%- if form_field_required %}
               <span class="required">*</span>
