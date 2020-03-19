@@ -138,7 +138,11 @@
         {% block embed_button_core %}
           {% if button.id %}id="{{ button.id }}"{% endif %}
           {% if button.disabled %}disabled="disabled"{% endif %}
-          {% if button.task %}name="task" value="{{ button.task }}"{% endif %}
+          {% if button.name %}
+            name="{{ button.name }}"
+          {% else %}
+            {% if button.task %}name="task" value="{{ button.task }}"{% endif %}
+          {% endif %}
           type="{{ button.type|default('submit') }}"
         {% endblock %}
 
