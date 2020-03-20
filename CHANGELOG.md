@@ -8,7 +8,7 @@
     * Recompiled JS with latest NPM libraries
 1. [](#bugfix)
     * Fixed password field outputting the contents to HTML (will now always be empty when loading the page)
-    * Escape default output in `formdata.html.twig` [#384](https://github.com/getgrav/grav-plugin-form/issues 
+    * Escape default output in `formdata.html.twig` [#384](https://github.com/getgrav/grav-plugin-form/issues/384) 
     * Better JS rendering of captcha field scripts for VueJS template compatibility
 
 # v4.0.5
