@@ -1,6 +1,8 @@
 # v4.0.7
 ## mm/dd/2020
 
+1. [](#new)
+    * Added ability to hide form fields in `data.html.twig` and `data.txt.twig` with `field.store: false`
 1. [](#improved)
     * Updated node dependencies
 
