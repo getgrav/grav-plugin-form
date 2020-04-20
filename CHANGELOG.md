@@ -5,6 +5,7 @@
     * Added ability to hide form fields in `data.html.twig` and `data.txt.twig` with `field.store: false`
 1. [](#improved)
     * Updated node dependencies
+    * Added new `force_bool: true|false` option to `toggle` field to cast strings for use in BC situations
 
 # v4.0.6
 ## 03/19/2020
