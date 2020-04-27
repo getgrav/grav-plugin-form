@@ -1,11 +1,13 @@
 # v4.0.7
-## mm/dd/2020
+## 04/27/2020
 
 1. [](#new)
     * Added ability to hide form fields in `data.html.twig` and `data.txt.twig` with `field.store: false`
 1. [](#improved)
     * Updated node dependencies
     * Added new `force_bool: true|false` option to `toggle` field to cast strings for use in BC situations
+1. [](#bugfix)
+    * Fix markdown links in changelog [#415](https://github.com/getgrav/grav-plugin-form/pull/415)
 
 # v4.0.6
 ## 03/19/2020
