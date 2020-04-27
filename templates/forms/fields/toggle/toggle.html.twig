@@ -22,6 +22,10 @@
 {% block input %}
     {% set value = (value is same as(false) ? 0 : value) %}
 
+    {% if field.force_bool %}
+        {% set value = value|bool %}
+    {% endif %}
+
   <div class="switch-toggle switch-grav {{ field.size }} switch-{{ field.options|length }} {{ field.classes }}">
     {% set maxLen = 0 %}
     {% for text in field.options %}
