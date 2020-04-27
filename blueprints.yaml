@@ -1,5 +1,7 @@
 name: Form
-version: 4.0.6
+slug: form
+type: plugin
+version: 4.0.7
 testing: false
 description: Enables the forms handling
 icon: check-square
