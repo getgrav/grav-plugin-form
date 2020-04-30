@@ -22,9 +22,10 @@
 {% block input %}
     {% set value = (value is same as(false) ? 0 : value) %}
 
-    {% if field.force_bool %}
-        {% set value = value|bool %}
+    {% if field.force_bool and get_type(value) == 'string'%}
+        {% set value = true %}
     {% endif %}
+
 
   <div class="switch-toggle switch-grav {{ field.size }} switch-{{ field.options|length }} {{ field.classes }}">
     {% set maxLen = 0 %}

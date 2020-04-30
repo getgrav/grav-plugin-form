@@ -1,3 +1,9 @@
+# v4.0.8
+## 04/30/2020
+
+1. [](#bugfix)
+    * Fixed issue with `force_bool` in `toggle` field to be more robust
+
 # v4.0.7
 ## 04/27/2020
 
