@@ -1,3 +1,9 @@
+# v4.0.9
+## mm/dd/2020
+
+1. [](#bugfix)
+    * Fixed bad `id` attribute on `checkbox` field [#421](https://github.com/getgrav/grav-plugin-form/issues/421)
+
 # v4.0.8
 ## 04/30/2020
 
