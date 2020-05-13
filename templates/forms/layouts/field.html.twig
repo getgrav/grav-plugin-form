@@ -39,7 +39,7 @@
           </div>
         {% endblock %}
       {% endblock %}
-      {% if field.description %}
+      {% if field.description is defined %}
         <div class="{{ form_field_extra_wrapper_classes }}">
           <span class="form-description">
             {{ form_field_description|raw }}
