@@ -15,7 +15,7 @@
 {% block input %}
     {% for key, text in field.options %}
 
-        {% set id = field.id|default(field.name) ~ '-' ~ key %}
+        {% set id = field.id|default(field.name)|hyphenize ~ '-' ~ key %}
         {% set name = field.use == 'keys' ? key : id %}
         {% set val = field.use == 'keys' ? '1' : key %}
         {% set checked = (field.use == 'keys' ? value[key] : key in value) %}

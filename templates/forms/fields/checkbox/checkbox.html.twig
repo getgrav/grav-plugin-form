@@ -4,7 +4,7 @@
 {% endblock %}
 
 {% block input %}
-    {% set id = field.id|default(field.name) ~ '-' ~ key %}
+    {% set id = field.id|default(field.name)|hyphenize %}
     <div class="{{ form_field_wrapper_classes ?: 'form-input-wrapper' }} {{ field.size }} {{ field.wrapper_classes }}">
         <input
             {# required attribute structures #}
