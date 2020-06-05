@@ -1,0 +1,21 @@
+{% extends "forms/field.html.twig" %}
+
+{% block field %}
+{% if field.security is empty or authorize(array(field.security)) %}
+<div class="{{ field.classes }}">
+    {% if field.title or field.underline %}
+    <h1 class="{% if not field.underline %}no_underline{% endif %}">{{ field.title|t }}</h1>
+    {% endif %}
+
+    {% if field.text %}
+    <p>{{ field.text|t|raw }}</p>
+    {% endif %}
+
+    {% if field.fields %}
+        <div class="form-section">
+            {% include 'forms/default/fields.html.twig' with {name: field.name, fields: field.fields} %}
+        </div>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

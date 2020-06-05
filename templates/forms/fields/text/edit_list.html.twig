@@ -1,0 +1,5 @@
+{% if link -%}
+    <a href="{{ link }}">{{ value|join(', ')|e }}</a>
+{%- else -%}
+    {{ value|join(', ')|e }}
+{%- endif %}

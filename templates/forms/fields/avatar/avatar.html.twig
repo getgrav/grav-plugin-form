@@ -1,5 +1,10 @@
-{% if form.data.avatar %}
-    <label><img style="max-width:200px;" src="{{ base_url_simple ~ '/' ~ (form.data.avatar|first).path }}" /></label>
+{% extends "forms/field.html.twig" %}
+
+{% block field %}
+{% set avatar = form.value('avatar') %}
+{% if avatar %}
+    <label class="{{ field.classes }}"><img class="{{ field.img_classes }}" style="max-width:200px;" src="{{ base_url_simple ~ '/' ~ (avatar|first).path }}" /></label>
 {% else %}
-    <label><img src="https://www.gravatar.com/avatar/{{ form.data.email|md5 }}?s=200" /></label>
+    <label class="{{ field.classes }}"><img class="{{ field.img_classes }}" src="https://www.gravatar.com/avatar/{{ form.value('email')|md5 }}?s=200" /></label>
 {% endif %}
+{% endblock %}

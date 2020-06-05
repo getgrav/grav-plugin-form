@@ -1,5 +1,8 @@
 name: Form
-version: 2.8.0
+slug: form
+type: plugin
+version: 4.0.9
+testing: false
 description: Enables the forms handling
 icon: check-square
 author:
@@ -12,7 +15,7 @@ bugs: https://github.com/getgrav/grav-plugin-form/issues
 license: MIT
 
 dependencies:
-    - { name: grav, version: '>=1.3.0-rc.3' }
+  - { name: grav, version: '>=1.6.0' }
 
 form:
   validation: strict
@@ -38,8 +41,55 @@ form:
           highlight: 1
           default: 1
           options:
-            1: Enabled
-            0: Disabled
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
+
+        inline_css:
+          type: toggle
+          label: PLUGIN_FORM.USE_INLINE_CSS
+          highlight: 1
+          default: 1
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
+
+        refresh_prevention:
+          type: toggle
+          label: PLUGIN_FORM.REFRESH_PREVENTION
+          help: PLUGIN_FORM.REFRESH_PREVENTION_HELP
+          highlight: 1
+          default: 0
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
+
+        client_side_validation:
+          type: toggle
+          label: PLUGIN_FORM.CLIENT_SIDE_VALIDATION
+          help: PLUGIN_FORM.CLIENT_SIDE_VALIDATION_HELP
+          highlight: 1
+          default: 1
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
+
+        inline_errors:
+          type: toggle
+          label: PLUGIN_FORM.INLINE_ERRORS
+          help: PLUGIN_FORM.INLINE_ERRORS_HELP
+          highlight: 0
+          default: 0
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
           validate:
             type: bool
 
@@ -59,8 +109,18 @@ form:
             0: PLUGIN_ADMIN.DISABLED
           validate:
             type: bool
+        files.limit:
+          type: text
+          size: x-small
+          label: PLUGIN_FORM.LIMIT
+          help: PLUGIN_FORM.LIMIT_HELP
+          default: 10
+          validate:
+            type: number
+            min: 1
         files.destination:
           type: text
+          size: large
           label: PLUGIN_FORM.DESTINATION
           help: PLUGIN_FORM.DESTINATION_HELP
           default: '@self'
@@ -74,12 +134,59 @@ form:
             - image/*
           validate:
               type: commalist
+        files.filesize:
+          type: text
+          label: PLUGIN_FORM.FILESIZE
+          help: PLUGIN_FORM.FILESIZE_HELP
+          size: x-small
+          default: 5
+          validate:
+            type: number
+            min: 0
+        files.avoid_overwriting:
+          type: toggle
+          label: PLUGIN_FORM.AVOID_OVERWRITING
+          help: PLUGIN_FORM.AVOID_OVERWRITING_HELP
+          highlight: 0
+          default: 0
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
+        files.random_name:
+          type: toggle
+          label: PLUGIN_FORM.RANDOM_NAME
+          help: PLUGIN_FORM.RANDOM_NAME_HELP
+          highlight: 0
+          default: 0
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
 
     recaptcha:
       type: section
       title: PLUGIN_FORM.RECAPTCHA
 
       fields:
+        recaptcha.version:
+          type: select
+          label: PLUGIN_FORM.RECAPTCHA_VERSION
+          default: 2-checkbox
+          options:
+            2-checkbox: PLUGIN_FORM.RECAPTCHA_VERSION_V2_CHECKBOX
+            2-invisible: PLUGIN_FORM.RECAPTCHA_VERSION_V2_INVISIBLE
+            3: PLUGIN_FORM.RECAPTCHA_VERSION_V3_LATEST
+        recaptcha.theme:
+          type: select
+          label: PLUGIN_FORM.RECAPTCHA_THEME
+          default: light
+          options:
+            light: PLUGIN_FORM.RECAPTCHA_THEME_LIGHT
+            dark: PLUGIN_FORM.RECAPTCHA_THEME_DARK
+          recaptcha.site_key:
         recaptcha.site_key:
           type: text
           label: PLUGIN_FORM.RECAPTCHA_SITE_KEY

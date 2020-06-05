@@ -1,8 +1,13 @@
-{% macro render_field(form, fields) %}
+{% macro render_field(form, fields, scope) %}
+    {% import _self as self %}
+
     {% for index, field in fields %}
+        {% set show_field = field.store ?? true %}
         {% set input = attribute(field, "input@") %}
+
         {% if input is null or input == true %}
-            {% if form.value(field.name) %}
+
+            {% if show_field and form.value(scope ~ field.name) %}
                 {% block field %}
                     <div>
                         {% block field_label %}
@@ -12,16 +17,18 @@
                         {% block field_value %}
                             {% if field.type == 'checkboxes' %}
                                 <ul>
-                                    {% for value in form.value(field.name) %}
-                                        <li>{{ field.options[value]|e }}</li>
+                                    {% set use_keys = field.use is defined and field.use == 'keys' %}
+                                    {% for key,value in form.value(scope ~ field.name) %}
+                                        {% set index = (use_keys ? key : value) %}
+                                        <li>{{ field.options[index]|e }}</li>
                                     {% endfor %}
                                 </ul>
                             {% elseif field.type == 'checkbox' %}
-                                {{ (form.value(field.name) == 1) ? "PLUGIN_FORM.YES"|t|e : "PLUGIN_FORM.NO"|t|e }}
+                                {{ (form.value(scope ~ field.name) == 1) ? "GRAV.YES"|t|e : "GRAV.NO"|t|e }}
                             {% elseif field.type == 'select' %}
-                                {{ field.options[form.value(field.name)]|e }}
+                                {{ field.options[form.value(scope ~ field.name)]|e }}
                             {% else %}
-                                {{ string(form.value(field.name))|nl2br }}
+                                {{ string(form.value(scope ~ field.name))|e|nl2br }}
                             {% endif %}
                         {% endblock %}
                     </div>
@@ -29,11 +36,13 @@
             {% endif %}
         {% else %}
             {% if field.fields %}
-                {{ _self.render_field(form, field.fields) }}
+                {% set new_scope = field.nest_id ? scope ~ field.name ~ '.' : scope %}
+                {{ self.render_field(form, field.fields, new_scope) }}
             {% endif %}
         {% endif %}
     {% endfor %}
 {% endmacro %}
 
-{{ _self.render_field(form, form.fields) }}
+{% import _self as macro %}
 
+{{ macro.render_field(form, form.fields, '') }}
