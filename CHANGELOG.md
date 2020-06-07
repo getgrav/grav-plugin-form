@@ -1,3 +1,9 @@
+# v4.0.10
+## mm/dd/2020
+
+1. [](#bugfix)
+    * Fixed redirect causing empty form on homepage forms with no action set
+
 # v4.0.9
 ## 06/03/2020
 
