@@ -1,6 +1,8 @@
 # v4.0.10
-## mm/dd/2020
+## 06/08/2020
 
+1. [](#improved)
+    * Updated languages
 1. [](#bugfix)
     * Fixed redirect causing empty form on homepage forms with no action set
 
