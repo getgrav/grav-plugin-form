@@ -24,8 +24,10 @@
 
 {% set action = (action starts with 'http') or (action starts with '#') ? action : base_url ~ action %}
 
+{% set action = action|trim('/', 'right') %}
+
 {% if (action == base_url_relative) %}
-    {% set action = base_url_relative ~ '/' ~ page.slug %}
+    {% set action = base_url_relative ~ '/' %}
 {% endif %}
 
 {% if form.keep_alive %}
@@ -101,7 +103,7 @@
 
   {% block embed_form_core %}
     name="{{ form.name }}"
-    action="{{ action | trim('/', 'right') }}"
+    action="{{ action }}"
     method="{{ method }}"{{ multipart|raw }}
     {% if form.id %}id="{{ form.id }}"{% endif %}
     {% if form.novalidate %}novalidate{% endif %}

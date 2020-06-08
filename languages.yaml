@@ -436,6 +436,7 @@ hu:
     NOT_VALIDATED: "Érvénytelen az űrlap. Egy vagy több kötelező mező nincs kitöltve."
     NONCE_NOT_VALIDATED: "Upsz, van egy kis probléma, kérlek nézd át az űrlapot, majd küldd el újra."
     FILES: "Fájlok Feltöltése"
+    FORM_ALREADY_SUBMITTED: "Ez az űrlap már el lett küldve."
     ALLOW_MULTIPLE: "Több fájl feltöltése"
     ALLOW_MULTIPLE_HELP: "Engedélyezi egyszerre több állomány feltöltését."
     DESTINATION: "Feltöltés Helye"
@@ -443,6 +444,58 @@ hu:
     ACCEPT: "Engedélyezett MIME-típusok"
     ACCEPT_HELP: "A feltölthető állományok MIME-típusainak listája"
     ERROR_VALIDATING_CAPTCHA: "Hiba lépett fel a Captcha validálása során"
+    DATA_SUMMARY: "Üzenet összesítő:"
+    NO_FORM_DATA: "Űrlap adatok nem elérhetőek."
+    RECAPTCHA: "reCAPTCHA"
+    RECAPTCHA_VERSION: "Verzió"
+    RECAPTCHA_VERSION_V2_CHECKBOX: "v2 - Kijelölőnégyzet"
+    RECAPTCHA_VERSION_V2_INVISIBLE: "v2 - Láthatatlan"
+    RECAPTCHA_VERSION_V3_LATEST: "v3 - Legutolsó"
+    RECAPTCHA_THEME: "Téma"
+    RECAPTCHA_THEME_LIGHT: "Világos téma"
+    RECAPTCHA_THEME_DARK: "Sötét téma"
+    RECAPTCHA_SITE_KEY: "Site kulcs"
+    RECAPTCHA_SITE_KEY_HELP: "További információért látogass el ide a https://developers.google.com/recaptcha webhelyre."
+    RECAPTCHA_SECRET_KEY: "Secret kulcs"
+    RECAPTCHA_SECRET_KEY_HELP: "További információért látogass el ide a https://developers.google.com/recaptcha webhelyre."
+    GENERAL: "Általános"
+    USE_BUILT_IN_CSS: "Alapértelmezett CSS használata"
+    USE_INLINE_CSS: "Beágyazott CSS használata"
+    FILEUPLOAD_PREVENT_SELF: '"%s" nem használható oldalakon kívül.'
+    FILEUPLOAD_UNABLE_TO_UPLOAD: 'Sikertelen fájlfeltöltés %s: %s'
+    FILEUPLOAD_UNABLE_TO_MOVE: '%s áthelyezése sikertelen ide: "%s"'
+    DROPZONE_CANCEL_UPLOAD: 'Feltöltés megszakítása'
+    DROPZONE_CANCEL_UPLOAD_CONFIRMATION: 'Biztos megszakítsuk a feltöltést?'
+    DROPZONE_DEFAULT_MESSAGE: 'Húzza a fájlokat ide vagy <strong>kattintson a területre</strong>'
+    DROPZONE_FALLBACK_MESSAGE: 'A böngésző nem támogatja a drag and drop fájlfeltöltéseket.'
+    DROPZONE_FALLBACK_TEXT: 'Kérjük használja a kompatibilitási űrlapot vagy a hagyományos fájfeltöltést.'
+    DROPZONE_FILE_TOO_BIG: 'Túl nagy állomány ({{filesize}}MiB). Maximum fájlméret: {{maxFilesize}}MiB.'
+    DROPZONE_INVALID_FILE_TYPE: "Ilyen típusú fájlok feltöltése nem megengedett."
+    DROPZONE_MAX_FILES_EXCEEDED: "További fájlok feltöltése nem megengedett, elérte a maximumot."
+    DROPZONE_REMOVE_FILE: "Fájl eltávolítása"
+    DROPZONE_REMOVE_FILE_CONFIRMATION: 'Biztos az eltávolításban?'
+    DROPZONE_RESPONSE_ERROR: "Szerver hiba, kód: {{statusCode}}."
+    YES: "Igen"
+    NO: "Nem"
+    REFRESH_PREVENTION: "Újratöltési védelem"
+    REFRESH_PREVENTION_HELP: "Az űrlap egyedi azonosítójának használata annak érdekében hogy az űrlap ne legyen újrafeldolgozva oldalfrissítés esetén."
+    LIMIT: "Limit"
+    LIMIT_HELP: "Az egy mezőben megadható fájlok maximális száma. (multiple required)"
+    FILESIZE: "Maximum fájlméret"
+    FILESIZE_HELP: "Maximum engedélyezett fájlméret (MB-ban), 0 = Rendszer alapértelmezés használata."
+    AVOID_OVERWRITING: "Felülírás elkerülése"
+    AVOID_OVERWRITING_HELP: "A már létező fájlok felülírásának elkerülése, dátum előtag hozzáadásával a fájlnévhez."
+    RANDOM_NAME: "Véletlenszerű név"
+    RANDOM_NAME_HELP: "Generáljon egy 15 karakter hosszú véletlenszerű nevet a feltöltött fájloknak."
+    CLIENT_SIDE_VALIDATION: "Kliens oldali validáció"
+    CLIENT_SIDE_VALIDATION_HELP: "Az űrlapok HTML5 kliens oldali validációt használnak alapértelmezésként, mint első védelmi vonal."
+    INLINE_ERRORS: "Beágyazott hibaüzenetek"
+    INLINE_ERRORS_HELP: "Beágyazott kontextuális űrlaphibák megjelenítése, hasznos ha a 'Kliens oldali validáció' ki van kapcsolva."
+    RESOLUTION_MIN: "A(z) {{attr}} érték kisebb mint a minimum {{min}}px <br />"
+    RESOLUTION_MAX: "A(z) {{attr}} érték nagyobb mint a maximum {{max}}px <br />"
+    DESTINATION_NOT_SPECIFIED: "A feltöltés helye nincs megadva."
+    INVALID_MIME_TYPE: "MIME-típus %s nem engedélyezett. Állomány: %s."
+    INVALID_FILE_EXTENSION: "A(z) %s állomány kiterjesztése nem engedélyezett."
 
 it:
   PLUGIN_FORM:
