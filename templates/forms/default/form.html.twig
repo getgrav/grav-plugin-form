@@ -21,11 +21,8 @@
 {% endfor %}
 
 {% set action = form.action ?: page.route ~ uri.params %}
-
 {% set action = (action starts with 'http') or (action starts with '#') ? action : base_url ~ action %}
-
 {% set action = action|trim('/', 'right') %}
-
 {% if (action == base_url_relative) %}
     {% set action = base_url_relative ~ '/' %}
 {% endif %}
