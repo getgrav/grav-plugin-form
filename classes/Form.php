@@ -37,7 +37,6 @@ use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
  * @property-read array $files
  * @property-read Data $value
  * @property array $errors
- * @property array $upload_errors
  * @property-read array $fields
  * @property-read Blueprint $blueprint
  * @property-read PageInterface $page
@@ -101,25 +100,6 @@ class Form implements FormInterface, \ArrayAccess
      * @var string $page
      */
     protected $page;
-
-    /**
-     * Upload error messages
-     *
-     * Copied from AdminBaseController in admin plugin.
-     * https://www.php.net/manual/en/features.file-upload.errors.php
-     *
-     * @var array $upload_errors
-     */
-    protected $upload_errors = [
-        UPLOAD_ERR_OK => 'There is no error, the file uploaded with success',
-        UPLOAD_ERR_INI_SIZE => 'The uploaded file exceeds the max upload size',
-        UPLOAD_ERR_FORM_SIZE => 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML',
-        UPLOAD_ERR_PARTIAL => 'The uploaded file was only partially uploaded',
-        UPLOAD_ERR_NO_FILE => 'No file was uploaded',
-        UPLOAD_ERR_NO_TMP_DIR => 'Missing a temporary folder',
-        UPLOAD_ERR_CANT_WRITE => 'Failed to write file to disk',
-        UPLOAD_ERR_EXTENSION => 'A PHP extension stopped the file upload'
-    ];
 
     /**
      * Create form for the given page.
@@ -567,7 +547,11 @@ class Form implements FormInterface, \ArrayAccess
             // json_response
             return [
                 'status' => 'error',
-                'message' => sprintf($language->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_UPLOAD', null, true), $filename, $this->upload_errors[$upload['file']['error']])
+                'message' => sprintf(
+                    $language->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_UPLOAD', null, true),
+                    $filename,
+                    $this->getFileUploadError($upload['file']['error'], $language)
+                )
             ];
         }
 
@@ -717,6 +701,50 @@ class Form implements FormInterface, \ArrayAccess
         header('Content-Type: application/json');
         echo json_encode($json_response);
         exit;
+    }
+
+    /**
+     * Return an error message for a PHP file upload error code
+     * https://www.php.net/manual/en/features.file-upload.errors.php
+     *
+     * @param int $error PHP file upload error code
+     * @param Language|null $language
+     * @return string File upload error message
+     */
+    public function getFileUploadError(int $error, Language $language = null): string
+    {
+        if (!$language) {
+            $grav = Grav::instance();
+            $language = $grav['language'];
+        }
+
+        switch ($error) {
+            case UPLOAD_ERR_INI_SIZE:
+                $item = 'FILEUPLOAD_ERR_INI_SIZE';
+                break;
+            case UPLOAD_ERR_FORM_SIZE:
+                $item = 'FILEUPLOAD_ERR_FORM_SIZE';
+                break;
+            case UPLOAD_ERR_PARTIAL:
+                $item = 'FILEUPLOAD_ERR_PARTIAL';
+                break;
+            case UPLOAD_ERR_NO_FILE:
+                $item = 'FILEUPLOAD_ERR_NO_FILE';
+                break;
+            case UPLOAD_ERR_NO_TMP_DIR:
+                $item = 'FILEUPLOAD_ERR_NO_TMP_DIR';
+                break;
+            case UPLOAD_ERR_CANT_WRITE:
+                $item = 'FILEUPLOAD_ERR_CANT_WRITE';
+                break;
+            case UPLOAD_ERR_EXTENSION:
+                $item = 'FILEUPLOAD_ERR_EXTENSION';
+                break;
+            case UPLOAD_ERR_OK:
+            default:
+                $item = 'FILEUPLOAD_ERR_OK';
+        }
+        return $language->translate('PLUGIN_FORM.'.$item);
     }
 
     /**
