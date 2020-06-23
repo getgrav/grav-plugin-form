@@ -715,6 +715,8 @@ class Form implements FormInterface, \ArrayAccess
     {
         if (!$language) {
             $grav = Grav::instance();
+
+            /** @var Language $language */
             $language = $grav['language'];
         }
 
