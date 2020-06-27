@@ -721,6 +721,9 @@ class Form implements FormInterface, \ArrayAccess
         }
 
         switch ($error) {
+            case UPLOAD_ERR_OK:
+                $item = 'FILEUPLOAD_ERR_OK';
+                break;
             case UPLOAD_ERR_INI_SIZE:
                 $item = 'FILEUPLOAD_ERR_INI_SIZE';
                 break;
@@ -742,9 +745,8 @@ class Form implements FormInterface, \ArrayAccess
             case UPLOAD_ERR_EXTENSION:
                 $item = 'FILEUPLOAD_ERR_EXTENSION';
                 break;
-            case UPLOAD_ERR_OK:
             default:
-                $item = 'FILEUPLOAD_ERR_OK';
+                $item = 'FILEUPLOAD_ERR_UNKNOWN';
         }
         return $language->translate('PLUGIN_FORM.'.$item);
     }
