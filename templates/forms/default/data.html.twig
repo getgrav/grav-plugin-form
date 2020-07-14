@@ -28,7 +28,16 @@
                             {% elseif field.type == 'select' %}
                                 {{ field.options[form.value(scope ~ field.name)]|e }}
                             {% else %}
-                                {{ string(form.value(scope ~ field.name))|e|nl2br }}
+                                {% set value = form.value(scope ~ field.name) %}
+                                {% if value is iterable %}
+                                    <ul>
+                                        {% for val in value %}
+                                            <li>{{ val|e }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    {{ string(value)|e|nl2br }}
+                                {% endif %}
                             {% endif %}
                         {% endblock %}
                     </div>

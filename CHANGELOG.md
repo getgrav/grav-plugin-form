@@ -1,3 +1,9 @@
+# v4.0.11
+## mm/dd/2020
+
+1. [](#improved)
+    * Support array values represented as a list of strings in `data.html.twig`
+
 # v4.0.10
 ## 06/08/2020
 
