@@ -2,7 +2,7 @@
 ## mm/dd/2020
 
 1. [](#improved)
-    * Support array values represented as a list of strings in `data.html.twig`
+    * Various improvements for nested form data in  `data.html.twig` and `data.txt.twig`
 
 # v4.0.10
 ## 06/08/2020
