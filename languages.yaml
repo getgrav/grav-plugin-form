@@ -250,6 +250,7 @@ fr:
     NOT_VALIDATED: "Formulaire non validé. Un ou plusieurs champs obligatoires sont manquants."
     NONCE_NOT_VALIDATED: "Oups, un problème est survenu. Veuillez vérifier votre saisie et soumettre à nouveau le formulaire."
     FILES: "Fichiers chargés"
+    FORM_ALREADY_SUBMITTED: "Le formulaire a déjà été envoyé."
     ALLOW_MULTIPLE: "Autoriser plus d'un fichier"
     ALLOW_MULTIPLE_HELP: "Permet la sélection de plusieurs fichiers pour chargement."
     DESTINATION: "Destination"
