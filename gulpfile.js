@@ -1,19 +1,19 @@
 'use strict';
 
-var gulp         = require('gulp'),
-    util         = require('util'),
-    path         = require('path'),
-    immutable    = require('immutable'),
-    gulpWebpack  = require('gulp-webpack'),
-    webpack      = require('webpack'),
-    sourcemaps   = require('gulp-sourcemaps'),
-    exec         = require('child_process').execSync,
-    sass         = require('gulp-sass'),
-    cleancss     = require('gulp-clean-css'),
-    csscomb      = require('gulp-csscomb'),
-    rename       = require('gulp-rename'),
-    autoprefixer = require('gulp-autoprefixer'),
-    pwd          = exec('pwd').toString();
+var gulp = require('gulp');
+var util = require('util');
+var path = require('path');
+var immutable = require('immutable');
+var gulpWebpack = require('gulp-webpack');
+var webpack = require('webpack');
+var sourcemaps = require('gulp-sourcemaps');
+var exec = require('child_process').execSync;
+var sass = require('gulp-sass');
+var cleancss = require('gulp-clean-css');
+var csscomb = require('gulp-csscomb');
+var rename = require('gulp-rename');
+var autoprefixer = require('gulp-autoprefixer');
+var pwd = exec('pwd').toString();
 
 // configure the paths
 var watch_dir = './scss/**/*.scss';
@@ -24,23 +24,23 @@ var paths = {
     source: src_dir
 };
 
-var plugins = {},
-    base    = immutable.fromJS(require('./webpack.conf.js')),
-    options = {
-        prod: base.mergeDeep({
-            devtool: 'source-map',
-            optimization: {minimize: true},
-            plugins: [
-                new webpack.DefinePlugin({
-                    'process.env': { NODE_ENV: '"production"' }
-                }),
-                new webpack.ProvidePlugin(plugins)
-            ],
-            output: {
-                filename: 'form.min.js'
-            }
-        })
-    };
+var plugins = {};
+var base = immutable.fromJS(require('./webpack.conf.js'));
+var options = {
+    prod: base.mergeDeep({
+        devtool: 'source-map',
+        optimization: {minimize: true},
+        plugins: [
+            new webpack.DefinePlugin({
+                'process.env': { NODE_ENV: '"production"' }
+            }),
+            new webpack.ProvidePlugin(plugins)
+        ],
+        output: {
+            filename: 'form.min.js'
+        }
+    })
+};
 
 // var compileJS = function(watch) {
 //     var prodOpts = options.prod.set('watch', watch);
@@ -65,7 +65,7 @@ var compileCSS = function() {
             suffix: '.min'
         }))
         .pipe(gulp.dest(dest_dir));
-}
+};
 
 // gulp.task('js', function() {
 //     compileJS(false);

@@ -3,6 +3,9 @@
 
 1. [](#improved)
     * Various improvements for nested form data in  `data.html.twig` and `data.txt.twig`
+1. [](#bugfix)
+    * Disabled the EXIF library for Dropzone for fixing the orientation as it was getting applied twice [#1923](https://github.com/getgrav/grav-plugin-admin/issues/1923)
+    * Forked Dropzone fo fix issue with Resize + EXIF orientation [#1923](https://github.com/getgrav/grav-plugin-admin/issues/1923)
 
 # v4.0.10
 ## 06/08/2020
