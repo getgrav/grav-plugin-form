@@ -1,3 +1,17 @@
+# v4.1.0
+## 07/29/2020
+
+1. [](#new)
+    * Support JSON based form submissions
+1. [](#improved)
+    * Improved handling of error messages with more details + translation [#428](https://github.com/getgrav/grav-plugin-form/pull/428) [#429](https://github.com/getgrav/grav-plugin-form/pull/429)
+    * Various improvements for nested form data in  `data.html.twig` and `data.txt.twig`
+    * Use `|length` rather than `|count` twig filter
+    * Various language updates
+1. [](#bugfix)
+    * Disabled the EXIF library for Dropzone for fixing the orientation as it was getting applied twice [#1923](https://github.com/getgrav/grav-plugin-admin/issues/1923)
+    * Forked Dropzone fo fix issue with Resize + EXIF orientation [#1923](https://github.com/getgrav/grav-plugin-admin/issues/1923)
+
 # v4.0.10
 ## 06/08/2020
 

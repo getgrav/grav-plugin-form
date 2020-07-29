@@ -31,6 +31,15 @@ en:
     FILEUPLOAD_PREVENT_SELF: 'Cannot use "%s" outside of pages.'
     FILEUPLOAD_UNABLE_TO_UPLOAD: 'Unable to upload file %s: %s'
     FILEUPLOAD_UNABLE_TO_MOVE: 'Unable to move file %s to "%s"'
+    FILEUPLOAD_ERR_OK: 'There is no error, the file uploaded with success'
+    FILEUPLOAD_ERR_INI_SIZE: 'The uploaded file exceeds the max upload size'
+    FILEUPLOAD_ERR_FORM_SIZE: 'The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML'
+    FILEUPLOAD_ERR_PARTIAL: 'The uploaded file was only partially uploaded'
+    FILEUPLOAD_ERR_NO_FILE: 'No file was uploaded'
+    FILEUPLOAD_ERR_NO_TMP_DIR: 'Missing a temporary folder'
+    FILEUPLOAD_ERR_CANT_WRITE: 'Failed to write file to disk'
+    FILEUPLOAD_ERR_EXTENSION: 'A PHP extension stopped the file upload'
+    FILEUPLOAD_ERR_UNKNOWN: 'Unknown file upload error'
     DROPZONE_CANCEL_UPLOAD: 'Cancel upload'
     DROPZONE_CANCEL_UPLOAD_CONFIRMATION: 'Are you sure you want to cancel this upload?'
     DROPZONE_DEFAULT_MESSAGE: 'Drop your files here or <strong>click in this area</strong>'
@@ -241,6 +250,7 @@ fr:
     NOT_VALIDATED: "Formulaire non validé. Un ou plusieurs champs obligatoires sont manquants."
     NONCE_NOT_VALIDATED: "Oups, un problème est survenu. Veuillez vérifier votre saisie et soumettre à nouveau le formulaire."
     FILES: "Fichiers chargés"
+    FORM_ALREADY_SUBMITTED: "Le formulaire a déjà été envoyé."
     ALLOW_MULTIPLE: "Autoriser plus d'un fichier"
     ALLOW_MULTIPLE_HELP: "Permet la sélection de plusieurs fichiers pour chargement."
     DESTINATION: "Destination"
