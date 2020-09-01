@@ -1,3 +1,9 @@
+# v4.1.1
+## 09/01/2020
+
+1. [](#bugfix)
+    * Key field should not escape the value
+
 # v4.1.0
 ## 07/29/2020
 
