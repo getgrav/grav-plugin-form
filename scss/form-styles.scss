@@ -171,6 +171,41 @@ $form-active-color: #000;
     }
 }
 
+// 5 Star Rating
+.rating {
+  border: none;
+  float: left;
+
+  > input {
+    display: none;
+  }
+
+  > label:before {
+    margin: 5px;
+    font-size: 1.25em;
+    font-family: FontAwesome;
+    display: inline-block;
+    content: "\f005";
+  }
+
+  > .half:before {
+    content: "\f089";
+    position: absolute;
+  }
+
+  > label {
+    color: #ddd;
+    float: right;
+  }
+
+  // Selected star color
+  > input:checked ~ label { color: #FFD700;  }
+
+  // Hover star color
+  &:not(:checked) > label:hover,
+  &:not(:checked) > label:hover ~ label { color: inherit;  }
+}
+
 // Toggleable
 .form-field-toggleable {
     .checkboxes.toggleable {

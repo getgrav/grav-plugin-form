@@ -72,6 +72,7 @@ en:
     DESTINATION_NOT_SPECIFIED: "Destination not specified"
     INVALID_MIME_TYPE: "The MIME type %s for the file %s is not accepted."
     INVALID_FILE_EXTENSION: "The File Extension for the file %s is not accepted."
+    STARS: "Stars"
 eu:
   PLUGIN_FORM:
     NOT_VALIDATED: "Formularioa ez da baliozkotu. Beharrezkoa den eremu bat edo gehiago falta dira."

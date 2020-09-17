@@ -1,0 +1,28 @@
+{% extends "forms/field.html.twig" %}
+
+{% set originalValue = value %}
+{% set value = (value is null ? field.default : value) %}
+
+{% block input %}
+    <fieldset class="rating">
+        {# It is important to count from max to min, as this is required by the css. #}
+        {% for i in field.validate.max|default(5)..field.validate.min|default(1) %}
+            {% set id = field.id|default(field.name) ~ '-star' ~ i %}
+            <input type="radio"
+                   value="{{ i|e }}"
+                   id="{{ id|e }}"
+                   name="{{ (scope ~ field.name)|fieldName }}"
+                   {% if field.classes is defined %}class="{{ field.classes }}" {% endif %}
+                   {% if i == value %}checked="checked" {% endif %}
+                   {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
+                   {% if required %}required="required"{% endif %}
+                   {% if field.tabindex %}tabindex="{{ field.tabindex }}"{% endif %}
+            />
+            <label class="full" for="{{ id|e }}" title="{{ field.titles[i]|default(i ~ ' ' ~ 'PLUGIN_FORM.STARS'|t)|t }}"></label>
+        {% endfor %}
+    </fieldset>
+
+    {# Ensure that the rest of the form is aligned below and not right to the rating #}
+    <div style="clear:both; float:none;"></div>
+
+{% endblock %}
