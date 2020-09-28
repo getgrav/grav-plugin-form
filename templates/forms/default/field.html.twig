@@ -57,7 +57,7 @@
 {% set layout_form_field_outer_classes = layout_form_field_outer_classes|trim ~ ' ' ~ embed_outer_field_classes %}
 
 {# Show Label logic #}
-{% set show_label = field.label is not same as(false) and field.display_label is not same as(false )%}
+{% set show_label = field.label is not same as(false) and field.display_label is not same as(false) and show_label is not same as(false) %}
 
 {# Label Classes #}
 {% set layout_form_field_outer_label_classes = ((form_field_outer_label_classes ?: 'form-label') ~ ' ' ~ field.labelclasses)|trim %}
