@@ -1,5 +1,5 @@
 # v4.1.2
-## mm/dd/2020
+## 10/07/2020
 
 1. [](#bugfix)
     * Added some missing class attributes
