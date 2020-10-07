@@ -1,3 +1,9 @@
+# v4.1.2
+## 10/07/2020
+
+1. [](#bugfix)
+    * Added some missing class attributes
+
 # v4.1.1
 ## 09/01/2020
 
