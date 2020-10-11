@@ -30,6 +30,15 @@
                         data-{{ datakey }}="{{ datavalue|e('html_attr') }}"
                     {% endfor %}
                 {% endif %}
+                {% if field.attributes is defined %}
+                  {% for key,attribute in field.attributes %}
+                    {% if attribute|of_type('array') %}
+                      {{ attribute.name }}="{{ attribute.value|e('html_attr') }}"
+                    {% else %}
+                      {{ key }}="{{ attribute|e('html_attr') }}"
+                    {% endif %}
+                  {% endfor %}
+                {% endif %}
             {% endblock %}
             >{{ value|trim|e('html') }}</textarea>
             {% block append %}{% endblock append %}

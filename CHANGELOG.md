@@ -1,3 +1,9 @@
+# v4.1.3
+## mm/dd/2020
+
+1. [](#improved)
+    * Added support for arbitrary `attributes` on `form`, `textarea` and `checkbox` and `buttons`. [#447](https://github.com/getgrav/grav-plugin-form/issues/447) [#448](https://github.com/getgrav/grav-plugin-form/issues/448)
+
 # v4.1.2
 ## 10/07/2020
 
