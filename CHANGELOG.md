@@ -3,6 +3,7 @@
 
 1. [](#improved)
     * Added support for arbitrary `attributes` on `form`, `textarea` and `checkbox` and `buttons`. [#447](https://github.com/getgrav/grav-plugin-form/issues/447) [#448](https://github.com/getgrav/grav-plugin-form/issues/448)
+    * Better support for array field key/value when either key or value are left empty
 
 # v4.1.2
 ## 10/07/2020
