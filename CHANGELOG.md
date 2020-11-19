@@ -1,3 +1,44 @@
+# v4.1.3
+## mm/dd/2020
+
+1. [](#improved)
+    * Added support for arbitrary `attributes` on `form`, `textarea` and `checkbox` and `buttons`. [#447](https://github.com/getgrav/grav-plugin-form/issues/447) [#448](https://github.com/getgrav/grav-plugin-form/issues/448)
+    * Better support for array field key/value when either key or value are left empty
+
+# v4.1.2
+## 10/07/2020
+
+1. [](#bugfix)
+    * Added some missing class attributes
+
+# v4.1.1
+## 09/01/2020
+
+1. [](#bugfix)
+    * Key field should not escape the value
+
+# v4.1.0
+## 07/29/2020
+
+1. [](#new)
+    * Support JSON based form submissions
+1. [](#improved)
+    * Improved handling of error messages with more details + translation [#428](https://github.com/getgrav/grav-plugin-form/pull/428) [#429](https://github.com/getgrav/grav-plugin-form/pull/429)
+    * Various improvements for nested form data in  `data.html.twig` and `data.txt.twig`
+    * Use `|length` rather than `|count` twig filter
+    * Various language updates
+1. [](#bugfix)
+    * Disabled the EXIF library for Dropzone for fixing the orientation as it was getting applied twice [#1923](https://github.com/getgrav/grav-plugin-admin/issues/1923)
+    * Forked Dropzone fo fix issue with Resize + EXIF orientation [#1923](https://github.com/getgrav/grav-plugin-admin/issues/1923)
+
+# v4.0.10
+## 06/08/2020
+
+1. [](#improved)
+    * Updated languages
+1. [](#bugfix)
+    * Fixed redirect causing empty form on homepage forms with no action set
+
 # v4.0.9
 ## 06/03/2020
 

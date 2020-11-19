@@ -12,7 +12,7 @@
   "author": "Team Grav",
   "license": "MIT",
   "dependencies": {
-    "dropzone": "^5.7.0",
+    "dropzone": "getgrav/dropzone#master",
     "exif-js": "^2.3.0",
     "sortablejs": "^1.10.2"
   },
