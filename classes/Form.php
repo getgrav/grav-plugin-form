@@ -1061,8 +1061,9 @@ class Form implements FormInterface, \ArrayAccess
      */
     public function getFileUploadAjaxRoute(): ?Route
     {
-        $route = Uri::getCurrentRoute()->withExtension('json')->withGravParam('task', 'file-upload');
 
+        $uri = Grav::instance()['uri'];
+        $route = Uri::getCurrentRoute()->withRoot($uri->uri())->withExtension('json')->withGravParam('task', 'file-upload');
         return $route;
     }
 
