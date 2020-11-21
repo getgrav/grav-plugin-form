@@ -13,6 +13,7 @@
 
                 <input
                         data-grav-array-type="key"
+                        class="array-key"
                         type="text" value="{{ key }}"
                         {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
                         placeholder="{{ field.placeholder_key|e|t }}" />
@@ -21,12 +22,14 @@
             {% if field.value_type == 'textarea' %}
                 <textarea
                         data-grav-array-type="value"
+                        {% if field.value_classes %}class="array-value {{ field.value_classes }}"{% endif %}
                         name="{{ ((scope ~ field.name)|fieldName) ~ '[' ~ key ~ ']' }}"
                         placeholder="{{ field.placeholder_value|e|t }}"
                         {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}>{{ text }}</textarea>
             {% else %}
                 <input
                         data-grav-array-type="value"
+                        {% if field.value_classes %}class="array-value {{ field.value_classes }}"{% endif %}
                         type="text"
                         name="{{ ((scope ~ field.name)|fieldName) ~ '[' ~ key ~ ']' }}"
                         placeholder="{{ field.placeholder_value|e|t }}"
@@ -73,6 +76,7 @@
                 {% if field.value_only != true %}
                     <input
                             data-grav-array-type="key"
+                            class="array-key"
                             type="text"
                             {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
                             placeholder="{{ field.placeholder_key|e|t }}" />
@@ -80,12 +84,14 @@
                 {% if field.value_type == 'textarea' %}
                     <textarea
                             data-grav-array-type="value"
+                            {% if field.value_classes %}class="array-value {{ field.value_classes }}"{% endif %}
                             name="{{ (scope ~ field.name)|fieldName }}"
                             {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
                             placeholder="{{ field.placeholder_value|e|t }}"></textarea>
                 {% else %}
                     <input
                             data-grav-array-type="value"
+                            {% if field.value_classes %}class="array-value {{ field.value_classes }}"{% endif %}
                             type="text"
                             name="{{ (scope ~ field.name)|fieldName }}"
                             {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
