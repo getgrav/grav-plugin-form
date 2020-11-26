@@ -57,7 +57,7 @@
               checked="checked"
             {% endif %}
           {% endif %}
-          {% if field.validate.required in ['on', 'true', 1] %}required="required"{% endif %}
+          {% if required %}required="required"{% endif %}
           {% if field.tabindex %}tabindex="{{ field.tabindex }}"{% endif %}
       />
       <label for="{{ id }}">{{ (macro.spanToggle(translation, maxLen)|trim)|raw }}</label>
