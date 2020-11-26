@@ -6,6 +6,7 @@
     * Better support for array field key/value when either key or value are left empty
 1. [](#bugfix)
     * Fixed KeepAlive issue where too large of a session value would fire the keep alive immediately
+    * Fixed stringable objects breaking the inputs
 
 # v4.1.2
 ## 10/07/2020
