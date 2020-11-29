@@ -23,8 +23,8 @@
                 {% if field.validate.message %}title="{{ field.validate.message|t|e }}"{% endif %}
                 {% if field.rows is defined %}rows="{{ field.rows }}"{% endif %}
                 {% if field.cols is defined %}cols="{{ field.cols }}"{% endif %}
-                {% if field.minlength is defined %}minlength="{{ field.minlength }}"{% endif %}
-                {% if field.maxlength is defined %}maxlength="{{ field.maxlength }}"{% endif %}
+                {% if field.minlength is defined or field.validate.min is defined %}minlength="{{ field.minlength | default(field.validate.min) }}"{% endif %}
+                {% if field.maxlength is defined or field.validate.max is defined %}maxlength="{{ field.maxlength | default(field.validate.max) }}"{% endif %}
                 {% if field.datasets %}
                     {% for datakey, datavalue in field.datasets %}
                         data-{{ datakey }}="{{ datavalue|e('html_attr') }}"
