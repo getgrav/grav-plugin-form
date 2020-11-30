@@ -9,7 +9,7 @@
         {%- if show_field %}
             {%- set value = form.value(scope ~ (field.name ?? index)) -%}
             {%- if value -%}
-            {{- field.label }}: {{ string(value is iterable ? value|json_encode : value|e) ~ "\r\n" }}
+            {{- field.label|t|e }}: {{ string(value is iterable ? value|json_encode : value|e) ~ "\r\n" }}
             {%- endif -%}
         {%- endif %}
     {%- endif %}
