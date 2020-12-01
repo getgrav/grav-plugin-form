@@ -120,6 +120,12 @@
     class="{{ parent() }} {{ override_form_classes|trim }}"
   {%- endblock %}
 
+  {% block embed_form_custom_attributes %}
+    {% for k, v in blueprints.form.attributes %}
+      {{ k }}="{{ v|e }}"
+    {% endfor %}
+  {% endblock %}
+
   {% block embed_fields %}
     {{ override_inner_markup_fields_start|raw }}
     {{ override_inner_markup_fields|raw }}
