@@ -1,7 +1,7 @@
-var webpack = require('webpack'),
-    path = require('path'),
-    UglifyJsPlugin = require('uglifyjs-webpack-plugin'),
-    isProd = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'production-wip';
+var webpack = require('webpack');
+var path = require('path');
+var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+var isProd = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'production-wip';
 
 module.exports = {
     entry: {
@@ -57,7 +57,7 @@ module.exports = {
                 loader: 'babel-loader',
                 exclude: /node_modules/,
                 query: {
-                    presets: ['es2015', 'stage-3']
+                    presets: ['@babel/preset-env']
                 }
             }
         ]

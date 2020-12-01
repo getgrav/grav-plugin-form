@@ -1,5 +1,5 @@
 {% block field %}
-<div class="form-field {{ layout_form_field_outer_classes|trim -}} {{- form_field_outer_core|trim -}}">
+<div class="form-field {{ layout_form_field_outer_classes|trim }} {{ form_field_outer_core|trim}}">
   {% block contents %}
     {% if show_label %}
       <div class="{{- layout_form_field_outer_label_classes -}}">
@@ -7,9 +7,9 @@
         <label class="{{ layout_form_field_label_classes }}{{ form_field_label_trim }}" {% if field.id %}for="{{ form_field_for }}"{% endif %}>
           {%- block label -%}
             {%- if form_field_help -%}
-              <span class="tooltip" data-tooltip="{{ form_field_help|e }}">{{ form_field_label }}</span>
+              <span class="tooltip" data-tooltip="{{ form_field_help|e }}">{{ form_field_label|raw }}</span>
             {%- else -%}
-              {{ form_field_label }}
+              {{ form_field_label|raw }}
             {%- endif -%}
             {%- if form_field_required %}
               <span class="required">*</span>
@@ -25,9 +25,10 @@
         {% block input %}
           <div class="{{ layout_form_field_wrapper_classes }} {{ field.size }}">
             {% block prepend %}{% endblock prepend %}
+            {% set input_value = value is iterable ? value|join(',') : value|string %}
             <input
               name="{{ (scope ~ field.name)|fieldName }}"
-              value="{{ value|join(', ')|e }}"
+              value="{{ input_value|e }}"
               {% block input_attributes %}{% endblock %}
             />
             {% block append %}{% endblock append %}
@@ -39,7 +40,7 @@
           </div>
         {% endblock %}
       {% endblock %}
-      {% if field.description %}
+      {% if field.description is defined %}
         <div class="{{ form_field_extra_wrapper_classes }}">
           <span class="form-description">
             {{ form_field_description|raw }}

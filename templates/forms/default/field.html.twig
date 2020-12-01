@@ -10,11 +10,11 @@
     {% set toggleable = field.toggleable ?? false %}
     {% if toggleable %}
         {% set originalValue = originalValue is defined ? originalValue : value %}
-        {% set toggleableChecked = originalValue is not null and originalValue is not empty %}
+        {% set toggleableChecked = originalValue is not null %}
     {% elseif field.overridable %}
         {% set toggleable = true %}
         {% set default = form.getDefaultValue(field.name) ?? field.default %}
-        {% set toggleableChecked = value != default %}
+        {% set toggleableChecked = value is not null and value != default %}
     {% endif %}
 
     {% set cookie_name = 'forms-' ~ form.name ~ '-' ~ field.name %}
@@ -91,7 +91,7 @@
 
 {# Field Label #}
 {% set form_field_label = field.markdown ? field.label|markdown(false) : field.label %}
-{% set form_field_label = form_field_label|default(field.name|capitalize)|t|e %}
+{% set form_field_label = form_field_label|default(field.name|capitalize)|t %}
 
 {# Field Help #}
 {% if field.help %}

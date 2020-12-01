@@ -1,6 +1,7 @@
 {% extends "forms/field.html.twig" %}
 
 {% block field %}
+{% set input_value = value is iterable ? value|join(',') : value|string %}
 <input aria-hidden="true"
        type="text"
        {% if config.plugins.form.inline_css == true %}
@@ -8,5 +9,5 @@
        {% endif %}
        class="form-honeybear"
        name="{{ (scope ~ field.name)|fieldName }}"
-       value="{{ value|join(', ') }}" />
+       value="{{ input_value|e }}" />
 {% endblock %}
