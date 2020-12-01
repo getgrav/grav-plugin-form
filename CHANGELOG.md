@@ -7,6 +7,7 @@
 1. [](#bugfix)
     * Fixed KeepAlive issue where too large of a session value would fire the keep alive immediately
     * Fixed stringable objects breaking the inputs
+    * Remove unused route variable from `file` field
 
 # v4.1.2
 ## 10/07/2020
