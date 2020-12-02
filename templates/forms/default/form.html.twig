@@ -2,6 +2,7 @@
     {% set form = grav.session.getFlashObject('form') %}
 {% endif  %}
 
+{# Keep here for Backwards Compatibility #}
 {% include 'partials/form-messages.html.twig' %}
 
 {% set scope = scope ?: form.scope is defined ? form.scope : 'data.' %}
