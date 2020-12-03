@@ -1,3 +1,22 @@
+# v4.2.0
+## 12/02/2020
+
+1. [](#improved)
+    * Added support for arbitrary `attributes` on `form`, `textarea` and `checkbox` and `buttons`. [#447](https://github.com/getgrav/grav-plugin-form/issues/447) [#448](https://github.com/getgrav/grav-plugin-form/issues/448)
+    * Better support for array field key/value when either key or value are left empty
+    * Allow data-* form parameters to be used as <form> attributes. [#336](https://github.com/getgrav/grav-plugin-form/pull/336) 
+    * Allow action param when including form partial [#410](https://github.com/getgrav/grav-plugin-form/pull/410)  
+    * Also support validate min/max for textarea [#455](https://github.com/getgrav/grav-plugin-form/pull/455)  
+    * Translate form labels also in text file [#444](https://github.com/getgrav/grav-plugin-form/pull/448)
+1. [](#bugfix)
+    * Fixed KeepAlive issue where too large of a session value would fire the keep alive immediately
+    * Fixed stringable objects breaking the inputs
+    * Remove unused route variable from `file` field
+    * Fix condition for required attribute in toggle field [#451](https://github.com/getgrav/grav-plugin-form/pull/451)
+    * Fix form data template when select field is set to multiple [#452](https://github.com/getgrav/grav-plugin-form/pull/452)  
+    * Fix has-errors for select and other fields [#454](https://github.com/getgrav/grav-plugin-form/pull/454)
+    * Fix #453 section title level [#459](https://github.com/getgrav/grav-plugin-form/pull/459)
+
 # v4.1.2
 ## 10/07/2020
 

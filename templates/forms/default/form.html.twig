@@ -2,6 +2,7 @@
     {% set form = grav.session.getFlashObject('form') %}
 {% endif  %}
 
+{# Keep here for Backwards Compatibility #}
 {% include 'partials/form-messages.html.twig' %}
 
 {% set scope = scope ?: form.scope is defined ? form.scope : 'data.' %}
@@ -20,9 +21,10 @@
     {% endif %}
 {% endfor %}
 
-{% set action = form.action ?: page.route ~ uri.params %}
+{% set action = action ?? (form.action ?: page.route ~ uri.params) %}
 {% set action = (action starts with 'http') or (action starts with '#') ? action : base_url ~ action %}
 {% set action = action|trim('/', 'right') %}
+
 {% if (action == base_url_relative) %}
     {% set action = base_url_relative ~ '/' %}
 {% endif %}
@@ -105,11 +107,26 @@
     {% if form.id %}id="{{ form.id }}"{% endif %}
     {% if form.novalidate %}novalidate{% endif %}
     {% if form.keep_alive %}data-grav-keepalive="true"{% endif %}
+    {% if form.attributes is defined %}
+      {% for key,attribute in form.attributes %}
+        {% if attribute|of_type('array') %}
+          {{ attribute.name }}="{{ attribute.value|e('html_attr') }}"
+        {% else %}
+          {{ key }}="{{ attribute|e('html_attr') }}"
+        {% endif %}
+      {% endfor %}
+    {% endif %}
   {% endblock %}
 
   {% block embed_form_classes -%}
     class="{{ parent() }} {{ override_form_classes|trim }}"
   {%- endblock %}
+
+  {% block embed_form_custom_attributes %}
+    {% for k, v in blueprints.form.attributes %}
+      {{ k }}="{{ v|e }}"
+    {% endfor %}
+  {% endblock %}
 
   {% block embed_fields %}
     {{ override_inner_markup_fields_start|raw }}
@@ -143,6 +160,15 @@
             {% if button.task %}name="task" value="{{ button.task }}"{% endif %}
           {% endif %}
           type="{{ button.type|default('submit') }}"
+          {% if button.attributes is defined %}
+            {% for key,attribute in button.attributes %}
+              {% if attribute|of_type('array') %}
+                {{ attribute.name }}="{{ attribute.value|e('html_attr') }}"
+              {% else %}
+                {{ key }}="{{ attribute|e('html_attr') }}"
+              {% endif %}
+            {% endfor %}
+          {% endif %}
         {% endblock %}
 
         {% block embed_button_classes %}

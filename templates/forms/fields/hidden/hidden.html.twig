@@ -4,6 +4,7 @@
 
 {% set value = value ?: field.value|default(field.default) %}
 {% set value = field.evaluate ? evaluate(value) : value %}
+{% set input_value = value is iterable ? value|join(',') : value|string %}
 
-<input data-grav-field="hidden" data-grav-disabled="false" type="hidden" class="input" name="{{ (scope ~ field.name)|fieldName }}" value="{{ value|join(', ')|e('html_attr') }}" />
+<input data-grav-field="hidden" data-grav-disabled="false" type="hidden" class="input" name="{{ (scope ~ field.name)|fieldName }}" value="{{ input_value|e('html_attr') }}" />
 {% endblock %}

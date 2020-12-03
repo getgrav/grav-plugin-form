@@ -28,7 +28,18 @@
                                 {% elseif field.type == 'checkbox' %}
                                     {{ (form.value(scope ~ field.name) == 1) ? "GRAV.YES"|t|e : "GRAV.NO"|t|e }}
                                 {% elseif field.type == 'select' %}
-                                    {{ field.options[form.value(scope ~ field.name)]|e }}
+                                    {% set value = form.value(scope ~ field.name) %}
+                                    {% if value is iterable %}
+                                        <ul>
+                                            {% set use_keys = field.use is defined and field.use == 'keys' %}
+                                            {% for key, val in value %}
+                                                {% set index = (use_keys ? key : val) %}
+                                                <li>{{ field.options[index]|e }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        {{ field.options[value]|e }}
+                                    {% endif %}
                                 {% else %}
                                     {% set value = form.value(scope ~ field.name) %}
                                     {% if value is iterable %}
