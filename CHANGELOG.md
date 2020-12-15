@@ -1,5 +1,5 @@
-# v4.2.1
-## mm/dd/2020
+# v4.3.0
+## 12/14/2020
 
 1. [](#new)
     * Added a new ‘condition’ attribute for tab for logic to process if it should display or not
