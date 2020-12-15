@@ -1,3 +1,14 @@
+# v4.3.0
+## 12/14/2020
+
+1. [](#new)
+    * Added a new ‘condition’ attribute for tab for logic to process if it should display or not
+1. [](#improved)
+    * Added priority to form translations/config
+1. [](#bugfix)
+    * Fix admin access check [#463](https://github.com/getgrav/grav-plugin-form/pull/463)
+
+
 # v4.2.0
 ## 12/02/2020
 

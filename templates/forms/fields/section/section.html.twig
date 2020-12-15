@@ -1,5 +1,5 @@
 {% extends "forms/field.html.twig" %}
-{% set title_level = grav.user.access.admin.login ? 'h1' : field.title_level|default('h3') %}
+{% set title_level = grav['admin'] is defined ? 'h1' : field.title_level|default('h3') %}
 
 {% block field %}
 {% if field.security is empty or authorize(array(field.security)) %}
