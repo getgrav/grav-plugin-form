@@ -11,7 +11,7 @@
             name="{{ (scope ~ field.name)|fieldName }}"
             value="{{ field.value ?? '1' }}"
             type="checkbox"
-            {% if value == field.value ?? '1' %} checked="checked" {% endif %}
+            {% if value == (field.value ?? '1') %} checked="checked" {% endif %}
 
             {# input attribute structures #}
             {% block input_attributes %}

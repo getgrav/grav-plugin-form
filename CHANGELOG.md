@@ -1,3 +1,9 @@
+# v4.3.1
+## mm/dd/2020
+
+1. [](#bugfix)
+   * Fixed state of the checkbox if no value is provided
+
 # v4.3.0
 ## 12/14/2020
 
@@ -7,7 +13,6 @@
     * Added priority to form translations/config
 1. [](#bugfix)
     * Fix admin access check [#463](https://github.com/getgrav/grav-plugin-form/pull/463)
-
 
 # v4.2.0
 ## 12/02/2020
