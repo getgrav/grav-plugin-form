@@ -52,7 +52,7 @@ class Forms
         $factory = $this->types[$type] ?? null;
 
         if ($factory) {
-            if (method_exists($factory, 'createFormForPage')) {
+            if (is_callable([$factory, 'createFormForPage'])) {
                 return $factory->createFormForPage($page, $name, $form);
             }
 
