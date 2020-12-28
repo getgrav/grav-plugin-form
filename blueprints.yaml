@@ -8,7 +8,7 @@ icon: check-square
 author:
   name: Team Grav
   email: devs@getgrav.org
-  url: http://getgrav.org
+  url: https://getgrav.org
 keywords: plugin, form
 homepage: https://github.com/getgrav/grav-plugin-form
 bugs: https://github.com/getgrav/grav-plugin-form/issues
