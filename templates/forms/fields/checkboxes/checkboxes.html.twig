@@ -18,7 +18,7 @@
         {% set id = field.id|default(field.name)|hyphenize ~ '-' ~ key %}
         {% set name = field.use == 'keys' ? key : id %}
         {% set val = field.use == 'keys' ? '1' : key %}
-        {% set checked = (field.use == 'keys' ? value[key] : key in value) %}
+        {% set checked = value[key] %}
         {% set help = (key in field.help_options|keys ? field.help_options[key] : false) %}
 
         <div class="checkboxes {{ form_field_wrapper_classes }} {{ field.wrapper_classes }}">
