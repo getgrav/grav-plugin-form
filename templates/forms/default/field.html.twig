@@ -7,18 +7,19 @@
 {% set vertical = field.style == 'vertical' %}
 
 {% if not blueprints or (blueprints.schema.type(field.type)['input@'] ?? true) is same as(true) %}
+    {% set default = field.default %}
     {% set toggleable = field.toggleable ?? false %}
     {% if toggleable %}
         {% set originalValue = originalValue is defined ? originalValue : value %}
         {% set toggleableChecked = originalValue is not null %}
     {% elseif field.overridable %}
         {% set toggleable = true %}
-        {% set default = form.getDefaultValue(field.name) ?? field.default %}
+        {% set default = form.getDefaultValue(field.name) ?? default %}
         {% set toggleableChecked = value is not null and value != default %}
     {% endif %}
 
     {% set cookie_name = 'forms-' ~ form.name ~ '-' ~ field.name %}
-    {% set value = value ?? (get_cookie(cookie_name) is not null ? get_cookie(cookie_name) : field.default) %}
+    {% set value = value ?? (get_cookie(cookie_name) is not null ? get_cookie(cookie_name) : default) %}
 
     {% if (field.yaml or field.validate.type == 'yaml') and value is iterable %}
         {% set value = value|toYaml %}

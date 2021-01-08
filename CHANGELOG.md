@@ -4,6 +4,7 @@
 1. [](#bugfix)
    * Fixed state of the checkbox if no value is provided
    * Fixed evaluating default value in `hidden` field (thanks @NicoHood)
+   * Fixed default value to come from the `Form` in overridable field (thanks @NicoHood)
 
 # v4.3.0
 ## 12/14/2020
