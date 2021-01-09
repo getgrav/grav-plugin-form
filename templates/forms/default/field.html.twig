@@ -58,8 +58,7 @@
 {% set layout_form_field_outer_classes = layout_form_field_outer_classes|trim ~ ' ' ~ embed_outer_field_classes %}
 
 {# Show Label logic #}
-{% set form_field_label = form_field_label ?? field.label %}
-{% set show_label = form_field_label is not same as(false) and field.display_label is not same as(false )%}
+{% set show_label = field.label is not same as(false) and field.display_label is not same as(false )%}
 
 {# Label Classes #}
 {% set layout_form_field_outer_label_classes = ((form_field_outer_label_classes ?: 'form-label') ~ ' ' ~ field.labelclasses)|trim %}
@@ -92,6 +91,7 @@
 {% set form_field_for = toggleable ? 'toggleable_' ~ field.name : field.id|e %}
 
 {# Field Label #}
+{% set form_field_label = field.label %}
 {% set form_field_label = field.markdown ? form_field_label|markdown(false) : form_field_label %}
 {% set form_field_label = field.twig ? evaluate_twig(form_field_label) : form_field_label %}
 {% set form_field_label = form_field_label|default(field.name|capitalize)|t %}
