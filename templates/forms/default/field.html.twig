@@ -7,7 +7,7 @@
 {% set vertical = field.style == 'vertical' %}
 
 {% if not blueprints or (blueprints.schema.type(field.type)['input@'] ?? true) is same as(true) %}
-    {% set default = field.default %}
+    {% set default = default ?? (field.evaluate and field.default and field.default is not iterable ? evaluate(field.default) : field.default) %}
     {% set toggleable = field.toggleable ?? false %}
     {% if toggleable %}
         {% set originalValue = originalValue is defined ? originalValue : value %}
