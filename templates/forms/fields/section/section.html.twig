@@ -9,7 +9,10 @@
     {% endif %}
 
     {% if field.text %}
-    <p>{{ field.text|t|raw }}</p>
+      {% set field_text = field.text %}
+      {% set field_text = field.markdown ? field_text|markdown(false) : field_text %}
+      {% set field_text = field.twig ? evaluate_twig(field_text) : field_text %}
+      <p>{{ field_text|t|raw }}</p>
     {% endif %}
 
     {% if field.fields %}
