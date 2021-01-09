@@ -1,5 +1,8 @@
 {% extends "forms/field.html.twig" %}
 
+{# NOTE: evaluate is used here instead of evaluate_twig for backwards compatibility #}
+{% set default = default ?? (field.evaluate and field.default and field.default is not iterable ? evaluate(field.default) : field.default) %}
+
 {% block field %}
 
 {% set value = value ?: field.value %}

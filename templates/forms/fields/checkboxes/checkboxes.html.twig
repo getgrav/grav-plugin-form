@@ -4,7 +4,7 @@
 
 {% set default = {} %}
 {% for key, default_value in field.default %}
-    {% set default_value = (default_value and field.evaluate) ? evaluate(default_value) : default_value %}
+    {% set default_value = (default_value and field.evaluate) ? evaluate_twig(default_value) : default_value %}
     {% if default_value %}
         {% if field.use == 'keys' %}
             {# NOTE: The brackets around the key are important! #}
