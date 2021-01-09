@@ -2,7 +2,7 @@
 
 {% set originalValue = value %}
 {% set value = (value is null ? field.default : value) %}
-{% if field.use == 'keys' and field.default %}
+{% if field.use == 'keys' and field.default and value is null %}
     {% set value = field.default|merge(value) %}
 {% endif %}
 
