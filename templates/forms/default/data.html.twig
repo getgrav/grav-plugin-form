@@ -34,11 +34,11 @@
                                             {% set use_keys = field.use is defined and field.use == 'keys' %}
                                             {% for key, val in value %}
                                                 {% set index = (use_keys ? key : val) %}
-                                                <li>{{ field.options[index]|e }}</li>
+                                                <li>{{ field.options[index]|t|e }}</li>
                                             {% endfor %}
                                         </ul>
                                     {% else %}
-                                        {{ field.options[value]|e }}
+                                        {{ field.options[value]|t|e }}
                                     {% endif %}
                                 {% else %}
                                     {% set value = form.value(scope ~ field.name) %}
