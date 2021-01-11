@@ -1,6 +1,8 @@
 # v4.3.1
 ## mm/dd/2020
 
+1. [](#improved)
+   * Updated deprecated `Twig_SimpleFunction` code
 1. [](#bugfix)
    * Fixed state of the checkbox if no value is provided
    * Fixed evaluating default value in `hidden` field (thanks @NicoHood)
