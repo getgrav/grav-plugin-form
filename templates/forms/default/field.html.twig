@@ -7,7 +7,7 @@
 {% set vertical = field.style == 'vertical' %}
 
 {% if not blueprints or (blueprints.schema.type(field.type)['input@'] ?? true) is same as(true) %}
-    {% set default = field.default %}
+    {% set default = default ?? (field.evaluate and field.default and field.default is not iterable ? evaluate_twig(field.default) : field.default) %}
     {% set toggleable = field.toggleable ?? false %}
     {% if toggleable %}
         {% set originalValue = originalValue is defined ? originalValue : value %}
@@ -110,7 +110,7 @@
 {% block global_attributes %}
   data-grav-field="{{ field.type }}"
   data-grav-disabled="{{ toggleable and toggleableChecked }}"
-  data-grav-default="{{ field.default|json_encode()|e('html_attr') }}"
+  data-grav-default="{{ default ? default|json_encode()|e('html_attr') }}"
 {% endblock %}
 
 {% block input_attributes %}

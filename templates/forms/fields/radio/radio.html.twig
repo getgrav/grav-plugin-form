@@ -1,7 +1,6 @@
 {% extends "forms/field.html.twig" %}
 
 {% set originalValue = value %}
-{% set value = (value is null ? field.default : value) %}
 
 {% block input %}
     {% for key, text in field.options %}
