@@ -915,6 +915,11 @@ class Form implements FormInterface, ArrayAccess
                     $data = $data[$action];
                 }
 
+                // do not execute action, if deactivated
+                if (Utils::isNegative($data)) {
+                    continue;
+                }
+
                 $event = new Event(['form' => $this, 'action' => $action, 'params' => $data]);
                 $grav->fireEvent('onFormProcessed', $event);
 

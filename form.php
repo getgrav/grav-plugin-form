@@ -414,10 +414,6 @@ class FormPlugin extends Plugin
 
         switch ($action) {
             case 'captcha':
-                if (Utils::isNegative($params)) {
-                    break;
-                }
-
                 $captcha_config = $this->config->get('plugins.form.recaptcha');
 
                 $secret = $params['recaptcha_secret'] ?? $params['recatpcha_secret'] ?? $captcha_config['secret_key'];
@@ -478,10 +474,6 @@ class FormPlugin extends Plugin
                 }
                 break;
             case 'timestamp':
-                if (Utils::isNegative($params)) {
-                    break;
-                }
-
                 $label = $params['label'] ?? 'Timestamp';
                 $format = $params['format'] ?? 'Y-m-d H:i:s';
                 $blueprint = $form->value()->blueprints();
@@ -492,10 +484,6 @@ class FormPlugin extends Plugin
                 $form->setData('timestamp', $date_string);
                 break;
             case 'ip':
-                if (Utils::isNegative($params)) {
-                    break;
-                }
-
                 $label = $params['label'] ?? 'User IP';
                 $blueprint = $form->value()->blueprints();
                 $blueprint->set('form/fields/ip', ['name' => 'ip', 'label' => $label, 'type' => 'hidden']);
