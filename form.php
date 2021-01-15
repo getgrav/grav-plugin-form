@@ -414,6 +414,7 @@ class FormPlugin extends Plugin
 
         switch ($action) {
             case 'captcha':
+
                 $captcha_config = $this->config->get('plugins.form.recaptcha');
 
                 $secret = $params['recaptcha_secret'] ?? $params['recatpcha_secret'] ?? $captcha_config['secret_key'];

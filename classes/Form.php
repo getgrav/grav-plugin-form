@@ -916,7 +916,7 @@ class Form implements FormInterface, ArrayAccess
                 }
 
                 // do not execute action, if deactivated
-                if (Utils::isNegative($data)) {
+                if (in_array($data, [false, 'false'], true)) {
                     continue;
                 }
 
