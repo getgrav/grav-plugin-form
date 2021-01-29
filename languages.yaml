@@ -821,3 +821,77 @@ da:
     DESTINATION_NOT_SPECIFIED: "Destination ikke angivet"
     INVALID_MIME_TYPE: "MIME typen %s for filen %s er ikke accepteret."
     INVALID_FILE_EXTENSION: "Filendelsen for filen %s er ikke accepteret."
+lt:
+  PLUGIN_FORM:
+    NOT_VALIDATED: "Forma nepatikrinta. Trūksta vieno ar daugiau privalomų laukų."
+    NONCE_NOT_VALIDATED: "Oi, įvyko klaida. Prašome patikrinti įvestus duomenis ir pateikti formą iš naujo."
+    FILES: "Bylų įkėlimas"
+    FORM_ALREADY_SUBMITTED: "Ši forma jau buvo pateikta."
+    ALLOW_MULTIPLE: "Leisti daugiau nei vieną bylą"
+    ALLOW_MULTIPLE_HELP: "Leidžia pasirinkti daugiau nei vieną bylą įkėlimui."
+    DESTINATION: "Tikslas"
+    DESTINATION_HELP: "Vieta, kur bylos turėtų būti įkeltos"
+    ACCEPT: "Leidžiami MIME tipai"
+    ACCEPT_HELP: "MIME tipų sąrašas, kuriuos galima įkelti"
+    ERROR_VALIDATING_CAPTCHA: "reCAPTCHA apsauga aptiko problemų pateikiant formą"
+    DATA_SUMMARY: "Čia yra santrauka to, ką mums parašėte:"
+    NO_FORM_DATA: "Nėra formos duomenų"
+    RECAPTCHA: "reCAPTCHA"
+    RECAPTCHA_VERSION: "Versija"
+    RECAPTCHA_VERSION_V2_CHECKBOX: "v2 - žymimasis langelis"
+    RECAPTCHA_VERSION_V2_INVISIBLE: "v2 - nematoma"
+    RECAPTCHA_VERSION_V3_LATEST: "v3 - naujausia"
+    RECAPTCHA_THEME: "Tema"
+    RECAPTCHA_THEME_LIGHT: "Šviesi tema"
+    RECAPTCHA_THEME_DARK: "Tamsi tema"
+    RECAPTCHA_SITE_KEY: "Puslapio raktas"
+    RECAPTCHA_SITE_KEY_HELP: "Daugiau informacijos - https://developers.google.com/recaptcha"
+    RECAPTCHA_SECRET_KEY: "Slaptas raktas"
+    RECAPTCHA_SECRET_KEY_HELP: "Daugiau informacijos - https://developers.google.com/recaptcha"
+    GENERAL: "Bendra"
+    USE_BUILT_IN_CSS: "Naudoti įdiegtą CSS"
+    USE_INLINE_CSS: "Naudoti įterptą (inline) CSS"
+    FILEUPLOAD_PREVENT_SELF: 'Negalima naudoti "%s" už puslapių ribų.'
+    FILEUPLOAD_UNABLE_TO_UPLOAD: 'Nepavyko įkelti bylos %s: %s'
+    FILEUPLOAD_UNABLE_TO_MOVE: 'Nepavyko perkelti bylos iš %s į "%s"'
+    FILEUPLOAD_ERR_OK: 'Klaidos nėra, byla įkelta sėkmingai'
+    FILEUPLOAD_ERR_INI_SIZE: 'Įkelta byla viršija maksimalų įkėlimo dydį'
+    FILEUPLOAD_ERR_FORM_SIZE: 'Įkelta byla viršija HTML nurodytą MAX_FILE_SIZE direktyvą'
+    FILEUPLOAD_ERR_PARTIAL: 'Įkeliama byla buvo įkelta tik dalinai'
+    FILEUPLOAD_ERR_NO_FILE: 'Nebuvo įkelta jokia byla'
+    FILEUPLOAD_ERR_NO_TMP_DIR: 'Nerastas laikinasis katalogas'
+    FILEUPLOAD_ERR_CANT_WRITE: 'Nepavyko įrašyti bylos į diską'
+    FILEUPLOAD_ERR_EXTENSION: 'PHP plėtinys sustabdė bylos įkėlimą'
+    FILEUPLOAD_ERR_UNKNOWN: 'Nežinoma bylos įkėlimo klaida'
+    DROPZONE_CANCEL_UPLOAD: 'Atšaukti įkėlimą'
+    DROPZONE_CANCEL_UPLOAD_CONFIRMATION: 'Ar tikrai norite atšaukti šį įkėlimą?'
+    DROPZONE_DEFAULT_MESSAGE: 'Tempkite bylas čia arba <strong>paspauskite šioje zonoje</strong>'
+    DROPZONE_FALLBACK_MESSAGE: 'Jūsų naršyklė nepalaiko bylų įtempimo (drag and drop).'
+    DROPZONE_FALLBACK_TEXT: 'Prašome bylų įkėlimui naudoti žemiau esantį atsarginį variantą, kaip senais laikais.'
+    DROPZONE_FILE_TOO_BIG: 'Byla per didelė ({{filesize}}MiB). Maks. dydis: {{maxFilesize}}MiB.'
+    DROPZONE_INVALID_FILE_TYPE: "Negalite įkelti šio tipo bylų."
+    DROPZONE_MAX_FILES_EXCEEDED: "Nebegalite įkelti daugiau bylų."
+    DROPZONE_REMOVE_FILE: "Šalinti bylą"
+    DROPZONE_REMOVE_FILE_CONFIRMATION: 'Ar tikrai norite ištrinti šią bylą?'
+    DROPZONE_RESPONSE_ERROR: "Serveris atsakė su {{statusCode}} kodu."
+    YES: "Taip"
+    NO: "Ne"
+    REFRESH_PREVENTION: "Atnaujinimo apsauga"
+    REFRESH_PREVENTION_HELP: "Naudoti formos unikalų ID, kad būtų sustabdytas formos pakartotinis apdorojimas atnaujinus puslapį"
+    LIMIT: "Riba"
+    LIMIT_HELP: "Maksimalus viename lauke leidžiamų bylų kiekis (privaloma leisti daugiau nei vieną)"
+    FILESIZE: "Maks. bylos dydis"
+    FILESIZE_HELP: "Maksimalus leidžiamas bylos dydis (MB), 0 = naudoti sistemos pagal nutylėjimą"
+    AVOID_OVERWRITING: "Išvengti perrašymo"
+    AVOID_OVERWRITING_HELP: "Neleisti perrašyti bylų tuo pačiu pavadinimu. Bus pridėtas datos priešdėlis"
+    RANDOM_NAME: "Atsitiktinis pavadinimas"
+    RANDOM_NAME_HELP: "Generuoti atsitiktinį 15-os simbolių ilgio pavadinimą įkeliamoms byloms"
+    CLIENT_SIDE_VALIDATION: "Tikrinimas kliento pusėje"
+    CLIENT_SIDE_VALIDATION_HELP: "Pagal nutylėjimą formos naudos HTML5 kliento tikrinimą kaip pirminį"
+    INLINE_ERRORS: "Įterptos klaidos"
+    INLINE_ERRORS_HELP: "Pravartu su išjungtu 'tikrinimu kliento pusėje' - parodo kontekstines formos klaidas"
+    RESOLUTION_MIN: "{{attr}} buvo mažiau nei minimalus {{min}}px <br />"
+    RESOLUTION_MAX: "{{attr}} buvo daugiau nei maksimalus {{max}}px <br />"
+    DESTINATION_NOT_SPECIFIED: "Nenurodytas tikslas"
+    INVALID_MIME_TYPE: "MIME tipas %s bylai %s nepriimtinas."
+    INVALID_FILE_EXTENSION: "Bylos išplėtimas bylai %s nepriimtinas."
