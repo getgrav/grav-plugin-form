@@ -1,14 +1,14 @@
 name: Form
 slug: form
 type: plugin
-version: 4.3.0
+version: 4.3.1
 testing: false
 description: Enables the forms handling
 icon: check-square
 author:
   name: Team Grav
   email: devs@getgrav.org
-  url: http://getgrav.org
+  url: https://getgrav.org
 keywords: plugin, form
 homepage: https://github.com/getgrav/grav-plugin-form
 bugs: https://github.com/getgrav/grav-plugin-form/issues

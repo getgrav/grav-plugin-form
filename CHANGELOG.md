@@ -1,3 +1,17 @@
+# v4.3.1
+## 01/31/2021
+
+1. [](#improved)
+   * Updated deprecated `Twig_SimpleFunction` code
+   * Added Lithuanian translation [#485](https://github.com/getgrav/grav-plugin-form/pull/485)
+1. [](#bugfix)
+   * Fixed state of the checkbox if no value is provided
+   * Fixed evaluating default value in `hidden` field (thanks @NicoHood)
+   * Fixed default value to come from the `Form` in overridable field (thanks @NicoHood)
+   * Fix for disabling `client_side_validation` [#482](https://github.com/getgrav/grav-plugin-form/pull/482)
+   * Fix for translations in `select` field in data template [#475](https://github.com/getgrav/grav-plugin-form/pull/475)
+   * PHPDoc fixes 
+
 # v4.3.0
 ## 12/14/2020
 
@@ -7,7 +21,6 @@
     * Added priority to form translations/config
 1. [](#bugfix)
     * Fix admin access check [#463](https://github.com/getgrav/grav-plugin-form/pull/463)
-
 
 # v4.2.0
 ## 12/02/2020

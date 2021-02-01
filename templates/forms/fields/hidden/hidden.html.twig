@@ -2,8 +2,13 @@
 
 {% block field %}
 
-{% set value = value ?: field.value|default(field.default) %}
-{% set value = field.evaluate ? evaluate(value) : value %}
+{#  Used if the field is being used directly outside of form #}
+{% set value = value ?? field.value ?? (field.evaluate ? evaluate(field.default) : field.default) %}
+
+{# Evaluate support for the form #}
+{% if not has_value and value and field.evaluate %}
+    {% set value = evaluate(value) %}
+{% endif %}
 {% set input_value = value is iterable ? value|join(',') : value|string %}
 
 <input data-grav-field="hidden" data-grav-disabled="false" type="hidden" class="input" name="{{ (scope ~ field.name)|fieldName }}" value="{{ input_value|e('html_attr') }}" />

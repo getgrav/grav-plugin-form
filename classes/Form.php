@@ -1,6 +1,7 @@
 <?php
 namespace Grav\Plugin\Form;
 
+use ArrayAccess;
 use Grav\Common\Config\Config;
 use Grav\Common\Data\Data;
 use Grav\Common\Data\Blueprint;
@@ -22,6 +23,12 @@ use Grav\Framework\Route\Route;
 use RocketTheme\Toolbox\ArrayTraits\NestedArrayAccessWithGetters;
 use RocketTheme\Toolbox\Event\Event;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
+use RuntimeException;
+use stdClass;
+use function is_array;
+use function is_int;
+use function is_string;
+use function json_encode;
 
 /**
  * Class Form
@@ -29,19 +36,19 @@ use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
  *
  * @property string $id
  * @property string $uniqueid
- * @property-read string $name
- * @property-read string $noncename
- * @property-read $string nonceaction
- * @property-read string $action
- * @property-read Data $data
- * @property-read array $files
- * @property-read Data $value
+ * @property string $name
+ * @property string $noncename
+ * @property string $nonceaction
+ * @property string $action
+ * @property Data $data
+ * @property array $files
+ * @property Data $value
  * @property array $errors
- * @property-read array $fields
- * @property-read Blueprint $blueprint
- * @property-read PageInterface $page
+ * @property array $fields
+ * @property Blueprint $blueprint
+ * @property PageInterface $page
  */
-class Form implements FormInterface, \ArrayAccess
+class Form implements FormInterface, ArrayAccess
 {
     use NestedArrayAccessWithGetters {
         NestedArrayAccessWithGetters::get as private traitGet;
@@ -53,31 +60,19 @@ class Form implements FormInterface, \ArrayAccess
         FormTrait::doUnserialize as private doTraitUnserialize;
     }
 
+    /** @var int */
     public const BYTES_TO_MB = 1048576;
 
-    /**
-     * @var string
-     */
+    /** @var string */
     public $message;
-
-    /**
-     * @var int
-     */
+    /** @var int */
     public $response_code;
-
-    /**
-     * @var string
-     */
+    /** @var string */
     public $status = 'success';
 
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $header_data = [];
-
-    /**
-     * @var array
-     */
+    /** @var array */
     protected $rules = [];
 
     /**
@@ -143,12 +138,12 @@ class Form implements FormInterface, \ArrayAccess
         $this->page = $page ? $page->route() : '/';
 
         // Add form specific rules.
-        if (!empty($this->items['rules']) && \is_array($this->items['rules'])) {
+        if (!empty($this->items['rules']) && is_array($this->items['rules'])) {
             $this->rules += $this->items['rules'];
         }
 
         // Set form name if not set.
-        if ($name && !\is_int($name)) {
+        if ($name && !is_int($name)) {
             $this->items['name'] = $name;
         } elseif (empty($this->items['name'])) {
             $this->items['name'] = $slug;
@@ -210,6 +205,10 @@ class Form implements FormInterface, \ArrayAccess
         return $this;
     }
 
+    /**
+     * @param FormFlash $flash
+     * @return void
+     */
     protected function setAllFiles(FormFlash $flash)
     {
         if (!$flash->exists()) {
@@ -252,6 +251,8 @@ class Form implements FormInterface, \ArrayAccess
 
     /**
      * Reset form.
+     *
+     * @return void
      */
     public function reset(): void
     {
@@ -272,6 +273,12 @@ class Form implements FormInterface, \ArrayAccess
         $grav->fireEvent('onFormInitialized', new Event(['form' => $this]));
     }
 
+    /**
+     * @param string $name
+     * @param mixed|null $default
+     * @param string|null $separator
+     * @return mixed
+     */
     public function get($name, $default = null, $separator = null)
     {
         switch (strtolower($name)) {
@@ -294,13 +301,16 @@ class Form implements FormInterface, \ArrayAccess
         return $this->traitGet($name, $default, $separator);
     }
 
+    /**
+     * @return string
+     */
     public function getAction(): string
     {
         return $this->items['action'] ?? $this->page;
     }
 
     /**
-     * @param $message
+     * @param string $message
      * @param string $type
      * @todo Type not used
      */
@@ -309,6 +319,12 @@ class Form implements FormInterface, \ArrayAccess
         $this->setError($message);
     }
 
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @param string|null $separator
+     * @return Form
+     */
     public function set($name, $value, $separator = null)
     {
         switch (strtolower($name)) {
@@ -405,6 +421,7 @@ class Form implements FormInterface, \ArrayAccess
      * Allow overriding of fields.
      *
      * @param array $fields
+     * @return void
      */
     public function setFields(array $fields = [])
     {
@@ -422,7 +439,7 @@ class Form implements FormInterface, \ArrayAccess
      * Get value of given variable (or all values).
      * First look in the $data array, fallback to the $values array
      *
-     * @param string $name
+     * @param string|null $name
      * @param bool $fallback
      * @return mixed
      */
@@ -446,7 +463,7 @@ class Form implements FormInterface, \ArrayAccess
     /**
      * Get value of given variable (or all values).
      *
-     * @param string $name
+     * @param string|null $name
      * @return mixed
      */
     public function data($name = null)
@@ -457,8 +474,9 @@ class Form implements FormInterface, \ArrayAccess
     /**
      * Set value of given variable in the values array
      *
-     * @param string $name
+     * @param string|null $name
      * @param mixed $value
+     * @return void
      */
     public function setValue($name = null, $value = '')
     {
@@ -472,9 +490,8 @@ class Form implements FormInterface, \ArrayAccess
     /**
      * Set value of given variable in the data array
      *
-     * @param string $name
+     * @param string|null $name
      * @param string $value
-     *
      * @return bool
      */
     public function setData($name = null, $value = '')
@@ -488,6 +505,10 @@ class Form implements FormInterface, \ArrayAccess
         return true;
     }
 
+    /**
+     * @param array $array
+     * @return void
+     */
     public function setAllData($array): void
     {
         $callable = function () {
@@ -668,7 +689,7 @@ class Form implements FormInterface, \ArrayAccess
 
         if ($task === 'cropupload') {
             $crop = $post['crop'];
-            if (\is_string($crop)) {
+            if (is_string($crop)) {
                 $crop = json_decode($crop, true);
             }
             $success = $flash->cropFile($field, $filename, $upload, $crop);
@@ -689,7 +710,7 @@ class Form implements FormInterface, \ArrayAccess
         // json_response
         $json_response = [
             'status' => 'success',
-            'session' => \json_encode([
+            'session' => json_encode([
                 'sessionField' => base64_encode($url),
                 'path' => $path,
                 'field' => $settings->name,
@@ -753,6 +774,8 @@ class Form implements FormInterface, \ArrayAccess
 
     /**
      * Removes a file from the flash object session, before it gets saved.
+     *
+     * @return void
      */
     public function filesSessionRemove(): void
     {
@@ -761,7 +784,7 @@ class Form implements FormInterface, \ArrayAccess
             $filename = $this->values->get('filename');
 
             if (!isset($field, $filename)) {
-                throw new \RuntimeException('Bad Request: name and/or filename are missing', 400);
+                throw new RuntimeException('Bad Request: name and/or filename are missing', 400);
             }
 
             $this->removeFlashUpload($filename, $field);
@@ -772,8 +795,10 @@ class Form implements FormInterface, \ArrayAccess
         $this->sendJsonResponse($callable);
     }
 
-
-    public function storeState(): void
+    /**
+     * @return void
+     */
+    public function storeState()
     {
         $callable = function (): array {
             $this->updateFlashData($this->values->get('data') ?? []);
@@ -784,7 +809,9 @@ class Form implements FormInterface, \ArrayAccess
         $this->sendJsonResponse($callable);
     }
 
-
+    /**
+     * @return void
+     */
     public function clearState(): void
     {
         $callable = function (): array {
@@ -798,6 +825,8 @@ class Form implements FormInterface, \ArrayAccess
 
     /**
      * Handle form processing on POST action.
+     *
+     * @return void
      */
     public function post()
     {
@@ -862,7 +891,7 @@ class Form implements FormInterface, \ArrayAccess
             if ($event->isPropagationStopped()) {
                 return;
             }
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             $this->status = 'error';
             $event = new Event(['form' => $this, 'message' => $e->getMessage(), 'messages' => []]);
             $grav->fireEvent('onFormValidationError', $event);
@@ -879,10 +908,10 @@ class Form implements FormInterface, \ArrayAccess
             $this->legacyUploads();
         }
 
-        if (\is_array($process)) {
+        if (is_array($process)) {
             foreach ($process as $action => $data) {
                 if (is_numeric($action)) {
-                    $action = \key($data);
+                    $action = key($data);
                     $data = $data[$action];
                 }
 
@@ -940,6 +969,7 @@ class Form implements FormInterface, \ArrayAccess
     /**
      * Backwards compatibility
      *
+     * @return void
      * @deprecated 3.0 Calling $form->filter() is not needed anymore (does nothing)
      */
     public function filter(): void
@@ -948,6 +978,8 @@ class Form implements FormInterface, \ArrayAccess
 
     /**
      * Store form uploads to the final location.
+     *
+     * @return void
      */
     public function copyFiles()
     {
@@ -969,14 +1001,14 @@ class Form implements FormInterface, \ArrayAccess
 
                 if (!is_dir($folder) && !@mkdir($folder, 0777, true) && !is_dir($folder)) {
                     $grav = Grav::instance();
-                    throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $upload->getClientFilename() . '"', $destination));
+                    throw new RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $upload->getClientFilename() . '"', $destination));
                 }
 
                 try {
                     $upload->moveTo($destination);
-                } catch (\RuntimeException $e) {
+                } catch (RuntimeException $e) {
                     $grav = Grav::instance();
-                    throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $upload->getClientFilename() . '"', $destination));
+                    throw new RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $upload->getClientFilename() . '"', $destination));
                 }
             }
         }
@@ -984,6 +1016,9 @@ class Form implements FormInterface, \ArrayAccess
         $flash->clearFiles();
     }
 
+    /**
+     * @return void
+     */
     public function legacyUploads()
     {
         // Get flash object in order to save the files.
@@ -1020,7 +1055,7 @@ class Form implements FormInterface, \ArrayAccess
         } else {
             user_error('Event onFormStoreUploads is deprecated.', E_USER_DEPRECATED);
 
-            if (\is_array($queue)) {
+            if (is_array($queue)) {
                 foreach ($queue as $key => $files) {
                     foreach ($files as $destination => $file) {
                         $filesystem = Filesystem::getInstance();
@@ -1028,12 +1063,12 @@ class Form implements FormInterface, \ArrayAccess
 
                         if (!is_dir($folder) && !@mkdir($folder, 0777, true) && !is_dir($folder)) {
                             $grav = Grav::instance();
-                            throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $file['tmp_name'] . '"', $destination));
+                            throw new RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $file['tmp_name'] . '"', $destination));
                         }
 
                         if (!rename($file['tmp_name'], $destination)) {
                             $grav = Grav::instance();
-                            throw new \RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $file['tmp_name'] . '"', $destination));
+                            throw new RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $file['tmp_name'] . '"', $destination));
                         }
 
                         if (file_exists($file['tmp_name'] . '.yaml')) {
@@ -1051,6 +1086,10 @@ class Form implements FormInterface, \ArrayAccess
         }
     }
 
+    /**
+     * @param string $path
+     * @return string
+     */
     public function getPagePathFromToken($path)
     {
         return Utils::getPagePathFromToken($path, $this->getPage());
@@ -1067,8 +1106,8 @@ class Form implements FormInterface, \ArrayAccess
     }
 
     /**
-     * @param $field
-     * @param $filename
+     * @param string $field
+     * @param string $filename
      * @return Route|null
      */
     public function getFileDeleteAjaxRoute($field, $filename): ?Route
@@ -1078,6 +1117,10 @@ class Form implements FormInterface, \ArrayAccess
         return $route;
     }
 
+    /**
+     * @param int|null $code
+     * @return int|mixed
+     */
     public function responseCode($code = null)
     {
         if ($code) {
@@ -1086,6 +1129,9 @@ class Form implements FormInterface, \ArrayAccess
         return $this->response_code;
     }
 
+    /**
+     * @return array
+     */
     public function doSerialize()
     {
         return $this->doTraitSerialize() + [
@@ -1099,6 +1145,10 @@ class Form implements FormInterface, \ArrayAccess
             ];
     }
 
+    /**
+     * @param array $data
+     * @return void
+     */
     public function doUnserialize(array $data)
     {
         $this->items = $data['items'];
@@ -1149,6 +1199,10 @@ class Form implements FormInterface, \ArrayAccess
         return $form_filesize;
     }
 
+    /**
+     * @param callable $callable
+     * @return void
+     */
     protected function sendJsonResponse(callable $callable)
     {
         $grav = Grav::instance();
@@ -1161,7 +1215,7 @@ class Form implements FormInterface, \ArrayAccess
         $post['data'] = $this->decodeData($post['data'] ?? []);
 
         if (empty($post['form-nonce']) || !Utils::verifyNonce($post['form-nonce'], 'form')) {
-            throw new \RuntimeException('Bad Request: Nonce is missing or invalid', 400);
+            throw new RuntimeException('Bad Request: Nonce is missing or invalid', 400);
         }
 
         $this->values = new Data($post);
@@ -1179,6 +1233,7 @@ class Form implements FormInterface, \ArrayAccess
      *
      * @param string $filename
      * @param string|null $field
+     * @return void
      */
     protected function removeFlashUpload(string $filename, string $field = null)
     {
@@ -1191,6 +1246,7 @@ class Form implements FormInterface, \ArrayAccess
      * Store updated data into flash object.
      *
      * @param array $data
+     * @return void
      */
     protected function updateFlashData(array $data)
     {
@@ -1210,11 +1266,20 @@ class Form implements FormInterface, \ArrayAccess
         $flash->save();
     }
 
+    /**
+     * @param array $data
+     * @param array $files
+     * @return void
+     */
     protected function doSubmit(array $data, array $files)
     {
         return;
     }
 
+    /**
+     * @param array $fields
+     * @return array
+     */
     protected function processFields($fields)
     {
         $types = Grav::instance()['plugins']->formFieldTypes;
@@ -1237,7 +1302,7 @@ class Form implements FormInterface, \ArrayAccess
             }
 
             // Recursively process children
-            if (isset($value['fields']) && \is_array($value['fields'])) {
+            if (isset($value['fields']) && is_array($value['fields'])) {
                 $value['fields'] = $this->processFields($value['fields']);
             }
 
@@ -1247,6 +1312,11 @@ class Form implements FormInterface, \ArrayAccess
         return $return;
     }
 
+    /**
+     * @param string $key
+     * @param array $files
+     * @return void
+     */
     protected function setImageField($key, $files)
     {
         $field = $this->data->blueprints()->schema()->get($key);
@@ -1264,7 +1334,7 @@ class Form implements FormInterface, \ArrayAccess
      */
     protected function decodeData($data)
     {
-        if (!\is_array($data)) {
+        if (!is_array($data)) {
             return [];
         }
 
@@ -1289,10 +1359,10 @@ class Form implements FormInterface, \ArrayAccess
     {
         $out = [];
 
-        if (\is_array($source)) {
+        if (is_array($source)) {
             foreach ($source as $key => $value) {
                 $key = str_replace(['%5B', '%5D'], ['[', ']'], $key);
-                if (\is_array($value)) {
+                if (is_array($value)) {
                     $out[$key] = $this->cleanDataKeys($value);
                 } else {
                     $out[$key] = $value;
@@ -1312,9 +1382,9 @@ class Form implements FormInterface, \ArrayAccess
      */
     protected function normalizeFiles($data, $key = '')
     {
-        $files = new \stdClass();
+        $files = new stdClass();
         $files->field = $key;
-        $files->file = new \stdClass();
+        $files->file = new stdClass();
 
         foreach ($data as $fieldName => $fieldValue) {
             // Since Files Upload are always happening via Ajax
