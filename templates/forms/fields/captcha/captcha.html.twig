@@ -15,11 +15,13 @@
       {% do assets.addJs('https://www.google.com/recaptcha/api.js?render='~site_key~'&theme=' ~ theme) %}
       {#<script src='https://www.google.com/recaptcha/api.js?render={{ site_key }}&theme={{ theme }}'></script>#}
       <script type="application/javascript">
-          (document.querySelectorAll('form') || []).forEach(function(form, index) {
-              var submit = function(event) {
+          window.gRecaptchaInstances = window.gRecaptchaInstances || {};
+          window.gRecaptchaInstances['{{ form.id }}'] = {
+              element: document.querySelector('form#{{ form.id }}'),
+              submit: function (event) {
                   event.preventDefault();
                   grecaptcha.ready(function () {
-                      grecaptcha.execute('{{ site_key }}', { action: '{{ action }}' }).then(function(token) {
+                      grecaptcha.execute('{{ site_key }}', {action: '{{ action }}'}).then(function (token) {
                           var tokenElement = document.createElement('input');
                           tokenElement.setAttribute('type', 'hidden');
                           tokenElement.setAttribute('name', 'data[token]');
@@ -30,16 +32,18 @@
                           actionElement.setAttribute('name', 'data[action]');
                           actionElement.setAttribute('value', '{{ action }}');
 
+                          const form = window.gRecaptchaInstances['{{ form.id }}'].element;
+                          const submit = window.gRecaptchaInstances['{{ form.id }}'].submit;
                           form.insertBefore(tokenElement, form.firstChild);
                           form.insertBefore(actionElement, form.firstChild);
                           form.removeEventListener('submit', submit);
                           form.submit();
                       });
                   });
-              };
+              }
+          };
 
-              form.addEventListener('submit', submit);
-          });
+          window.gRecaptchaInstances['{{ form.id }}'].element.addEventListener('submit', window.gRecaptchaInstances['{{ form.id }}'].submit);
       </script>
   {% elseif config.plugins.form.recaptcha.version == '2-invisible' %}
       <script type="application/javascript">

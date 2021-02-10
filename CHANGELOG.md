@@ -1,3 +1,9 @@
+# v4.3.2
+## mm/dd/2021
+
+1. [](#bugfix)
+   * Fixed reCaptcha v3 incompatibility with multiple forms on the same page sharing different actions [#416](https://github.com/getgrav/grav-plugin-form/issues/416)
+
 # v4.3.1
 ## 01/31/2021
 
