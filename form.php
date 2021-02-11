@@ -30,6 +30,7 @@ use RocketTheme\Toolbox\File\YamlFile;
 use RocketTheme\Toolbox\File\File;
 use RocketTheme\Toolbox\Event\Event;
 use RuntimeException;
+use Twig\Extension\CoreExtension;
 use Twig\TwigFunction;
 use function count;
 use function function_exists;
@@ -352,7 +353,7 @@ class FormPlugin extends Plugin
             new TwigFunction('forms', [$this, 'getForm'])
         );
 
-        $this->grav['twig']->twig()->getExtension('Twig_Extension_Core')->setEscaper('yaml', function ($twig, $string, $charset) {
+        $this->grav['twig']->twig()->getExtension(CoreExtension::class)->setEscaper('yaml', function ($twig, $string, $charset) {
             return Yaml::dump($string);
         }
         );
