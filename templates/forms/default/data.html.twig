@@ -25,6 +25,9 @@
                                             <li>{{ field.options[index]|t|e }}</li>
                                         {% endfor %}
                                     </ul>
+                                {% elseif field.type == 'radio' %}
+                                    {% set value = form.value(scope ~ field.name) %}
+                                    {{ field.options[value]|t|e }}
                                 {% elseif field.type == 'checkbox' %}
                                     {{ (form.value(scope ~ field.name) == 1) ? "GRAV.YES"|t|e : "GRAV.NO"|t|e }}
                                 {% elseif field.type == 'select' %}
