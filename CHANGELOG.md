@@ -1,4 +1,4 @@
-# v4.3.2
+# v5.0.0
 ## mm/dd/2021
 
 1. [](#new)
@@ -7,6 +7,8 @@
 1. [](#bugfix)
    * Fixed reCaptcha v3 incompatibility with multiple forms on the same page sharing different actions [#416](https://github.com/getgrav/grav-plugin-form/issues/416)
    * Toggle fields do not save `false` if they are `toggleable` [#497](https://github.com/getgrav/grav-plugin-form/issues/497)
+   * Data template fixes [#494](https://github.com/getgrav/grav-plugin-form/pull/494)
+   * Fix deprecated Twig method
 
 # v4.3.1
 ## 01/31/2021
