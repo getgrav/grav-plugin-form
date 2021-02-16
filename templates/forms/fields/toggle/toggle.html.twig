@@ -38,7 +38,7 @@
              id="{{ id }}"
              name="{{ (scope ~ field.name)|fieldName }}"
           {% if field.highlight is defined %}
-            class="{{ field.highlight|string same as(key) ? 'highlight' : '' }}"
+            class="{{ field.highlight|string is same as(key) ? 'highlight' : '' }}"
           {% endif %}
           {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
           {% if key is same as(value) %}
