@@ -2,9 +2,11 @@
 ## mm/dd/2021
 
 1. [](#new)
+   * Requires **Grav 1.7.0**
    * Allow admins to temporarily disable form process actions by setting the value to `false` [#481](https://github.com/getgrav/grav-plugin-form/pull/481)
 1. [](#bugfix)
    * Fixed reCaptcha v3 incompatibility with multiple forms on the same page sharing different actions [#416](https://github.com/getgrav/grav-plugin-form/issues/416)
+   * Toggle fields do not save `false` if they are `toggleable` [#497](https://github.com/getgrav/grav-plugin-form/issues/497)
 
 # v4.3.1
 ## 01/31/2021
