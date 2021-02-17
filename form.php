@@ -30,6 +30,7 @@ use RocketTheme\Toolbox\File\YamlFile;
 use RocketTheme\Toolbox\File\File;
 use RocketTheme\Toolbox\Event\Event;
 use RuntimeException;
+use Twig\Extension\CoreExtension;
 use Twig\TwigFunction;
 use function count;
 use function function_exists;
@@ -352,7 +353,7 @@ class FormPlugin extends Plugin
             new TwigFunction('forms', [$this, 'getForm'])
         );
 
-        $this->grav['twig']->twig()->getExtension('Twig_Extension_Core')->setEscaper('yaml', function ($twig, $string, $charset) {
+        $this->grav['twig']->twig()->getExtension(CoreExtension::class)->setEscaper('yaml', function ($twig, $string, $charset) {
             return Yaml::dump($string);
         }
         );
@@ -792,10 +793,11 @@ class FormPlugin extends Plugin
                 return $first_form;
             }
 
-            //No form on this route. Try looking up in the current page first
-            /** @var Forms $forms */
-            $forms = $this->grav['forms'];
-            return $forms->createPageForm($this->grav['page']);
+            // Try to get page by defined route first or get current if not found
+            $page = $this->grav['pages']->find($page_route) ?: $this->grav['page'];
+
+            // Try looking up in the defined page
+            return $this->grav['forms']->createPageForm($page);
         }
 
         // return the form you are looking for if available

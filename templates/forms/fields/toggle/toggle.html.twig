@@ -20,13 +20,6 @@
 {% endblock %}
 
 {% block input %}
-    {% set value = (value is same as(false) ? 0 : value) %}
-
-    {% if field.force_bool and get_type(value) == 'string'%}
-        {% set value = true %}
-    {% endif %}
-
-
   <div class="switch-toggle switch-grav {{ field.size }} switch-{{ field.options|length }} {{ field.classes }}">
     {% set maxLen = 0 %}
     {% for text in field.options %}
@@ -34,7 +27,9 @@
       {% set maxLen = max(translation|length, maxLen) %}
     {% endfor %}
 
+    {% set value = value|string %}
     {% for key, text in field.options %}
+      {% set key = key|string %}
       {% set id = "toggle_" ~ field.name ~ key %}
       {% set translation = text|t|trim %}
 
@@ -43,19 +38,11 @@
              id="{{ id }}"
              name="{{ (scope ~ field.name)|fieldName }}"
           {% if field.highlight is defined %}
-            class="{{ field.highlight == '' ~ key ? 'highlight' : '' }}"
+            class="{{ field.highlight|string is same as(key) ? 'highlight' : '' }}"
           {% endif %}
           {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
-          {% if field.toggleable %}
-            {% if '' ~ key == '' ~ value %}
-              checked="checked"
-            {% elseif value is defined and (key == 1 or key == '1') %}
-              checked="checked"
-            {% endif %}
-          {% else %}
-            {% if '' ~ key == '' ~ value %}
-              checked="checked"
-            {% endif %}
+          {% if key is same as(value) %}
+            checked="checked"
           {% endif %}
           {% if required %}required="required"{% endif %}
           {% if field.tabindex %}tabindex="{{ field.tabindex }}"{% endif %}
