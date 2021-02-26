@@ -1,3 +1,9 @@
+# v5.0.1
+## mm/dd/2021
+
+1. [](#bugfix)
+   * Fixed toggle highlight when there's no value
+
 # v5.0.0
 ## 02/17/2021
 
