@@ -148,45 +148,45 @@ de:
     ALLOW_MULTIPLE_HELP: "Erlaubt es, mehr als eine Datei zum Hochladen auszuwählen."
     DESTINATION: "Ziel"
     DESTINATION_HELP: "Das Ziel, wohin die Dateien hochgeladen werden sollen."
-    ACCEPT: "Erlaube MIME-Typen"
+    ACCEPT: "Erlaubte MIME-Typen"
     ACCEPT_HELP: "Eine Liste von MIME-Typen, die hochgeladen werden dürfen."
     ERROR_VALIDATING_CAPTCHA: "Die Überprüfung des Captcha ist fehlgeschlagen."
-    DATA_SUMMARY: "Hier die Zusammenfassung von dem, was Sie geschrieben haben:"
+    DATA_SUMMARY: "Hier die Zusammenfassung dessen, was du geschrieben hast:"
     YES: "Ja"
     NO: "Nein"
     NO_FORM_DATA: "Keine Formulardaten vorhanden"
     RECAPTCHA: "ReCaptcha"
-    RECAPTCHA_SITE_KEY: "Seiten Schlüssel"
+    RECAPTCHA_SITE_KEY: "Seitenschlüssel"
     RECAPTCHA_SITE_KEY_HELP: "Für mehr Informationen besuche https://developers.google.com/recaptcha"
     RECAPTCHA_SECRET_KEY: "Privater Schlüssel"
     RECAPTCHA_SECRET_KEY_HELP: "Für mehr Informationen besuche https://developers.google.com/recaptcha"
     GENERAL: "General"
-    USE_BUILT_IN_CSS: "Benutze built-in CSS"
+    USE_BUILT_IN_CSS: "Benutze eingebautes CSS"
     USE_INLINE_CSS: "Benutze inline CSS"
     FILEUPLOAD_PREVENT_SELF: '"%s" kann nicht ausserhalb der Seiten verwendet werden.'
-    FILEUPLOAD_UNABLE_TO_UPLOAD: 'Upload Fehler %s: %s'
-    FILEUPLOAD_UNABLE_TO_MOVE: 'Fehler beim verschieben von %s nach "%s"'
+    FILEUPLOAD_UNABLE_TO_UPLOAD: 'Upload-Fehler %s: %s'
+    FILEUPLOAD_UNABLE_TO_MOVE: 'Fehler beim Verschieben von %s nach "%s"'
     DROPZONE_CANCEL_UPLOAD: 'Upload abgebrochen'
-    DROPZONE_CANCEL_UPLOAD_CONFIRMATION: 'Bist du sicher das Du diesen Upload abbrechen möchtest??'
-    DROPZONE_DEFAULT_MESSAGE: 'Ziehe deine Dateien hierhin <strong>Klicke hier</strong>'
+    DROPZONE_CANCEL_UPLOAD_CONFIRMATION: 'Bist du sicher, dass du diesen Upload abbrechen möchtest??'
+    DROPZONE_DEFAULT_MESSAGE: 'Ziehe deine Dateien hierhin: <strong>Klicke hier</strong>'
     DROPZONE_FALLBACK_MESSAGE: 'Dein Browser unterstützt kein "drag and drop".'
-    DROPZONE_FILE_TOO_BIG: 'Datei zu gross ({{filesize}}MiB). Max Dateigrösse: {{maxFilesize}}MiB.'
+    DROPZONE_FILE_TOO_BIG: 'Datei zu gross ({{filesize}}MiB). Maximale Dateigrösse: {{maxFilesize}}MiB.'
     DROPZONE_INVALID_FILE_TYPE: "Du kannst keine Dateien dieses Typs hochladen."
-    DROPZONE_MAX_FILES_EXCEEDED: "DU kannst keine weiteren Dateien hochladen."
+    DROPZONE_MAX_FILES_EXCEEDED: "Du kannst keine weiteren Dateien hochladen."
     DROPZONE_REMOVE_FILE: "Datei entfernen"
     DROPZONE_REMOVE_FILE_CONFIRMATION: 'Möchtest du diese Datei wirklich löschen?'
     DROPZONE_RESPONSE_ERROR: "Server antwortet mit {{statusCode}}."
     LIMIT_HELP: "Maximale anzahl erlaubter Dateien (Mehrfachauswahl erforderlich) "
-    FILESIZE: "Max Dateigrösse"
+    FILESIZE: "Maximale Dateigrösse"
     FILESIZE_HELP: "Maximale Dateigrösse (in MB), 0 = Benutze Standart"
-    AVOID_OVERWRITING: "Überschreibungen verhindern"
-    AVOID_OVERWRITING_HELP: "Verhindert überschreibungen und fügt ein Prefix an."
+    AVOID_OVERWRITING: "Überschreiben verhindern"
+    AVOID_OVERWRITING_HELP: "Verhindert das Überschreiben und fügt einen Dateipräfix hinzu."
     RANDOM_NAME: "Zufälliger Name"
-    RANDOM_NAME_HELP: "Generiert einen 15 Zeichen langen Zufalls Name."
+    RANDOM_NAME_HELP: "Generiert einen 15 Zeichen langen Zufallsnamen."
     CLIENT_SIDE_VALIDATION: "Klientseitige Überprüfung"
-    INLINE_ERRORS: "Inline errors"
+    INLINE_ERRORS: "Inline-Fehler"
     DESTINATION_NOT_SPECIFIED: "Zielort nicht definiert"
-    INVALID_MIME_TYPE: "Der MIME-Type %s für die Datei %s ist nicht erlaubt."
+    INVALID_MIME_TYPE: "Der MIME-Typ %s für die Datei %s ist nicht erlaubt."
     INVALID_FILE_EXTENSION: "Die Dateiendung %s ist nicht erlaubt."
 
 es:
