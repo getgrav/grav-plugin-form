@@ -35,6 +35,7 @@
                 {% set options = options|merge(value|default([]))|array_unique %}
             {% endif %}
 
+            {% set value = value is iterable ? value : value|string %}
             {% for key, item_value in options %}
                 {% if item_value is iterable and item_value.value %}
                     {% set akey = field.selectize and field.multiple ? item_value : key %}
@@ -50,17 +51,18 @@
                     {% set optgroup_label = item_value|keys|first %}
                     <optgroup label="{{ optgroup_label }}">
                       {% for subkey, suboption in field.options[key][optgroup_label] %}
-                          {% set selected = field.selectize ? suboption : subkey %}
-                          {% set item_value = field.selectize and field.multiple ? suboption : subkey %}
-                          <option {% if subkey == value or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ suboption }}">
+                          {% set subkey = subkey|string %}
+                          {% set item_value = (field.selectize and field.multiple ? suboption : subkey)|string %}
+                          {% set selected = (field.selectize ? suboption : subkey)|string %}
+                          <option {% if subkey is same as (value) or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ suboption }}">
                             {{ suboption|t|raw }}
                           </option>
                       {% endfor %}
                     </optgroup>
                 {% else %}
-                    {% set selected = field.selectize ? item_value : key %}
-                    {% set val = field.selectize and field.multiple ? item_value : key %}
-                    <option {% if val == value or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ val }}">{{ item_value|t|raw }}</option>
+                    {% set val = (field.selectize and field.multiple ? item_value : key)|string %}
+                    {% set selected = (field.selectize ? item_value : key)|string %}
+                    <option {% if val is same as (value) or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ val }}">{{ item_value|t|raw }}</option>
                 {% endif %}
             {% endfor %}
 

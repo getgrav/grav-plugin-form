@@ -3,6 +3,7 @@
 
 1. [](#bugfix)
    * Fixed toggle highlight when there's no value
+   * Fixed wrong selected values in `select` field with integer and boolean values
 
 # v5.0.0
 ## 02/17/2021
