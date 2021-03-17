@@ -1,8 +1,7 @@
 name: Form
 slug: form
 type: plugin
-version: 5.0.0
-testing: false
+version: 5.0.1
 description: Enables the forms handling
 icon: check-square
 author:

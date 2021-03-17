@@ -1,9 +1,13 @@
 # v5.0.1
-## mm/dd/2021
+## 03/17/2021
 
+1. [](#improved)
+   * Updated `de` language [#510](https://github.com/getgrav/grav-plugin-form/pull/510)
+   * Better field type definitions for avatar and file fields
 1. [](#bugfix)
    * Fixed toggle highlight when there's no value
    * Fixed wrong selected values in `select` field with integer and boolean values
+   * Fixed changelog display [#502](https://github.com/getgrav/grav-plugin-form/pull/502)
 
 # v5.0.0
 ## 02/17/2021
