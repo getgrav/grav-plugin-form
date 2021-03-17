@@ -813,7 +813,8 @@ class FormPlugin extends Plugin
     {
         return [
             'avatar' => [
-                'input@' => false
+                'input@' => false,
+                'media_field' => true
             ],
             'captcha' => [
                 'input@' => false
@@ -835,6 +836,7 @@ class FormPlugin extends Plugin
             ],
             'file' => [
                 'array' => true,
+                'media_field' => true,
                 'validate' => [
                     'type' => 'ignore'
                 ]
