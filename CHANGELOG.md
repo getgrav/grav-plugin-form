@@ -1,3 +1,9 @@
+# v5.0.2
+## mm/dd/2021
+
+1. [](#improved)
+   * Better message for invalid nonce [#513](https://github.com/getgrav/grav-plugin-form/issues/513)
+  
 # v5.0.1
 ## 03/17/2021
 
