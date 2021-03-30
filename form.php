@@ -23,6 +23,7 @@ use Grav\Plugin\Form\Form;
 use Grav\Plugin\Form\Forms;
 use ReCaptcha\ReCaptcha;
 use ReCaptcha\RequestMethod\CurlPost;
+use ReCaptcha\RequestMethod\Post;
 use RecursiveArrayIterator;
 use RecursiveIteratorIterator;
 use RocketTheme\Toolbox\File\JsonFile;
@@ -415,10 +416,10 @@ class FormPlugin extends Plugin
 
         switch ($action) {
             case 'captcha':
-
                 $captcha_config = $this->config->get('plugins.form.recaptcha');
 
                 $secret = $params['recaptcha_secret'] ?? $params['recatpcha_secret'] ?? $captcha_config['secret_key'];
+                $verify_url = $captcha_config['verify_url'] ?? ReCaptcha::SITE_VERIFY_URL;
 
                 /** @var Uri $uri */
                 $uri = $this->grav['uri'];
@@ -426,9 +427,10 @@ class FormPlugin extends Plugin
                 $hostname = $uri->host();
                 $ip = Uri::ip();
 
-                $recaptcha = new ReCaptcha($secret);
                 if (extension_loaded('curl')) {
-                    $recaptcha = new ReCaptcha($secret, new CurlPost());
+                    $recaptcha = new ReCaptcha($secret, new CurlPost(null, $verify_url));
+                } else {
+                    $recaptcha = new ReCaptcha($secret, new Post($verify_url));
                 }
 
                 // get captcha version
