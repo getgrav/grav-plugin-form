@@ -13,7 +13,13 @@
                     {% block field %}
                         <div>
                             {% block field_label %}
-                                <strong>{{ field.label|t|e }}</strong>:
+                                <strong>
+                                    {%- if field.markdown -%}
+                                        {{ field.label|t|markdown(false) }}
+                                    {%- else -%}
+                                        {{ field.label|t|e }}
+                                    {%- endif -%}
+                                </strong>:
                             {% endblock %}
 
                             {% block field_value %}
