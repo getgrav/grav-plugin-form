@@ -3,6 +3,7 @@
 
 1. [](#improved)
    * Better message for invalid nonce [#513](https://github.com/getgrav/grav-plugin-form/issues/513)
+   * Better error if `Form::getPage()` gets called too early [#518](https://github.com/getgrav/grav-plugin-form/issues/518)
   
 # v5.0.1
 ## 03/17/2021
