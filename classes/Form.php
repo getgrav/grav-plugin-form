@@ -12,6 +12,7 @@ use Grav\Common\Grav;
 use Grav\Common\Inflector;
 use Grav\Common\Language\Language;
 use Grav\Common\Page\Interfaces\PageInterface;
+use Grav\Common\Page\Pages;
 use Grav\Common\Security;
 use Grav\Common\Uri;
 use Grav\Common\Utils;
@@ -390,11 +391,21 @@ class Form implements FormInterface, ArrayAccess
     /**
      * Return page object for the form.
      *
+     * Can be called only after onPageInitialize event has fired.
+     *
      * @return PageInterface
+     * @throws \LogicException
      */
     public function getPage(): PageInterface
     {
-        return Grav::instance()['pages']->dispatch($this->page);
+        /** @var Pages $pages */
+        $pages = Grav::instance()['pages'];
+        $page = $pages->find($this->page);
+        if (null === $page) {
+            throw new \LogicException('Form::getPage() method was called too early!');
+        }
+
+        return $page;
     }
 
     /**

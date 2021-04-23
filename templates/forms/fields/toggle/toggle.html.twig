@@ -33,7 +33,7 @@
 
     {% for key, text in field.options %}
       {% set key = key|string %}
-      {% set id = "toggle_" ~ field.name ~ key %}
+      {% set id = (field.id ?? ("toggle_" ~ field.name)) ~ key %}
       {% set translation = text|t|trim %}
 
       <input type="radio"
