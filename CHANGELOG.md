@@ -1,3 +1,9 @@
+# v5.0.3
+## mm/dd/2021
+
+1. [](#improved)
+   * Removed the windows `\r\n` line breaks + extraneous escaping in `data.txt.twig`
+
 # v5.0.2
 ## 04/23/2021
 

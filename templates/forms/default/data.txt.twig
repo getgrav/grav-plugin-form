@@ -9,7 +9,7 @@
         {%- if show_field %}
             {%- set value = form.value(scope ~ (field.name ?? index)) -%}
             {%- if value -%}
-            {{- field.label|t|e }}: {{ string(value is iterable ? value|json_encode : value|escape('yaml')) ~ "\r\n" }}
+            {{- field.label|t|e }}: {{ string(value is iterable ? value|json_encode : value) ~ "\n" }}
             {%- endif -%}
         {%- endif %}
     {%- endif %}
@@ -17,5 +17,5 @@
 {%- endmacro %}
 {%- import _self as macro %}
 {%- autoescape false %}
-{{- macro.render_field(form, form.fields, '') ~ "\r\n" }}
+{{- macro.render_field(form, form.fields, '') ~ "\n" }}
 {%- endautoescape %}
