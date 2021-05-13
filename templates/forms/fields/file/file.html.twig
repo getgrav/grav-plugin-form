@@ -32,17 +32,17 @@
         {% if type == 'pages' %}
             {% set blueprint_name = type ~ '/' ~ blueprint_name %}
         {% endif %}
-        {% set blueprint = base64_encode(blueprint_name) %}
+        {% set blueprint = blueprint_name|base64_encode %}
         {% set real_path = value.thumb ?? global.context.media[path].relativePath ?? global.form.getPagePathFromToken(path) %}
         {% set remove = global.form.getFileDeleteAjaxRoute(files.name, path)|string ?: uri.addNonce(
             global.base_url_relative ~
             '/media.json' ~
             '/task' ~ config.system.param_sep ~ 'removeFileFromBlueprint' ~
-            '/proute' ~ config.system.param_sep ~ base64_encode(route) ~
+            '/proute' ~ config.system.param_sep ~ route|base64_encode ~
             '/blueprint' ~ config.system.param_sep ~ blueprint ~
             '/type' ~ config.system.param_sep ~ type ~
             '/field' ~ config.system.param_sep ~ files.name ~
-            '/path' ~ config.system.param_sep ~ base64_encode(value.path), 'admin-form', 'admin-nonce') %}
+            '/path' ~ config.system.param_sep ~ value.path|base64_encode, 'admin-form', 'admin-nonce') %}
 
         {% set file = value|merge({remove: remove, path: value.thumb_url ?? (uri.rootUrl == '/' ? '/' : uri.rootUrl ~ '/' ~ real_path) }) %}
         <div class="hidden" data-file="{{ file|json_encode|e('html_attr') }}"></div>
