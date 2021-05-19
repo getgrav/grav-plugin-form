@@ -185,7 +185,6 @@ form:
           options:
             light: PLUGIN_FORM.RECAPTCHA_THEME_LIGHT
             dark: PLUGIN_FORM.RECAPTCHA_THEME_DARK
-          recaptcha.site_key:
         recaptcha.site_key:
           type: text
           label: PLUGIN_FORM.RECAPTCHA_SITE_KEY
@@ -196,3 +195,11 @@ form:
           label: PLUGIN_FORM.RECAPTCHA_SECRET_KEY
           help: PLUGIN_FORM.RECAPTCHA_SECRET_KEY_HELP
           default: ''
+        recaptcha.js_url:
+          type: text
+          label: PLUGIN_FORM.RECAPTCHA_JS_URL
+          help: PLUGIN_FORM.RECAPTCHA_JS_URL_HELP
+        recaptcha.verify_url:
+          type: text
+          label: PLUGIN_FORM.RECAPTCHA_VERIFY_URL
+          help: PLUGIN_FORM.RECAPTCHA_VERIFY_URL_HELP
