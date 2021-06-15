@@ -1,3 +1,10 @@
+# v5.0.3
+## 05/15/2021
+
+1. [](#improved)
+   * Removed the windows `\r\n` line breaks + extraneous escaping in `data.txt.twig`
+   * Use base64_encode filter rather than function
+
 # v5.0.2
 ## 04/23/2021
 

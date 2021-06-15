@@ -56,6 +56,6 @@
             "install-path": "../google/recaptcha"
         }
     ],
-    "dev": true,
+    "dev": false,
     "dev-package-names": []
 }

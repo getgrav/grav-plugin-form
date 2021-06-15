@@ -29,7 +29,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '3eabc541329e2fc0b9fc2f23e5d5c58d5f0dbc15',
+    'reference' => 'd53d3124481c8a72f223c49a03e6fd9b1f5bd7ee',
     'name' => 'getgrav/grav-plugin-form',
   ),
   'versions' => 
@@ -41,7 +41,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '3eabc541329e2fc0b9fc2f23e5d5c58d5f0dbc15',
+      'reference' => 'd53d3124481c8a72f223c49a03e6fd9b1f5bd7ee',
     ),
     'google/recaptcha' => 
     array (
