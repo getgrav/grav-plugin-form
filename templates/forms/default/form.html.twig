@@ -1,6 +1,6 @@
-{% if form is null %}
-    {% set form = grav.session.getFlashObject('form') %}
-{% endif  %}
+{% set form = form ?? grav.session.getFlashObject('form') %}
+{% set layout = layout ?? form.layout ?? 'default' %}
+{% set field_layout = layout != 'default' ? layout ~ '-field' : 'field' %}
 
 {# Keep here for Backwards Compatibility #}
 {% include 'partials/form-messages.html.twig' %}
@@ -77,7 +77,7 @@
         {% set value = form ? form.value(field_name) : data.value(field_name) %}
         {% block inner_markup_field_open %}{% endblock %}
         {% block field %}
-          {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
+          {% include ["forms/fields/#{field.type}/#{layout}.html.twig", "forms/fields/#{field.type}/#{field.type}.html.twig"] ignore missing %}
         {% endblock %}
         {% block inner_markup_field_close %}{% endblock %}
       {% endif %}

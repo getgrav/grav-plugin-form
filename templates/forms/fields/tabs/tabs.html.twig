@@ -23,7 +23,12 @@
         {% for field in (tabs|first).fields %}
             {% if field.type %}
                 {% set value = field.name ? (form ? form.value(field.name) : data.value(field.name)) : data.toArray %}
-                {% include ["forms/fields/#{field.type}/#{field.type}.html.twig", 'forms/fields/text/text.html.twig'] %}
+                {% include [
+                  "forms/fields/#{field.type}/#{field_layout}.html.twig",
+                  "forms/fields/#{field.type}/#{field.type}.html.twig",
+                  "forms/fields/text/#{field_layout}.html.twig",
+                  'forms/fields/text/text.html.twig'
+                  ] %}
             {% endif %}
         {% endfor %}
     {% else %}
