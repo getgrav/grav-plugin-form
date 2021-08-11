@@ -1,20 +1,12 @@
 {% for field_name, field in fields %}
-    {% if field.type and not field.validate.ignore %}
-        {%- if field_name starts with '.' -%}
-            {% set field_name = name ? name ~ field_name : field_name[1:] %}
-            {% set field = field|merge({ name: field_name }) %}
-        {% endif %}
-
-        {% set value = form ? form.value(field_name) : data.value(field_name) %}
+    {% set field = prepare_form_field(field, field_name, name) %}
+    {% if field %}
+        {% set value = form ? form.value(field.name) : data.value(field.name) %}
+        {% set field_templates = include_form_field(field.type, field_layout, 'text') %}
 
         {% block inner_markup_field_open %}{% endblock %}
         {% block field %}
-            {% include [
-              "forms/fields/#{field.type}/#{field_layout}.html.twig",
-              "forms/fields/#{field.type}/#{field.type}.html.twig",
-              "forms/fields/text/#{field_layout}.html.twig",
-              'forms/fields/text/text.html.twig'
-              ] %}
+            {% include field_templates %}
         {% endblock %}
         {% block inner_markup_field_close %}{% endblock %}
     {% endif %}

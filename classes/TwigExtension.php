@@ -1,0 +1,101 @@
+<?php declare(strict_types=1);
+
+namespace Grav\Plugin\Form;
+
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
+use function is_string;
+
+/**
+ * Class GravExtension
+ * @package Grav\Common\Twig\Extension
+ */
+class TwigExtension extends AbstractExtension
+{
+    /**
+     * Return a list of all filters.
+     *
+     * @return array
+     */
+    public function getFilters(): array
+    {
+        return [];
+    }
+
+    /**
+     * Return a list of all functions.
+     *
+     * @return array
+     */
+    public function getFunctions(): array
+    {
+        return [
+            new TwigFunction('prepare_form_field', [$this, 'prepareFormField']),
+            new TwigFunction('include_form_field', [$this, 'includeFormField']),
+        ];
+    }
+
+    /**
+     * Filters field name by changing dot notation into array notation.
+     *
+     * @param array $field
+     * @param string|int|null $name
+     * @param string|null $parent
+     * @return array|null
+     */
+    public function prepareFormField($field, $name = null, $parent = null): ?array
+    {
+        // Make sure that the field is a valid form field type and is not being ignored.
+        if (empty($field['type']) || ($field['validate']['ignore'] ?? false)) {
+            return null;
+        }
+
+        // Check if we have just a list of fields (no name given).
+        if (is_int($name)) {
+            $name = null;
+        }
+
+        // Make sure that the field has a name.
+        $name = $name ?? $field['name'] ?? null;
+        if (!is_string($name) || $name === '') {
+            return null;
+        }
+
+        // Prefix name with the parent name if needed.
+        if (str_starts_with($name, '.')) {
+            $name = $parent ? $parent . $name : (string)substr($name, 1);
+        }
+
+        // Always set field name.
+        $field['name'] = $name;
+
+        return $field;
+    }
+
+    /**
+     * @param string $type
+     * @param string|null $layout
+     * @param string|null $default
+     * @return string[]
+     */
+    public function includeFormField(string $type, string $layout = null, string $default = null): array
+    {
+        $list = [
+            "forms/fields/{$type}/{$layout}.html.twig",
+            "forms/fields/{$type}/field.html.twig",
+            "forms/fields/{$type}/{$type}.html.twig",
+        ];
+        if ($default) {
+            $list = array_merge(
+                $list,
+                [
+                    "forms/fields/{$default}/{$layout}.html.twig",
+                    "forms/fields/{$default}/field.html.twig",
+                    "forms/fields/{$default}/{$default}.html.twig",
+                ]
+            );
+        }
+
+        return $list;
+    }
+}
