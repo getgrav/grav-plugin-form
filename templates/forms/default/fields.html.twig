@@ -1,17 +1,15 @@
+{% set fields = prepare_form_fields(fields, name) %}
 {% if fields|length %}
   {% block outer_markup_field_open %}{% endblock %}
   {% for field_name, field in fields %}
-      {% set field = prepare_form_field(field, field_name, name) %}
-      {% if field %}
-          {% set value = form ? form.value(field.name) : data.value(field.name) %}
-          {% set field_templates = include_form_field(field.type, field_layout, fallback_field ?? 'text') %}
+    {% set value = form ? form.value(field.name) : data.value(field.name) %}
+    {% set field_templates = include_form_field(field.type, field_layout, fallback_field ?? 'text') %}
 
-          {% block inner_markup_field_open %}{% endblock %}
-          {% block field %}
-              {% include field_templates %}
-          {% endblock %}
-          {% block inner_markup_field_close %}{% endblock %}
-      {% endif %}
+    {% block inner_markup_field_open %}{% endblock %}
+    {% block field %}
+        {% include field_templates %}
+    {% endblock %}
+    {% block inner_markup_field_close %}{% endblock %}
   {% endfor %}
   {% block outer_markup_field_close %}{% endblock %}
 {% else %}

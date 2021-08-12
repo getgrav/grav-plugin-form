@@ -3,7 +3,7 @@
 
 1. [](#new)
     * Added support for custom form layouts
-    * Added Twig function `prepare_form_field()` to prepare form field array
+    * Added Twig function `prepare_form_fields()` and `prepare_form_field()` to prepare form fields and field array
     * Added Twig function `include_form_field()` to get all include paths for the field type
 
 # v5.0.3

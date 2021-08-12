@@ -30,9 +30,33 @@ class TwigExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
+            new TwigFunction('prepare_form_fields', [$this, 'prepareFormFields']),
             new TwigFunction('prepare_form_field', [$this, 'prepareFormField']),
             new TwigFunction('include_form_field', [$this, 'includeFormField']),
         ];
+    }
+
+    /**
+     * Filters form fields for the current parent.
+     *
+     * @param array $fields Form fields
+     * @param string|null $parent Parent field name if available
+     * @return array
+     */
+    public function prepareFormFields($fields, $parent = null): array
+    {
+        $list = [];
+
+        if (is_iterable($fields)) {
+            foreach ($fields as $name => $field) {
+                $field = $this->prepareFormField($field, $name, $parent);
+                if ($field) {
+                    $list[$field['name']] = $field;
+                }
+            }
+        }
+
+        return $list;
     }
 
     /**
