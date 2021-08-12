@@ -2,7 +2,7 @@
     {% set field = prepare_form_field(field, field_name, name) %}
     {% if field %}
         {% set value = form ? form.value(field.name) : data.value(field.name) %}
-        {% set field_templates = include_form_field(field.type, field_layout, 'text') %}
+        {% set field_templates = include_form_field(field.type, field_layout, fallback_field ?? 'text') %}
 
         {% block inner_markup_field_open %}{% endblock %}
         {% block field %}
