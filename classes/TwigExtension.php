@@ -38,12 +38,13 @@ class TwigExtension extends AbstractExtension
     /**
      * Filters field name by changing dot notation into array notation.
      *
-     * @param array $field
-     * @param string|int|null $name
-     * @param string|null $parent
+     * @param array $field Form field
+     * @param string|int|null $name Field name (defaults to field.name)
+     * @param string|null $parent Parent field name if available
+     * @param string|null $key Key for the current item if available
      * @return array|null
      */
-    public function prepareFormField($field, $name = null, $parent = null): ?array
+    public function prepareFormField($field, $name = null, $parent = null, string $key = null): ?array
     {
         // Make sure that the field is a valid form field type and is not being ignored.
         if (empty($field['type']) || ($field['validate']['ignore'] ?? false)) {
@@ -64,6 +65,8 @@ class TwigExtension extends AbstractExtension
         // Prefix name with the parent name if needed.
         if (str_starts_with($name, '.')) {
             $name = $parent ? $parent . $name : (string)substr($name, 1);
+        } elseif (null !== $key) {
+            $name = str_replace('*', $key, $name);
         }
 
         // Always set field name.
