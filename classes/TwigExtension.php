@@ -108,16 +108,14 @@ class TwigExtension extends AbstractExtension
     public function includeFormField(string $type, string $layout = null, string $default = null): array
     {
         $list = [
-            "forms/fields/{$type}/{$layout}.html.twig",
-            "forms/fields/{$type}/field.html.twig",
+            "forms/fields/{$type}/{$layout}-{$type}.html.twig",
             "forms/fields/{$type}/{$type}.html.twig",
         ];
         if ($default) {
             $list = array_merge(
                 $list,
                 [
-                    "forms/fields/{$default}/{$layout}.html.twig",
-                    "forms/fields/{$default}/field.html.twig",
+                    "forms/fields/{$default}/{$layout}-{$default}.html.twig",
                     "forms/fields/{$default}/{$default}.html.twig",
                 ]
             );
