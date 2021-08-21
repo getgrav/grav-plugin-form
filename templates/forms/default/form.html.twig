@@ -1,6 +1,6 @@
 {% set form = form ?? grav.session.getFlashObject('form') %}
 {% set layout = layout ?? form.layout ?? 'default' %}
-{% set field_layout = layout != 'default' ? layout ~ '-field' : 'field' %}
+{% set field_layout = layout %}
 
 {# Keep here for Backwards Compatibility #}
 {% include 'partials/form-messages.html.twig' %}
