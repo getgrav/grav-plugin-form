@@ -65,11 +65,12 @@ class TwigExtension extends AbstractExtension
      * @param array $field Form field
      * @param string|int|null $name Field name (defaults to field.name)
      * @param string|null $parent Parent field name if available
-     * @param string|null $key Key for the current item if available
+     * @param array|null $options List of options to override
      * @return array|null
      */
-    public function prepareFormField($field, $name = null, $parent = null, string $key = null): ?array
+    public function prepareFormField($field, $name = null, $parent = null, array $options = []): ?array
     {
+
         // Make sure that the field is a valid form field type and is not being ignored.
         if (empty($field['type']) || ($field['validate']['ignore'] ?? false)) {
             return null;
@@ -89,8 +90,15 @@ class TwigExtension extends AbstractExtension
         // Prefix name with the parent name if needed.
         if (str_starts_with($name, '.')) {
             $name = $parent ? $parent . $name : (string)substr($name, 1);
-        } elseif (null !== $key) {
-            $name = str_replace('*', $key, $name);
+        } elseif (isset($options['key'])) {
+            $name = str_replace('*', $options['key'], $name);
+        }
+
+        unset($options['key']);
+
+        // Loop through options
+        foreach ($options as $key => $option) {
+            $field[$key] = $option;
         }
 
         // Always set field name.
