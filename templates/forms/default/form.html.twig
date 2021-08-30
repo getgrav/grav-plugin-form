@@ -129,9 +129,10 @@
     {{ override_inner_markup_fields_start|raw }}
     {{ override_inner_markup_fields|raw }}
 
-    {% include "forms/fields/formname/formname.html.twig" %}
-    {% include "forms/fields/formtask/formtask.html.twig" %}
-    {% include 'forms/fields/uniqueid/uniqueid.html.twig' %}
+    {% include include_form_field('formname', field_layout, 'hidden') %}
+    {% include include_form_field('formtask', field_layout, 'hidden') %}
+    {% include include_form_field('uniqueid', field_layout, 'hidden') %}
+
     {{ nonce_field(form.getNonceAction() ?? 'form', form.getNonceName() ?? 'form-nonce')|raw }}
 
     {{ override_inner_markup_fields_end|raw }}
