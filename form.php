@@ -21,6 +21,7 @@ use Grav\Framework\Form\Interfaces\FormInterface;
 use Grav\Framework\Route\Route;
 use Grav\Plugin\Form\Form;
 use Grav\Plugin\Form\Forms;
+use Grav\Plugin\Form\TwigExtension;
 use ReCaptcha\ReCaptcha;
 use ReCaptcha\RequestMethod\CurlPost;
 use RecursiveArrayIterator;
@@ -84,6 +85,7 @@ class FormPlugin extends Plugin
                 ['autoload', 100000],
                 ['onPluginsInitialized', 0]
             ],
+            'onTwigExtensions' => ['onTwigExtensions', 0],
             'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0]
         ];
     }
@@ -358,6 +360,14 @@ class FormPlugin extends Plugin
         }
         );
 
+    }
+
+    /**
+     * @return void
+     */
+    public function onTwigExtensions(): void
+    {
+        $this->grav['twig']->twig->addExtension(new TwigExtension());
     }
 
     /**

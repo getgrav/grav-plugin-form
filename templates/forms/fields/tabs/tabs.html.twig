@@ -8,9 +8,10 @@
 {% block field %}
 <div class="form-tabs {{ field.class }} {{ field.classes }}">
 
-  {% if field.fields %}
+  {% set fields = prepare_form_fields(field.fields, field.name) %}
+  {% if fields|length %}
     {% set tabs = {} %}
-    {% for tab in field.fields %}
+    {% for tab in fields %}
         {% if tab.type == 'tab' and not tab.validate.ignore and (tab.security is empty or authorize(array(tab.security))) %}
         {% set tabs = tabs|merge([tab]) %}
         {% endif %}
@@ -20,25 +21,18 @@
     {% if count == 0 %}
         {# Nothing to display #}
     {% elseif count == 1 and not admin %}
-        {% for field in (tabs|first).fields %}
-            {% if field.type %}
-                {% set value = field.name ? (form ? form.value(field.name) : data.value(field.name)) : data.toArray %}
-                {% include ["forms/fields/#{field.type}/#{field.type}.html.twig", 'forms/fields/text/text.html.twig'] %}
-            {% endif %}
+        {% set fields = (tabs|first).fields %}
+        {% for field in fields %}
+            {% set value = field.name ? (form ? form.value(field.name) : data.value(field.name)) : data.toArray %}
+            {% set field_templates = include_form_field(field.type, field_layout, 'text') %}
+            {% include field_templates %}
         {% endfor %}
     {% else %}
-        {% set tabsKey = field.fields|keys|join('.') %}
+        {% set tabsKey = form.name ~ '-' ~ fields|keys|join(':')|md5 %}
         {% set storedValue = grav.admin is defined ? get_cookie('grav-tabs-state')|default('{}')|json_decode : [] %}
         {% set storedTab = attribute(storedValue, 'tab-' ~ tabsKey) %}
-
         {% if storedTab is empty %}
-            {% if uri.params.tab %}
-                {% set active = uri.params.tab %}
-            {% elseif field.active %}
-                {% set active = field.active %}
-            {% else %}
-                {% set active = 1 %}
-            {% endif %}
+            {% set active = uri.params.tab ?? field.active ?? 1 %}
         {% endif %}
 
         <div class="tabs-nav">
@@ -51,7 +45,7 @@
         {% endfor %}
         </div>
         <div class="tabs-content">
-            {% embed 'forms/default/fields.html.twig' with {name: field.name, fields: field.fields} %}
+            {% embed 'forms/default/fields.html.twig' with {name: field.name, fields: fields} %}
                 {% block inner_markup_field_open %}
                     <div id="tab-{{ tabsKey ~ loop.index }}" class="tab__content {{ (storedTab == scope ~ field.name) or active == loop.index ? 'active' : '' }}">
                 {% endblock %}

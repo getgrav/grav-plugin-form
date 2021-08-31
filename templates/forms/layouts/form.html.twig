@@ -1,8 +1,4 @@
-<form
-    {% block embed_form_core %}{% endblock %}
-    {% block embed_form_classes %}{% endblock %}
-    {% block embed_form_custom_attributes %}{% endblock %}
->
-  {% block embed_fields %}{% endblock %}
-  {% block embed_buttons %}{% endblock %}
-</form>
+{# DEPRECATED: Do not override this file! Use forms/layouts/form/[FORM_LAYOUT]-form.html.twig instead #}
+
+{% set layout = layout ?? form.layout ?? 'default' %}
+{% extends ["forms/layouts/form/#{layout}-form.html.twig", 'forms/layouts/form/default-form.html.twig'] %}

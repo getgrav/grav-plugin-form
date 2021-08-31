@@ -1,6 +1,6 @@
-{% if form is null %}
-    {% set form = grav.session.getFlashObject('form') %}
-{% endif  %}
+{% set form = form ?? grav.session.getFlashObject('form') %}
+{% set layout = layout ?? form.layout ?? 'default' %}
+{% set field_layout = layout %}
 
 {# Keep here for Backwards Compatibility #}
 {% include 'partials/form-messages.html.twig' %}
@@ -67,17 +67,14 @@
 {% set override_inner_markup_fields %}
   {% block inner_markup_fields %}
     {% for field_name, field in form.fields %}
-      {% set field_name = field.name ?? field_name %}
-      {% if field_name and not field.validate.ignore %}
-        {%- if field_name starts with '.' -%}
-          {% set field_name = field_name[1:] %}
-          {% set field = field|merge({ name: field_name }) %}
-        {% endif %}
+      {% set field = prepare_form_field(field, field_name) %}
+      {% if field %}
+        {% set value = form ? form.value(field.name) : data.value(field.name) %}
+        {% set field_templates = include_form_field(field.type, field_layout) %}
 
-        {% set value = form ? form.value(field_name) : data.value(field_name) %}
         {% block inner_markup_field_open %}{% endblock %}
         {% block field %}
-          {% include "forms/fields/#{field.type}/#{field.type}.html.twig" ignore missing %}
+          {% include field_templates ignore missing %}
         {% endblock %}
         {% block inner_markup_field_close %}{% endblock %}
       {% endif %}
@@ -132,10 +129,10 @@
     {{ override_inner_markup_fields_start|raw }}
     {{ override_inner_markup_fields|raw }}
 
-    {% include "forms/fields/formname/formname.html.twig" %}
-    {% include "forms/fields/formtask/formtask.html.twig" %}
-    {% include 'forms/fields/uniqueid/uniqueid.html.twig' %}
-    {{ nonce_field(form.getNonceAction() ?? 'form', form.getNonceName() ?? 'form-nonce')|raw }}
+    {% include include_form_field('formname', field_layout, 'hidden') %}
+    {% include include_form_field('formtask', field_layout, 'hidden') %}
+    {% include include_form_field('uniqueid', field_layout, 'hidden') %}
+    {% include include_form_field('nonce', field_layout, 'hidden') %}
 
     {{ override_inner_markup_fields_end|raw }}
   {% endblock %}

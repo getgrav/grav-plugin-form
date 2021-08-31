@@ -1,4 +1,5 @@
 <?php
+
 namespace Grav\Plugin\Form;
 
 use Grav\Common\Page\Interfaces\PageInterface;

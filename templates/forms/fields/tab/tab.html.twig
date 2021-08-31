@@ -1,9 +1,8 @@
 {% extends "forms/field.html.twig" %}
 
 {% block field %}
-    {% if field.fields %}
-        <div class="form-tab">
-            {% include 'forms/default/fields.html.twig' with {name: field.name, fields: field.fields} %}
-        </div>
-    {% endif %}
+  {% embed 'forms/default/fields.html.twig' with {name: field.name, fields: field.fields} %}
+    {% block outer_markup_field_open %}<div class="form-tab">{% endblock %}
+    {% block outer_markup_field_close %}</div>{% endblock %}
+  {% endembed %}
 {% endblock %}

@@ -1,9 +1,21 @@
+# v5.1.0
+## 08/31/2021
+
+1. [](#new)
+    * Require **Grav 1.7.19**
+    * Added support for custom form layouts
+    * Added Twig function `prepare_form_fields()` and `prepare_form_field()` to prepare form fields and field array
+    * Added Twig function `include_form_field()` to get all include paths for the field type
+    * Make `nonce` to a customizable field
+1. [](#bugfix)
+    * Fixed bad cookie value for remembering the position of nested tabs
+
 # v5.0.3
-## 05/15/2021
+## 06/15/2021
 
 1. [](#improved)
    * Removed the windows `\r\n` line breaks + extraneous escaping in `data.txt.twig`
-   * Use base64_encode filter rather than function
+   * Use `base64_encode` filter rather than function
 
 # v5.0.2
 ## 04/23/2021

@@ -10,9 +10,7 @@
     <div class="{{ field.classes }}">
     {% endif %}
 
-    {% if field.fields %}
-        {% include 'forms/default/fields.html.twig' with {name: field.name, fields: field.fields} %}
-    {% endif %}
+    {% include 'forms/default/fields.html.twig' with {name: field.name, fields: field.fields} %}
 
     {% if field.classes %}
     </div>
