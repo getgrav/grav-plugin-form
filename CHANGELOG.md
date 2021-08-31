@@ -1,7 +1,8 @@
 # v5.1.0
-## mm/dd/2021
+## 08/31/2021
 
 1. [](#new)
+    * Require **Grav 1.7.19**
     * Added support for custom form layouts
     * Added Twig function `prepare_form_fields()` and `prepare_form_field()` to prepare form fields and field array
     * Added Twig function `include_form_field()` to get all include paths for the field type
