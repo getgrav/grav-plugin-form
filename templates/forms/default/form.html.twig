@@ -132,8 +132,7 @@
     {% include include_form_field('formname', field_layout, 'hidden') %}
     {% include include_form_field('formtask', field_layout, 'hidden') %}
     {% include include_form_field('uniqueid', field_layout, 'hidden') %}
-
-    {{ nonce_field(form.getNonceAction() ?? 'form', form.getNonceName() ?? 'form-nonce')|raw }}
+    {% include include_form_field('nonce', field_layout, 'hidden') %}
 
     {{ override_inner_markup_fields_end|raw }}
   {% endblock %}

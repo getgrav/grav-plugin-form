@@ -70,7 +70,6 @@ class TwigExtension extends AbstractExtension
      */
     public function prepareFormField($field, $name = null, $parent = null, array $options = []): ?array
     {
-
         // Make sure that the field is a valid form field type and is not being ignored.
         if (empty($field['type']) || ($field['validate']['ignore'] ?? false)) {
             return null;

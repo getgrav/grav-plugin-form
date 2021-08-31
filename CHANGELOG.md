@@ -5,6 +5,7 @@
     * Added support for custom form layouts
     * Added Twig function `prepare_form_fields()` and `prepare_form_field()` to prepare form fields and field array
     * Added Twig function `include_form_field()` to get all include paths for the field type
+    * Make `nonce` to a customizable field
 1. [](#bugfix)
     * Fixed bad cookie value for remembering the position of nested tabs
 
