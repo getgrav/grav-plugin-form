@@ -1,3 +1,11 @@
+# v5.1.1
+## mm/dd/2021
+
+1. [](#new)
+    * Require **Grav 1.7.21**
+1. [](#bugfix)
+    * Fixed accidental admin plugin requirement for YAML filter in the form
+
 # v5.1.0
 ## 08/31/2021
 
