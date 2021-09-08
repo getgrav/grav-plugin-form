@@ -5,6 +5,7 @@
     * Require **Grav 1.7.21**
 1. [](#bugfix)
     * Fixed accidental admin plugin requirement for YAML filter in the form
+    * Fixed `GravForm.config` JS to have correct `current_url` and `current_params` settings
 
 # v5.1.0
 ## 08/31/2021
