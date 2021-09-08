@@ -1123,11 +1123,11 @@ class Form implements FormInterface, ArrayAccess
     }
 
     /**
-     * @param string $field
-     * @param string $filename
+     * @param string|null $field
+     * @param string|null $filename
      * @return Route|null
      */
-    public function getFileDeleteAjaxRoute($field, $filename): ?Route
+    public function getFileDeleteAjaxRoute($field = null, $filename = null): ?Route
     {
         $route = Uri::getCurrentRoute()->withExtension('json')->withGravParam('task', 'file-remove');
 

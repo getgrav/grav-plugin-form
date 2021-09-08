@@ -6,6 +6,7 @@
 1. [](#bugfix)
     * Fixed accidental admin plugin requirement for YAML filter in the form
     * Fixed `GravForm.config` JS to have correct `current_url` and `current_params` settings
+    * Fixed custom file upload and remove routes
 
 # v5.1.0
 ## 08/31/2021
