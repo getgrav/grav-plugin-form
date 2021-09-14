@@ -78,7 +78,7 @@ class TwigExtension extends AbstractExtension
         // Check if we have just a list of fields (no name given).
         if (is_int($name)) {
             // Look at the field.name and if not set, fall back to the key.
-            $name = $field['name'] ?? (string)$name;
+            $name = (string)($field['name'] ?? $name);
         }
 
         // Make sure that the field has a name.
