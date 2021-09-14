@@ -8,6 +8,7 @@
     * Fixed `GravForm.config` JS to have correct `current_url` and `current_params` settings
     * Fixed custom file upload and remove routes
     * Fixed bug where uploading file has no effect [#349](https://github.com/getgrav/grav-plugin-form/issues/349)
+    * Fixed field with numeric field name in `prepare_form_fields()` [#530](https://github.com/getgrav/grav-plugin-form/issues/530)
 
 # v5.1.0
 ## 08/31/2021
