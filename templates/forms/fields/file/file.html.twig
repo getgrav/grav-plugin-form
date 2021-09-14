@@ -64,7 +64,13 @@
     {% block prepend %}{% endblock %}
     {% set settings = {name: field.name, paramName: (scope ~ field.name)|fieldName ~ (files.multiple ? '[]' : ''), limit: limit, filesize: max_filesize, accept: files.accept, resolution: files.resolution, resizeWidth: files.resizeWidth, resizeHeight: files.resizeHeight, resizeQuality: files.resizeQuality } %}
     {% set dropzoneSettings = field.dropzone %}
-    <div class="{{ form_field_wrapper_classes ?: 'form-input-wrapper' }} {{ field.classes }} dropzone files-upload form-input-file {{ field.size }}" data-grav-file-settings="{{ settings|json_encode|e('html_attr') }}" data-dropzone-options="{{ dropzoneSettings|json_encode|e('html_attr') }}" {% if form.getFileUploadAjaxRoute %}data-file-url-add="{{ form.getFileUploadAjaxRoute() }}"{% endif %}>
+    {% set file_url_add = form.getFileUploadAjaxRoute() %}
+    {% set file_url_remove = form.getFileDeleteAjaxRoute(null, null) %}
+    <div class="{{ form_field_wrapper_classes ?: 'form-input-wrapper' }} {{ field.classes }} dropzone files-upload form-input-file {{ field.size }}"
+         data-grav-file-settings="{{ settings|json_encode|e('html_attr') }}"
+         data-dropzone-options="{{ dropzoneSettings|json_encode|e('html_attr') }}"
+         {% if file_url_add %}data-file-url-add="{{ file_url_add|e('html_attr') }}"{% endif %}
+         {% if file_url_remove %}data-file-url-remove="{{ file_url_remove|e('html_attr') }}"{% endif %}>
         {% block file_extras %}{% endblock %}
         <input
                 {# required attribute structures #}

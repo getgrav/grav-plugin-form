@@ -40,9 +40,10 @@
 {% do assets.addInlineJs("
     window.GravForm = window.GravForm || {};
     window.GravForm.config = {
-        current_url: '" ~ uri.route(true) ~"',
+        current_url: '" ~ grav.route.withoutParams() ~"',
+        current_params: " ~ grav.route.params|json_encode ~ ",
+        param_sep: '" ~ config.system.param_sep ~ "',
         base_url_relative: '" ~ base_url_relative ~ "',
-        param_sep: '"~ config.system.param_sep ~ "',
         form_nonce: '" ~ form.getNonce() ~ "',
         session_timeout: " ~ config.system.session.timeout ~ "
     };
