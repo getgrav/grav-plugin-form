@@ -1,7 +1,7 @@
 # v5.1.2
 ## 09/14/2021
 
-1. [](#new)
+1. [](#improved)
     * Improved support for Twig 2/3
 
 # v5.1.1
