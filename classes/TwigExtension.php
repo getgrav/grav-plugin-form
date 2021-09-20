@@ -13,16 +13,6 @@ use function is_string;
 class TwigExtension extends AbstractExtension
 {
     /**
-     * Return a list of all filters.
-     *
-     * @return array
-     */
-    public function getFilters(): array
-    {
-        return [];
-    }
-
-    /**
      * Return a list of all functions.
      *
      * @return array
