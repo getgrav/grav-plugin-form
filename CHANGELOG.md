@@ -1,5 +1,5 @@
 # v5.1.2
-## mm/dd/2021
+## 09/29/2021
 
 1. [](#improved)
     * Improved support for Twig 2/3
