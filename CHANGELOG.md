@@ -1,3 +1,9 @@
+# v5.1.3
+## 09/29/2021
+
+1. [](#improved)
+    * Improved Twig function `include_form_field()` to allow the second parameter to be an array of layouts
+
 # v5.1.2
 ## 09/29/2021
 

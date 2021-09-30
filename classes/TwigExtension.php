@@ -99,24 +99,23 @@ class TwigExtension extends AbstractExtension
 
     /**
      * @param string $type
-     * @param string|null $layout
+     * @param string|string[]|null $layouts
      * @param string|null $default
      * @return string[]
      */
-    public function includeFormField(string $type, string $layout = null, string $default = null): array
+    public function includeFormField(string $type, $layouts = null, string $default = null): array
     {
-        $list = [
-            "forms/fields/{$type}/{$layout}-{$type}.html.twig",
-            "forms/fields/{$type}/{$type}.html.twig",
-        ];
+        $list = [];
+        foreach ((array)$layouts as $layout) {
+            $list[] = "forms/fields/{$type}/{$layout}-{$type}.html.twig";
+        }
+        $list[] = "forms/fields/{$type}/{$type}.html.twig";
+
         if ($default) {
-            $list = array_merge(
-                $list,
-                [
-                    "forms/fields/{$default}/{$layout}-{$default}.html.twig",
-                    "forms/fields/{$default}/{$default}.html.twig",
-                ]
-            );
+            foreach ((array)$layouts as $layout) {
+                $list[] = "forms/fields/{$default}/{$layout}-{$default}.html.twig";
+            }
+            $list[] = "forms/fields/{$default}/{$default}.html.twig";
         }
 
         return $list;
