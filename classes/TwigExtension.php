@@ -3,6 +3,7 @@
 namespace Grav\Plugin\Form;
 
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 use function is_string;
 
@@ -12,6 +13,13 @@ use function is_string;
  */
 class TwigExtension extends AbstractExtension
 {
+    public function getFilters()
+    {
+       return [
+            new TwigFilter('value_and_label', [$this, 'valueAndLabel'])
+       ];
+    }
+
     /**
      * Return a list of all functions.
      *
@@ -24,6 +32,20 @@ class TwigExtension extends AbstractExtension
             new TwigFunction('prepare_form_field', [$this, 'prepareFormField']),
             new TwigFunction('include_form_field', [$this, 'includeFormField']),
         ];
+    }
+
+    public function valueAndLabel($value): array
+    {
+        if (!is_array($value)) {
+            return [];
+        }
+
+        $list = [];
+        foreach ($value as $key => $label) {
+            $list[] = ['value' => $key, 'label' => $label];
+        }
+
+        return $list;
     }
 
     /**

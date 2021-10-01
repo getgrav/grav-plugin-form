@@ -1,3 +1,9 @@
+# v5.1.4
+## mm/dd/2021
+
+1. [](#new)
+    * Added `|value_and_label` Twig filter to convert options to value/label pairs
+
 # v5.1.3
 ## 09/29/2021
 
