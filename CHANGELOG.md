@@ -2,6 +2,8 @@
 ## mm/dd/2021
 
 1. [](#new)
+    * Require **Grav 1.7.24**
+    * Added support to disable a form, making it readonly
     * Added `|value_and_label` Twig filter to convert options to value/label pairs
 
 # v5.1.3

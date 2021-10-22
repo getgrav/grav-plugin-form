@@ -164,6 +164,10 @@ class Form implements FormInterface, ArrayAccess
             $this->items['nonce']['action'] = 'form';
         }
 
+        if (Utils::isPositive($this->items['disabled'] ?? false)) {
+            $this->disable();
+        }
+
         // Initialize form properties.
         $this->name = $this->items['name'];
         $this->setId($this->items['id']);
