@@ -1,14 +1,10 @@
-# v5.1.4
-## mm/dd/2021
+# v5.1.3
+## 10/26/2021
 
 1. [](#new)
     * Require **Grav 1.7.24**
     * Added support to disable a form, making it readonly
     * Added `|value_and_label` Twig filter to convert options to value/label pairs
-
-# v5.1.3
-## 09/29/2021
-
 1. [](#improved)
     * Improved Twig function `include_form_field()` to allow the second parameter to be an array of layouts
 
