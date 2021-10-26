@@ -1,6 +1,6 @@
 {% set form = form ?? grav.session.getFlashObject('form') %}
 {% set layout = layout ?? form.layout ?? 'default' %}
-{% set field_layout = layout %}
+{% set field_layout = field_layout ?? layout %}
 
 {# Keep here for Backwards Compatibility #}
 {% include 'partials/form-messages.html.twig' %}
@@ -130,10 +130,12 @@
     {{ override_inner_markup_fields_start|raw }}
     {{ override_inner_markup_fields|raw }}
 
+    {% if form.enabled %}
     {% include include_form_field('formname', field_layout, 'hidden') %}
     {% include include_form_field('formtask', field_layout, 'hidden') %}
     {% include include_form_field('uniqueid', field_layout, 'hidden') %}
     {% include include_form_field('nonce', field_layout, 'hidden') %}
+    {% endif %}
 
     {{ override_inner_markup_fields_end|raw }}
   {% endblock %}
@@ -141,6 +143,7 @@
   {% block embed_buttons %}
     {{ override_inner_markup_buttons_start|raw }}
 
+    {% if form.enabled %}
     {% for button in form.buttons %}
       {% if button.outerclasses is defined %}<div class="{{ button.outerclasses }}">{% endif %}
 
@@ -188,6 +191,7 @@
 
       {% if button.outerclasses is defined %}</div>{% endif %}
     {% endfor %}
+    {% endif %}
 
     {{ override_inner_markup_buttons_end }}
   {% endblock %}

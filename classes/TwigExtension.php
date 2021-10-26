@@ -2,7 +2,9 @@
 
 namespace Grav\Plugin\Form;
 
+use Grav\Framework\Form\Interfaces\FormInterface;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 use function is_string;
 
@@ -12,6 +14,13 @@ use function is_string;
  */
 class TwigExtension extends AbstractExtension
 {
+    public function getFilters()
+    {
+       return [
+            new TwigFilter('value_and_label', [$this, 'valueAndLabel'])
+       ];
+    }
+
     /**
      * Return a list of all functions.
      *
@@ -20,26 +29,41 @@ class TwigExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
-            new TwigFunction('prepare_form_fields', [$this, 'prepareFormFields']),
-            new TwigFunction('prepare_form_field', [$this, 'prepareFormField']),
+            new TwigFunction('prepare_form_fields', [$this, 'prepareFormFields'], ['needs_context' => true]),
+            new TwigFunction('prepare_form_field', [$this, 'prepareFormField'], ['needs_context' => true]),
             new TwigFunction('include_form_field', [$this, 'includeFormField']),
         ];
+    }
+
+    public function valueAndLabel($value): array
+    {
+        if (!is_array($value)) {
+            return [];
+        }
+
+        $list = [];
+        foreach ($value as $key => $label) {
+            $list[] = ['value' => $key, 'label' => $label];
+        }
+
+        return $list;
     }
 
     /**
      * Filters form fields for the current parent.
      *
+     * @param array $context
      * @param array $fields Form fields
      * @param string|null $parent Parent field name if available
      * @return array
      */
-    public function prepareFormFields($fields, $parent = null): array
+    public function prepareFormFields(array $context, $fields, $parent = null): array
     {
         $list = [];
 
         if (is_iterable($fields)) {
             foreach ($fields as $name => $field) {
-                $field = $this->prepareFormField($field, $name, $parent);
+                $field = $this->prepareFormField($context, $field, $name, $parent);
                 if ($field) {
                     $list[$field['name']] = $field;
                 }
@@ -52,13 +76,14 @@ class TwigExtension extends AbstractExtension
     /**
      * Filters field name by changing dot notation into array notation.
      *
+     * @param array $context
      * @param array $field Form field
      * @param string|int|null $name Field name (defaults to field.name)
      * @param string|null $parent Parent field name if available
      * @param array|null $options List of options to override
      * @return array|null
      */
-    public function prepareFormField($field, $name = null, $parent = null, array $options = []): ?array
+    public function prepareFormField(array $context, $field, $name = null, $parent = null, array $options = []): ?array
     {
         // Make sure that the field is a valid form field type and is not being ignored.
         if (empty($field['type']) || ($field['validate']['ignore'] ?? false)) {
@@ -86,6 +111,13 @@ class TwigExtension extends AbstractExtension
 
         unset($options['key']);
 
+        // Set fields as readonly if form is in readonly mode.
+        /** @var FormInterface $form */
+        $form = $context['form'] ?? null;
+        if ($form && method_exists($form, 'isEnabled') && !$form->isEnabled()) {
+            $options['disabled'] = true;
+        }
+
         // Loop through options
         foreach ($options as $key => $option) {
             $field[$key] = $option;
@@ -99,24 +131,23 @@ class TwigExtension extends AbstractExtension
 
     /**
      * @param string $type
-     * @param string|null $layout
+     * @param string|string[]|null $layouts
      * @param string|null $default
      * @return string[]
      */
-    public function includeFormField(string $type, string $layout = null, string $default = null): array
+    public function includeFormField(string $type, $layouts = null, string $default = null): array
     {
-        $list = [
-            "forms/fields/{$type}/{$layout}-{$type}.html.twig",
-            "forms/fields/{$type}/{$type}.html.twig",
-        ];
+        $list = [];
+        foreach ((array)$layouts as $layout) {
+            $list[] = "forms/fields/{$type}/{$layout}-{$type}.html.twig";
+        }
+        $list[] = "forms/fields/{$type}/{$type}.html.twig";
+
         if ($default) {
-            $list = array_merge(
-                $list,
-                [
-                    "forms/fields/{$default}/{$layout}-{$default}.html.twig",
-                    "forms/fields/{$default}/{$default}.html.twig",
-                ]
-            );
+            foreach ((array)$layouts as $layout) {
+                $list[] = "forms/fields/{$default}/{$layout}-{$default}.html.twig";
+            }
+            $list[] = "forms/fields/{$default}/{$default}.html.twig";
         }
 
         return $list;
