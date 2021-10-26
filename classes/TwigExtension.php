@@ -114,7 +114,7 @@ class TwigExtension extends AbstractExtension
         // Set fields as readonly if form is in readonly mode.
         /** @var FormInterface $form */
         $form = $context['form'] ?? null;
-        if (method_exists($form, 'isEnabled') && !$form->isEnabled()) {
+        if ($form && method_exists($form, 'isEnabled') && !$form->isEnabled()) {
             $options['disabled'] = true;
         }
 
