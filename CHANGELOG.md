@@ -1,3 +1,9 @@
+# v5.1.4
+## 11/16/2021
+
+1. [](#bugfix)
+    * Fixed buttons no longer rendered [#537](https://github.com/getgrav/grav-plugin-form/issues/537) 
+
 # v5.1.3
 ## 10/26/2021
 
