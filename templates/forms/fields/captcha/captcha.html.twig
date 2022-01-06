@@ -95,6 +95,6 @@
     </script>
     <script src="https://www.google.com/recaptcha/api.js?onload=captchaOnloadCallback_{{ formName }}&render=explicit&hl={{ grav.language.language }}&theme={{ theme }} "
         async defer></script>
-    <div class="g-recaptcha" id="g-recaptcha-{{ formName }}"></div>
+    <div class="g-recaptcha" id="g-recaptcha-{{ formName }}" data-theme="{{ theme }}"></div>
   {% endif %}
 {% endblock %}
