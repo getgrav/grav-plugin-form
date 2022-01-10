@@ -19,6 +19,7 @@
                 {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
                 {% if field.tabindex %}tabindex="{{ field.tabindex }}"{% endif %}
                 {% if field.form %}form="{{ field.form }}"{% endif %}
+                {% if field.autocomplete is defined %}autocomplete="{{ field.autocomplete }}"{% endif %}
                 {% if field.key %}
                     data-key-observe="{{ (scope ~ field.name)|fieldName }}"
                 {% endif %}
