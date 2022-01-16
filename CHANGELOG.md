@@ -1,3 +1,9 @@
+# v5.1.5
+## mm/dd/2022
+
+1. [](#bugfix)
+    * Fixed case in selectize field where custom new entries would not be stored in non `multiple` lists
+
 # v5.1.4
 ## 11/16/2021
 
