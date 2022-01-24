@@ -19,6 +19,7 @@
                 {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
                 {% if field.tabindex %}tabindex="{{ field.tabindex }}"{% endif %}
                 {% if field.form %}form="{{ field.form }}"{% endif %}
+                {% if field.autocomplete is defined %}autocomplete="{{ field.autocomplete }}"{% endif %}
                 {% if field.key %}
                     data-key-observe="{{ (scope ~ field.name)|fieldName }}"
                 {% endif %}
@@ -31,8 +32,9 @@
             {% if field.placeholder %}<option value="" disabled selected>{{ field.placeholder|t|raw }}</option>{% endif %}
 
             {% set options = field.options %}
-            {% if field.selectize.create and field.multiple %}
-                {% set options = options|merge(value|default([]))|array_unique %}
+            {% if field.selectize.create and value %}
+              {% set custom_value = field.multiple ? value : { (value): value } %}
+              {% set options = options|merge(custom_value|default([]))|array_unique %}
             {% endif %}
 
             {% set value = value is iterable ? value : value|string %}

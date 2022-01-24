@@ -1,8 +1,15 @@
+# v5.1.5
+## 01/24/2022
+
+1. [](#bugfix)
+    * Fixed case in selectize field where custom new entries would not be stored in non `multiple` lists
+
 # v5.1.4
 ## 11/16/2021
 
 1. [](#bugfix)
     * Fixed buttons no longer rendered [#537](https://github.com/getgrav/grav-plugin-form/issues/537) 
+    * Allow `select` field to customize `autocomplete` attribute
 
 # v5.1.3
 ## 10/26/2021

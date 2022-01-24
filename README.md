@@ -1,6 +1,6 @@
 # Grav Form Plugin
 
-The **form plugin** for [Grav](http://github.com/getgrav/grav) adds the ability to create and use forms.  This is currently used extensively by the **admin** and **login** plugins.
+The **form plugin** for [Grav](https://github.com/getgrav/grav) adds the ability to create and use forms.  This is currently used extensively by the **admin** and **login** plugins.
 
 # Installation
 
@@ -22,7 +22,7 @@ enabled: true
 
 The Learn site has two pages describing how to use the Form Plugin:
 - [Forms](https://learn.getgrav.org/forms)
-- [Add a contact form](http://learn.getgrav.org/forms/forms/example-form)
+- [Add a contact form](https://learn.getgrav.org/forms/forms/example-form)
 
 # Using email
 
