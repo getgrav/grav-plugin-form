@@ -1,5 +1,5 @@
 # v5.1.5
-## mm/dd/2022
+## 01/24/2022
 
 1. [](#bugfix)
     * Fixed case in selectize field where custom new entries would not be stored in non `multiple` lists
