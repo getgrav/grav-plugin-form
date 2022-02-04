@@ -51,12 +51,12 @@
                     </option>
                 {% elseif item_value is iterable %}
                     {% set optgroup_label = item_value|keys|first %}
-                    <optgroup label="{{ optgroup_label }}">
+                    <optgroup label="{{ optgroup_label|t|e('html_attr') }}">
                       {% for subkey, suboption in field.options[key][optgroup_label] %}
                           {% set subkey = subkey|string %}
                           {% set item_value = (field.selectize and field.multiple ? suboption : subkey)|string %}
                           {% set selected = (field.selectize ? suboption : subkey)|string %}
-                          <option {% if subkey is same as (value) or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ suboption }}">
+                          <option {% if subkey is same as (value) or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ subkey }}">
                             {{ suboption|t|raw }}
                           </option>
                       {% endfor %}
