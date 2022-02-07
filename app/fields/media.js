@@ -165,10 +165,10 @@ export default class PageMedia extends FilesField {
         $('.dz-preview').prop('draggable', 'true');
     }
 
-    onDropzoneRemovedFile(file, ...extra) {
-        super.onDropzoneRemovedFile(file, ...extra);
-        this.sortable.options.onSort();
-    }
+    // onDropzoneRemovedFile(file, ...extra) {
+    //     super.onDropzoneRemovedFile(file, ...extra);
+    //     this.sortable.options.onSort();
+    // }
 }
 
 export let Instance = new PageMedia();
