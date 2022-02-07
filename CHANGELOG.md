@@ -1,5 +1,5 @@
 # v5.1.6
-## mm/dd/2022
+## 02/07/2022
 
 1. [](#bugfix)
    * Fixed Select field when using OptGroups, not allowing key/values [#541](https://github.com/getgrav/grav-plugin-form/issues/541)
