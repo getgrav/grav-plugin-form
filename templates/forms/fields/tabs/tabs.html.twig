@@ -1,6 +1,6 @@
 {% extends "forms/field.html.twig" %}
 
-{% if grav.admin is not defined %}
+{% if not grav.admin %}
 {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'group': 'bottom', 'loading': 'defer' }) %}
 {% do assets.addJs('plugin://form/assets/form.min.js', { 'group': 'bottom', 'loading': 'defer' }) %}
 {% endif %}
@@ -29,7 +29,7 @@
         {% endfor %}
     {% else %}
         {% set tabsKey = form.name ~ '-' ~ fields|keys|join(':')|md5 %}
-        {% set storedValue = grav.admin is defined ? get_cookie('grav-tabs-state')|default('{}')|json_decode : [] %}
+        {% set storedValue = grav.admin ? get_cookie('grav-tabs-state')|default('{}')|json_decode : [] %}
         {% set storedTab = attribute(storedValue, 'tab-' ~ tabsKey) %}
         {% if storedTab is empty %}
             {% set active = uri.params.tab ?? field.active ?? 1 %}
