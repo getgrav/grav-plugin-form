@@ -1,9 +1,11 @@
 # v5.1.7
-## mm/dd/2022
+## 03/14/2022
 
 1. [](#new)
     * Added `access` support for buttons
-
+2. [](#bugfix)
+   * Fixed tabs in the frontend to ensure JS is loaded
+   
 # v5.1.6
 ## 02/07/2022
 
