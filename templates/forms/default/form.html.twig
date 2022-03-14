@@ -145,6 +145,7 @@
 
     {% if form.isEnabled() ?? true %}
     {% for button in form.buttons %}
+      {% if not button.access or authorize(button.access) %}
       {% if button.outerclasses is defined %}<div class="{{ button.outerclasses }}">{% endif %}
 
       {% if button.url %}
@@ -190,6 +191,7 @@
       {% endembed %}
 
       {% if button.outerclasses is defined %}</div>{% endif %}
+      {% endif %}
     {% endfor %}
     {% endif %}
 
