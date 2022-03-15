@@ -886,6 +886,9 @@ class Form implements FormInterface, ArrayAccess
                 if ($field['type'] === 'checkbox' || $field['type'] === 'switch') {
                     $data[$name] = isset($data[$name]) ? true : false;
                 }
+                if ($field['type'] === 'checkboxes' && !isset($data[$name])) {
+                    $data[$name] = [];
+                }
                 $i++;
             }
 
