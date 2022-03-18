@@ -57,8 +57,6 @@ class FormPlugin extends Plugin
     /** @var array */
     protected $forms = [];
     /** @var array */
-    protected $flat_forms = [];
-    /** @var array */
     protected $active_forms = [];
     /** @var array */
     protected $json_response = [];
@@ -779,8 +777,6 @@ class FormPlugin extends Plugin
 
         if (!isset($this->forms[$page_route][$name])) {
             $this->forms[$page_route][$name] = $form;
-
-            $this->flattenForms();
             $this->recache_forms = true;
         }
     }
@@ -815,6 +811,7 @@ class FormPlugin extends Plugin
             if (!empty($this->forms[$page_route])) {
                 $forms = $this->forms[$page_route];
                 $first_form = reset($forms) ?: null;
+
                 return $first_form;
             }
 
@@ -931,6 +928,26 @@ class FormPlugin extends Plugin
     }
 
     /**
+     * Return all forms matching the given name.
+     *
+     * @param string $name
+     * @return array
+     */
+    protected function findFormByName(string $name): array
+    {
+        $list = [];
+        foreach ($this->forms as $page => $forms) {
+            foreach ($forms as $key => $form) {
+                if ($name === $key) {
+                    $list[] = [$page, $key, $form];
+                }
+            }
+        }
+
+        return $list;
+    }
+
+    /**
      * Retrieve a form based on the form name
      *
      * @param string $form_name
@@ -941,11 +958,18 @@ class FormPlugin extends Plugin
     {
         $form = $this->active_forms[$form_name] ?? null;
         if (!$form) {
-            $form = $this->flat_forms[$form_name] ?? null;
+            $forms = $this->findFormByName($form_name);
+            if (count($forms) > 1) {
+                $debugger = $this->grav['debugger'];
+                $debugger->addMessage(sprintf('Fetching form by its name, but there are multiple pages with the same form name %s', $form_name), 'warning');
+            }
 
-            if (!$form) {
+            $first = reset($forms);
+            if (!$first) {
                 return null;
             }
+
+            [$page, $key, $form] = $first;
 
             if ('' === $unique_id) {
                 // Reset form to change the cached unique id and to fire onFormInitialized event.
@@ -1010,16 +1034,6 @@ class FormPlugin extends Plugin
     }
 
     /**
-     * Flatten the forms array into something that can be more easily searched
-     *
-     * @return void
-     */
-    protected function flattenForms()
-    {
-        $this->flat_forms = Utils::arrayFlatten($this->forms);
-    }
-
-    /**
      * Get the current form, should already be processed but can get it directly from the page if necessary
      *
      * @param PageInterface|null $page
@@ -1027,11 +1041,6 @@ class FormPlugin extends Plugin
      */
     protected function form(PageInterface $page = null)
     {
-        // Regenerate list of flat_forms if not already populated
-        if (empty($this->flat_forms)) {
-            $this->flattenForms();
-        }
-
         /** @var Forms $forms */
         $forms = $this->grav['forms'];
 
@@ -1115,7 +1124,6 @@ class FormPlugin extends Plugin
         // Only update the forms if it's not empty
         if (!empty($forms)) {
             $this->forms = array_merge($this->forms, $forms);
-            $this->flattenForms();
         }
     }
 

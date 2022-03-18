@@ -1,3 +1,11 @@
+# v5.2.0
+## mm/dd/2022
+
+1. [](#improved)
+    * Added log warning when trying to access form by non-unique name
+1. [](#bugfix)
+   * Fixed select field where option is iterable (#558)
+
 # v5.1.7
 ## 03/14/2022
 
