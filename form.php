@@ -1070,7 +1070,7 @@ class FormPlugin extends Plugin
 
             // last attempt using current page's form
             if (!$form && $page) {
-                $form = $forms->createPageForm($page);
+                $form = $this->createForm($page);
             }
 
             if ($form) {
@@ -1089,20 +1089,16 @@ class FormPlugin extends Plugin
 
     /**
      * @param PageInterface $page
-     * @param string|int|null $name
-     * @param array $form
-     * @return Form|null
-     * @deprecated
+     * @param string|null $name
+     * @param array|null $form
+     * @return FormInterface|null
      */
-    protected function createForm(PageInterface $page, $name = null, $form = null)
+    protected function createForm(PageInterface $page, string $name = null, array $form = null): ?FormInterface
     {
+        /** @var Forms $forms */
+        $forms = $this->grav['forms'];
 
-        $header = $page->header();
-        if (isset($header->form) || isset($header->forms)) {
-            return new Form($page, $name, $form);
-        }
-
-        return null;
+        return $forms->createPageForm($page, $name, $form);
     }
 
     /**
