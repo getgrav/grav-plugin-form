@@ -4,6 +4,7 @@ namespace Grav\Plugin;
 
 use Composer\Autoload\ClassLoader;
 use DateTime;
+use Doctrine\Common\Cache\Cache;
 use Exception;
 use Grav\Common\Data\ValidationException;
 use Grav\Common\Debugger;
@@ -18,6 +19,7 @@ use Grav\Common\Utils;
 use Grav\Common\Uri;
 use Grav\Common\Yaml;
 use Grav\Framework\Form\Interfaces\FormInterface;
+use Grav\Framework\Psr7\Response;
 use Grav\Framework\Route\Route;
 use Grav\Plugin\Form\Form;
 use Grav\Plugin\Form\Forms;
@@ -56,7 +58,7 @@ class FormPlugin extends Plugin
     protected $form;
     /** @var array */
     protected $forms = [];
-    /** @var array */
+    /** @var FormInterface[] */
     protected $active_forms = [];
     /** @var array */
     protected $json_response = [];
@@ -68,7 +70,7 @@ class FormPlugin extends Plugin
      */
     public static function checkRequirements(): bool
     {
-        return version_compare(GRAV_VERSION, '1.6', '>');
+        return version_compare(GRAV_VERSION, '1.7', '>');
     }
 
     /**
@@ -81,10 +83,7 @@ class FormPlugin extends Plugin
         }
 
         return [
-            'onPluginsInitialized' => [
-                ['autoload', 100000],
-                ['onPluginsInitialized', 0]
-            ],
+            'onPluginsInitialized' => ['onPluginsInitialized', 0],
             'onTwigExtensions' => ['onTwigExtensions', 0],
             'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0]
         ];
@@ -112,10 +111,9 @@ class FormPlugin extends Plugin
 
         $this->grav['forms'] = function () {
             $forms = new Forms();
-
-            $grav = Grav::instance();
             $event = new Event(['forms' => $forms]);
-            $grav->fireEvent('onFormRegisterTypes', $event);
+
+            $this->grav->fireEvent('onFormRegisterTypes', $event);
 
             return $forms;
         };
@@ -128,10 +126,15 @@ class FormPlugin extends Plugin
             return;
         }
 
+        /** @var Uri $uri */
+        $uri = $this->grav['uri'];
+
         // Mini Keep-Alive Logic
-        $task = $this->grav['uri']->param('task');
-        if ($task && $task === 'keep-alive') {
-            exit;
+        $task = $uri->param('task');
+        if ($task === 'keep-alive') {
+            $response = new Response(200);
+
+            $this->grav->close($response);
         }
 
         $this->enable([
@@ -255,7 +258,7 @@ class FormPlugin extends Plugin
             if ($form instanceof Form) {
                 // Post the form
                 $isJson = $uri->extension() === 'json';
-                $task = $uri->post('task') ?? $uri->param('task');
+                $task = (string)($uri->post('task') ?? $uri->param('task'));
 
                 if ($isJson) {
                     if ($task === 'store-state') {
@@ -284,10 +287,13 @@ class FormPlugin extends Plugin
                 if ($this->json_response && $page->template() !== 'form') {
                     $status = $this->json_response['status'] ?? null;
 
-                    header('Content-Type: application/json');
-                    http_response_code($status === 'error' ? 400 : 200);
-                    echo json_encode($this->json_response);
-                    exit;
+                    $response = new Response(
+                        $status !== 'error' ? 200 : 400,
+                        ['Content-Type' => 'application/json'],
+                        json_encode($this->json_response, JSON_THROW_ON_ERROR)
+                    );
+
+                    $this->grav->close($response);
                 }
             }
 
@@ -311,6 +317,9 @@ class FormPlugin extends Plugin
             // There is no active form to be posted.
             // Check all the forms for the current page; we are looking for forms with remember state turned on with random unique id.
 
+            /** @var Forms $forms */
+            $forms = $this->grav['forms'];
+
             /** @var Route $route */
             $route = $this->grav['route'];
             $pageForms = $this->forms[$route->getRoute()] ?? [];
@@ -326,8 +335,6 @@ class FormPlugin extends Plugin
                         $form->setUniqueId($uniqueId);
                         $form->initialize();
 
-                        /** @var Forms $forms */
-                        $forms = $this->grav['forms'];
                         $forms->setActiveForm($form);
 
                         break;
@@ -335,7 +342,7 @@ class FormPlugin extends Plugin
 
                     // Append unique id to the URL and redirect.
                     $route = $route->withGravParam($formParam, $form->getUniqueId());
-                    $page->redirect((string)$route->toString());
+                    $page->redirect($route->toString());
 
                     // TODO: Do we want to add support for multiple forms with remembered state?
                     break;
@@ -396,7 +403,7 @@ class FormPlugin extends Plugin
     /**
      * Make form accessible from twig.
      *
-     * @param Event $event
+     * @param Event|null $event
      * @return void
      */
     public function onTwigVariables(Event $event = null): void
@@ -734,6 +741,7 @@ class FormPlugin extends Plugin
      */
     public function onFormValidationError(Event $event): void
     {
+        /** @var FormInterface $form */
         $form = $event['form'];
         if (isset($event['message'])) {
             $form->status = 'error';
@@ -741,6 +749,7 @@ class FormPlugin extends Plugin
             $form->messages = $event['messages'];
         }
 
+        /** @var Uri $uri */
         $uri = $this->grav['uri'];
         $route = $uri->route();
 
@@ -750,8 +759,7 @@ class FormPlugin extends Plugin
 
         /** @var Pages $pages */
         $pages = $this->grav['pages'];
-        $page = $pages->dispatch($route, true);
-
+        $page = $pages->find($route, true);
         if ($page) {
             unset($this->grav['page']);
             $this->grav['page'] = $page;
@@ -763,11 +771,11 @@ class FormPlugin extends Plugin
     /**
      * Add a form to the forms plugin
      *
-     * @param string|null $page_route
+     * @param string|null $route
      * @param FormInterface|null $form
      * @return void
      */
-    public function addForm(?string $page_route, ?FormInterface $form)
+    public function addForm(?string $route, ?FormInterface $form): void
     {
         if (null === $form) {
             return;
@@ -775,8 +783,8 @@ class FormPlugin extends Plugin
 
         $name = $form->getName();
 
-        if (!isset($this->forms[$page_route][$name])) {
-            $this->forms[$page_route][$name] = $form;
+        if (!isset($this->forms[$route][$name])) {
+            $this->forms[$route][$name] = $form;
             $this->recache_forms = true;
         }
     }
@@ -831,7 +839,7 @@ class FormPlugin extends Plugin
      *
      * @return array
      */
-    public function getFormFieldTypes()
+    public function getFormFieldTypes(): array
     {
         return [
             'avatar' => [
@@ -903,7 +911,7 @@ class FormPlugin extends Plugin
      *
      * - fillWithCurrentDateTime
      *
-     * @param Form $form
+     * @param FormInterface $form
      * @return void
      */
     protected function process($form)
@@ -918,13 +926,13 @@ class FormPlugin extends Plugin
     /**
      * Get current page's route
      *
-     * @return mixed
+     * @return string
      */
     protected function getCurrentPageRoute()
     {
         $path = $this->grav['uri']->route();
-        $path = $path ?: '/';
-        return $path;
+
+        return $path ?: '/';
     }
 
     /**
@@ -936,10 +944,10 @@ class FormPlugin extends Plugin
     protected function findFormByName(string $name): array
     {
         $list = [];
-        foreach ($this->forms as $page => $forms) {
+        foreach ($this->forms as $route => $forms) {
             foreach ($forms as $key => $form) {
                 if ($name === $key) {
-                    $list[] = [$page, $key, $form];
+                    $list[] = [$route, $key, $form];
                 }
             }
         }
@@ -989,12 +997,11 @@ class FormPlugin extends Plugin
      *
      * @return bool
      */
-    protected function shouldProcessForm()
+    protected function shouldProcessForm(): bool
     {
+        /** @var Uri $uri */
         $uri = $this->grav['uri'];
-        $nonce = $uri->post('form-nonce');
-        $status = $nonce ? true : false; // php72 quirk?
-        $refresh_prevention = null;
+        $status = (bool)$uri->post('form-nonce');
 
         if ($status && $form = $this->form()) {
             // Make sure form is something we recognize.
@@ -1037,7 +1044,7 @@ class FormPlugin extends Plugin
      * Get the current form, should already be processed but can get it directly from the page if necessary
      *
      * @param PageInterface|null $page
-     * @return Form|null
+     * @return FormInterface|null
      */
     protected function form(PageInterface $page = null)
     {
@@ -1103,18 +1110,20 @@ class FormPlugin extends Plugin
      *
      * @return void
      */
-    protected function loadCachedForms()
+    protected function loadCachedForms(): void
     {
         // Get and set the cache of forms if it exists
         try {
-            [$forms] = $this->grav['cache']->fetch($this->getFormCacheId());
-        } catch (Exception $e) {
-            // Couldn't fetch cached forms.
-            $forms = null;
+            /** @var Cache $cache */
+            $cache = $this->grav['cache'];
 
+            [$forms] = $cache->fetch($this->getFormCacheId());
+        } catch (Exception $e) {
             /** @var Debugger $debugger */
             $debugger = Grav::instance()['debugger'];
             $debugger->addMessage(sprintf('Unserializing cached forms failed: %s', $e->getMessage()), 'error');
+
+            $forms = null;
         }
 
         if (!is_array($forms)) {
@@ -1122,7 +1131,7 @@ class FormPlugin extends Plugin
         }
 
         // Only update the forms if it's not empty
-        if (!empty($forms)) {
+        if ($forms) {
             $this->forms = array_merge($this->forms, $forms);
         }
     }
@@ -1132,13 +1141,19 @@ class FormPlugin extends Plugin
      *
      * @return void
      */
-    protected function saveCachedForms()
+    protected function saveCachedForms(): void
     {
         // Save the current state of the forms to cache
-        if ($this->recache_forms) {
-            $this->recache_forms = false;
-            $this->grav['cache']->save($this->getFormCacheId(), [$this->forms]);
+        if (!$this->recache_forms) {
+            return;
         }
+
+        $this->recache_forms = false;
+
+        /** @var Cache $cache */
+        $cache = $this->grav['cache'];
+
+        $cache->save($this->getFormCacheId(), [$this->forms]);
     }
 
     /**
@@ -1146,9 +1161,12 @@ class FormPlugin extends Plugin
      *
      * @return string
      */
-    protected function getFormCacheId()
+    protected function getFormCacheId(): string
     {
-        return $this->grav['pages']->getPagesCacheId() . '-form-plugin';
+        /** @var Pages $pages */
+        $pages = $this->grav['pages'];
+
+        return $pages->getPagesCacheId() . '-form-plugin';
     }
 
     /**
@@ -1160,13 +1178,11 @@ class FormPlugin extends Plugin
      */
     protected function udate($format = 'u', $raw = false)
     {
-
-        $utimestamp = microtime(true);
-
         if ($raw) {
             return date($format);
         }
 
+        $utimestamp = microtime(true);
         $timestamp = floor($utimestamp);
         $milliseconds = round(($utimestamp - $timestamp) * 1000000);
 
