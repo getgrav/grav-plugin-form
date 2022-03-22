@@ -90,8 +90,6 @@ class FormPlugin extends Plugin
     }
 
     /**
-     * [onPluginsInitialized:100000] Composer autoload.
-     *
      * @return ClassLoader
      */
     public function autoload()

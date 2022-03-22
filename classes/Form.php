@@ -119,7 +119,7 @@ class Form implements FormInterface, ArrayAccess
             $this->items = $form;
         } else {
             // Otherwise get all forms in the page.
-            $forms = $page->forms();
+            $forms = $page->getForms();
             if ($name) {
                 // If form with given name was found, use that.
                 $this->items = $forms[$name] ?? [];
