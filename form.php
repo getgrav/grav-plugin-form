@@ -56,7 +56,7 @@ class FormPlugin extends Plugin
 
     /** @var Form */
     protected $form;
-    /** @var array */
+    /** @var array[]|FormInterface[] */
     protected $forms = [];
     /** @var FormInterface[] */
     protected $active_forms = [];
@@ -160,16 +160,16 @@ class FormPlugin extends Plugin
     /**
      * Process forms after page header processing, but before caching
      *
-     * @param Event $e
+     * @param Event $event
      * @return void
      */
-    public function onPageProcessed(Event $e): void
+    public function onPageProcessed(Event $event): void
     {
         /** @var PageInterface $page */
-        $page = $e['page'];
+        $page = $event['page'];
 
-        $pageForms = $page->forms();
-        if (!$pageForms) {
+        $forms = $page->getForms();
+        if (!$forms) {
             return;
         }
 
@@ -183,23 +183,18 @@ class FormPlugin extends Plugin
         }
         $parent = $current && $current !== $page ? $current : null;
 
-        $page_route = $page->home() ? '/' : $page->route();
-
         // If the form was in the modular page, we need to add the form into the parent page as well.
         if ($parent) {
-            $parent->addForms($pageForms);
-            $parent_route = $parent->home() ? '/' : $parent->route();
+            $parent->addForms($forms);
         }
 
-        /** @var Forms $forms */
-        $forms = $this->grav['forms'];
-
         // Store the page forms in the forms instance
-        foreach ($pageForms as $name => $form) {
-            if (isset($parent, $parent_route)) {
-                $this->addForm($parent_route, $forms->createPageForm($parent, $name, $form));
+        foreach ($forms as $name => $form) {
+            if ($parent) {
+                $this->addFormDefinition($parent, $name, $form);
             }
-            $this->addForm($page_route, $forms->createPageForm($page, $name, $form));
+
+            $this->addFormDefinition($page, $name, $form);
         }
     }
 
@@ -322,7 +317,18 @@ class FormPlugin extends Plugin
             $route = $this->grav['route'];
             $pageForms = $this->forms[$route->getRoute()] ?? [];
 
-            foreach ($pageForms as $formName => $form) {
+            /**
+             * @var string $name
+             * @var array|FormInterface $form
+             */
+            foreach ($pageForms as $name => $form) {
+                if (is_array($form)) {
+                    $form = $this->createForm($page, $name, $form);
+                }
+                if (!$form instanceof FormInterface) {
+                    continue;
+                }
+
                 if ($form->get('remember_redirect')) {
                     // Found one; we need to check if unique id is set.
                     $formParam = $form->get('uniqueid_param', 'fid');
@@ -767,6 +773,26 @@ class FormPlugin extends Plugin
     }
 
     /**
+     * Add a form definition to the forms plugin
+     *
+     * @param PageInterface $page
+     * @return void
+     */
+    public function addFormDefinition(PageInterface $page, string $name, array $form): void
+    {
+        if (!$page->routable()) {
+            return;
+        }
+
+        $route = $page->home() ? '/' : $page->route();
+
+        if (!isset($this->forms[$route][$name])) {
+            $this->forms[$route][$name] = $form;
+            $this->recache_forms = true;
+        }
+    }
+
+    /**
      * Add a form to the forms plugin
      *
      * @param string|null $route
@@ -790,46 +816,128 @@ class FormPlugin extends Plugin
     /**
      * function to get a specific form
      *
-     * @param null|array|string $data optional form `name`
+     * @param string|array|null $data Optional form name or ['name' => $name, 'route' => $route]
      * @return FormInterface|null
      */
-    public function getForm($data = null)
+    public function getForm($data = null): ?FormInterface
     {
+        /** @var Pages $pages */
+        $pages = $this->grav['pages'];
+
+        // Handle parameters.
         if (is_array($data)) {
-            $form_name = $data['name'] ?? null;
-            $page_route = $data['route'] ?? null;
+            $name = (string)($data['name'] ?? '');
+            $route = (string)($data['route'] ?? '');
         } elseif (is_string($data)) {
-            $form_name = $data;
-            $page_route = null;
+            $name = $data;
+            $route = '';
         } else {
-            $form_name = null;
-            $page_route = null;
+            $name = '';
+            $route = '';
         }
 
-        // if no form name, use the first form found in the page
-        if (!$form_name) {
-            // If page route not provided, use the current page
-            if (!$page_route) {
-                // Get page route with a fallback using current URI if page not initialized yet
-                $page_route = $this->grav['page']->route() ?: $this->getCurrentPageRoute();
-            }
-
-            if (!empty($this->forms[$page_route])) {
-                $forms = $this->forms[$page_route];
-                $first_form = reset($forms) ?: null;
-
-                return $first_form;
-            }
-
-            // Try to get page by defined route first or get current if not found
-            $page = $this->grav['pages']->find($page_route) ?: $this->grav['page'];
-
-            // Try looking up in the defined page
-            return $this->grav['forms']->createPageForm($page);
+        // Return always the same form instance.
+        $form = $this->active_forms[$route][$name] ?? null;
+        if ($form) {
+            return $form;
         }
 
-        // return the form you are looking for if available
-        return $this->getFormByName($form_name);
+        $unnamed = $name === '';
+        $routed = $route !== '';
+
+        // Get the page.
+        if ($routed) {
+            // Use fixed route for the form.
+            $route_provided = true;
+
+            $page = $pages->find($route);
+        } else {
+            // Search form from the current page first.
+            $route_provided = false;
+
+            /** @var PageInterface|null $page */
+            $page = $this->grav['page'] ?? null;
+            if ($page) {
+                $route = $page->route();
+            } else {
+                // Get page route with a fallback using current URI if page is not yet initialized.
+                $route = $this->getCurrentPageRoute();
+                $page = $pages->find($route);
+            }
+        }
+
+        // Attempt to find the form from the page.
+        if ('' !== $route) {
+            $forms = $this->forms[$route] ?? [];
+
+            if (!$unnamed) {
+                // Get form by the name.
+                $form = $forms[$name] ?? null;
+            } else {
+                // Get the first form.
+                $form = reset($forms) ?: null;
+                $name = key($forms);
+            }
+        }
+
+        // Search the form from the other pages.
+        if (null === $form) {
+            // First check if we requested a specific form which didn't exist.
+            if ($route_provided || $unnamed) {
+                /** @var Debugger $debugger */
+                $debugger = $this->grav['debugger'];
+                $debugger->addMessage(sprintf('Form %s not found in page %s', $name ?? 'unnamed', $route), 'warning');
+
+                return null;
+            }
+
+            // Attempt to find any form with given name.
+            $forms = $this->findFormByName($name);
+            $first = reset($forms);
+            if (!$first) {
+                return null;
+            }
+
+            // Check for naming conflicts.
+            if (count($forms) > 1) {
+                $debugger = $this->grav['debugger'];
+                $debugger->addMessage(sprintf('Fetching form by its name, but there are multiple pages with the same form name %s', $name), 'warning');
+            }
+
+            [$route, $name, $form] = $first;
+
+            $page = $pages->find($route);
+        }
+
+        // Form can be saved as an array or an object. If it's an array, we need to create object from it.
+        if (is_array($form)) {
+            // Form was cached as an array, try to create the object.
+            if (null === $page) {
+                /** @var Debugger $debugger */
+                $debugger = $this->grav['debugger'];
+                $debugger->addMessage(sprintf('Form %s cannot be created as page %s does not exist', $name, $route), 'warning');
+
+                return null;
+            }
+
+            $form = $this->createForm($page, $name, $form);
+        }
+
+        // Register form to the active forms to get the same instance back next time.
+        $this->active_forms[$route][$name] = $form;
+        if ($unnamed) {
+            $this->active_forms[$route][''] = $form;
+        }
+
+        // Also make aliases if route was not provided to the method.
+        if (!$routed) {
+            $this->active_forms[''][$name] = $form;
+            if ($unnamed) {
+                $this->active_forms[''][''] = $form;
+            }
+        }
+
+        return $form;
     }
 
     /**
@@ -954,43 +1062,6 @@ class FormPlugin extends Plugin
     }
 
     /**
-     * Retrieve a form based on the form name
-     *
-     * @param string $form_name
-     * @param string $unique_id
-     * @return mixed
-     */
-    protected function getFormByName($form_name, $unique_id = '')
-    {
-        $form = $this->active_forms[$form_name] ?? null;
-        if (!$form) {
-            $forms = $this->findFormByName($form_name);
-            if (count($forms) > 1) {
-                $debugger = $this->grav['debugger'];
-                $debugger->addMessage(sprintf('Fetching form by its name, but there are multiple pages with the same form name %s', $form_name), 'warning');
-            }
-
-            $first = reset($forms);
-            if (!$first) {
-                return null;
-            }
-
-            [$page, $key, $form] = $first;
-
-            if ('' === $unique_id) {
-                // Reset form to change the cached unique id and to fire onFormInitialized event.
-                $form->setUniqueId('');
-                $form->reset();
-            }
-
-            // Register form to the active forms to get the same instance back next time.
-            $this->active_forms[$form_name] = $form;
-        }
-
-        return $form;
-    }
-
-    /**
      * Determine if the page has a form submission that should be processed
      *
      * @return bool
@@ -1064,7 +1135,12 @@ class FormPlugin extends Plugin
                 $form_name = $page ? $page->slug() : null;
             }
 
-            $form = $this->getFormByName($form_name, $unique_id);
+            $form = $form_name ? $this->getForm($form_name) : null;
+            if ($form && '' === $unique_id) {
+                // Reset form to change the cached unique id and to fire onFormInitialized event.
+                $form->setUniqueId('');
+                $form->reset();
+            }
 
             // last attempt using current page's form
             if (!$form && $page) {

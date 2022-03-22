@@ -1,10 +1,14 @@
-# v5.2.0
+# v6.0.0
 ## mm/dd/2022
 
 1. [](#improved)
     * Added log warning when trying to access form by non-unique name
+    * Optimized form caching
 1. [](#bugfix)
-   * Fixed select field where option is iterable (#558)
+    * Fixed select field where option is iterable (#558)
+    * Fixed `FormPlugin::getForm()` to properly search the current page first
+    * Fixed `FormPlugin::getForm()` to ignore fallback if the page was given as parameter
+    * Fixed dynamic forms to work with cache turned on
 
 # v5.1.7
 ## 03/14/2022
