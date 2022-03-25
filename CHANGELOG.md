@@ -10,6 +10,7 @@
     * Fixed `FormPlugin::getForm()` to properly search the current page first
     * Fixed `FormPlugin::getForm()` to ignore fallback if the page was given as parameter
     * Fixed dynamic forms to work with cache turned on
+    * Fix nested `toggleable`: originalValue now checks with `??` instead of `is defined`
 
 # v5.1.7
 ## 03/14/2022
