@@ -1,11 +1,5 @@
 {% extends "forms/field.html.twig" %}
 
-{% set originalValue = value %}
-{% set value = (value is null ? field.default : value) %}
-{% if field.use == 'keys' and field.default %}
-    {% set value = field.default|merge(value) %}
-{% endif %}
-
 {% block global_attributes %}
     {{ parent() }}
     data-grav-keys="{{ field.use == 'keys' ? 'true' : 'false' }}"
@@ -13,6 +7,11 @@
 {% endblock %}
 
 {% block input %}
+    {% set value = (value is null ? field.default : value) %}
+    {% if field.use == 'keys' and field.default %}
+        {% set value = field.default|merge(value) %}
+    {% endif %}
+
     {% for key, text in field.options %}
 
         {% set id = field.id|default(field.name)|hyphenize ~ '-' ~ key %}
