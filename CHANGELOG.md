@@ -1,5 +1,5 @@
 # v6.0.0
-## mm/dd/2022
+## 03/28/2022
 
 1. [](#improved)
     * Added log warning when trying to access form by non-unique name
