@@ -43,9 +43,9 @@
                     {% set akey = field.selectize and field.multiple ? item_value : key %}
                     {% set avalue = item_value.value|t %}
                     <option {{ item_value.disabled ? 'disabled="disabled"' : '' }}
-                        {{ item_value.selected ? 'selected="selected"' : '' }}
+                        {{ item_value.selected or key == value ? 'selected="selected"' : '' }}
                         {{ item_value.label    ? 'label=' ~ item_value.label : '' }}
-                        value="{{ item_value.akey }}"
+                        value="{{ akey }}"
                     >
                         {{ avalue|raw }}
                     </option>

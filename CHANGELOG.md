@@ -1,3 +1,17 @@
+# v6.0.0
+## 03/28/2022
+
+1. [](#improved)
+    * Added log warning when trying to access form by non-unique name
+    * Optimized form caching by not initializing the forms in `onPageProcessed` event anymore
+    * **BACKWARD COMPATIBILITY**: As form initialization has been delayed, logic relaying on `onPageProcessed` with forms may not work anymore
+1. [](#bugfix)
+    * Fixed select field where option is iterable (#558)
+    * Fixed `FormPlugin::getForm()` to properly search the current page first
+    * Fixed `FormPlugin::getForm()` to ignore fallback if the page was given as parameter
+    * Fixed dynamic forms to work with cache turned on
+    * Fix nested `toggleable`: originalValue now checks with `??` instead of `is defined`
+
 # v5.1.7
 ## 03/14/2022
 
