@@ -465,26 +465,52 @@ class FormPlugin extends Plugin
                     $recaptcha = new ReCaptcha($secret, new CurlPost());
                 }
 
-                // get captcha version
-                $captcha_version = $captcha_config['version'] ?? 2;
+                $success = true;
+                $errors = '';
 
-                // Add version 3 specific options
-                if ($captcha_version == 3) {
-                    $token = $form->value('token');
-                    $resp = $recaptcha
-                        ->setExpectedHostname($hostname)
-                        ->setExpectedAction($action)
-                        ->setScoreThreshold(0.5)
-                        ->verify($token, $ip);
+                if ($this->config->get('plugins.form.recaptcha.provider','reCaptcha') == 'hCaptcha') {
+                    // Use hCaptcha as provider: https://docs.hcaptcha.com/switch (see bottom of page for PHP code)
+                    $data = array(
+                        'secret' => $secret,
+                        'response' => $_POST['h-captcha-response']
+                    );
+                    $verify = curl_init();
+                    curl_setopt($verify, CURLOPT_URL, "https://hcaptcha.com/siteverify");
+                    curl_setopt($verify, CURLOPT_POST, true);
+                    curl_setopt($verify, CURLOPT_POSTFIELDS, http_build_query($data));
+                    curl_setopt($verify, CURLOPT_RETURNTRANSFER, true);
+                    $response = curl_exec($verify);
+                    $responseData = json_decode($response);
+                    if(!$responseData->success) {
+                        $success = false;
+                        $errors = $responseData;
+                    }
                 } else {
-                    $token = $form->value('g-recaptcha-response', true);
-                    $resp = $recaptcha
-                        ->setExpectedHostname($hostname)
-                        ->verify($token, $ip);
+                    // get captcha version
+                    $captcha_version = $captcha_config['version'] ?? 2;
+
+                    // Add version 3 specific options
+                    if ($captcha_version == 3) {
+                        $token = $form->value('token');
+                        $resp = $recaptcha
+                            ->setExpectedHostname($hostname)
+                            ->setExpectedAction($action)
+                            ->setScoreThreshold(0.5)
+                            ->verify($token, $ip);
+                    } else {
+                        $token = $form->value('g-recaptcha-response', true);
+                        $resp = $recaptcha
+                            ->setExpectedHostname($hostname)
+                            ->verify($token, $ip);
+                    }
+
+                    if (!$resp->isSuccess()) {
+                        $success = false;
+                        $errors = $resp->getErrorCodes();
+                    }
                 }
 
-                if (!$resp->isSuccess()) {
-                    $errors = $resp->getErrorCodes();
+                if (!$success) {
                     $message = $this->grav['language']->translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA');
 
                     $fields = $form->value()->blueprints()->get('form/fields');

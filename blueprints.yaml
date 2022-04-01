@@ -170,6 +170,14 @@ form:
       title: PLUGIN_FORM.RECAPTCHA
 
       fields:
+        recaptcha.provider:
+          type: select
+          label: PLUGIN_FORM.RECAPTCHA_PROVIDER
+          help: PLUGIN_FORM.RECAPTCHA_PROVIDER_HELP
+          default: reCaptcha
+          options:
+            reCaptcha: reCaptcha (Google)
+            hCaptcha: hCaptcha (Intuition Machines)
         recaptcha.version:
           type: select
           label: PLUGIN_FORM.RECAPTCHA_VERSION
@@ -189,10 +197,8 @@ form:
         recaptcha.site_key:
           type: text
           label: PLUGIN_FORM.RECAPTCHA_SITE_KEY
-          help: PLUGIN_FORM.RECAPTCHA_SITE_KEY_HELP
           default: ''
         recaptcha.secret_key:
           type: text
           label: PLUGIN_FORM.RECAPTCHA_SECRET_KEY
-          help: PLUGIN_FORM.RECAPTCHA_SECRET_KEY_HELP
           default: ''
