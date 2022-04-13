@@ -163,22 +163,22 @@ de:
     GENERAL: "General"
     USE_BUILT_IN_CSS: "Benutze eingebautes CSS"
     USE_INLINE_CSS: "Benutze inline CSS"
-    FILEUPLOAD_PREVENT_SELF: '"%s" kann nicht ausserhalb der Seiten verwendet werden.'
+    FILEUPLOAD_PREVENT_SELF: '"%s" kann nicht außerhalb der Seiten verwendet werden.'
     FILEUPLOAD_UNABLE_TO_UPLOAD: 'Upload-Fehler %s: %s'
     FILEUPLOAD_UNABLE_TO_MOVE: 'Fehler beim Verschieben von %s nach "%s"'
     DROPZONE_CANCEL_UPLOAD: 'Upload abgebrochen'
     DROPZONE_CANCEL_UPLOAD_CONFIRMATION: 'Bist du sicher, dass du diesen Upload abbrechen möchtest??'
     DROPZONE_DEFAULT_MESSAGE: 'Ziehe deine Dateien hierhin: <strong>Klicke hier</strong>'
     DROPZONE_FALLBACK_MESSAGE: 'Dein Browser unterstützt kein "drag and drop".'
-    DROPZONE_FILE_TOO_BIG: 'Datei zu gross ({{filesize}}MiB). Maximale Dateigrösse: {{maxFilesize}}MiB.'
+    DROPZONE_FILE_TOO_BIG: 'Datei zu groß ({{filesize}}MiB). Maximale Dateigröße: {{maxFilesize}}MiB.'
     DROPZONE_INVALID_FILE_TYPE: "Du kannst keine Dateien dieses Typs hochladen."
     DROPZONE_MAX_FILES_EXCEEDED: "Du kannst keine weiteren Dateien hochladen."
     DROPZONE_REMOVE_FILE: "Datei entfernen"
     DROPZONE_REMOVE_FILE_CONFIRMATION: 'Möchtest du diese Datei wirklich löschen?'
     DROPZONE_RESPONSE_ERROR: "Server antwortet mit {{statusCode}}."
     LIMIT_HELP: "Maximale anzahl erlaubter Dateien (Mehrfachauswahl erforderlich) "
-    FILESIZE: "Maximale Dateigrösse"
-    FILESIZE_HELP: "Maximale Dateigrösse (in MB), 0 = Benutze Standard"
+    FILESIZE: "Maximale Dateigröße"
+    FILESIZE_HELP: "Maximale Dateigröße (in MB), 0 = Benutze Standard"
     AVOID_OVERWRITING: "Überschreiben verhindern"
     AVOID_OVERWRITING_HELP: "Verhindert das Überschreiben und fügt einen Dateipräfix hinzu."
     RANDOM_NAME: "Zufälliger Name"
