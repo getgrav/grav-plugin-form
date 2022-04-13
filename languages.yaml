@@ -178,7 +178,7 @@ de:
     DROPZONE_RESPONSE_ERROR: "Server antwortet mit {{statusCode}}."
     LIMIT_HELP: "Maximale anzahl erlaubter Dateien (Mehrfachauswahl erforderlich) "
     FILESIZE: "Maximale Dateigrösse"
-    FILESIZE_HELP: "Maximale Dateigrösse (in MB), 0 = Benutze Standart"
+    FILESIZE_HELP: "Maximale Dateigrösse (in MB), 0 = Benutze Standard"
     AVOID_OVERWRITING: "Überschreiben verhindern"
     AVOID_OVERWRITING_HELP: "Verhindert das Überschreiben und fügt einen Dateipräfix hinzu."
     RANDOM_NAME: "Zufälliger Name"
