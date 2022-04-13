@@ -140,8 +140,8 @@ eu:
 
 de:
   PLUGIN_FORM:
-    NOT_VALIDATED: "Formularwerte nicht gültig. Für ein oder mehrere erforderliche Felder fehlen Werte."
-    NONCE_NOT_VALIDATED: "Ups, es gibt da ein Problem. Eingabewerte bitte noch mal prüfen und das Formular erneut absenden."
+    NOT_VALIDATED: "Die Formularwerte sind ungültig. Für ein oder mehrere erforderliche Felder fehlen Werte."
+    NONCE_NOT_VALIDATED: "Oops, das Formular ist abgelaufen. Lade die Seite bitte erneut und sende das Formular erneut ab."
     FILES: "Dateien hochladen"
     FORM_ALREADY_SUBMITTED: "Formular wurde bereits versendet."
     ALLOW_MULTIPLE: "Erlaube mehr als eine Datei"
@@ -152,39 +152,63 @@ de:
     ACCEPT_HELP: "Eine Liste von MIME-Typen, die hochgeladen werden dürfen."
     ERROR_VALIDATING_CAPTCHA: "Die Überprüfung des Captcha ist fehlgeschlagen."
     DATA_SUMMARY: "Hier die Zusammenfassung dessen, was du geschrieben hast:"
-    YES: "Ja"
-    NO: "Nein"
     NO_FORM_DATA: "Keine Formulardaten vorhanden"
-    RECAPTCHA: "ReCaptcha"
+    RECAPTCHA: "reCAPTCHA"
+    RECAPTCHA_VERSION: "Version"
+    RECAPTCHA_VERSION_V2_CHECKBOX: "v2 - Kontrollkästchen"
+    RECAPTCHA_VERSION_V2_INVISIBLE: "v2 - Unsichtbar"
+    RECAPTCHA_VERSION_V3_LATEST: "v3 - Neuste"
+    RECAPTCHA_THEME: "Thema"
+    RECAPTCHA_THEME_LIGHT: "Helles Thema"
+    RECAPTCHA_THEME_DARK: "Dunkles Thema"
     RECAPTCHA_SITE_KEY: "Seitenschlüssel"
     RECAPTCHA_SITE_KEY_HELP: "Für mehr Informationen besuche https://developers.google.com/recaptcha"
     RECAPTCHA_SECRET_KEY: "Privater Schlüssel"
     RECAPTCHA_SECRET_KEY_HELP: "Für mehr Informationen besuche https://developers.google.com/recaptcha"
-    GENERAL: "General"
-    USE_BUILT_IN_CSS: "Benutze eingebautes CSS"
-    USE_INLINE_CSS: "Benutze inline CSS"
+    GENERAL: "Allgemein"
+    USE_BUILT_IN_CSS: "Eingebautes CSS verwenden"
+    USE_INLINE_CSS: "Inline CSS verwenden"
     FILEUPLOAD_PREVENT_SELF: '"%s" kann nicht außerhalb der Seiten verwendet werden.'
-    FILEUPLOAD_UNABLE_TO_UPLOAD: 'Upload-Fehler %s: %s'
+    FILEUPLOAD_UNABLE_TO_UPLOAD: 'Fehler beim Upload %s: %s'
     FILEUPLOAD_UNABLE_TO_MOVE: 'Fehler beim Verschieben von %s nach "%s"'
-    DROPZONE_CANCEL_UPLOAD: 'Upload abgebrochen'
-    DROPZONE_CANCEL_UPLOAD_CONFIRMATION: 'Bist du sicher, dass du diesen Upload abbrechen möchtest??'
+    FILEUPLOAD_ERR_OK: 'Es liegt kein Fehler vor, die Datei wurde erfolgreich hochgeladen.'
+    FILEUPLOAD_ERR_INI_SIZE: 'Die hochgeladene Datei überschreitet die maximale Datei-Größe'
+    FILEUPLOAD_ERR_FORM_SIZE: 'Die hochgeladene Datei überschreitet die MAX_FILE_SIZE-Anweisung, die im HTML deklariert ist.'
+    FILEUPLOAD_ERR_PARTIAL: 'Die hochgeladene Datei wurde nur teilweise hochgeladen.'
+    FILEUPLOAD_ERR_NO_FILE: 'Es wurde keine Datei hochgeladen.'
+    FILEUPLOAD_ERR_NO_TMP_DIR: 'Der temporäre Ordner fehlt.'
+    FILEUPLOAD_ERR_CANT_WRITE: 'Datei konnte nicht beschrieben werden.'
+    FILEUPLOAD_ERR_EXTENSION: 'Eine PHP-Erweiterung hat den Datei-Upload gestoppt.'
+    FILEUPLOAD_ERR_UNKNOWN: 'Unbekannter Fehler beim Datei-Upload.'
+    DROPZONE_CANCEL_UPLOAD: 'Upload abbrechen'
+    DROPZONE_CANCEL_UPLOAD_CONFIRMATION: 'Bist Du sicher, dass Du diesen Upload abbrechen möchtest?'
     DROPZONE_DEFAULT_MESSAGE: 'Ziehe deine Dateien hierhin: <strong>Klicke hier</strong>'
-    DROPZONE_FALLBACK_MESSAGE: 'Dein Browser unterstützt kein "drag and drop".'
-    DROPZONE_FILE_TOO_BIG: 'Datei zu groß ({{filesize}}MiB). Maximale Dateigröße: {{maxFilesize}}MiB.'
+    DROPZONE_FALLBACK_MESSAGE: 'Ihr Browser unterstützt das Hochladen von Dateien per Drag & Drop nicht.'
+    DROPZONE_FALLBACK_TEXT: 'Bitte verwende das untenstehende Formular, um Deine Dateien wie früher hochzuladen.'
+    DROPZONE_FILE_TOO_BIG: 'Die Datei ist zu groß ({{filesize}}MiB). Maximale Dateigröße: {{maxFilesize}}MiB.'
     DROPZONE_INVALID_FILE_TYPE: "Du kannst keine Dateien dieses Typs hochladen."
     DROPZONE_MAX_FILES_EXCEEDED: "Du kannst keine weiteren Dateien hochladen."
     DROPZONE_REMOVE_FILE: "Datei entfernen"
-    DROPZONE_REMOVE_FILE_CONFIRMATION: 'Möchtest du diese Datei wirklich löschen?'
-    DROPZONE_RESPONSE_ERROR: "Server antwortet mit {{statusCode}}."
-    LIMIT_HELP: "Maximale anzahl erlaubter Dateien (Mehrfachauswahl erforderlich) "
+    DROPZONE_REMOVE_FILE_CONFIRMATION: 'Bist Du sicher, dass Du diese Datei entfernen möchtest?'
+    DROPZONE_RESPONSE_ERROR: "Der Server antwortete mit dem Statuscode {{statusCode}}."
+    YES: "Ja"
+    NO: "Nein"
+    REFRESH_PREVENTION: "Neuladen verhindern"
+    REFRESH_PREVENTION_HELP: "Eine eindeutige ID des Formulars verwenden, um sicherzustellen, dass dasselbe Formular beim Neuladen des Browsers nicht erneut verarbeitet wird."
+    LIMIT: "Limit"
+    LIMIT_HELP: "Maximale Anzahl der erlaubten Dateien pro Feld (mehrere erforderlich)"
     FILESIZE: "Maximale Dateigröße"
-    FILESIZE_HELP: "Maximale Dateigröße (in MB), 0 = Benutze Standard"
+    FILESIZE_HELP: "Maximal erlaubte Dateigröße (in MB), 0 = Standard verwenden"
     AVOID_OVERWRITING: "Überschreiben verhindern"
-    AVOID_OVERWRITING_HELP: "Verhindert das Überschreiben und fügt einen Dateipräfix hinzu."
+    AVOID_OVERWRITING_HELP: "Verhindert, dass Dateien mit demselben Namen überschrieben werden. Es wird ein Datumspräfix hinzugefügt."
     RANDOM_NAME: "Zufälliger Name"
-    RANDOM_NAME_HELP: "Generiert einen 15 Zeichen langen Zufallsnamen."
-    CLIENT_SIDE_VALIDATION: "Klientseitige Überprüfung"
+    RANDOM_NAME_HELP: "Erzeugt einen zufälligen, 15 Zeichen langen Zufallsnamen."
+    CLIENT_SIDE_VALIDATION: "Klientseitige Validierung"
+    CLIENT_SIDE_VALIDATION_HELP: "Standardmäßig werden Formulare die HTML5-klientseitige Validierung als erste Schutzmaßnahme verwenden."
     INLINE_ERRORS: "Inline-Fehler"
+    INLINE_ERRORS_HELP: "Useful with 'client-side validation' off, shows inline contextual form errors"
+    RESOLUTION_MIN: "The {{attr}} was less than the minimum of {{min}}px <br />"
+    RESOLUTION_MAX: "The {{attr}} was more than the maximum of {{max}}px <br />"
     DESTINATION_NOT_SPECIFIED: "Zielort nicht definiert"
     INVALID_MIME_TYPE: "Der MIME-Typ %s für die Datei %s ist nicht erlaubt."
     INVALID_FILE_EXTENSION: "Die Dateiendung %s ist nicht erlaubt."
