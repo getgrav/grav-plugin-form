@@ -151,7 +151,7 @@ de:
     ACCEPT: "Erlaubte MIME-Typen"
     ACCEPT_HELP: "Eine Liste von MIME-Typen, die hochgeladen werden dürfen."
     ERROR_VALIDATING_CAPTCHA: "Die Überprüfung des Captcha ist fehlgeschlagen."
-    DATA_SUMMARY: "Hier die Zusammenfassung dessen, was du geschrieben hast:"
+    DATA_SUMMARY: "Hier die Zusammenfassung dessen, was Du geschrieben hast:"
     NO_FORM_DATA: "Keine Formulardaten vorhanden"
     RECAPTCHA: "reCAPTCHA"
     RECAPTCHA_VERSION: "Version"
