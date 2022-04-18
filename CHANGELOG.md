@@ -5,6 +5,7 @@
     * Improved `prepare_form_field()` twig method to include `plain_name`
 1. [](#bugfix)
     * Fixed `columns` and `column` fields with `.dotted` variables inside to ignore columns and column names
+    * Fixed `forms({ route: '/forms/_myform' })` not finding forms from non-routable pages
 
 # v6.0.0
 ## 03/28/2022

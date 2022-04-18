@@ -780,13 +780,11 @@ class FormPlugin extends Plugin
      */
     public function addFormDefinition(PageInterface $page, string $name, array $form): void
     {
-        if (!$page->routable()) {
-            return;
-        }
-
         $route = $page->home() ? '/' : $page->route();
 
         if (!isset($this->forms[$route][$name])) {
+            $form['_page_routable'] = $page->routable();
+
             $this->forms[$route][$name] = $form;
             $this->recache_forms = true;
         }
@@ -850,7 +848,7 @@ class FormPlugin extends Plugin
             // Use fixed route for the form.
             $route_provided = true;
 
-            $page = $pages->find($route);
+            $page = $pages->find($route, true);
         } else {
             // Search form from the current page first.
             $route_provided = false;
@@ -1052,7 +1050,7 @@ class FormPlugin extends Plugin
         $list = [];
         foreach ($this->forms as $route => $forms) {
             foreach ($forms as $key => $form) {
-                if ($name === $key) {
+                if ($name === $key && !empty($form['_page_routable'])) {
                     $list[] = [$route, $key, $form];
                 }
             }
