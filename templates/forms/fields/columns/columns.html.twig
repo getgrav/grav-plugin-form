@@ -2,6 +2,6 @@
 
 {% block field %}
 <div class="form-columns {{ field.classes }}">
-    {% include 'forms/default/fields.html.twig' with {name: field.name, fields: field.fields} %}
+    {% include 'forms/default/fields.html.twig' with {name: field.name|parent_field, fields: field.fields} %}
 </div>
 {% endblock %}

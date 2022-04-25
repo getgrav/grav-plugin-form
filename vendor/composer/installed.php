@@ -5,7 +5,7 @@
         'type' => 'grav-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
-        'reference' => '97a332c933d346ae767003023580484cd9d64965',
+        'reference' => '2e6d16dbc801d605f56d2d2942cd99a8bf63550c',
         'name' => 'getgrav/grav-plugin-form',
         'dev' => true,
     ),
@@ -16,7 +16,7 @@
             'type' => 'grav-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
-            'reference' => '97a332c933d346ae767003023580484cd9d64965',
+            'reference' => '2e6d16dbc801d605f56d2d2942cd99a8bf63550c',
             'dev_requirement' => false,
         ),
         'google/recaptcha' => array(

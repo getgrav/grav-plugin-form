@@ -90,21 +90,28 @@ class TwigExtension extends AbstractExtension
             return null;
         }
 
+        // If field has already been prepared, we do not need to do anything.
+        if (!empty($field['prepared'])) {
+            return $field;
+        }
+
         // Check if we have just a list of fields (no name given).
-        if (is_int($name)) {
+        $fieldName = (string)($field['name'] ?? $name);
+        if (!is_string($name) || $name === '') {
             // Look at the field.name and if not set, fall back to the key.
-            $name = (string)($field['name'] ?? $name);
+            $name = $fieldName;
         }
 
         // Make sure that the field has a name.
-        $name = $name ?? $field['name'] ?? null;
-        if (!is_string($name) || $name === '') {
+        if ($name === '') {
             return null;
         }
 
         // Prefix name with the parent name if needed.
         if (str_starts_with($name, '.')) {
-            $name = $parent ? $parent . $name : (string)substr($name, 1);
+            $plainName = (string)substr($name, 1);
+            $field['plain_name'] = $plainName;
+            $name = $parent ? $parent . $name : $plainName;
         } elseif (isset($options['key'])) {
             $name = str_replace('*', $options['key'], $name);
         }
@@ -125,6 +132,7 @@ class TwigExtension extends AbstractExtension
 
         // Always set field name.
         $field['name'] = $name;
+        $field['prepared'] = true;
 
         return $field;
     }
