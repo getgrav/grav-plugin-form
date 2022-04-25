@@ -1,5 +1,5 @@
 # v6.0.1
-## mm/dd/2022
+## 04/25/2022
 
 1. [](#improved)
     * Improved `prepare_form_field()` twig method to include `plain_name`
