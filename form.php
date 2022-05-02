@@ -783,7 +783,7 @@ class FormPlugin extends Plugin
         $route = $page->home() ? '/' : $page->route();
 
         if (!isset($this->forms[$route][$name])) {
-            $form['_page_routable'] = $page->routable();
+            $form['_page_routable'] = !$page->isModule();
 
             $this->forms[$route][$name] = $form;
             $this->recache_forms = true;

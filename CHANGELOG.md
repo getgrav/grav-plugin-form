@@ -1,3 +1,9 @@
+# v6.0.2
+## 05/02/2022
+
+1. [](#bugfix)
+    * Fixed `forms({ route: '/forms/_myform' })` not finding form from non-routable pages (second try)
+
 # v6.0.1
 ## 04/25/2022
 
