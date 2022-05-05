@@ -1,3 +1,9 @@
+# v6.0.3
+## 05/05/2022
+
+1. [](#bugfix)
+    * Regression: Fixed broken `addForm()` method
+
 # v6.0.2
 ## 05/02/2022
 

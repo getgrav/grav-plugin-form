@@ -806,6 +806,8 @@ class FormPlugin extends Plugin
         $name = $form->getName();
 
         if (!isset($this->forms[$route][$name])) {
+            $form['_page_routable'] = true;
+
             $this->forms[$route][$name] = $form;
             $this->recache_forms = true;
         }
