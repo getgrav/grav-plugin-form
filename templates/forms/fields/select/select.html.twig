@@ -28,6 +28,11 @@
                         data-{{ datakey }}="{{ datavalue|e('html_attr') }}"
                     {% endfor %}
                 {% endif %}
+                {% if field.attributes %}
+                    {% for key, value in field.attributes %}
+                        {{ key }}="{{ value|e('html_attr') }}"
+                    {% endfor %}
+                {% endif %}
                 >
             {% if field.placeholder %}<option value="" disabled selected>{{ field.placeholder|t|raw }}</option>{% endif %}
 
