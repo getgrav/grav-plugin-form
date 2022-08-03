@@ -540,9 +540,10 @@ class FormPlugin extends Plugin
                 break;
             case 'redirect':
                 $this->grav['session']->setFlashObject('form', $form);
-                $url = ((string)$params);
+                $url = (string)(is_array($params) ? ($params['route'] ?? null) : $params) ?: $this->grav['page']->url();
                 $vars = array(
-                    'form' => $form
+                    'form' => $form,
+                    'page' => $this->grav['page']
                 );
                 /** @var Twig $twig */
                 $twig = $this->grav['twig'];
@@ -554,6 +555,8 @@ class FormPlugin extends Plugin
                 }
 
                 $event['redirect'] = $url;
+                $event['redirect_code'] = ($params['redirect_code'] ?? null) ?: 303;
+
                 $event->stopPropagation();
                 break;
             case 'reset':
