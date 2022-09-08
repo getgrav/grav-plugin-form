@@ -1,3 +1,9 @@
+# v6.0.4
+## 08/08/2022
+
+1. [](#improved)
+    * Added `attributes` to field [#573](https://github.com/getgrav/grav-plugin-form/pull/573)
+
 # v6.0.3
 ## 05/05/2022
 
