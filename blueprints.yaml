@@ -1,8 +1,8 @@
 name: Form
 slug: form
 type: plugin
-version: 6.0.3
-description: Enables the forms handling
+version: 6.0.4
+description: Enables forms handling and processing
 icon: check-square
 author:
   name: Team Grav
