@@ -105,7 +105,7 @@ class BasicCaptcha
     public function validateCaptcha($formData): bool
     {
         $isValid = false;
-        $capchaSessionData = $this->getSession("captcha_code");
+        $capchaSessionData = $this->getSession();
 
         if ($capchaSessionData == $formData) {
             $isValid = true;
