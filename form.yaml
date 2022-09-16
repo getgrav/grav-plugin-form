@@ -18,3 +18,19 @@ recaptcha:
     theme: light
     site_key:
     secret_key:
+basic_captcha:
+  type: characters              # characters | math
+  chars:
+    length: 6
+    font: zxx-noise.ttf       # zxx-noise.ttf | zxx-camo.ttf | zxx-xed.ttf | zxx-sans.ttf
+    bg: '#cccccc'
+    text: '#333333'
+    size: 24
+    start_x: 5
+    start_y: 30
+    box_width: 135
+    box_height: 40
+  math:
+    min: 1
+    max: 12
+    operators: ['+','-','*']

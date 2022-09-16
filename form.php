@@ -21,6 +21,7 @@ use Grav\Common\Yaml;
 use Grav\Framework\Form\Interfaces\FormInterface;
 use Grav\Framework\Psr7\Response;
 use Grav\Framework\Route\Route;
+use Grav\Plugin\Form\BasicCaptcha;
 use Grav\Plugin\Form\Form;
 use Grav\Plugin\Form\Forms;
 use Grav\Plugin\Form\TwigExtension;
@@ -134,6 +135,8 @@ class FormPlugin extends Plugin
 
             $this->grav->close($response);
         }
+
+        $this->processBasicCaptchaImage($uri);
 
         $this->enable([
             'onPageProcessed' => ['onPageProcessed', 0],
@@ -509,6 +512,21 @@ class FormPlugin extends Plugin
                     return;
                 }
                 break;
+            case 'basic-captcha':
+                $captcha = new BasicCaptcha();
+                $captcha_value = trim($form->value('basic-captcha'));
+                if (!$captcha->validateCaptcha($captcha_value)) {
+                    $message = $params['message'] ?? $this->grav['language']->translate('PLUGIN_FORM.ERROR_BASIC_CAPTCHA');
+
+                    $this->grav->fireEvent('onFormValidationError', new Event([
+                        'form' => $form,
+                        'message' => $message
+                    ]));
+
+                    $event->stopPropagation();
+                    return;
+                }
+                break;
             case 'timestamp':
                 $label = $params['label'] ?? 'Timestamp';
                 $format = $params['format'] ?? 'Y-m-d H:i:s';
@@ -553,8 +571,7 @@ class FormPlugin extends Plugin
                     $this->grav['messages']->add($form->message, 'success');
                 }
 
-                $event['redirect'] = $url;
-                $event->stopPropagation();
+                $this->grav->redirect($url);
                 break;
             case 'reset':
                 if (Utils::isPositive($params)) {
@@ -1257,5 +1274,16 @@ class FormPlugin extends Plugin
         $milliseconds = round(($utimestamp - $timestamp) * 1000000);
 
         return date(preg_replace('`(?<!\\\\)u`', sprintf('%06d', $milliseconds), $format), $timestamp);
+    }
+
+    protected function processBasicCaptchaImage(Uri $uri)
+    {
+        if ($uri->path() === '/forms-basic-captcha-image.jpg') {
+            $captcha = new BasicCaptcha();
+            $code = $captcha->getCaptchaCode();
+            $image = $captcha->createCaptchaImage($code);
+            $captcha->renderCaptchaImage($image);
+            exit;
+        }
     }
 }
