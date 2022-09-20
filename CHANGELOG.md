@@ -1,3 +1,9 @@
+# v7.0.1
+## mm/dd/2022
+
+1. [](#improved)
+   * Provided some basic CSS styling for new captcha field
+
 # v7.0.0
 ## 09/20/2022
 

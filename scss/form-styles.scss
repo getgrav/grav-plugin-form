@@ -1,4 +1,4 @@
-$form-border-color: #eee;
+$form-border-color: #ccc;
 $form-active-color: #000;
 
 .form-group.has-errors {
@@ -285,5 +285,31 @@ $form-active-color: #000;
 {
     margin: 0 0.5rem;
     display: inline-block;
+}
+
+.form-data.basic-captcha {
+    .form-input-wrapper {
+        border: 1px solid $form-border-color;
+        border-radius: 5px;
+        display: flex;
+        overflow: hidden;
+    }
+    .form-input-prepend {
+        display: flex;
+        color: #333;
+        background-color: #ccc;
+        flex-shrink: 0;
+        img {
+            margin: 0;
+        }
+        button > svg {
+            margin: 0 8px;
+            width: 18px;
+            height: 18px;
+        }
+    }
+    input.form-input {
+        border: 0;
+    }
 }
 
