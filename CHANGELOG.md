@@ -1,5 +1,5 @@
 # v7.0.0
-## mm/dd/2022
+## 09/20/2022
 
 1. [](#new)
    * Added a new custom `basic-captcha` option with **character** and **math** puzzles.  No 3rd-part service required.
