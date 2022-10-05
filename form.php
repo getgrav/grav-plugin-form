@@ -797,7 +797,7 @@ class FormPlugin extends Plugin
      */
     public function addFormDefinition(PageInterface $page, string $name, array $form): void
     {
-        $route = $page->home() ? '/' : $page->route();
+        $route = ($page->home() ? '/' : $page->route()) ?? '/';
 
         if (!isset($this->forms[$route][$name])) {
             $form['_page_routable'] = !$page->isModule();

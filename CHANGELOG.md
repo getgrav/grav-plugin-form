@@ -1,3 +1,9 @@
+# v7.0.2
+## 10/05/2022
+
+1. [](#bugfix)
+   * Fix for modular form definitions at root-level (useful for storing shared forms)
+
 # v7.0.1
 ## 09/20/2022
 
