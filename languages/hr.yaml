@@ -1,0 +1,10 @@
+PLUGIN_FORM:
+  NOT_VALIDATED: "Formular nije validiran. Jedan ili više traženih polja nedostaju."
+  NONCE_NOT_VALIDATED: "Ups, došlo je do problema, molimo provjerite svoj unos i pokušajte opet."
+  FILES: "Upload Fajlova"
+  ALLOW_MULTIPLE: "Dopusti više od jednog fajla"
+  DESTINATION: "Destinacija"
+  DESTINATION_HELP: "Lokacija gdje bi fajlovi trebali biti uploadani"
+  ACCEPT: "Dopušteni MIME Tipovi"
+  ACCEPT_HELP: "Lista dopuštenih MIME Tipova koji su dozvoljeni za upload"
+  ERROR_VALIDATING_CAPTCHA: "Greška pri validiranju Captcha"
