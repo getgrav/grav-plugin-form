@@ -18,6 +18,12 @@ recaptcha:
     theme: light
     site_key:
     secret_key:
+turnstile:
+  widget: managed             # options: [managed | non-interactive | invisible]
+  theme: light                # options: [light | dark]
+  site_key:
+  secret_key:
+
 basic_captcha:
   type: characters            # options: [characters | math]
   chars:
