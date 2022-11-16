@@ -25,6 +25,7 @@ use Grav\Plugin\Form\BasicCaptcha;
 use Grav\Plugin\Form\Form;
 use Grav\Plugin\Form\Forms;
 use Grav\Plugin\Form\TwigExtension;
+use Grav\Common\HTTP\Client;
 use ReCaptcha\ReCaptcha;
 use ReCaptcha\RequestMethod\CurlPost;
 use RecursiveArrayIterator;
@@ -34,6 +35,7 @@ use RocketTheme\Toolbox\File\YamlFile;
 use RocketTheme\Toolbox\File\File;
 use RocketTheme\Toolbox\Event\Event;
 use RuntimeException;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Twig\Environment;
 use Twig\Extension\CoreExtension;
 use Twig\Extension\EscaperExtension;
@@ -440,6 +442,7 @@ class FormPlugin extends Plugin
      * @param Event $event
      * @return void
      * @throws Exception
+     * @throws TransportExceptionInterface
      */
     public function onFormProcessed(Event $event): void
     {
@@ -526,6 +529,40 @@ class FormPlugin extends Plugin
                     $event->stopPropagation();
                     return;
                 }
+                break;
+            case 'turnstile':
+                /** @var Uri $uri */
+                $uri = $this->grav['uri'];
+
+                $turnstile_config = $this->config->get('plugins.form.turnstile');
+                $secret = $turnstile_config['secret_key'] ?? null;
+                $token = $form->getValue('cf-turnstile-response') ?? null;
+                $ip = Uri::ip();
+
+                $client = Client::getClient();
+                $response = $client->request('POST', 'https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+                    'body' => [
+                        'secret' => $secret,
+                        'response' => $token,
+                        'remoteip' => $ip
+                    ]
+                ]);
+
+                $content = $response->toArray();
+
+                if (!$content['success']) {
+                    $message = $params['message'] ?? $this->grav['language']->translate('PLUGIN_FORM.ERROR_BASIC_CAPTCHA');
+
+                    $this->grav->fireEvent('onFormValidationError', new Event([
+                        'form' => $form,
+                        'message' => $message
+                    ]));
+
+                    $this->grav['log']->addWarning('Form Turnstile invalid: [' . $uri->route() . '] ' . json_encode($content));
+                    $event->stopPropagation();
+                    return;
+                }
+
                 break;
             case 'timestamp':
                 $label = $params['label'] ?? 'Timestamp';

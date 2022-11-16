@@ -1,0 +1,15 @@
+{% extends "forms/field.html.twig" %}
+
+{% set config = grav.config %}
+{% set site_key = field.turnstile_site_key ?? config.plugins.form.turnstile.site_key %}
+{% set theme = field.theme ?? config.plugins.form.turnstile.theme ?? 'light' %}
+
+{% block label %}{% endblock %}
+
+{% block input %}
+  {% do assets.addJs('https://challenges.cloudflare.com/turnstile/v0/api.js', { defer: '', async: '' }) %}
+
+  <div class="turnstile">
+    <div class="cf-turnstile" data-sitekey="{{ site_key }}" data-theme="{{ theme }}"></div>
+  </div>
+{% endblock %}
