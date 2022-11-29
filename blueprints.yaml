@@ -1,7 +1,7 @@
 name: Form
 slug: form
 type: plugin
-version: 7.1.0
+version: 7.1.1
 description: Enables forms handling and processing
 icon: check-square
 author:
@@ -192,6 +192,29 @@ form:
           help: PLUGIN_FORM.RECAPTCHA_SITE_KEY_HELP
           default: ''
         recaptcha.secret_key:
+          type: text
+          label: PLUGIN_FORM.RECAPTCHA_SECRET_KEY
+          help: PLUGIN_FORM.RECAPTCHA_SECRET_KEY_HELP
+          default: ''
+
+    turnstile_captcha:
+      type: section
+      title: PLUGIN_FORM.TURNSTILE_CAPTCHA
+
+      fields:
+        turnstile.theme:
+          type: select
+          label: PLUGIN_FORM.RECAPTCHA_THEME
+          default: light
+          options:
+            light: PLUGIN_FORM.RECAPTCHA_THEME_LIGHT
+            dark: PLUGIN_FORM.RECAPTCHA_THEME_DARK
+        turnstile.site_key:
+          type: text
+          label: PLUGIN_FORM.RECAPTCHA_SITE_KEY
+          help: PLUGIN_FORM.RECAPTCHA_SITE_KEY_HELP
+          default: ''
+        turnstile.secret_key:
           type: text
           label: PLUGIN_FORM.RECAPTCHA_SECRET_KEY
           help: PLUGIN_FORM.RECAPTCHA_SECRET_KEY_HELP
