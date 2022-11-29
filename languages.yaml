@@ -87,6 +87,7 @@ en:
     BASIC_CAPTCHA_MATH_MIN: "Minimum number"
     BASIC_CAPTCHA_MATH_MAX: "Maximum number"
     BASIC_CAPTCHA_MATH_OPERATORS: "Mathematical operators (randomized)"
+    TURNSTILE_CAPTCHA: "Cloudflare Turnstile Captcha"
 
 eu:
   PLUGIN_FORM:
