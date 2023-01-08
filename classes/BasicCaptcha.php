@@ -32,20 +32,20 @@ class BasicCaptcha
             // calculator
             if ($operator === '-') {
                 if ($first_num < $second_num) {
-                    $result = "$second_num-$first_num";
-                    $captcha_code = $second_num-$first_num;
+                    $result = "$second_num - $first_num";
+                    $captcha_code = $second_num - $first_num;
                 } else {
                     $result = "$first_num-$second_num";
                     $captcha_code = $first_num - $second_num;
                 }
             } elseif ($operator === '*') {
-                $result = "{$first_num}x{$second_num}";
-                $captcha_code = $first_num - $second_num;
+                $result = "{$first_num} x {$second_num}";
+                $captcha_code = $first_num * $second_num;
             } elseif ($operator === '/') {
-                $result = "$first_num/ second_num";
+                $result = "$first_num / second_num";
                 $captcha_code = $first_num / $second_num;
             } elseif ($operator === '+') {
-                $result = "$first_num+$second_num";
+                $result = "$first_num + $second_num";
                 $captcha_code = $first_num + $second_num;
             }
         } else {
