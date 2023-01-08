@@ -1,3 +1,9 @@
+# v7.1.2
+## 01/08/2023
+
+1. [](#bugfix)
+   * Fixes issue with multiplication type BasicCaptcha Math Captcha [#587](https://github.com/getgrav/grav-plugin-form/issues/587)
+
 # v7.1.1
 ## 11/29/2022
 
