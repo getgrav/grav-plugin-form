@@ -3,6 +3,7 @@
 
 1. [](#improved)
    * Removed `FILTER_SANITIZE_STRING` input filter in favor of `htmlspecialchars(strip_tags())` 
+   * Fixed a deprecated message when using `Route::_toString()`
 
 # v7.1.2
 ## 01/08/2023
