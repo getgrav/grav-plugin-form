@@ -1182,8 +1182,8 @@ class FormPlugin extends Plugin
             }
 
             // Try to find the posted form if available.
-            $form_name = $this->grav['uri']->post('__form-name__', FILTER_SANITIZE_STRING) ?? '';
-            $unique_id = $this->grav['uri']->post('__unique_form_id__', FILTER_SANITIZE_STRING) ?? '';
+            $form_name = $this->grav['uri']->post('__form-name__', GRAV_SANITIZE_STRING) ?? '';
+            $unique_id = $this->grav['uri']->post('__unique_form_id__', GRAV_SANITIZE_STRING) ?? '';
 
             if (!$form_name) {
                 $form_name = $page ? $page->slug() : null;
