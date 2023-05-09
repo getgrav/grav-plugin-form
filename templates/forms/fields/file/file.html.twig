@@ -26,7 +26,7 @@
         {% set uri = global.grav.uri %}
         {% set files = global.files %}
         {% set config = global.grav.config %}
-        {% set route = global.context.route().getUri() %}
+        {% set route = global.context.route().toString(true) %}
         {% set type =  global.context.content() is not null ? 'pages' : global.plugin ? 'plugins' : global.theme ? 'themes' : 'config' %}
         {% set blueprint_name = global.blueprints.getFilename %}
         {% if type == 'pages' %}
@@ -34,7 +34,7 @@
         {% endif %}
         {% set blueprint = blueprint_name|base64_encode %}
         {% set real_path = value.thumb ?? global.context.media[path].relativePath ?? global.form.getPagePathFromToken(path) %}
-        {% set remove = global.form.getFileDeleteAjaxRoute(files.name, path).getUri() ?: uri.addNonce(
+        {% set remove = global.form.getFileDeleteAjaxRoute(files.name, path).toString(true) ?: uri.addNonce(
             global.base_url_relative ~
             '/media.json' ~
             '/task' ~ config.system.param_sep ~ 'removeFileFromBlueprint' ~
