@@ -26,7 +26,7 @@
         {% set uri = global.grav.uri %}
         {% set files = global.files %}
         {% set config = global.grav.config %}
-        {% set route = global.context.route() %}
+        {% set route = global.context.route().toString(true) %}
         {% set type =  global.context.content() is not null ? 'pages' : global.plugin ? 'plugins' : global.theme ? 'themes' : 'config' %}
         {% set blueprint_name = global.blueprints.getFilename %}
         {% if type == 'pages' %}
@@ -34,7 +34,7 @@
         {% endif %}
         {% set blueprint = blueprint_name|base64_encode %}
         {% set real_path = value.thumb ?? global.context.media[path].relativePath ?? global.form.getPagePathFromToken(path) %}
-        {% set remove = global.form.getFileDeleteAjaxRoute(files.name, path)|string ?: uri.addNonce(
+        {% set remove = global.form.getFileDeleteAjaxRoute(files.name, path).toString(true) ?: uri.addNonce(
             global.base_url_relative ~
             '/media.json' ~
             '/task' ~ config.system.param_sep ~ 'removeFileFromBlueprint' ~
@@ -64,8 +64,8 @@
     {% block prepend %}{% endblock %}
     {% set settings = {name: field.name, paramName: (scope ~ field.name)|fieldName ~ (files.multiple ? '[]' : ''), limit: limit, filesize: max_filesize, accept: files.accept, resolution: files.resolution, resizeWidth: files.resizeWidth, resizeHeight: files.resizeHeight, resizeQuality: files.resizeQuality } %}
     {% set dropzoneSettings = field.dropzone %}
-    {% set file_url_add = form.getFileUploadAjaxRoute() %}
-    {% set file_url_remove = form.getFileDeleteAjaxRoute(null, null) %}
+    {% set file_url_add = form.getFileUploadAjaxRoute().getUri() %}
+    {% set file_url_remove = form.getFileDeleteAjaxRoute(null, null).getUri() %}
     <div class="{{ form_field_wrapper_classes ?: 'form-input-wrapper' }} {{ field.classes }} dropzone files-upload form-input-file {{ field.size }}"
          data-grav-file-settings="{{ settings|json_encode|e('html_attr') }}"
          data-dropzone-options="{{ dropzoneSettings|json_encode|e('html_attr') }}"

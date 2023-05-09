@@ -40,7 +40,7 @@
 {% do assets.addInlineJs("
     window.GravForm = window.GravForm || {};
     window.GravForm.config = {
-        current_url: '" ~ grav.route.withoutParams() ~"',
+        current_url: '" ~ grav.route.withoutParams().toString(true) ~"',
         current_params: " ~ grav.route.params|json_encode ~ ",
         param_sep: '" ~ config.system.param_sep ~ "',
         base_url_relative: '" ~ base_url_relative ~ "',
