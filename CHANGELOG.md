@@ -1,5 +1,5 @@
 # v7.2.0
-## mm/dd/2023
+## 06/21/2023
 
 1. [](#bugfix)
    * Fixed a long-standing bug with cached forms not working properly in multi-language scenarios
