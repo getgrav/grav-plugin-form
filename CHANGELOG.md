@@ -1,3 +1,9 @@
+# v7.2.0
+## 06/21/2023
+
+1. [](#bugfix)
+   * Fixed a long-standing bug with cached forms not working properly in multi-language scenarios
+
 # v7.1.3
 ## 05/09/2023
 
