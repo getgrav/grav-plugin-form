@@ -26,6 +26,7 @@ use Grav\Plugin\Form\Form;
 use Grav\Plugin\Form\Forms;
 use Grav\Plugin\Form\TwigExtension;
 use Grav\Common\HTTP\Client;
+use Monolog\Logger;
 use ReCaptcha\ReCaptcha;
 use ReCaptcha\RequestMethod\CurlPost;
 use RecursiveArrayIterator;
@@ -148,6 +149,8 @@ class FormPlugin extends Plugin
             'onTwigSiteVariables' => ['onTwigVariables', 0],
             'onFormValidationProcessed' => ['onFormValidationProcessed', 0],
         ]);
+
+
     }
 
     /**
@@ -224,6 +227,7 @@ class FormPlugin extends Plugin
 
         /** @var PageInterface $page */
         $page = $this->grav['page'];
+
 
         // Force rebuild form when form has not been built and form cache expired.
         // This happens when form cache expires before the page cache
@@ -1258,6 +1262,12 @@ class FormPlugin extends Plugin
         // Only update the forms if it's not empty
         if ($forms) {
             $this->forms = array_merge($this->forms, $forms);
+            if ($this->config()['debug']) {
+                /** @var Logger $logger */
+                $logger = $this->grav['log'];
+                $logger->addDebug(sprintf("<<<< Loaded cached forms: %s\n%s", $this->getFormCacheId(), $this->arrayToString($this->forms)));
+            }
+
         }
     }
 
@@ -1272,8 +1282,11 @@ class FormPlugin extends Plugin
         $cache = $this->grav['cache'];
         $cache_id = $this->getFormCacheId();
         $cache->save($cache_id, [$this->forms]);
-//        $this->grav['debugger']->addMessage("cache_id: {$cache_id}");
-//        $this->grav['debugger']->addMessage($this->forms);
+        if ($this->config()['debug']) {
+            /** @var Logger $logger */
+            $logger = $this->grav['log'];
+            $logger->addDebug(sprintf(">>>> Saved cached forms: %s\n%s", $this->getFormCacheId(), $this->arrayToString($this->forms)));
+        }
     }
 
     /**
@@ -1318,5 +1331,21 @@ class FormPlugin extends Plugin
             $captcha->renderCaptchaImage($image);
             exit;
         }
+    }
+
+    protected function arrayToString($array, $level = 0) {
+        $result = '';
+
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                if ($level < 2) {
+                    $result .= "$key: " . $this->arrayToString($value, $level + 1) . "\n";
+                }
+            } else {
+                $result .= "$key: $value\n";
+            }
+        }
+
+        return $result;
     }
 }
