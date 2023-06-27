@@ -1,3 +1,9 @@
+# v7.2.1
+## mm/dd/2023
+
+1. [](#bugfix)
+   * More robust fix for multi-language form caching
+
 # v7.2.0
 ## 06/21/2023
 

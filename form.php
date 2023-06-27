@@ -66,6 +66,7 @@ class FormPlugin extends Plugin
     /** @var array */
     protected $json_response = [];
 
+
     /**
      * @return bool
      */
@@ -311,9 +312,11 @@ class FormPlugin extends Plugin
             /** @var Forms $forms */
             $forms = $this->grav['forms'];
 
+            $lang = $this->grav['language']->getLanguage();
+
             /** @var Route $route */
             $route = $this->grav['route'];
-            $pageForms = $this->forms[$route->getRoute()] ?? [];
+            $pageForms = $this->forms[$lang][$route->getRoute()] ?? [];
 
             /**
              * @var string $name
@@ -828,10 +831,11 @@ class FormPlugin extends Plugin
     public function addFormDefinition(PageInterface $page, string $name, array $form): void
     {
         $route = ($page->home() ? '/' : $page->route()) ?? '/';
+        $lang = $this->grav['language']->getLanguage();
 
-        if (!isset($this->forms[$route][$name])) {
+        if (!isset($this->forms[$lang][$route][$name])) {
             $form['_page_routable'] = !$page->isModule();
-            $this->forms[$route][$name] = $form;
+            $this->forms[$lang][$route][$name] = $form;
             $this->saveCachedForms();
         }
     }
@@ -849,12 +853,13 @@ class FormPlugin extends Plugin
             return;
         }
 
+        $lang = $this->grav['language']->getLanguage();
         $name = $form->getName();
 
-        if (!isset($this->forms[$route][$name])) {
+        if (!isset($this->forms[$lang][$route][$name])) {
             $form['_page_routable'] = true;
 
-            $this->forms[$route][$name] = $form;
+            $this->forms[$lang][$route][$name] = $form;
             $this->saveCachedForms();
         }
     }
@@ -869,6 +874,7 @@ class FormPlugin extends Plugin
     {
         /** @var Pages $pages */
         $pages = $this->grav['pages'];
+        $lang = $this->grav['language']->getLanguage();
 
         // Handle parameters.
         if (is_array($data)) {
@@ -914,7 +920,7 @@ class FormPlugin extends Plugin
 
         // Attempt to find the form from the page.
         if ('' !== $route) {
-            $forms = $this->forms[$route] ?? [];
+            $forms = $this->forms[$lang][$route] ?? [];
 
             if (!$unnamed) {
                 // Get form by the name.
@@ -1096,7 +1102,9 @@ class FormPlugin extends Plugin
     protected function findFormByName(string $name): array
     {
         $list = [];
-        foreach ($this->forms as $route => $forms) {
+        $lang = $this->grav['language']->getLanguage();
+
+        foreach ($this->forms[$lang] as $route => $forms) {
             foreach ($forms as $key => $form) {
                 if ($name === $key && !empty($form['_page_routable'])) {
                     $list[] = [$route, $key, $form];
@@ -1261,8 +1269,9 @@ class FormPlugin extends Plugin
     {
         /** @var Cache $cache */
         $cache = $this->grav['cache'];
-
-        $cache->save($this->getFormCacheId(), [$this->forms]);
+        $cache_id = $this->getFormCacheId();
+        $this->grav['debugger']->addMessage($this->forms);
+        $cache->save($cache_id, [$this->forms]);
     }
 
     /**
@@ -1274,8 +1283,9 @@ class FormPlugin extends Plugin
     {
         /** @var Pages $pages */
         $pages = $this->grav['pages'];
+        $form_cache_id = $pages->getPagesCacheId() . '-form-plugin';
 
-        return $pages->getPagesCacheId() . '-form-plugin';
+        return $form_cache_id;
     }
 
     /**
