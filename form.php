@@ -1271,6 +1271,8 @@ class FormPlugin extends Plugin
         $cache = $this->grav['cache'];
         $cache_id = $this->getFormCacheId();
         $cache->save($cache_id, [$this->forms]);
+//        $this->grav['debugger']->addMessage("cache_id: {$cache_id}");
+//        $this->grav['debugger']->addMessage($this->forms);
     }
 
     /**
@@ -1280,11 +1282,10 @@ class FormPlugin extends Plugin
      */
     protected function getFormCacheId(): string
     {
-        /** @var Pages $pages */
-        $pages = $this->grav['pages'];
-        $form_cache_id = $pages->getPagesCacheId() . '-form-plugin';
-
-        return $form_cache_id;
+        /** @var \Grav\Common\Cache $cache */
+        $cache = $this->grav['cache'];
+        $cache_id = $cache->getKey() . '-form-plugin';
+        return $cache_id;
     }
 
     /**
