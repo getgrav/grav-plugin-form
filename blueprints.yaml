@@ -1,7 +1,7 @@
 name: Form
 slug: form
 type: plugin
-version: 7.2.0
+version: 7.2.1
 description: Enables forms handling and processing
 icon: check-square
 author:
@@ -34,6 +34,17 @@ form:
       title: PLUGIN_FORM.GENERAL
 
       fields:
+        debug:
+          type: toggle
+          label: Debug
+          highlight: 1
+          default: 0
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
+
         built_in_css:
           type: toggle
           label: PLUGIN_FORM.USE_BUILT_IN_CSS

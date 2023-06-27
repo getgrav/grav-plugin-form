@@ -3,6 +3,7 @@ built_in_css: true
 inline_css: true
 refresh_prevention: false
 client_side_validation: true
+debug: false
 inline_errors: false
 files:
   multiple: false          # To allow multiple files, default is single
