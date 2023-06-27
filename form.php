@@ -229,9 +229,7 @@ class FormPlugin extends Plugin
         $page = $this->grav['page'];
 
 
-        // Force rebuild form when form has not been built and form cache expired.
-        // This happens when form cache expires before the page cache
-        // and then does not trigger 'onPageProcessed' event.
+        // DEPRECATED: This should no longer ever happen
         if (!$this->forms) {
             $this->onPageProcessed(new Event(['page' => $page]));
         }
@@ -1253,7 +1251,7 @@ class FormPlugin extends Plugin
 
         // Only update the forms if it's not empty
         if ($forms) {
-            $this->forms = array_merge($this->forms, $forms);
+            $this->forms = Utils::arrayMergeRecursiveUnique($this->forms, $forms);
             if ($this->config()['debug']) {
                 $this->grav['log']->addDebug(sprintf("<<<< Loaded cached forms: %s\n%s", $this->getFormCacheId(), $this->arrayToString($this->forms)));
             }
