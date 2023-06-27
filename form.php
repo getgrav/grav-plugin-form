@@ -1103,8 +1103,9 @@ class FormPlugin extends Plugin
     {
         $list = [];
         $lang = $this->grav['language']->getLanguage();
+        $lang_forms = $this->forms[$lang] ?? [];
 
-        foreach ($this->forms[$lang] as $route => $forms) {
+        foreach ($lang_forms as $route => $forms) {
             foreach ($forms as $key => $form) {
                 if ($name === $key && !empty($form['_page_routable'])) {
                     $list[] = [$route, $key, $form];
