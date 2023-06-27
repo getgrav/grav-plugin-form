@@ -1270,7 +1270,6 @@ class FormPlugin extends Plugin
         /** @var Cache $cache */
         $cache = $this->grav['cache'];
         $cache_id = $this->getFormCacheId();
-        $this->grav['debugger']->addMessage($this->forms);
         $cache->save($cache_id, [$this->forms]);
     }
 
