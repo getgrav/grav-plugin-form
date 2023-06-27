@@ -940,9 +940,7 @@ class FormPlugin extends Plugin
         if (null === $form) {
             // First check if we requested a specific form which didn't exist.
             if ($route_provided || $unnamed) {
-                /** @var Debugger $debugger */
-                $debugger = $this->grav['debugger'];
-                $debugger->addMessage(sprintf('Form %s not found in page %s', $name ?? 'unnamed', $route), 'warning');
+                $this->grav['debugger']->addMessage(sprintf('Form %s not found in page %s', $name ?? 'unnamed', $route), 'warning');
 
                 return null;
             }
@@ -956,8 +954,7 @@ class FormPlugin extends Plugin
 
             // Check for naming conflicts.
             if (count($forms) > 1) {
-                $debugger = $this->grav['debugger'];
-                $debugger->addMessage(sprintf('Fetching form by its name, but there are multiple pages with the same form name %s', $name), 'warning');
+                $this->grav['debugger']->addMessage(sprintf('Fetching form by its name, but there are multiple pages with the same form name %s', $name), 'warning');
             }
 
             [$route, $name, $form] = $first;
@@ -969,9 +966,7 @@ class FormPlugin extends Plugin
         if (is_array($form)) {
             // Form was cached as an array, try to create the object.
             if (null === $page) {
-                /** @var Debugger $debugger */
-                $debugger = $this->grav['debugger'];
-                $debugger->addMessage(sprintf('Form %s cannot be created as page %s does not exist', $name, $route), 'warning');
+                $this->grav['debugger']->addMessage(sprintf('Form %s cannot be created as page %s does not exist', $name, $route), 'warning');
 
                 return null;
             }
@@ -1246,12 +1241,9 @@ class FormPlugin extends Plugin
             /** @var Cache $cache */
             $cache = $this->grav['cache'];
 
-            [$forms] = $cache->fetch($this->getFormCacheId());
+            $forms = $cache->fetch($this->getFormCacheId());
         } catch (Exception $e) {
-            /** @var Debugger $debugger */
-            $debugger = Grav::instance()['debugger'];
-            $debugger->addMessage(sprintf('Unserializing cached forms failed: %s', $e->getMessage()), 'error');
-
+            $this->grav['debugger']->addMessage(sprintf('Unserializing cached forms failed: %s', $e->getMessage()), 'error');
             $forms = null;
         }
 
@@ -1263,9 +1255,7 @@ class FormPlugin extends Plugin
         if ($forms) {
             $this->forms = array_merge($this->forms, $forms);
             if ($this->config()['debug']) {
-                /** @var Logger $logger */
-                $logger = $this->grav['log'];
-                $logger->addDebug(sprintf("<<<< Loaded cached forms: %s\n%s", $this->getFormCacheId(), $this->arrayToString($this->forms)));
+                $this->grav['log']->addDebug(sprintf("<<<< Loaded cached forms: %s\n%s", $this->getFormCacheId(), $this->arrayToString($this->forms)));
             }
 
         }
@@ -1281,11 +1271,15 @@ class FormPlugin extends Plugin
         /** @var Cache $cache */
         $cache = $this->grav['cache'];
         $cache_id = $this->getFormCacheId();
-        $cache->save($cache_id, [$this->forms]);
+
+        $forms = $cache->fetch($cache_id);
+        if ($forms) {
+            $this->forms = Utils::arrayMergeRecursiveUnique($this->forms, $forms);
+        }
+
+        $cache->save($cache_id, $this->forms);
         if ($this->config()['debug']) {
-            /** @var Logger $logger */
-            $logger = $this->grav['log'];
-            $logger->addDebug(sprintf(">>>> Saved cached forms: %s\n%s", $this->getFormCacheId(), $this->arrayToString($this->forms)));
+            $this->grav['log']->addDebug(sprintf(">>>> Saved cached forms: %s\n%s", $this->getFormCacheId(), $this->arrayToString($this->forms)));
         }
     }
 
@@ -1333,17 +1327,22 @@ class FormPlugin extends Plugin
         }
     }
 
-    protected function arrayToString($array, $level = 0) {
-        $result = '';
+    protected function arrayToString($array, $level = 2) {
+        $result = $this->limitArrayLevels($array, $level);
+        return json_encode($result, JSON_UNESCAPED_SLASHES);
+    }
 
+    protected function limitArrayLevels($array, $levelsToKeep, $currentLevel = 0) {
+        if ($currentLevel >= $levelsToKeep) {
+            return '-';
+        }
+
+        $result = [];
         foreach ($array as $key => $value) {
             if (is_array($value)) {
-                if ($level < 2) {
-                    $result .= "$key: " . $this->arrayToString($value, $level + 1) . "\n";
-                }
-            } else {
-                $result .= "$key: $value\n";
+                $value = $this->limitArrayLevels($value, $levelsToKeep, $currentLevel + 1);
             }
+            $result[$key] = $value;
         }
 
         return $result;
