@@ -667,10 +667,9 @@ class FormPlugin extends Plugin
                     $filename = $prefix . $this->udate($format, $raw_format) . $postfix . $ext;
                 }
 
-                $extension = Utils::pathinfo($filename, PATHINFO_EXTENSION);
-                $dangerous_extensions = Grav::instance()['config']->get('security.uploads_dangerous_extensions', []);
-                if (in_array($extension, $dangerous_extensions, true)) {
-                    throw new RuntimeException(sprintf('Form save: File extension "%s" is not allowed', $extension));
+                // Handle bad filenames.
+                if (!Utils::checkFilename($filename)) {
+                    throw new RuntimeException(sprintf('Form save: File with extension not allowed: %s', $filename));
                 }
 
                 /** @var Twig $twig */
