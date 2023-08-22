@@ -3,6 +3,7 @@
 
 1. [](#improved)
    * Add _inline errors_ for `file` field.  Useful in combination with `form: no-validate: true` form setting.
+   * Validate filename against `uploads_dangerous_extensions` when using the `save:` action
 
 # v7.2.1
 ## 06/27/2023
