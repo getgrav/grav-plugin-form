@@ -89,7 +89,14 @@
             {{ macro.preview(path, file, _context) }}
         {% endfor %}
         {% include 'forms/fields/hidden/hidden.html.twig' with {field: {name: '_json.' ~ field.name}, value: (value ?? [])|json_encode } %}
+
+
     </div>
+    {% if inline_errors and errors %}
+    <div class="{{ form_field_inline_error_classes }}">
+      <p class="form-message"><i class="fa fa-exclamation-circle"></i> {{ errors|first|raw }}</p>
+    </div>
+    {% endif %}
 
     {% if grav.browser.browser == 'msie' and grav.browser.version < 12 %}
         {% do assets.addJs('plugin://form/assets/object.assign.polyfill.js') %}
