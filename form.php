@@ -518,7 +518,7 @@ class FormPlugin extends Plugin
                 $captcha_value = trim($form->value('basic-captcha'));
                 if (!$captcha->validateCaptcha($captcha_value)) {
                     $message = $params['message'] ?? $this->grav['language']->translate('PLUGIN_FORM.ERROR_BASIC_CAPTCHA');
-
+                    $form->setData('basic-captcha', '');
                     $this->grav->fireEvent('onFormValidationError', new Event([
                         'form' => $form,
                         'message' => $message
