@@ -1,5 +1,5 @@
 # v7.2.2
-## mm/dd/2023
+## 12/13/2023
 
 1. [](#improved)
    * Add _inline errors_ for `file` field.  Useful in combination with `form: no-validate: true` form setting.
