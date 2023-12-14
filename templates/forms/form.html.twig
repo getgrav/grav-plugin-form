@@ -26,4 +26,9 @@ You can also override individual fields by copying (using text field as an examp
 templates/forms/fields/text/text.html.twig -> templates/forms/fields/text/tailwind-text.html.twig
 
 #}
+
 {% extends "forms/default/form.html.twig" %}
+
+{% block xhr %}
+{% include 'forms/layouts/xhr.html.twig' %}
+{% endblock %}

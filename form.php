@@ -1135,6 +1135,10 @@ class FormPlugin extends Plugin
                 return false;
             }
 
+            if (isset($form->xhr_submit) && $form->xhr_submit) {
+                $form->set('template', $form->template ?? 'form-xhr');
+            }
+
             // Set page template if passed by form
             if (isset($form->template)) {
                 $this->grav['page']->template($form->template);
