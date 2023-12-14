@@ -1,5 +1,5 @@
 # v7.3.0
-## mm/dd/2023
+## 12/14/2023
 
 1. [](#new)
    * Added XHR/Ajax form submission as an option in the form blueprint. See [Learn Forms](https://learn.getgrav.org/17/forms/forms/how-to-ajax-submission) for details.
