@@ -218,10 +218,16 @@ es:
     DESTINATION_HELP: "El lugar de destino al que subir los ficheros"
     ACCEPT: "MIME Types permitidos"
     ACCEPT_HELP: "Una lista de  MIME Types que se permiten subir."
+    ERROR_BASIC_CAPTCHA: "El Captcha falló para este formulario; por favor intente nuevamente"
     ERROR_VALIDATING_CAPTCHA: "Error al comprobar el Captcha"
     DATA_SUMMARY: "Este es el resumen de lo que nos has escrito:"
     NO_FORM_DATA: "No hay datos disponibles del formulario"
     RECAPTCHA: "ReCaptcha"
+    RECAPTCHA_VERSION: "Versión"
+    RECAPTCHA_VERSION_V3_LATEST: "v3 - Última"
+    RECAPTCHA_THEME: "Tema"
+    RECAPTCHA_THEME_LIGHT: "Tema claro"
+    RECAPTCHA_THEME_DARK: "Tema oscuro"
     RECAPTCHA_SITE_KEY: "Site key"
     RECAPTCHA_SITE_KEY_HELP: "Para más información visita https://developers.google.com/recaptcha"
     RECAPTCHA_SECRET_KEY: "Secret key"
@@ -232,6 +238,15 @@ es:
     FILEUPLOAD_PREVENT_SELF: 'No se puede utilizar "%s" fuera de las páginas'
     FILEUPLOAD_UNABLE_TO_UPLOAD: 'No se puede subir el fichero %s: %s'
     FILEUPLOAD_UNABLE_TO_MOVE: 'No se puede mover el fichero %s to "%s"'
+    FILEUPLOAD_ERR_OK: 'Sin error; el archivo fue subido exitosamente'
+    FILEUPLOAD_ERR_INI_SIZE: 'El archivo subido excede el tamaño máximo permitido'
+    FILEUPLOAD_ERR_FORM_SIZE: 'El archivo subido excede la directiva MAX_FILE_SIZE especificada en el HTML'
+    FILEUPLOAD_ERR_PARTIAL: 'El archivo fue subido solo parcialmente'
+    FILEUPLOAD_ERR_NO_FILE: 'Ningún archivo fue subido'
+    FILEUPLOAD_ERR_NO_TMP_DIR: 'Falta una carpeta temporal'
+    FILEUPLOAD_ERR_CANT_WRITE: 'No fue posible escribir el archivo al disco'
+    FILEUPLOAD_ERR_EXTENSION: 'Una extensión PHP detuvo la subida del archivo'
+    FILEUPLOAD_ERR_UNKNOWN: 'Error de subida desconocido'
     DROPZONE_CANCEL_UPLOAD: 'Cancelar subida'
     DROPZONE_CANCEL_UPLOAD_CONFIRMATION: '¿Estas seguro que quieres cancelar esta subida?'
     DROPZONE_DEFAULT_MESSAGE: 'Arrastra tus ficheros aquí o <strong>haz click en esta área</strong>'
@@ -261,6 +276,23 @@ es:
     INLINE_ERRORS_HELP: "Útil con 'validación del lado del cliente' desactivado, muestra errores en el formulario contextual en línea"
     RESOLUTION_MIN: "{{attr}} fué menor que el mínimo {{min}}px <br />"
     RESOLUTION_MAX: "{{attr}} fué mayor que el máximo {{max}}px <br />"
+    DESTINATION_NOT_SPECIFIED: "Destino no especificado"
+    INVALID_MIME_TYPE: "El tipo MIME %s para el archivo %s no fue aceptado."
+    INVALID_FILE_EXTENSION: "La extensión de archivo para el archivo %s no fue aceptada."
+    BASIC_CAPTCHA: "Captcha básico"
+    BASIC_CAPTCHA_TYPE: "Tipo de reto Captcha"
+    BASIC_CAPTCHA_LENGTH: "Número de caracteres"
+    BASIC_CAPTCHA_FONT: "Estilo de letra TTF"
+    BASIC_CAPTCHA_SIZE: "Tamaño de estilo de letra"
+    BASIC_CAPTCHA_BG_COLOR: "Color de fondo"
+    BASIC_CAPTCHA_TEXT_COLOR: "Color de texto"
+    BASIC_CAPTCHA_START_X: "Inicio de texto posición X"
+    BASIC_CAPTCHA_START_Y: "Inicio de texto posición Y"
+    BASIC_CAPTCHA_BOX_WIDTH: "Ancho de imagen"
+    BASIC_CAPTCHA_BOX_HEIGHT: "Altura de imagen"
+    BASIC_CAPTCHA_MATH_MIN: "Número mínimo"
+    BASIC_CAPTCHA_MATH_MAX: "Número máximo"
+    BASIC_CAPTCHA_MATH_OPERATORS: "Operadores matemáticos (aleatorios)"
 
 fr:
   PLUGIN_FORM:
