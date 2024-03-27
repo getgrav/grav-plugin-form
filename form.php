@@ -1299,7 +1299,10 @@ class FormPlugin extends Plugin
     {
         /** @var \Grav\Common\Cache $cache */
         $cache = $this->grav['cache'];
-        $cache_id = $cache->getKey() . '-form-plugin';
+        /** @var Pages $pages */
+        $pages= $this->grav['pages'];
+//        $cache_id = $cache->getKey() . '-form-plugin';
+        $cache_id = $pages->getPagesCacheId() . '-form-plugin';
         return $cache_id;
     }
 
