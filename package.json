@@ -31,8 +31,6 @@
     "gulp-clean-css": "^4.3.0",
     "gulp-csscomb": "^3.1.0",
     "gulp-rename": "^2.0.0",
-    "gulp-sass": "^4.0.2",
-    "gulp-sourcemaps": "^2.6.5",
     "gulp-webpack": "^1.5.0",
     "immutable": "^4.0.0-rc.12",
     "imports-loader": "^0.8.0",

@@ -1,21 +1,8 @@
 {% if form.xhr_submit == true %}
+  {% do assets.addJs('plugin://form/assets/xhr-submitter.js', {'group': 'bottom', 'position': 'before'}) %}
   {% do assets.addInlineJs("
-    document.addEventListener('DOMContentLoaded', function() {
-        var form = document.getElementById('" ~ form.id ~ "');
-        form.addEventListener('submit', function(e) {
-            // prevent standard form submission
-            e.preventDefault();
-            // submit the form via Ajax
-            var xhr = new XMLHttpRequest();
-            xhr.open(form.getAttribute('method'), form.getAttribute('action'));
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-            xhr.onload = function() {
-                if (xhr.status === 200) {
-                    document.getElementById('" ~ form.id ~ "').innerHTML = xhr.responseText;
-                }
-            };
-            xhr.send(new URLSearchParams(new FormData(form)).toString());
-        });
-    });
-  ", {'group': 'bottom', 'position': 'before', 'priority': 100}) %}
+    document.addEventListener('DOMContentLoaded', () => {
+        attachFormSubmitListener('" ~ form.id ~ "');
+    });",
+    {'group': 'bottom', 'position': 'before'}) %}
 {% endif %}

@@ -1,3 +1,13 @@
+# v7.4.0
+## 03/29/2024
+
+1. [](#improved)
+   * Better modular form support
+   * Support for multiple Ajax/XHR forms on a single page either modular-based or manually injected
+   * Yarn libraries updated
+1. [](#bugfix)
+   * Fixed an issue with cache being tied to `core` cache_id rather than the more appropriate `pages` cache_id, which could lead to form properties being cached even when modified.
+
 # v7.3.0
 ## 12/14/2023
 

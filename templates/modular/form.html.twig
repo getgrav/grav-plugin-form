@@ -1,4 +1,8 @@
 <div class="modular-row form {{ page.header.class }}">
-    {{ content|raw }}
+  {{ content|raw }}
+  {% if config.plugins.form.modular_form_fix %}
+    {% include "forms/form.html.twig" with {form: forms({route: page.route})} %}
+  {% else %}
     {% include "forms/form.html.twig" %}
+  {% endif %}
 </div>

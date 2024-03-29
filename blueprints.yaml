@@ -1,7 +1,7 @@
 name: Form
 slug: form
 type: plugin
-version: 7.3.0
+version: 7.4.0
 description: Enables forms handling and processing
 icon: check-square
 author:
@@ -97,6 +97,18 @@ form:
           help: PLUGIN_FORM.INLINE_ERRORS_HELP
           highlight: 0
           default: 0
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
+
+        modular_form_fix:
+          type: toggle
+          label: PLUGIN_FORM.MODULAR_FORM_FIX
+          help: PLUGIN_FORM.MODULAR_FORM_FIX_HELP
+          highlight: 1
+          default: 1
           options:
             1: PLUGIN_ADMIN.ENABLED
             0: PLUGIN_ADMIN.DISABLED
