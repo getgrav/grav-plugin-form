@@ -5,6 +5,7 @@ refresh_prevention: false
 client_side_validation: true
 debug: false
 inline_errors: false
+modular_form_fix: true
 files:
   multiple: false          # To allow multiple files, default is single
   limit: 10                # Number of allowed files per field (multiple required)
