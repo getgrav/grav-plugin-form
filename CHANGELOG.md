@@ -1,5 +1,5 @@
 # v7.4.0
-## mm/dd/2024
+## 03/29/2024
 
 1. [](#improved)
    * Better modular form support
