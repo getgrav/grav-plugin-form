@@ -810,6 +810,8 @@ class FormPlugin extends Plugin
             $form->messages = $event['messages'];
         }
 
+        xdebug_break();
+
         /** @var Uri $uri */
         $uri = $this->grav['uri'];
         $route = $uri->route();

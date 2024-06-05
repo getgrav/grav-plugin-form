@@ -14,12 +14,12 @@ $form-active-color: #000;
 }
 
 .form-honeybear {
-    visibility: hidden;
+    display: none;
     position: absolute !important;
     height: 1px;
     width: 1px;
     overflow: hidden;
-    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: rect(0px, 1px, 1px, 0px);
 }
 
 .form-errors p {
