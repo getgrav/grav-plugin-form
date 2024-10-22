@@ -12,30 +12,30 @@
         {% set value = field.default|merge(value) %}
     {% endif %}
 
-    {% for key, text in field.options %}
-
-        {% set id = field.id|default(field.name)|hyphenize ~ '-' ~ key %}
-        {% set name = field.use == 'keys' ? key : id %}
-        {% set val = field.use == 'keys' ? '1' : key %}
-        {% set checked = (field.use == 'keys' ? value[key] : key in value) %}
-        {% set help = (key in field.help_options|keys ? field.help_options[key] : false) %}
-
         <div class="checkboxes {{ form_field_wrapper_classes }} {{ field.wrapper_classes }}">
-            <input type="checkbox"
-                   id="{{ id|e }}"
-                   value="{{ val|e }}"
-                   name="{{ (scope ~ field.name)|fieldName ~ '[' ~ name ~ ']' }}"
-                   class="{{ form_field_checkbox_classes }} {{ field.classes }}"
-                   {% if checked %}checked="checked"{% endif %}
-                   {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
-            >
-            <label style="display: inline" for="{{ id|e }}">
-                {% if help %}
-                    <span class="hint--bottom" data-hint="{{ help|t|e('html_attr') }}">{{ text|t|e }}</span>
-                {% else %}
-                    {{ text|t|e }}
-                {% endif %}
-            </label>
+            {% for key, text in field.options %}
+                {% set id = field.id|default(field.name)|hyphenize ~ '-' ~ key %}
+                {% set name = field.use == 'keys' ? key : id %}
+                {% set val = field.use == 'keys' ? '1' : key %}
+                {% set checked = (field.use == 'keys' ? value[key] : key in value) %}
+                {% set help = (key in field.help_options|keys ? field.help_options[key] : false) %}
+                {% set disabled = key in field.disabled_options %}
+                <input type="checkbox"
+                    id="{{ id|e }}"
+                    value="{{ val|e }}"
+                    name="{{ (scope ~ field.name)|fieldName ~ '[' ~ name ~ ']' }}"
+                    class="{{ form_field_checkbox_classes }} {{ field.classes }}"
+                    {% if checked %}checked="checked"{% endif %}
+                    {% if disabled %}disabled="disabled"{% endif %}
+                >
+                <label style="display: inline; {% if disabled %}opacity: 0.6; cursor: no-drop;{% endif %}" for="{{ id|e }}">
+                    {% if help %}
+                        <span class="hint--bottom" data-hint="{{ help|t|e('html_attr') }}">{{ text|t|e }}</span>
+                    {% else %}
+                        {{ text|t|e }}
+                    {% endif %}
+                </label>
+            {% endfor %}
         </div>
-    {% endfor %}
+    
 {% endblock %}
