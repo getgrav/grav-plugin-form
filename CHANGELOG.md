@@ -1,5 +1,5 @@
 # v7.4.1
-## mm/dd/2024
+## 10/22/2024
 
 1. [](#improved)
   * `honeypot` field tweaks
