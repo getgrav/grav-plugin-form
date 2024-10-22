@@ -1,3 +1,9 @@
+# v7.4.1
+## 10/22/2024
+
+1. [](#improved)
+  * `honeypot` field tweaks
+
 # v7.4.0
 ## 03/29/2024
 
