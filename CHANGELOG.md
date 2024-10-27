@@ -1,3 +1,9 @@
+# v7.4.2
+## mm/dd/2024
+
+1. [](#improved)
+  * Updated logging methods to support Monolog2+
+
 # v7.4.1
 ## 10/22/2024
 
