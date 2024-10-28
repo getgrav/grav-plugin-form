@@ -506,7 +506,7 @@ class FormPlugin extends Plugin
                         'message' => $message
                     ]));
 
-                    $this->grav['log']->addWarning('Form reCAPTCHA Errors: [' . $uri->route() . '] ' . json_encode($errors));
+                    $this->grav['log']->warning('Form reCAPTCHA Errors: [' . $uri->route() . '] ' . json_encode($errors));
 
                     $event->stopPropagation();
 
@@ -556,7 +556,7 @@ class FormPlugin extends Plugin
                         'message' => $message
                     ]));
 
-                    $this->grav['log']->addWarning('Form Turnstile invalid: [' . $uri->route() . '] ' . json_encode($content));
+                    $this->grav['log']->warning('Form Turnstile invalid: [' . $uri->route() . '] ' . json_encode($content));
                     $event->stopPropagation();
                     return;
                 }
@@ -1262,7 +1262,7 @@ class FormPlugin extends Plugin
         if ($forms) {
             $this->forms = Utils::arrayMergeRecursiveUnique($this->forms, $forms);
             if ($this->config()['debug']) {
-                $this->grav['log']->addDebug(sprintf("<<<< Loaded cached forms: %s\n%s", $this->getFormCacheId(), $this->arrayToString($this->forms)));
+                $this->grav['log']->debug(sprintf("<<<< Loaded cached forms: %s\n%s", $this->getFormCacheId(), $this->arrayToString($this->forms)));
             }
 
         }
@@ -1286,7 +1286,7 @@ class FormPlugin extends Plugin
 
         $cache->save($cache_id, $this->forms);
         if ($this->config()['debug']) {
-            $this->grav['log']->addDebug(sprintf(">>>> Saved cached forms: %s\n%s", $this->getFormCacheId(), $this->arrayToString($this->forms)));
+            $this->grav['log']->debug(sprintf(">>>> Saved cached forms: %s\n%s", $this->getFormCacheId(), $this->arrayToString($this->forms)));
         }
     }
 
