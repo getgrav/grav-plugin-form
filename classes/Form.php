@@ -748,7 +748,7 @@ class Form implements FormInterface, ArrayAccess
      * @param Language|null $language
      * @return string File upload error message
      */
-    public function getFileUploadError(int $error, Language $language = null): string
+    public function getFileUploadError(int $error, ?Language $language = null): string
     {
         if (!$language) {
             $grav = Grav::instance();
@@ -1256,7 +1256,7 @@ class Form implements FormInterface, ArrayAccess
      * @param string|null $field
      * @return void
      */
-    protected function removeFlashUpload(string $filename, string $field = null)
+    protected function removeFlashUpload(string $filename, ?string $field = null)
     {
         $flash = $this->getFlash();
         $flash->removeFile($filename, $field);

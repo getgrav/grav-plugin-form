@@ -143,7 +143,7 @@ class TwigExtension extends AbstractExtension
      * @param string|null $default
      * @return string[]
      */
-    public function includeFormField(string $type, $layouts = null, string $default = null): array
+    public function includeFormField(string $type, $layouts = null, ?string $default = null): array
     {
         $list = [];
         foreach ((array)$layouts as $layout) {

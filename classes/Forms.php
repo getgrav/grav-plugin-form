@@ -62,7 +62,7 @@ class Forms
      * @param array|null $form
      * @return FormInterface|null
      */
-    public function createPageForm(PageInterface $page, string $name = null, array $form = null): ?FormInterface
+    public function createPageForm(PageInterface $page, ?string $name = null, ?array $form = null): ?FormInterface
     {
         if (null === $form) {
             [$name, $form] = $this->getPageParameters($page, $name);
