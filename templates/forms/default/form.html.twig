@@ -106,6 +106,7 @@
     {% if form.id %}id="{{ form.id }}"{% endif %}
     {% if form.novalidate %}novalidate{% endif %}
     {% if form.keep_alive %}data-grav-keepalive="true"{% endif %}
+    {% if form.xhr_submit %}data-xhr-submit="true"{% endif %}
     {% if form.attributes is defined %}
       {% for key,attribute in form.attributes %}
         {% if attribute|of_type('array') %}

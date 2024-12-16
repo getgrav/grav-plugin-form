@@ -1,8 +1,3 @@
 {% if form.xhr_submit == true %}
   {% do assets.addJs('plugin://form/assets/xhr-submitter.js', {'group': 'bottom', 'position': 'before'}) %}
-  {% do assets.addInlineJs("
-    document.addEventListener('DOMContentLoaded', () => {
-        attachFormSubmitListener('" ~ form.id ~ "');
-    });",
-    {'group': 'bottom', 'position': 'before'}) %}
 {% endif %}
