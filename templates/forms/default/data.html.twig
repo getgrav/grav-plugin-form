@@ -13,7 +13,7 @@
                     {% block field %}
                         <div>
                             {% block field_label %}
-                                <strong>{{ field.label|t|e }}</strong>:
+                                <strong>{{ field.data_label ? field.data_label|t|e : field.label|t|e }}</strong>:
                             {% endblock %}
 
                             {% block field_value %}

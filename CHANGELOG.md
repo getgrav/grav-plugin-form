@@ -1,3 +1,9 @@
+# v7.4.3
+## mm/dd/2025
+
+1. [](#improved)
+   * Added support for `data_label:` in fields for use with data twig templates to override the displayed label
+
 # v7.4.2
 ## 10/28/2024
 
