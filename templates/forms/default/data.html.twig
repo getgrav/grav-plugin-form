@@ -25,6 +25,13 @@
                                             <li>{{ field.options[index]|t|e }}</li>
                                         {% endfor %}
                                     </ul>
+                                {% elseif field.type == 'file' %}
+                                    {% set files = form.value(scope ~ field.name) %}
+                                    <ul>
+                                        {% for file in files %}
+                                            <li><a href="{{ grav.base_url_absolute }}/{{ file.path }}">{{ file.name }} ({{ file.size|nicefilesize }})</a></li>
+                                        {% endfor %}
+                                    </ul>
                                 {% elseif field.type == 'radio' %}
                                     {% set value = form.value(scope ~ field.name) %}
                                     {{ field.options[value]|t|e }}
