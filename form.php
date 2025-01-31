@@ -449,9 +449,11 @@ class FormPlugin extends Plugin
         $action = $event['action'];
         $params = $event['params'];
 
-        $this->process($form);
-
         switch ($action) {
+            case 'process':
+                $this->process($form);
+                break;
+
             case 'captcha':
 
                 $captcha_config = $this->config->get('plugins.form.recaptcha');
@@ -1079,6 +1081,14 @@ class FormPlugin extends Plugin
         foreach ($form->fields as $field) {
             if (!empty($field['process']['fillWithCurrentDateTime'])) {
                 $form->setData($field['name'], gmdate('D, d M Y H:i:s', time()));
+            }
+            if (!empty($field['process']['twig'])) {
+                $twig = $this->grav['twig'];
+                $vars = [
+                    'form' => $form
+                ];
+                // Process with Twig
+                $form->setData($field['name'], $twig->processString($field['process']['twig'], $vars));
             }
         }
     }
