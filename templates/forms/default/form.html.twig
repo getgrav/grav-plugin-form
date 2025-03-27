@@ -3,6 +3,7 @@
 {% set layout = layout ?? form.layout ?? 'default' %}
 {% set field_layout = field_layout ?? layout %}
 
+<div id="{{ form.id }}-wrapper" class="form-wrapper">
 {# Keep here for Backwards Compatibility #}
 {% include 'partials/form-messages.html.twig' %}
 
@@ -202,9 +203,9 @@
 
 {% endembed %}
 
-
 {% if config.forms.dropzone.enabled %}
 <div id="dropzone-template" style="display:none;">
     {% include 'forms/dropzone/template.html.twig' %}
 </div>
 {% endif %}
+</div>
