@@ -3,98 +3,321 @@
 {% set config = grav.config %}
 {% set site_key = field.recaptcha_site_key and field.recaptcha_site_key != 'ENTER_YOUR_CAPTCHA_SITE_KEY' ? field.recaptcha_site_key : config.plugins.form.recaptcha.site_key %}
 {% set action = (page.route|trim('/') ~ '-' ~ form.name)|underscorize %}
-{% set formName = form.name|underscorize %}
+{% set formId = form.id %} {# Use formId consistently #}
 {% set theme = config.plugins.form.recaptcha.theme ?? 'light' %}
+{% set version = config.plugins.form.recaptcha.version %}
 
 {% block label %}{% endblock %}
 
 {% block input %}
+  <div class="g-recaptcha-container"
+       data-form-id="{{ formId }}"
+       data-recaptcha-version="{{ version }}"
+       data-recaptcha-sitekey="{{ site_key }}"
+       data-recaptcha-action="{{ action }}"
+       data-recaptcha-theme="{{ theme }}"
+       data-recaptcha-lang="{{ grav.language.language }}"
+       {# Add a unique ID for potential re-rendering for v2 checkbox #}
+       {% if version != 3 and version != '2-invisible' %}id="g-recaptcha-{{ formId }}"{% endif %}
+       >
+    {# This div acts as a marker and holds config #}
+  </div>
+
   {% if not site_key %}
-      <script type="application/javascript">console && console.error('site_key was not defined for form "{{ form.name }}" (Grav Form Plugin)')</script>
-  {% elseif config.plugins.form.recaptcha.version == 3 %}
-      {% do assets.addJs('https://www.google.com/recaptcha/api.js?render='~site_key~'&theme=' ~ theme) %}
-      {#<script src='https://www.google.com/recaptcha/api.js?render={{ site_key }}&theme={{ theme }}'></script>#}
-      <script type="application/javascript">
-          window.gRecaptchaInstances = window.gRecaptchaInstances || {};
-          window.gRecaptchaInstances['{{ form.id }}'] = {
-              element: document.querySelector('form#{{ form.id }}'),
-              submit: function (event) {
-                  event.preventDefault();
-                  grecaptcha.ready(function () {
-                      grecaptcha.execute('{{ site_key }}', {action: '{{ action }}'}).then(function (token) {
-                          var tokenElement = document.createElement('input');
-                          tokenElement.setAttribute('type', 'hidden');
-                          tokenElement.setAttribute('name', 'data[token]');
-                          tokenElement.setAttribute('value', token);
+    {# Error handling remains the same #}
+    <script type="application/javascript">console && console.error('site_key was not defined for form "{{ form.name }}" (Grav Form Plugin)')</script>
+  {% else %}
+    {# Centralized Initialization Script #}
+    <script type="application/javascript">
+      (function() {
+        // Namespace for our recaptcha initializers
+        window.GravRecaptchaInitializers = window.GravRecaptchaInitializers || {};
 
-                          var actionElement = document.createElement('input');
-                          actionElement.setAttribute('type', 'hidden');
-                          actionElement.setAttribute('name', 'data[action]');
-                          actionElement.setAttribute('value', '{{ action }}');
+        // --- Common Function ---
+        function addHiddenInput(form, name, value) {
+          // Remove existing input if present (important for XHR resubmissions)
+          const existing = form.querySelector('input[type="hidden"][name="' + name + '"]');
+          if (existing) {
+            existing.remove();
+          }
+          const input = document.createElement('input');
+          input.setAttribute('type', 'hidden');
+          input.setAttribute('name', name);
+          input.setAttribute('value', value);
+          form.insertBefore(input, form.firstChild);
+        }
 
-                          const form = window.gRecaptchaInstances['{{ form.id }}'].element;
-                          const submit = window.gRecaptchaInstances['{{ form.id }}'].submit;
-                          form.insertBefore(tokenElement, form.firstChild);
-                          form.insertBefore(actionElement, form.firstChild);
-                          form.removeEventListener('submit', submit);
+        // --- Initialization logic per version ---
+        function initRecaptchaV3(container) {
+          const formId = container.dataset.formId;
+          const siteKey = container.dataset.recaptchaSitekey;
+          const action = container.dataset.recaptchaAction;
+          const form = document.getElementById(formId);
+          const theme = container.dataset.recaptchaTheme;
+
+          if (!form) return;
+
+          // Load API if not already loaded by another field/form
+          if (!document.querySelector('script[src*="recaptcha/api.js?render=' + siteKey + '"]')) {
+              const script = document.createElement('script');
+              script.src = 'https://www.google.com/recaptcha/api.js?render=' + siteKey + '&theme=' + theme;
+              script.async = true;
+              script.defer = true;
+              document.head.appendChild(script);
+          }
+
+          const submitHandler = function(event) {
+            event.preventDefault(); // Prevent submission immediately
+
+            grecaptcha.ready(function () {
+              grecaptcha.execute(siteKey, { action: action }).then(function (token) {
+                  // ... inside grecaptcha.execute().then(...) callback ...
+                  addHiddenInput(form, 'data[token]', token);
+                  addHiddenInput(form, 'data[action]', action);
+
+                  // Remove this specific listener before submitting
+                  form.removeEventListener('submit', submitHandler);
+
+                  // Check if XHR is enabled for this form
+                  if (form.dataset.xhrEnabled === 'true' && window.GravFormXHRSubmitters) {
+                      window.GravFormXHRSubmitters.submit(form); // Call the XHR submit function
+                  } else {
+                      // Use requestSubmit if available for standard submission
+                      if (typeof form.requestSubmit === 'function') {
+                          form.requestSubmit();
+                      } else {
                           form.submit();
-                      });
-                  });
-              }
+                      }
+                  }
+
+                  // Re-attach listener *after* submission attempt (for XHR cases where form might remain)
+                  setTimeout(() => {
+                      // Check if form still exists before re-attaching
+                      const currentForm = document.getElementById(formId);
+                      if (currentForm && !currentForm.dataset.recaptchaListenerAttached) {
+                         currentForm.addEventListener('submit', submitHandler);
+                         currentForm.dataset.recaptchaListenerAttached = 'true'; // Mark as attached
+                      } else if (currentForm) {
+                         // Clear the marker if needed
+                         delete currentForm.dataset.recaptchaListenerAttached;
+                      }
+                  }, 0);
+                  // ... rest of the function ...
+
+              });
+            });
           };
 
-          window.gRecaptchaInstances['{{ form.id }}'].element.addEventListener('submit', window.gRecaptchaInstances['{{ form.id }}'].submit);
-      </script>
-  {% elseif config.plugins.form.recaptcha.version == '2-invisible' %}
-      <script type="application/javascript">
-          function captchaOnloadCallback_{{ formName }}() {
-              var form = document.querySelector('form#{{ form.id }}');
-              var submits = form.querySelectorAll('[type="submit"]') || [];
-              submits.forEach(function(submit) {
-                  submit.addEventListener('click', function(event) {
-                      event.preventDefault();
-                      var captchaElement = form.querySelector('#g-recaptcha-{{ formName }}');
+          // Clear any previous marker/listener before adding a new one
+           delete form.dataset.recaptchaListenerAttached;
+           // Remove potentially stale listeners from previous initializations
+           // This requires storing the handler reference, maybe on the form element itself?
+           // Or simply rely on the re-initialization logic in xhr-submitter to call this init function again.
+           // Let's rely on re-init for now.
 
-                      if (captchaElement) {
-                          captchaElement.remove();
-                      }
-
-                      captchaElement = document.createElement('div');
-                      captchaElement.setAttribute('id', 'g-recaptcha-{{ formName }}');
-                      form.appendChild(captchaElement);
-
-                      var widgetReference = grecaptcha.render('g-recaptcha-{{ formName }}', {
-                          sitekey: '{{ site_key }}', size: 'invisible',
-                          callback: function(/* token */) {
-                              form.submit();
-                          }
-                      });
-
-                      grecaptcha.execute(widgetReference);
-                  });
-              });
+          if (!form.dataset.recaptchaListenerAttached) {
+              form.addEventListener('submit', submitHandler);
+              form.dataset.recaptchaListenerAttached = 'true'; // Mark as attached
           }
-      </script>
+        }
 
-      <script src="https://www.google.com/recaptcha/api.js?onload=captchaOnloadCallback_{{ formName }}&hl={{ grav.language.language }}&theme={{ theme }}"
-              async defer></script>
-  {% else %}
-    <script type="application/javascript">
-        var captchaOnloadCallback_{{ formName }} = function captchaOnloadCallback_{{ formName }}() {
-            grecaptcha.render('g-recaptcha-{{ formName }}', {
-                'sitekey': "{{ site_key }}",
-                'callback': captchaValidatedCallback_{{ formName }},
-                'expired-callback': captchaExpiredCallback_{{ formName }}
-            });
+        function initRecaptchaV2Invisible(container) {
+            const formId = container.dataset.formId;
+            const siteKey = container.dataset.recaptchaSitekey;
+            const lang = container.dataset.recaptchaLang;
+            const theme = container.dataset.recaptchaTheme;
+            const form = document.getElementById(formId);
+            let widgetId = null; // Store widget ID
+
+            if (!form) return;
+
+            // Define the onload callback globally if it doesn't exist
+            const callbackName = 'captchaInvisibleOnloadCallback_' + formId;
+            if (typeof window[callbackName] !== 'function') {
+                window[callbackName] = function() {
+                    // The actual rendering is now triggered by the submit handler
+                    console.log('reCAPTCHA Invisible API ready for form ' + formId);
+                };
+                // Load API
+                 if (!document.querySelector('script[src*="recaptcha/api.js?onload=' + callbackName + '"]')) {
+                    const script = document.createElement('script');
+                    script.src = 'https://www.google.com/recaptcha/api.js?onload=' + callbackName + '&hl=' + lang + '&theme=' + theme;
+                    script.async = true;
+                    script.defer = true;
+                    document.head.appendChild(script);
+                 }
+            }
+
+            const submitHandler = function(event) {
+                event.preventDefault(); // Prevent default submission
+
+                 // Ensure grecaptcha is loaded and ready
+                 if (typeof grecaptcha === 'undefined' || typeof grecaptcha.render === 'undefined') {
+                    console.error('grecaptcha not ready for invisible captcha');
+                    // Optionally: display an error to the user
+                    return;
+                 }
+
+                 // Create a temporary container for the widget if it doesn't exist
+                 let captchaElement = form.querySelector('#g-recaptcha-invisible-' + formId);
+                 if (!captchaElement) {
+                     captchaElement = document.createElement('div');
+                     captchaElement.setAttribute('id', 'g-recaptcha-invisible-' + formId);
+                     captchaElement.style.display = 'none'; // Keep it hidden
+                     form.appendChild(captchaElement);
+                 }
+
+                const renderCaptcha = () => {
+                     // Reset previous widget if exists
+                    if (widgetId !== null) {
+                        try { grecaptcha.reset(widgetId); } catch (e) { console.warn("Error resetting captcha", e); }
+                    }
+
+                    widgetId = grecaptcha.render(captchaElement.id, {
+                        sitekey: siteKey,
+                        size: 'invisible',
+                        callback: function(token) {
+                            // ... inside grecaptcha.render callback ...
+                            addHiddenInput(form, 'g-recaptcha-response', token);
+
+                            // Remove listener before submitting
+                            form.removeEventListener('submit', submitHandler);
+
+                            // Check if XHR is enabled
+                            if (form.dataset.xhrEnabled === 'true' && window.GravFormXHRSubmitters) {
+                                window.GravFormXHRSubmitters.submit(form); // Call XHR submit
+                            } else {
+                                // Standard submission
+                                if (typeof form.requestSubmit === 'function') {
+                                    form.requestSubmit();
+                                } else {
+                                    form.submit();
+                                }
+                            }
+
+                            // Re-attach listener after submission attempt (for XHR)
+                             setTimeout(() => {
+                                const currentForm = document.getElementById(formId);
+                                if (currentForm && !currentForm.dataset.recaptchaListenerAttached) {
+                                   currentForm.addEventListener('submit', submitHandler);
+                                   currentForm.dataset.recaptchaListenerAttached = 'true';
+                                } else if (currentForm) {
+                                    delete currentForm.dataset.recaptchaListenerAttached;
+                                }
+                            }, 0);
+                            // ... rest of the callback ...
+                        }
+                    });
+
+                    grecaptcha.execute(widgetId);
+                };
+
+                // Ensure grecaptcha is ready before rendering/executing
+                if (typeof grecaptcha !== 'undefined' && grecaptcha.render) {
+                   renderCaptcha();
+                } else {
+                    // If grecaptcha isn't ready yet, wait for the API load callback
+                    const originalOnload = window[callbackName];
+                    window[callbackName] = function() {
+                        if(originalOnload) originalOnload(); // Call original if exists
+                        renderCaptcha(); // Now render
+                    };
+                    // If script is still loading, the onload will trigger renderCaptcha
+                    // If script loaded but grecaptcha object not ready (rare), this might need retry logic
+                    console.warn("grecaptcha object not found immediately, waiting for onload callback: " + callbackName);
+                }
+            };
+
+             // Attach submit listener logic (similar to v3)
+             delete form.dataset.recaptchaListenerAttached;
+             // Consider removing old listeners if a more robust approach is needed
+             if (!form.dataset.recaptchaListenerAttached) {
+                 form.addEventListener('submit', submitHandler);
+                 form.dataset.recaptchaListenerAttached = 'true';
+             }
+        }
+
+        function initRecaptchaV2Checkbox(container) {
+          const formId = container.dataset.formId;
+          const siteKey = container.dataset.recaptchaSitekey;
+          const lang = container.dataset.recaptchaLang;
+          const theme = container.dataset.recaptchaTheme;
+          const widgetContainerId = 'g-recaptcha-' + formId; // Use the container's ID
+
+          // Define the onload callback globally
+          const callbackName = 'captchaCheckboxOnloadCallback_' + formId;
+          if (typeof window[callbackName] !== 'function') {
+              window[callbackName] = function() {
+                  const widgetContainer = document.getElementById(widgetContainerId);
+                  if (widgetContainer && !widgetContainer.hasChildNodes()) { // Render only if empty
+                     grecaptcha.render(widgetContainerId, {
+                        'sitekey': siteKey,
+                        'theme': theme
+                        // 'callback': optional validation callback if needed client-side
+                        // 'expired-callback': optional
+                     });
+                  }
+              };
+
+             // Load API
+             if (!document.querySelector('script[src*="recaptcha/api.js?onload=' + callbackName + '"]')) {
+                const script = document.createElement('script');
+                // Use render=explicit parameter
+                script.src = 'https://www.google.com/recaptcha/api.js?onload=' + callbackName + '&render=explicit&hl=' + lang + '&theme=' + theme;
+                script.async = true;
+                script.defer = true;
+                document.head.appendChild(script);
+            }
+          }
+
+          // If grecaptcha is already loaded and ready, call the onload function directly
+          // This handles cases where the API script is loaded by another component first
+          // or after XHR replaces content
+          if (typeof grecaptcha !== 'undefined' && grecaptcha.render) {
+             // Use setTimeout to ensure the container exists in the DOM after innerHTML replacement
+             setTimeout(() => {
+                 window[callbackName]();
+             }, 0);
+          }
+        }
+
+        // --- Store Initializer Function ---
+        // Use a unique name for the initializer function based on form ID
+        const initializerFunctionName = 'initRecaptcha_' + '{{ formId }}';
+        window.GravRecaptchaInitializers[initializerFunctionName] = function() {
+          const container = document.querySelector('[data-form-id="{{ formId }}"][data-recaptcha-version]');
+          if (!container) return; // Container not found
+
+          const version = container.dataset.recaptchaVersion;
+
+          // Reset state marker for listeners
+           const form = document.getElementById('{{ formId }}');
+           if (form) {
+               delete form.dataset.recaptchaListenerAttached;
+           }
+
+
+          if (version == 3) {
+            initRecaptchaV3(container);
+          } else if (version == '2-invisible') {
+            initRecaptchaV2Invisible(container);
+          } else { // Default to v2 Checkbox
+            initRecaptchaV2Checkbox(container);
+          }
         };
 
-        var captchaValidatedCallback_{{ formName }} = function captchaValidatedCallback_{{ formName }}() {};
-        var captchaExpiredCallback_{{ formName }} = function captchaExpiredCallback_{{ formName }}() {
-            grecaptcha.reset();
-        };
+        // --- Initial Call ---
+        // Use DOMContentLoaded to ensure form element exists, but run after XHR script setup potentially
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', window.GravRecaptchaInitializers[initializerFunctionName]);
+        } else {
+            // DOM already loaded, call initializer directly
+            // Use setTimeout to defer execution slightly, ensuring XHR listener might attach first if needed
+            // And allows DOM changes (like innerHTML replacement) to settle.
+             setTimeout(window.GravRecaptchaInitializers[initializerFunctionName], 0);
+        }
+
+      })();
     </script>
-    <script src="https://www.google.com/recaptcha/api.js?onload=captchaOnloadCallback_{{ formName }}&render=explicit&hl={{ grav.language.language }}&theme={{ theme }} "
-        async defer></script>
-    <div class="g-recaptcha" id="g-recaptcha-{{ formName }}" data-theme="{{ theme }}"></div>
   {% endif %}
 {% endblock %}

@@ -103,8 +103,9 @@
     name="{{ form.name }}"
     action="{{ action }}"
     method="{{ method }}"{{ multipart|raw }}
-    {% if form.id %}id="{{ form.id }}"{% endif %}
+    id="{{ form.id|default(form.name|hyphenize) }}"
     {% if form.novalidate %}novalidate{% endif %}
+    {% if form.xhr_submit %}data-xhr-enabled="true"{% endif %}
     {% if form.keep_alive %}data-grav-keepalive="true"{% endif %}
     {% if form.attributes is defined %}
       {% for key,attribute in form.attributes %}
