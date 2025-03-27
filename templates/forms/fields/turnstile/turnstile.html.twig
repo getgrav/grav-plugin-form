@@ -3,13 +3,114 @@
 {% set config = grav.config %}
 {% set site_key = field.turnstile_site_key ?? config.plugins.form.turnstile.site_key %}
 {% set theme = field.theme ?? config.plugins.form.turnstile.theme ?? 'light' %}
+{% set formId = form.id %} {# Ensure formId is available #}
+{% set turnstileContainerId = 'cf-turnstile-' ~ formId %}
 
 {% block label %}{% endblock %}
 
 {% block input %}
-  {% do assets.addJs('https://challenges.cloudflare.com/turnstile/v0/api.js', { defer: '', async: '' }) %}
+  {# Add script only once if multiple turnstile fields exist, browser usually handles this #}
+  {# Note: Explicit rendering means we might not even need async/defer strictly,
+     but it's harmless and good practice. The JS API checks if `turnstile` is ready. #}
+  {% do assets.addJs('https://challenges.cloudflare.com/turnstile/v0/api.js', { 'loading': 'async', 'defer': '' }) %}
 
   <div class="turnstile">
-    <div class="cf-turnstile" data-sitekey="{{ site_key }}" data-theme="{{ theme }}"></div>
+    {# Add unique ID and keep data attributes for the initializer #}
+    <div id="{{ turnstileContainerId }}"
+         class="cf-turnstile-container" {# Use a class as a marker too if needed #}
+         data-sitekey="{{ site_key }}"
+         data-theme="{{ theme }}">
+         {# Content will be rendered here by JS #}
+    </div>
   </div>
+
+  {# Add Initializer Script #}
+  <script type="application/javascript">
+    (function() {
+      // Namespace for Turnstile initializers
+      window.GravTurnstileInitializers = window.GravTurnstileInitializers || {};
+
+      // Unique initializer function name
+      const initializerFunctionName = 'initTurnstile_{{ formId }}';
+
+      // Define the initializer function
+      window.GravTurnstileInitializers[initializerFunctionName] = function() {
+        const containerId = '{{ turnstileContainerId }}';
+        const container = document.getElementById(containerId);
+
+        if (!container) {
+          console.warn('Turnstile container #' + containerId + ' not found.');
+          return;
+        }
+
+        // Prevent re-rendering if widget already exists inside (Turnstile might handle this, but belt-and-suspenders)
+        if (container.innerHTML.trim() !== '' && container.querySelector('iframe')) {
+            // console.log('Turnstile widget already appears to be rendered in #' + containerId);
+            // Optionally, you could call turnstile.reset('#'+containerId) here if needed
+            return;
+        }
+
+        // Clear container in case of previous failed render attempts or placeholder text
+        container.innerHTML = '';
+
+        const sitekey = container.dataset.sitekey;
+        const theme = container.dataset.theme;
+
+        if (!sitekey) {
+            console.error('Turnstile sitekey not found for container #' + containerId);
+            return;
+        }
+
+        console.log('Attempting to render Turnstile in #' + containerId);
+
+        // Check if Turnstile API is ready
+        if (typeof window.turnstile !== 'undefined' && typeof window.turnstile.render === 'function') {
+          try {
+            window.turnstile.render('#' + containerId, {
+              sitekey: sitekey,
+              theme: theme,
+              // Optional: Add callbacks if needed
+              callback: function(token) {
+                  // This callback runs when a token is received
+                  // console.log('Turnstile challenge succeeded for #' + containerId + ', token:', token);
+              },
+              'expired-callback': function() {
+                  // Runs when the token expires
+                  console.log('Turnstile token expired for #' + containerId);
+                  // Turnstile should handle visual state, but you could potentially call reset here if needed
+                  // window.turnstile.reset('#' + containerId);
+              },
+              'error-callback': function(errorCode) {
+                  // Runs on errors (network, configuration, etc.)
+                  console.error('Turnstile error ('+ errorCode +') for #' + containerId);
+                  container.innerHTML = '<p style="color:red;">Could not load verification challenge.</p>'; // Basic feedback
+              }
+            });
+          } catch (e) {
+             console.error('Error calling turnstile.render for #' + containerId, e);
+             container.innerHTML = '<p style="color:red;">Error initializing verification challenge.</p>';
+          }
+        } else {
+          console.warn('Turnstile API (window.turnstile) not available yet for #' + containerId + '. Might render implicitly or retry needed?');
+          // If the API isn't ready, the implicit rendering might still kick in later.
+          // For explicit rendering after XHR, the API *should* be loaded already.
+          // If this warning appears *after* an XHR update, there might be a script loading issue.
+        }
+      };
+
+      // --- Initial Call on page load ---
+      // Use a small timeout or DOMContentLoaded to ensure the container exists
+      // and the Turnstile API has a chance to load.
+       if (document.readyState === 'loading') {
+           document.addEventListener('DOMContentLoaded', function() {
+               // Small delay after DOM ready, lets external scripts settle
+               setTimeout(window.GravTurnstileInitializers[initializerFunctionName], 50);
+           });
+       } else {
+           // DOM already loaded, call initializer (with small delay)
+           setTimeout(window.GravTurnstileInitializers[initializerFunctionName], 50);
+       }
+
+    })();
+  </script>
 {% endblock %}

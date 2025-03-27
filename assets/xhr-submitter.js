@@ -2,20 +2,17 @@
  * Grav Form XHR Submitter
  *
  * Handles submitting forms via XMLHttpRequest (AJAX) when configured.
- * Replaces the form's content with the server's response and
- * attempts to re-initialize specific components like reCAPTCHA.
+ * Replaces the content of a designated wrapper element with the server's response.
+ * Includes logic to re-initialize Google reCAPTCHA and Cloudflare Turnstile widgets
+ * after the content replacement.
  */
 
-(function() {
+(function () {
     'use strict';
 
     // Namespace for globally exposed functions (e.g., for reCAPTCHA script to call)
     window.GravFormXHRSubmitters = window.GravFormXHRSubmitters || {};
 
-    /**
-     * Performs the actual XHR submission for a given form.
-     * @param {HTMLFormElement} form The form element to submit.
-     */
     /**
      * Performs the actual XHR submission for a given form.
      * Targets a wrapper element (`form.id + '-wrapper'`) for content replacement.
@@ -46,18 +43,18 @@
 
         var xhr = new XMLHttpRequest();
         xhr.open(form.getAttribute('method') || 'POST', form.getAttribute('action') || window.location.href);
+
+        // Set Headers AFTER open() but BEFORE send()
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest'); // For server-side detection
-        xhr.setRequestHeader('X-Grav-Form-XHR', 'true'); // Our custom header!
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest'); // Standard header
+        xhr.setRequestHeader('X-Grav-Form-XHR', 'true'); // Custom header for server-side check
 
         // --- Handler for successful request (HTTP 200-299) ---
-        xhr.onload = function() {
+        xhr.onload = function () {
             console.log('XHR request completed for form:', formId, 'Status:', xhr.status);
 
             // Optional: Remove loading indicator
             // wrapperElement.classList.remove('loading');
-            // const currentFormInWrapper = wrapperElement.querySelector('#' + formId);
-            // if (currentFormInWrapper) currentFormInWrapper.classList.remove('submitting');
 
             if (xhr.status >= 200 && xhr.status < 300) {
                 // Response received successfully
@@ -68,7 +65,7 @@
                 try {
                     tempDiv.innerHTML = xhr.responseText;
                 } catch (e) {
-                    console.error('Error parsing response HTML for wrapper:', wrapperId, e);
+                    console.error("Error parsing response HTML for wrapper:", wrapperId, e);
                     wrapperElement.innerHTML = '<p class="form-message error">An error occurred processing the server response.</p>';
                     return; // Stop processing
                 }
@@ -89,40 +86,63 @@
                         // Find the NEW form element *inside the updated wrapper*
                         const updatedForm = wrapperElement.querySelector('#' + formId);
                         if (updatedForm) {
-                            const initializerFuncName = 'initRecaptcha_' + formId;
-                            const needsRecaptchaInit = window.GravRecaptchaInitializers && typeof window.GravRecaptchaInitializers[initializerFuncName] === 'function';
-                            // Check for container specifically within the newly added form content
-                            const recaptchaContainerInNewForm = updatedForm.querySelector('.g-recaptcha-container[data-form-id="' + formId + '"]');
 
-                            if (needsRecaptchaInit && recaptchaContainerInNewForm) {
-                                // ReCAPTCHA is present in the new content and needs initialization
-                                console.log('Re-initializing reCAPTCHA for form:', formId, 'within updated wrapper');
-                                setTimeout(() => { // Use setTimeout for safety after DOM update
-                                    try {
-                                        window.GravRecaptchaInitializers[initializerFuncName]();
-                                        // reCAPTCHA's init function should now add its own intercepting listener
-                                    } catch (e) {
-                                        console.error('Error running reCAPTCHA initializer for ' + formId, e);
-                                    }
+                            let recaptchaInitRan = false;
+                            let turnstileInitRan = false;
 
-                                    // Call setupXHRListener *after* potential async reCAPTCHA init.
-                                    // It will check the form again; if reCAPTCHA added its listener,
-                                    // setupXHRListener won't add the direct one.
-                                    console.log('Calling setupXHRListener for form ' + formId + ' after attempting reCAPTCHA init.');
-                                    setupXHRListener(formId); // Re-run setup to ensure correct listener state
-
-                                }, 0); // End setTimeout
-
+                            // --- Check for reCAPTCHA Initializer ---
+                            const recaptchaInitializerFuncName = 'initRecaptcha_' + formId;
+                            if (window.GravRecaptchaInitializers && typeof window.GravRecaptchaInitializers[recaptchaInitializerFuncName] === 'function') {
+                                const recaptchaContainerInNewForm = updatedForm.querySelector('.g-recaptcha-container[data-form-id="' + formId + '"]');
+                                if (recaptchaContainerInNewForm) {
+                                    console.log('Re-initializing reCAPTCHA for form:', formId, 'within updated wrapper');
+                                    recaptchaInitRan = true;
+                                    setTimeout(() => { // Use setTimeout for safety after DOM update
+                                        try {
+                                            window.GravRecaptchaInitializers[recaptchaInitializerFuncName]();
+                                        } catch (e) {
+                                            console.error("Error running reCAPTCHA initializer for " + formId, e);
+                                        }
+                                    }, 0); // End setTimeout
+                                } else {
+                                    console.log('reCAPTCHA container not found in updated form for:', formId);
+                                }
                             } else {
-                                // No reCAPTCHA initializer found OR no reCAPTCHA container in the updated form content
-                                // --> Need to ensure the correct listener (likely direct XHR) is attached.
-                                console.log('No intercepting reCAPTCHA detected in updated form ' + formId + '. Re-running listener setup.');
-                                // Calling setupXHRListener again handles attaching the direct listener if appropriate
-                                setupXHRListener(formId); // Re-run setup on the new form element
+                                console.log('No reCAPTCHA initializer function found for:', formId);
                             }
+                            // --- End reCAPTCHA Check ---
+
+
+                            // --- Check for Turnstile Initializer ---
+                            const turnstileInitializerFuncName = 'initTurnstile_' + formId;
+                            if (window.GravTurnstileInitializers && typeof window.GravTurnstileInitializers[turnstileInitializerFuncName] === 'function') {
+                                const turnstileContainerInNewForm = updatedForm.querySelector('#cf-turnstile-' + formId); // Check by ID
+                                if (turnstileContainerInNewForm) {
+                                    console.log('Re-initializing Turnstile for form:', formId);
+                                    turnstileInitRan = true;
+                                    setTimeout(() => { // Use setTimeout for safety
+                                        try {
+                                            window.GravTurnstileInitializers[turnstileInitializerFuncName]();
+                                        } catch (e) {
+                                            console.error("Error running Turnstile initializer for " + formId, e);
+                                        }
+                                    }, 0); // End setTimeout
+                                } else {
+                                    console.log('Turnstile container not found in updated form for:', formId);
+                                }
+                            } else {
+                                console.log('No Turnstile initializer function found for:', formId);
+                            }
+                            // --- End Turnstile Check ---
+
+
+                            // --- Ensure XHR Listener is correctly setup AFTER potential async initializers ---
+                            console.log("Re-running listener setup for form " + formId + " after potential captcha init.");
+                            // Use a small timeout to ensure it runs after the initializer timeouts (if any)
+                            setTimeout(() => setupXHRListener(formId), 10); // Give initializers a moment
 
                         } else {
-                            console.warn('Could not find form #' + formId + ' inside the updated wrapper #' + wrapperId + ' after update. Cannot re-attach listener.');
+                            console.warn("Could not find form #" + formId + " inside the updated wrapper #" + wrapperId + " after update. Cannot re-attach listener/initializers.");
                         }
                         // --- END Listener Re-attachment & Re-initialization ---
 
@@ -137,15 +157,46 @@
                         wrapperElement.innerHTML = xhr.responseText;
                         console.log('Update using full responseText SUCCESSFUL (fallback) for wrapper:', wrapperId);
 
-                        // Even in fallback, try to re-attach listener if the form might be in the response
-                        console.log('Attempting listener re-attachment after fallback update for wrapper:', wrapperId);
-                        // Find the form ID within the potentially replaced content
-                        if (wrapperElement.querySelector('#' + formId)) {
-                            setupXHRListener(formId); // Try re-attaching based on the potentially new content
-                        } else {
-                            console.warn('Form #' + formId + ' not found within wrapper after fallback update. Cannot re-attach listener.');
-                        }
+                        // Attempt re-init/re-attach after fallback
+                        const updatedFormInFallback = wrapperElement.querySelector('#' + formId);
+                        if (updatedFormInFallback) {
+                            console.log("Attempting listener/initializer re-attachment after fallback update for wrapper:", wrapperId);
 
+                            // Check/Call Turnstile Initializer in fallback
+                            const turnstileInitializerFuncName = 'initTurnstile_' + formId;
+                            if (window.GravTurnstileInitializers && typeof window.GravTurnstileInitializers[turnstileInitializerFuncName] === 'function') {
+                                const turnstileContainerInFallback = updatedFormInFallback.querySelector('#cf-turnstile-' + formId);
+                                if (turnstileContainerInFallback) {
+                                    setTimeout(() => {
+                                        try {
+                                            window.GravTurnstileInitializers[turnstileInitializerFuncName]();
+                                        } catch (e) {
+                                            console.error(e);
+                                        }
+                                    }, 0);
+                                }
+                            }
+                            // Check/Call reCAPTCHA Initializer in fallback (if applicable)
+                            const recaptchaInitializerFuncName = 'initRecaptcha_' + formId;
+                            if (window.GravRecaptchaInitializers && typeof window.GravRecaptchaInitializers[recaptchaInitializerFuncName] === 'function') {
+                                const recaptchaContainerInFallback = updatedFormInFallback.querySelector('.g-recaptcha-container[data-form-id="' + formId + '"]');
+                                if (recaptchaContainerInFallback) {
+                                    setTimeout(() => {
+                                        try {
+                                            window.GravRecaptchaInitializers[recaptchaInitializerFuncName]();
+                                        } catch (e) {
+                                            console.error(e);
+                                        }
+                                    }, 0);
+                                }
+                            }
+
+                            // Re-attach listener after fallback
+                            setTimeout(() => setupXHRListener(formId), 10);
+
+                        } else {
+                            console.warn("Form #" + formId + " not found within wrapper after fallback update. Cannot re-attach listener/initializers.")
+                        }
                     } catch (e) {
                         console.error('Error during wrapperElement.innerHTML update (fallback):', e);
                         wrapperElement.innerHTML = '<p class="form-message error">An error occurred updating the form content (fallback).</p>';
@@ -157,40 +208,28 @@
             } else {
                 // --- Handle HTTP error responses (e.g., 4xx, 5xx) ---
                 console.error('Form submission failed for form:', formId, 'HTTP Status:', xhr.status, xhr.statusText);
-                // Display error inside the wrapper if possible
+                // Display error inside the wrapper
                 const errorTarget = wrapperElement; // Target the wrapper for errors
-                const errorMsgContainer = errorTarget.querySelector('.form-messages') || errorTarget; // Find existing message area or use wrapper
+                const errorMsgContainer = errorTarget.querySelector('.form-messages') || errorTarget;
                 if (errorMsgContainer) {
-                    // Clear previous success messages maybe?
-                    // const successMessages = errorMsgContainer.querySelectorAll('.form-message.success, .toast-success');
-                    // successMessages.forEach(el => el.remove());
-
                     const errorMsg = document.createElement('div');
                     errorMsg.className = 'form-message error'; // Use theme's error classes
                     errorMsg.textContent = 'An error occurred during submission (Status: ' + xhr.status + '). Please check the form and try again.';
-                    // Prepend to show at top
                     errorMsgContainer.insertBefore(errorMsg, errorMsgContainer.firstChild);
                 }
             }
         }; // End xhr.onload
 
         // --- Handler for network errors ---
-        xhr.onerror = function() {
+        xhr.onerror = function () {
             console.error('Form submission failed due to network error for form:', formId);
-
             // Optional: Remove loading indicator
             // wrapperElement.classList.remove('loading');
-            // const currentFormInWrapper = wrapperElement.querySelector('#' + formId);
-            // if (currentFormInWrapper) currentFormInWrapper.classList.remove('submitting');
 
             // Display network error inside the wrapper
             const errorTarget = wrapperElement;
             const errorMsgContainer = errorTarget.querySelector('.form-messages') || errorTarget;
             if (errorMsgContainer) {
-                // Clear previous success messages maybe?
-                // const successMessages = errorMsgContainer.querySelectorAll('.form-message.success, .toast-success');
-                // successMessages.forEach(el => el.remove());
-
                 const errorMsg = document.createElement('div');
                 errorMsg.className = 'form-message error';
                 errorMsg.textContent = 'A network error occurred. Please check your connection and try again.';
@@ -202,10 +241,10 @@
         try {
             const formData = new FormData(form);
             const urlEncodedData = new URLSearchParams(formData).toString();
-            console.log('Sending XHR request for form:', formId, 'with custom header X-Grav-Form-XHR'); //
+            console.log('Sending XHR request for form:', formId, 'with custom header X-Grav-Form-XHR');
             xhr.send(urlEncodedData);
         } catch (e) {
-            console.error('Error preparing or sending XHR request for form:', formId, e);
+            console.error("Error preparing or sending XHR request for form:", formId, e);
             // Display error?
             const errorTarget = wrapperElement;
             const errorMsgContainer = errorTarget.querySelector('.form-messages') || errorTarget;
@@ -215,73 +254,76 @@
                 errorMsg.textContent = 'An unexpected error occurred before sending the form.';
                 errorMsgContainer.insertBefore(errorMsg, errorMsgContainer.firstChild);
             }
-            // Optional: Remove loading indicator
-            // wrapperElement.classList.remove('loading');
-            // form.classList.remove('submitting');
         }
     } // End submitFormViaXHR function
 
+
     /**
      * Sets up the event listener for XHR submission on a specific form.
-     * Checks if reCAPTCHA v3/invisible is present; if so, it lets the
-     * reCAPTCHA script handle interception. Otherwise, attaches a direct listener.
+     * Checks if intercepting reCAPTCHA (v3/invisible) is present; if so, defers
+     * listener attachment to the reCAPTCHA script. Otherwise, attaches a direct listener.
      * @param {string} formId The ID attribute of the form element.
      */
     function setupXHRListener(formId) {
-        var form = document.getElementById(formId);
-        if (!form) {
-            console.warn('XHR Setup: Form with ID "' + formId + '" not found.');
-            return;
-        }
-
-        // Check if reCAPTCHA will handle the submission interception
-        const recaptchaNeedsIntercept = form.querySelector('.g-recaptcha-container[data-recaptcha-version="3"], .g-recaptcha-container[data-recaptcha-version="2-invisible"]');
-
-        if (!recaptchaNeedsIntercept) {
-            // No intercepting reCAPTCHA found, attach the direct XHR listener
-            const directXhrSubmitHandler = function(event) {
-                console.log('Direct XHR submit handler triggered for form:', formId);
-                event.preventDefault(); // Prevent standard browser submission
-                submitFormViaXHR(form); // Call the core XHR function
-            };
-
-            // Basic check to avoid attaching multiple identical listeners if this runs again (unlikely with DOMContentLoaded)
-            if (!form.dataset.directXhrListenerAttached) {
-                console.log('Attaching direct XHR listener for form:', formId);
-                form.addEventListener('submit', directXhrSubmitHandler);
-                form.dataset.directXhrListenerAttached = 'true'; // Mark as attached
-            } else {
-                console.log('Direct XHR listener already attached for form:', formId);
+        // Use setTimeout to ensure this runs after potential DOM updates settle
+        // and after captcha initializers might have run and added their elements/listeners.
+        setTimeout(() => {
+            var form = document.getElementById(formId);
+            if (!form) {
+                console.warn('XHR Setup (delayed): Form with ID "' + formId + '" not found.');
+                return;
             }
+            // Remove potentially stale marker from previous runs
+            delete form.dataset.directXhrListenerAttached;
 
-        } else {
-            // Intercepting reCAPTCHA (v3/invisible) is present.
-            // Its own script should handle event.preventDefault() and eventually call
-            // window.GravFormXHRSubmitters.submit(form) if XHR is enabled.
-            console.log('XHR listener deferred: reCAPTCHA should intercept submit for form:', formId);
-        }
-    }
+            // Check if reCAPTCHA v3/invisible script already added its listener
+            // (We check for the presence of the container, assuming the init script runs if container exists)
+            const recaptchaV3InvisibleContainer = form.querySelector('.g-recaptcha-container[data-recaptcha-version="3"], .g-recaptcha-container[data-recaptcha-version="2-invisible"]');
+
+            if (!recaptchaV3InvisibleContainer) {
+                // No intercepting reCAPTCHA found, attach the direct XHR listener
+                const directXhrSubmitHandler = function (event) {
+                    console.log('Direct XHR submit handler triggered for form:', formId);
+                    event.preventDefault(); // Prevent standard browser submission
+                    submitFormViaXHR(form); // Call the core XHR function
+                };
+
+                // Ensure the form is actually configured for XHR before adding listener
+                if (form.dataset.xhrEnabled === 'true') {
+                    // Basic check to avoid attaching multiple identical listeners if this somehow runs multiple times rapidly
+                    // We identify listener by checking a dataset flag WE set.
+                    if (!form.dataset.directXhrListenerAttached) {
+                        console.log('Attaching direct XHR listener for form:', formId);
+                        // IMPORTANT: Remove previous listener if stored? This is hard without storing the exact function ref.
+                        // Relying on finding only one form by ID and adding listener once after update.
+                        form.addEventListener('submit', directXhrSubmitHandler);
+                        form.dataset.directXhrListenerAttached = 'true'; // Mark as attached
+                    } else {
+                        console.log('Direct XHR listener should already be attached for form:', formId);
+                    }
+                } else {
+                    console.log('XHR not enabled for form:', formId, '. Skipping direct listener attachment.');
+                    // Ensure no stale listener marker remains
+                    delete form.dataset.directXhrListenerAttached;
+                }
+
+            } else {
+                // Intercepting reCAPTCHA (v3/invisible) is present.
+                // Its own script should handle event.preventDefault() and eventually call
+                // window.GravFormXHRSubmitters.submit(form) if XHR is enabled.
+                console.log('XHR listener deferred: reCAPTCHA should intercept submit for form:', formId);
+                // Ensure no stale listener marker remains
+                delete form.dataset.directXhrListenerAttached;
+            }
+        }, 0); // Tiny delay to run after current execution stack clears
+    } // End setupXHRListener function
 
     // --- Expose necessary functions globally ---
 
-    // Expose the core submit function so reCAPTCHA scripts can call it
+    // Expose the core submit function so reCAPTCHA/other scripts can call it
     window.GravFormXHRSubmitters.submit = submitFormViaXHR;
 
-    // Expose the setup function to be called from inline script in Twig
-    // Note: This function needs to be defined before it's potentially called
-    // by the inline script triggered by DOMContentLoaded.
-    // We make it global temporarily for the inline script to find it.
-    // An alternative is to manage initialization differently, but this is common.
+    // Expose the setup function to be called from inline script in Twig layout
     window.attachFormSubmitListener = setupXHRListener;
-
-    // Clean up the global scope slightly after initial setup phase (optional)
-    // We keep GravFormXHRSubmitters.submit exposed
-    /*
-    document.addEventListener('DOMContentLoaded', () => {
-        if (window.attachFormSubmitListener === setupXHRListener) {
-            // delete window.attachFormSubmitListener; // Remove if no longer needed after DOM load
-        }
-    });
-    */
 
 })(); // End IIFE
