@@ -6,7 +6,7 @@
  * attempts to re-initialize specific components like reCAPTCHA.
  */
 
-(function() {
+(function () {
     'use strict';
 
     // Namespace for globally exposed functions (e.g., for reCAPTCHA script to call)
@@ -16,43 +16,52 @@
      * Performs the actual XHR submission for a given form.
      * @param {HTMLFormElement} form The form element to submit.
      */
+    /**
+     * Performs the actual XHR submission for a given form.
+     * Targets a wrapper element (`form.id + '-wrapper'`) for content replacement.
+     * @param {HTMLFormElement} form The form element that triggered the submission.
+     */
     function submitFormViaXHR(form) {
-        if (!form) {
-            console.error('submitFormViaXHR called with invalid form element.');
+        if (!form || !form.id) { // Ensure form and form.id exist
+            console.error('submitFormViaXHR called with invalid form element or form missing ID.');
             return;
         }
 
-        console.log('Initiating XHR submission for form:', form.id);
+        const formId = form.id; // Get form ID early
+        const wrapperId = formId + '-wrapper'; // Construct the wrapper ID
+        const wrapperElement = document.getElementById(wrapperId); // Find wrapper on page
 
-        // Optional: Add a loading indicator here if desired
+        if (!wrapperElement) {
+            console.error('submitFormViaXHR: Target wrapper element #" + wrapperId + " not found on the page! Cannot proceed.');
+            // Optionally display an error within the form itself as a last resort
+            form.innerHTML = '<p class="form-message error">Error: Form wrapper missing. Cannot update content.</p>';
+            return;
+        }
+
+        console.log('Initiating XHR submission for form:', formId, 'targeting wrapper:', wrapperId);
+
+        // Optional: Add a loading indicator to the wrapper or form
+        // wrapperElement.classList.add('loading');
         // form.classList.add('submitting');
 
         var xhr = new XMLHttpRequest();
         xhr.open(form.getAttribute('method') || 'POST', form.getAttribute('action') || window.location.href);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        // Add header for Grav to potentially detect AJAX requests
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest'); // For server-side detection
 
         // --- Handler for successful request (HTTP 200-299) ---
-        xhr.onload = function() {
-            console.log('XHR request completed for form:', form.id, 'Status:', xhr.status); // form.id is still the original trigger form
+        xhr.onload = function () {
+            console.log('XHR request completed for form:', formId, 'Status:', xhr.status);
+
+            // Optional: Remove loading indicator
+            // wrapperElement.classList.remove('loading');
+            // const currentFormInWrapper = wrapperElement.querySelector('#' + formId);
+            // if (currentFormInWrapper) currentFormInWrapper.classList.remove('submitting');
 
             if (xhr.status >= 200 && xhr.status < 300) {
-                const formId = form.id; // ID of the form element itself
-                const wrapperId = formId + '-wrapper'; // Construct the wrapper ID
+                // Response received successfully
                 console.log('Target Wrapper ID:', wrapperId);
-                // console.log('Raw Response Text:', xhr.responseText);
-
-                // Find the wrapper element currently on the page
-                const wrapperElement = document.getElementById(wrapperId);
-                if (!wrapperElement) {
-                    console.error('Target wrapper element #" + wrapperId + " not found on the page!');
-                    // Handle error - maybe update the form itself with an error?
-                    form.innerHTML = '<p class="form-message error">Error: Form wrapper missing. Cannot update content.</p>';
-                    return;
-                }
-                console.log('Target wrapper element for update:', wrapperElement);
-
+                // console.log('Raw Response Text:', xhr.responseText); // Debugging
 
                 const tempDiv = document.createElement('div');
                 try {
@@ -60,7 +69,7 @@
                 } catch (e) {
                     console.error("Error parsing response HTML for wrapper:", wrapperId, e);
                     wrapperElement.innerHTML = '<p class="form-message error">An error occurred processing the server response.</p>';
-                    return;
+                    return; // Stop processing
                 }
 
                 // Find the NEW wrapper element *within the response*
@@ -68,118 +77,148 @@
                 console.log('Searching for #' + wrapperId + ' in response. Found element:', newWrapperElement);
 
                 if (newWrapperElement) {
+                    // Found the expected wrapper in the response
                     console.log('Attempting update using newWrapperElement.innerHTML for wrapper:', wrapperId);
                     try {
-                        // *** THIS IS THE KEY CHANGE ***
+                        // *** Replace content of the existing wrapper ***
                         wrapperElement.innerHTML = newWrapperElement.innerHTML;
                         console.log('Update using newWrapperElement.innerHTML SUCCESSFUL for wrapper:', wrapperId);
+
+                        // --- Listener Re-attachment & Re-initialization ---
+                        // Find the NEW form element *inside the updated wrapper*
+                        const updatedForm = wrapperElement.querySelector('#' + formId);
+                        if (updatedForm) {
+                            const initializerFuncName = 'initRecaptcha_' + formId;
+                            const needsRecaptchaInit = window.GravRecaptchaInitializers && typeof window.GravRecaptchaInitializers[initializerFuncName] === 'function';
+                            // Check for container specifically within the newly added form content
+                            const recaptchaContainerInNewForm = updatedForm.querySelector('.g-recaptcha-container[data-form-id="' + formId + '"]');
+
+                            if (needsRecaptchaInit && recaptchaContainerInNewForm) {
+                                // ReCAPTCHA is present in the new content and needs initialization
+                                console.log('Re-initializing reCAPTCHA for form:', formId, 'within updated wrapper');
+                                setTimeout(() => { // Use setTimeout for safety after DOM update
+                                    try {
+                                        window.GravRecaptchaInitializers[initializerFuncName]();
+                                        // reCAPTCHA's init function should now add its own intercepting listener
+                                    } catch (e) {
+                                        console.error("Error running reCAPTCHA initializer for " + formId, e);
+                                    }
+
+                                    // Call setupXHRListener *after* potential async reCAPTCHA init.
+                                    // It will check the form again; if reCAPTCHA added its listener,
+                                    // setupXHRListener won't add the direct one.
+                                    console.log("Calling setupXHRListener for form " + formId + " after attempting reCAPTCHA init.");
+                                    setupXHRListener(formId); // Re-run setup to ensure correct listener state
+
+                                }, 0); // End setTimeout
+
+                            } else {
+                                // No reCAPTCHA initializer found OR no reCAPTCHA container in the updated form content
+                                // --> Need to ensure the correct listener (likely direct XHR) is attached.
+                                console.log("No intercepting reCAPTCHA detected in updated form " + formId + ". Re-running listener setup.");
+                                // Calling setupXHRListener again handles attaching the direct listener if appropriate
+                                setupXHRListener(formId); // Re-run setup on the new form element
+                            }
+
+                        } else {
+                            console.warn("Could not find form #" + formId + " inside the updated wrapper #" + wrapperId + " after update. Cannot re-attach listener.");
+                        }
+                        // --- END Listener Re-attachment & Re-initialization ---
+
                     } catch (e) {
                         console.error('Error during wrapperElement.innerHTML update:', e);
                         wrapperElement.innerHTML = '<p class="form-message error">An error occurred updating the form content.</p>';
                     }
                 } else {
-                    // Fallback: Wrapper ID not found in response. Maybe response is just a message? Or unexpected structure?
+                    // Fallback: Wrapper ID not found in response. Replace wrapper content with full response.
                     console.warn('Wrapper element #" + wrapperId + " not found in XHR response. Replacing wrapper content with full response as fallback.');
                     try {
                         wrapperElement.innerHTML = xhr.responseText;
                         console.log('Update using full responseText SUCCESSFUL (fallback) for wrapper:', wrapperId);
+
+                        // Even in fallback, try to re-attach listener if the form might be in the response
+                        console.log("Attempting listener re-attachment after fallback update for wrapper:", wrapperId);
+                        // Find the form ID within the potentially replaced content
+                        if (wrapperElement.querySelector('#' + formId)) {
+                            setupXHRListener(formId); // Try re-attaching based on the potentially new content
+                        } else {
+                            console.warn("Form #" + formId + " not found within wrapper after fallback update. Cannot re-attach listener.")
+                        }
+
                     } catch (e) {
                         console.error('Error during wrapperElement.innerHTML update (fallback):', e);
                         wrapperElement.innerHTML = '<p class="form-message error">An error occurred updating the form content (fallback).</p>';
                     }
                 }
 
-                // --- CRUCIAL: Trigger Re-initialization ---
-                // AFTER updating the wrapper's content, find the potentially NEW form inside it
-                const updatedForm = wrapperElement.querySelector('#' + formId);
-                if (updatedForm) {
-                    const initializerFuncName = 'initRecaptcha_' + formId;
-                    if (window.GravRecaptchaInitializers && typeof window.GravRecaptchaInitializers[initializerFuncName] === 'function') {
-                        // Find the container *within the newly updated form content*
-                        const newRecaptchaContainer = updatedForm.querySelector('.g-recaptcha-container[data-form-id="' + formId + '"]');
-                        if (newRecaptchaContainer) {
-                            console.log('Re-initializing reCAPTCHA for form:', formId, 'within updated wrapper');
-                            setTimeout(() => {
-                                try {
-                                    window.GravRecaptchaInitializers[initializerFuncName]();
-                                } catch (e) {
-                                    console.error("Error running reCAPTCHA initializer for " + formId, e);
-                                }
-                            }, 0);
-                        } else {
-                            console.log('reCAPTCHA container not found in updated form for:', formId);
-                        }
-                    } else {
-                        console.log('No reCAPTCHA initializer function found for:', formId);
-                    }
-
-                    // **Important for potential re-submission:**
-                    // If you need the form to be submittable again via XHR *without* a page refresh,
-                    // you might need to re-attach the 'submit' listener here, potentially by calling
-                    // setupXHRListener(formId) again, or by modifying setupXHRListener to handle re-attachment.
-                    // For now, let's assume it's a one-shot submission per page load.
-                    // Example: setupXHRListener(formId); // Re-run setup on the new form if needed
-
-                } else {
-                    console.warn("Could not find form #" + formId + " inside the updated wrapper #" + wrapperId);
-                }
-                // --- END Re-initialization ---
-
                 console.log('Finished processing successful XHR response for wrapper:', wrapperId);
 
             } else {
-                // --- Handle HTTP error responses ---
-                // Try to put error inside the wrapper if possible
-                const wrapperElement = document.getElementById(form.id + '-wrapper'); // Find wrapper even on error
-                const errorTarget = wrapperElement || form; // Fallback to form if wrapper not found
-                console.error('Form submission failed for form:', form.id, 'HTTP Status:', xhr.status, xhr.statusText);
-                const errorDiv = errorTarget.querySelector('.form-messages') || errorTarget;
-                if (errorDiv) {
+                // --- Handle HTTP error responses (e.g., 4xx, 5xx) ---
+                console.error('Form submission failed for form:', formId, 'HTTP Status:', xhr.status, xhr.statusText);
+                // Display error inside the wrapper if possible
+                const errorTarget = wrapperElement; // Target the wrapper for errors
+                const errorMsgContainer = errorTarget.querySelector('.form-messages') || errorTarget; // Find existing message area or use wrapper
+                if (errorMsgContainer) {
+                    // Clear previous success messages maybe?
+                    // const successMessages = errorMsgContainer.querySelectorAll('.form-message.success, .toast-success');
+                    // successMessages.forEach(el => el.remove());
+
                     const errorMsg = document.createElement('div');
-                    errorMsg.className = 'form-message error';
+                    errorMsg.className = 'form-message error'; // Use theme's error classes
                     errorMsg.textContent = 'An error occurred during submission (Status: ' + xhr.status + '). Please check the form and try again.';
-                    errorDiv.insertBefore(errorMsg, errorDiv.firstChild);
+                    // Prepend to show at top
+                    errorMsgContainer.insertBefore(errorMsg, errorMsgContainer.firstChild);
                 }
             }
-        };
+        }; // End xhr.onload
 
         // --- Handler for network errors ---
-        xhr.onerror = function() {
-            console.error('Form submission failed due to network error for form:', form.id);
+        xhr.onerror = function () {
+            console.error('Form submission failed due to network error for form:', formId);
 
             // Optional: Remove loading indicator
-            // form.classList.remove('submitting');
+            // wrapperElement.classList.remove('loading');
+            // const currentFormInWrapper = wrapperElement.querySelector('#' + formId);
+            // if (currentFormInWrapper) currentFormInWrapper.classList.remove('submitting');
 
-            const errorDiv = form.querySelector('.form-messages') || form;
-            if (errorDiv) {
-                // errorDiv.innerHTML = ''; // Clear previous messages maybe?
+            // Display network error inside the wrapper
+            const errorTarget = wrapperElement;
+            const errorMsgContainer = errorTarget.querySelector('.form-messages') || errorTarget;
+            if (errorMsgContainer) {
+                // Clear previous success messages maybe?
+                // const successMessages = errorMsgContainer.querySelectorAll('.form-message.success, .toast-success');
+                // successMessages.forEach(el => el.remove());
+
                 const errorMsg = document.createElement('div');
                 errorMsg.className = 'form-message error';
                 errorMsg.textContent = 'A network error occurred. Please check your connection and try again.';
-                errorDiv.insertBefore(errorMsg, errorDiv.firstChild);
+                errorMsgContainer.insertBefore(errorMsg, errorMsgContainer.firstChild);
             }
-        };
+        }; // End xhr.onerror
 
         // --- Prepare and Send Data ---
         try {
             const formData = new FormData(form);
             const urlEncodedData = new URLSearchParams(formData).toString();
             xhr.send(urlEncodedData);
-            console.log('XHR request sent for form:', form.id);
+            console.log('XHR request sent for form:', formId);
         } catch (e) {
-            console.error("Error preparing or sending XHR request for form:", form.id, e);
+            console.error("Error preparing or sending XHR request for form:", formId, e);
             // Display error?
-            const errorDiv = form.querySelector('.form-messages') || form;
-            if (errorDiv) {
+            const errorTarget = wrapperElement;
+            const errorMsgContainer = errorTarget.querySelector('.form-messages') || errorTarget;
+            if (errorMsgContainer) {
                 const errorMsg = document.createElement('div');
                 errorMsg.className = 'form-message error';
                 errorMsg.textContent = 'An unexpected error occurred before sending the form.';
-                errorDiv.insertBefore(errorMsg, errorDiv.firstChild);
+                errorMsgContainer.insertBefore(errorMsg, errorMsgContainer.firstChild);
             }
             // Optional: Remove loading indicator
+            // wrapperElement.classList.remove('loading');
             // form.classList.remove('submitting');
         }
-    }
+    } // End submitFormViaXHR function
 
     /**
      * Sets up the event listener for XHR submission on a specific form.
