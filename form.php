@@ -1135,7 +1135,7 @@ class FormPlugin extends Plugin
                 return false;
             }
 
-            if (isset($form->xhr_submit) && $form->xhr_submit) {
+            if (isset($form->xhr_submit) && $form->xhr_submit && $this->isFormXhrRequest()) {
                 $form->set('template', $form->template ?? 'form-xhr');
             }
 
@@ -1356,5 +1356,22 @@ class FormPlugin extends Plugin
         }
 
         return $result;
+    }
+
+    protected function isFormXhrRequest(): bool
+    {
+        if (!$this->grav['request']) {
+            return false;
+        }
+
+        // Check 1: Our custom header (most reliable for our purpose)
+        $isCustomXhr = $this->grav['request']->getHeaderLine('X-Grav-Form-XHR') === 'true';
+
+        // Check 2: Standard X-Requested-With (often added by libraries)
+        $isStdXhr = $this->grav['request']->getHeaderLine('X-Requested-With') === 'XMLHttpRequest';
+
+        // Require our custom header for the specific partial rendering logic.
+        // You could use || $isStdXhr if you want to be more lenient, but $isCustomXhr is stricter.
+        return $isCustomXhr && $isStdXhr;
     }
 }
