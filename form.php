@@ -7,9 +7,7 @@ use DateTime;
 use Doctrine\Common\Cache\Cache;
 use Exception;
 use Grav\Common\Data\ValidationException;
-use Grav\Common\Debugger;
 use Grav\Common\Filesystem\Folder;
-use Grav\Common\Grav;
 use Grav\Common\Page\Interfaces\PageInterface;
 use Grav\Common\Page\Pages;
 use Grav\Common\Page\Types;
@@ -22,13 +20,10 @@ use Grav\Framework\Form\Interfaces\FormInterface;
 use Grav\Framework\Psr7\Response;
 use Grav\Framework\Route\Route;
 use Grav\Plugin\Form\BasicCaptcha;
+use Grav\Plugin\Form\Captcha\CaptchaManager;
 use Grav\Plugin\Form\Form;
 use Grav\Plugin\Form\Forms;
 use Grav\Plugin\Form\TwigExtension;
-use Grav\Common\HTTP\Client;
-use Monolog\Logger;
-use ReCaptcha\ReCaptcha;
-use ReCaptcha\RequestMethod\CurlPost;
 use RecursiveArrayIterator;
 use RecursiveIteratorIterator;
 use RocketTheme\Toolbox\File\JsonFile;
@@ -37,7 +32,6 @@ use RocketTheme\Toolbox\File\File;
 use RocketTheme\Toolbox\Event\Event;
 use RuntimeException;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Twig\Environment;
 use Twig\Extension\CoreExtension;
 use Twig\Extension\EscaperExtension;
@@ -119,6 +113,9 @@ class FormPlugin extends Plugin
 
             return $forms;
         };
+
+        // Initialize the captcha manager
+        CaptchaManager::initialize();
 
         if ($this->isAdmin()) {
             $this->enable([
@@ -454,204 +451,16 @@ class FormPlugin extends Plugin
 
         switch ($action) {
             case 'captcha':
-                // --- 1. Determine Provider and Find Field Definition ---
-                $captchaField = null;
-                $provider = 'recaptcha'; // Default provider
-                $formFields = $form->value()->blueprints()->get('form/fields');
-                foreach ($formFields as $fieldDef) {
-                    if (($fieldDef['type'] ?? null) === 'captcha') {
-                        $captchaField = $fieldDef;
-                        $provider = $fieldDef['provider'] ?? 'recaptcha'; // Get provider from field definition
-                        break;
-                    }
-                }
+                // Convert boolean params to array if needed
+                $captcha_params = is_array($params) ? $params : [];
 
-                if (!$captchaField) { /* ... handle missing field ... */
-                    return;
-                }
-
-                // --- 2. Common Variables ---
-                /** @var Uri $uri */
-                $uri = $this->grav['uri'];
-                $ip = Uri::ip();
-                $hostname = $uri->host();
-                $isValid = false;
-                $validationResponseData = null;
-                $logDetails = null;
-                $errorMessage = null;
-
-                // --- 3. Provider-Specific Validation ---
-                try {
-                    $formConfig = $this->config->get('plugins.form');
-
-                    if ($provider === 'hcaptcha') {
-                        // --- hCaptcha Validation (using Grav's HTTP Client) ---
-                        $hcaptchaConfig = $formConfig['hcaptcha'] ?? [];
-                        $secretKey = $params['hcaptcha_secret'] ?? $captchaField['hcaptcha_secret'] ?? $hcaptchaConfig['secret_key'] ?? null;
-                        $token = $form->value('h-captcha-response', true);
-
-                        if (!$secretKey) {
-                            throw new \RuntimeException("hCaptcha secret key not configured.");
-                        }
-                        if (!$token) {
-                            $logDetails = ['error' => 'missing-input-response'];
-                            throw new \RuntimeException("hCaptcha response token not found.");
-                        }
-
-                        $postData = [
-                            'secret' => $secretKey,
-                            'response' => $token,
-                            'hostname' => $hostname,
-                        ];
-                        $validationUrl = 'https://hcaptcha.com/siteverify';
-
-                        $httpClient = Client::getClient();
-
-                        $response = $httpClient->request('POST', $validationUrl, [
-                            // Symfony client uses 'body' for POST fields (encodes as form data)
-                            'body' => $postData,
-                        ]);
-                        // *** End Grav HTTP Client Usage ***
-
-                        // Check status code FIRST (throws exception on 3xx-5xx by default)
-                        $statusCode = $response->getStatusCode(); // Ensure 2xx range
-                        if ($statusCode < 200 || $statusCode >= 300) {
-                            throw new \RuntimeException("hCaptcha verification request failed with status code: ".$statusCode);
-                        }
-
-                        $responseBody = $response->getContent(); // Get body content
-                        $validationResponseData = json_decode($responseBody, true);
-
-                        if (json_last_error() !== JSON_ERROR_NONE) {
-                            throw new \RuntimeException("Invalid JSON received from hCaptcha: ".json_last_error_msg());
-                        }
-                        if (!isset($validationResponseData['success'])) {
-                            throw new \RuntimeException("Invalid response format from hCaptcha verification (missing 'success' key).");
-                        }
-
-                        $isValid = $validationResponseData['success'];
-
-                        if (!$isValid) {
-                            $logDetails = ['error-codes' => $validationResponseData['error-codes'] ?? ['validation-failed']];
-                        }
-
-                    } else {
-                        // --- reCAPTCHA Validation (Using ReCaptcha library - NO CHANGE HERE) ---
-                        // ... (exactly as in the previous Guzzle/CurlPost examples) ...
-                        $recaptchaConfig = $formConfig['recaptcha'] ?? [];
-                        $secretKey = $params['recaptcha_secret'] ?? $params['recatpcha_secret'] ?? $captchaField['recaptcha_secret'] ?? $recaptchaConfig['secret_key'] ?? null;
-                        $version = $recaptchaConfig['version'] ?? 2;
-
-                        if (!$secretKey) {
-                            throw new \RuntimeException("reCAPTCHA secret key not configured.");
-                        }
-
-                        $requestMethod = extension_loaded('curl') ? new CurlPost() : null;
-                        $recaptcha = new ReCaptcha($secretKey, $requestMethod);
-
-                        if ($version == 3) {
-                            $token = $form->value('token');
-                            $action = $form->value('action');
-                            if (!$token) { /* ... */
-                                throw new \RuntimeException("reCAPTCHA v3 response token not found.");
-                            }
-                            $recaptcha->setExpectedHostname($hostname)->setExpectedAction($action)->setScoreThreshold($recaptchaConfig['score_threshold'] ?? 0.5);
-                        } else {
-                            $token = $form->value('g-recaptcha-response', true);
-                            if (!$token) { /* ... */
-                                throw new \RuntimeException("reCAPTCHA v2 response token not found.");
-                            }
-                            $recaptcha->setExpectedHostname($hostname);
-                        }
-                        $validationResponseObject = $recaptcha->verify($token, $ip);
-                        $isValid = $validationResponseObject->isSuccess();
-                        if (!$isValid) {
-                            $logDetails = ['error-codes' => $validationResponseObject->getErrorCodes()];
-                        }
-                    }
-
-                } catch (TransportExceptionInterface $e) { // *** CATCH SYMFONY HTTP TRANSPORT EXCEPTIONS ***
-                    // Handle connection errors, timeouts etc. from Symfony client
-                    $this->grav['log']->error("Form Captcha ({$provider}) HTTP transport error: ".$e->getMessage());
-                    $errorMessage = $this->grav['language']->translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA_CONNECTION');
-                    $logDetails = ['error' => 'connection-error', 'message' => $e->getMessage()];
-                    $isValid = false;
-                } catch (\Exception $e) { // Catch other exceptions (config, runtime, ReCaptcha lib errors, non-transport HTTP errors)
-                    $this->grav['log']->error("Form Captcha ({$provider}) validation failed: ".$e->getMessage());
-                    $errorMessage = ($logDetails['error'] ?? null) === 'missing-input-response'
-                        ? ($captchaField['captcha_not_validated'] ?? $this->grav['language']->translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA'))
-                        // Generic for other errors (connection errors now caught by TransportExceptionInterface)
-                        : $this->grav['language']->translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA');
-                    $logDetails = $logDetails ?? ['error' => 'exception', 'message' => $e->getMessage()];
-                    $isValid = false;
-                }
-
-                // --- 4. Handle Validation Result ---
-                if (!$isValid) {
-                    // ... (Same error handling logic: determine message, fire event, log, stop propagation) ...
-                    $message = $errorMessage ?? $captchaField['captcha_not_validated'] ?? // Custom message from field definition
-                               ($provider === 'hcaptcha' ? $this->grav['language']->translate('PLUGIN_FORM.ERROR_VALIDATING_HCAPTCHA')
-                               : $this->grav['language']->translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA'));
-                    $this->grav->fireEvent('onFormValidationError',
-                        new Event(['form' => $form, 'message' => $message]));
-                    $this->grav['log']->warning("Form Captcha ({$provider}) validation failed: [".$uri->route().'] Details: '.json_encode($logDetails));
+                // Use the captcha manager to validate
+                $validated = CaptchaManager::validateCaptcha($form, $captcha_params);
+                if (!$validated) {
                     $event->stopPropagation();
-                    return;
-                }
-
-                // Success
-                $this->grav['log']->info("Form Captcha ({$provider}) validation successful for form: ".$form->name);
-                break; // End case 'captcha'
-
-            case 'basic-captcha':
-                $captcha = new BasicCaptcha();
-                $captcha_value = trim($form->value('basic-captcha'));
-                if (!$captcha->validateCaptcha($captcha_value)) {
-                    $message = $params['message'] ?? $this->grav['language']->translate('PLUGIN_FORM.ERROR_BASIC_CAPTCHA');
-                    $form->setData('basic-captcha', '');
-                    $this->grav->fireEvent('onFormValidationError', new Event([
-                        'form' => $form,
-                        'message' => $message
-                    ]));
-
-                    $event->stopPropagation();
-                    return;
                 }
                 break;
-            case 'turnstile':
-                /** @var Uri $uri */
-                $uri = $this->grav['uri'];
 
-                $turnstile_config = $this->config->get('plugins.form.turnstile');
-                $secret = $turnstile_config['secret_key'] ?? null;
-                $token = $form->getValue('cf-turnstile-response') ?? null;
-                $ip = Uri::ip();
-
-                $client = Client::getClient();
-                $response = $client->request('POST', 'https://challenges.cloudflare.com/turnstile/v0/siteverify', [
-                    'body' => [
-                        'secret' => $secret,
-                        'response' => $token,
-                        'remoteip' => $ip
-                    ]
-                ]);
-
-                $content = $response->toArray();
-
-                if (!$content['success']) {
-                    $message = $params['message'] ?? $this->grav['language']->translate('PLUGIN_FORM.ERROR_BASIC_CAPTCHA');
-
-                    $this->grav->fireEvent('onFormValidationError', new Event([
-                        'form' => $form,
-                        'message' => $message
-                    ]));
-
-                    $this->grav['log']->warning('Form Turnstile invalid: ['.$uri->route().'] '.json_encode($content));
-                    $event->stopPropagation();
-                    return;
-                }
-
-                break;
             case 'timestamp':
                 $label = $params['label'] ?? 'Timestamp';
                 $format = $params['format'] ?? 'Y-m-d H:i:s';
@@ -1423,7 +1232,7 @@ class FormPlugin extends Plugin
         return date(preg_replace('`(?<!\\\\)u`', sprintf('%06d', $milliseconds), $format), $timestamp);
     }
 
-    protected function processBasicCaptchaImage(Uri $uri)
+    protected function processBasicCaptchaImage(Uri $uri): void
     {
         if ($uri->path() === '/forms-basic-captcha-image.jpg') {
             $captcha = new BasicCaptcha();

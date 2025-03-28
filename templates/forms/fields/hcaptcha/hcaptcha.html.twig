@@ -1,0 +1,141 @@
+{% extends "forms/field.html.twig" %}
+
+{% block label %}{% endblock %}
+
+{% block input %}
+    {% set config = grav.config %}
+    {% set formId = form.id ?: form.name %}
+
+    {# Get configuration values with fallbacks #}
+    {% set site_key = field.hcaptcha_site_key ?? config.plugins.form.hcaptcha.site_key %}
+    {% set theme = field.hcaptcha_theme ?? config.plugins.form.hcaptcha.theme ?? 'light' %}
+    {% set size = field.hcaptcha_size ?? config.plugins.form.hcaptcha.size ?? 'normal' %}
+    {% set container_id = 'h-captcha-' ~ formId %}
+    {% set onloadCallback = 'hCaptchaOnloadCallback_' ~ formId %}
+
+    {% if not site_key %}
+        <div class="form-error">hCaptcha site key is not set. Please set it in the form field or plugin configuration.</div>
+    {% else %}
+        <div class="h-captcha-container"
+             data-form-id="{{ formId }}"
+             data-captcha-provider="hcaptcha"
+             data-intercepts-submit="true"
+             data-sitekey="{{ site_key }}"
+             data-theme="{{ theme }}"
+             data-size="{{ size }}">
+            <div id="{{ container_id }}" class="h-captcha"></div>
+        </div>
+
+        {% do assets.addJs('https://js.hcaptcha.com/1/api.js?onload=' ~ onloadCallback ~ '&render=explicit', { 'loading': 'async', 'defer': '' }) %}
+
+        <script>
+            (function() {
+                // Explicit rendering for hCaptcha
+                window.GravExplicitCaptchaInitializers = window.GravExplicitCaptchaInitializers || {};
+                const initializerFunctionName = 'initExplicitCaptcha_{{ formId }}';
+
+                // Define the initializer function
+                window.GravExplicitCaptchaInitializers[initializerFunctionName] = function() {
+                    const containerId = '{{ container_id }}';
+                    const container = document.getElementById(containerId);
+
+                    if (!container) {
+                        console.warn('hCaptcha container #' + containerId + ' not found.');
+                        return;
+                    }
+
+                    // Prevent re-rendering if widget already exists
+                    if (container.innerHTML.trim() !== '' && container.querySelector('iframe')) {
+                        return;
+                    }
+
+                    // Get configuration from parent container
+                    const parentContainer = container.closest('.h-captcha-container');
+                    if (!parentContainer) {
+                        console.error('Cannot find parent container for #' + containerId);
+                        return;
+                    }
+
+                    const sitekey = parentContainer.dataset.sitekey;
+                    const theme = parentContainer.dataset.theme;
+                    const size = parentContainer.dataset.size;
+
+                    if (!sitekey) {
+                        console.error('hCaptcha sitekey missing for #' + containerId);
+                        return;
+                    }
+
+                    console.log('Attempting to render hCaptcha in #' + containerId);
+
+                    if (typeof hcaptcha !== 'undefined' && typeof hcaptcha.render === 'function') {
+                        try {
+                            hcaptcha.render(containerId, {
+                                sitekey: sitekey,
+                                theme: theme,
+                                size: size,
+                                callback: function(token) {
+                                    console.log('hCaptcha challenge successful for #' + containerId);
+                                },
+                                'expired-callback': function() {
+                                    console.log('hCaptcha token expired for #' + containerId);
+                                    try {
+                                        hcaptcha.reset(containerId);
+                                    } catch(e) {
+                                        console.warn("Error resetting hCaptcha", e);
+                                    }
+                                },
+                                'error-callback': function(err) {
+                                    console.error('hCaptcha error ('+err+') for #' + containerId);
+                                    container.innerHTML = '<p style="color:red;">Could not load verification challenge.</p>';
+                                }
+                            });
+                        } catch (e) {
+                            console.error('Error calling hcaptcha.render for #' + containerId, e);
+                            container.innerHTML = '<p style="color:red;">Error initializing hCaptcha.</p>';
+                        }
+                    } else {
+                        console.warn('hcaptcha API not available yet for #' + containerId + '. Waiting for onload.');
+                    }
+                };
+
+                // Define the global onload callback
+                window['{{ onloadCallback }}'] = function() {
+                    console.log('hCaptcha API loaded, triggering init for #{{ container_id }}');
+                    if (window.GravExplicitCaptchaInitializers[initializerFunctionName]) {
+                        window.GravExplicitCaptchaInitializers[initializerFunctionName]();
+                    } else {
+                        console.error("Initializer " + initializerFunctionName + " not found!");
+                    }
+                };
+
+                // Form submit handler to check if captcha is completed
+                document.addEventListener('DOMContentLoaded', function() {
+                    const form = document.getElementById('{{ formId }}');
+                    if (form) {
+                        form.addEventListener('submit', function(event) {
+                            const response = document.querySelector('textarea[name="h-captcha-response"]');
+                            if (!response || !response.value) {
+                                event.preventDefault();
+                                alert("{{ field.captcha_not_validated|t|default('Please complete the captcha')|e('js') }}");
+                            } else if (form.dataset.xhrEnabled === 'true' && window.GravFormXHR && typeof window.GravFormXHR.submit === 'function') {
+                                event.preventDefault();
+                                window.GravFormXHR.submit(form);
+                            }
+                        });
+                    }
+                });
+
+                // Initial call - will usually wait for onload callback
+                if (typeof hcaptcha !== 'undefined' && typeof hcaptcha.render === 'function') {
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', function() {
+                            setTimeout(window.GravExplicitCaptchaInitializers[initializerFunctionName], 0);
+                        });
+                    } else {
+                        setTimeout(window.GravExplicitCaptchaInitializers[initializerFunctionName], 0);
+                    }
+                }
+            })();
+        </script>
+    {% endif %}
+{% endblock %}
