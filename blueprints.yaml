@@ -220,6 +220,29 @@ form:
           help: PLUGIN_FORM.RECAPTCHA_SECRET_KEY_HELP
           default: ''
 
+    hcaptcha_section:
+      type: section
+      title: PLUGIN_FORM.HCAPTCHA
+
+      fields:
+        hcaptcha.theme:
+          type: select
+          label: PLUGIN_FORM.HCAPTCHA_THEME
+          default: light
+          options:
+            light: PLUGIN_FORM.RECAPTCHA_THEME_LIGHT
+            dark: PLUGIN_FORM.RECAPTCHA_THEME_DARK
+        hcaptcha.site_key:
+          type: text
+          label: PLUGIN_FORM.RECAPTCHA_SITE_KEY
+          help: PLUGIN_FORM.RECAPTCHA_SITE_KEY_HELP
+          default: ''
+        hcaptcha.secret_key:
+          type: text
+          label: PLUGIN_FORM.RECAPTCHA_SECRET_KEY
+          help: PLUGIN_FORM.RECAPTCHA_SECRET_KEY_HELP
+          default: ''
+
     turnstile_captcha:
       type: section
       title: PLUGIN_FORM.TURNSTILE_CAPTCHA
