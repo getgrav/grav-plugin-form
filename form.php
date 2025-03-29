@@ -450,6 +450,8 @@ class FormPlugin extends Plugin
         $this->process($form);
 
         switch ($action) {
+            case 'basic-captcha':
+            case 'turnstile':
             case 'captcha':
                 // Convert boolean params to array if needed
                 $captcha_params = is_array($params) ? $params : [];

@@ -44,10 +44,19 @@ class CaptchaManager
         $providerName = 'recaptcha'; // Default provider
 
         $formFields = $form->value()->blueprints()->get('form/fields');
-        foreach ($formFields as $fieldDef) {
-            if (($fieldDef['type'] ?? null) === 'captcha') {
+        foreach ($formFields as $fieldName => $fieldDef) {
+            $fieldType = $fieldDef['type'] ?? null;
+
+            // Check for modern captcha type with provider
+            if ($fieldType === 'captcha') {
                 $captchaField = $fieldDef;
                 $providerName = $fieldDef['provider'] ?? 'recaptcha';
+                break;
+            }
+            // Check for legacy captcha types
+            elseif (in_array($fieldType, ['basic-captcha', 'turnstile', 'hcaptcha'])) {
+                $captchaField = $fieldDef;
+                $providerName = $fieldType; // Use the field type as the provider name
                 break;
             }
         }
