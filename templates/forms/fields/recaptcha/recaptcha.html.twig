@@ -8,14 +8,14 @@
     {% set lang = grav.language.language %}
 
     {# Get configuration values with fallbacks #}
-    {% set version = field.recaptcha_version ?? config.plugins.form.recaptcha.version ?? 2 %}
+    {% set version = field.recaptcha_version ?? config.plugins.form.recaptcha.version ?? '2-checkbox' %}
     {% set site_key = field.recaptcha_site_key ?? config.plugins.form.recaptcha.site_key %}
     {% set theme = field.recaptcha_theme ?? config.plugins.form.recaptcha.theme ?? 'light' %}
 
     {% if not site_key %}
         <div class="form-error">reCAPTCHA site key is not set. Please set it in the form field or plugin configuration.</div>
     {% else %}
-        {% if version == 3 %}
+        {% if version == 3 or version == '3' %}
             {# --- reCAPTCHA v3 Handling --- #}
             {% set action = (page.route|trim('/') ~ '-' ~ form.name)|underscorize %}
 
@@ -24,11 +24,14 @@
                  data-recaptcha-version="3"
                  data-captcha-provider="recaptcha"
                  data-intercepts-submit="true"
-                 data-recaptcha-sitekey="{{ site_key }}"
-                 data-recaptcha-action="{{ action }}"
-                 data-recaptcha-theme="{{ theme }}"
-                 data-recaptcha-lang="{{ lang }}">
+                 data-sitekey="{{ site_key }}"
+                 data-version="3"
+                 data-action="{{ action }}"
+                 data-theme="{{ theme }}"
+                 data-lang="{{ lang }}">
                 {# Container for v3 - will be managed by JS #}
+                <input type="hidden" name="data[token]" value="">
+                <input type="hidden" name="data[action]" value="{{ action }}">
             </div>
 
             {% do assets.addJs('https://www.google.com/recaptcha/api.js?render=' ~ site_key, { group: 'bottom' }) %}
@@ -39,28 +42,35 @@
 
                     function addHiddenInput(form, name, value) {
                         const existing = form.querySelector('input[type="hidden"][name="' + name + '"]');
-                        if (existing) { existing.remove(); }
-                        const input = document.createElement('input');
-                        input.setAttribute('type', 'hidden');
-                        input.setAttribute('name', name);
-                        input.setAttribute('value', value);
-                        form.insertBefore(input, form.firstChild);
+                        if (existing) {
+                            existing.value = value;
+                        } else {
+                            const input = document.createElement('input');
+                            input.setAttribute('type', 'hidden');
+                            input.setAttribute('name', name);
+                            input.setAttribute('value', value);
+                            form.insertBefore(input, form.firstChild);
+                        }
                     }
 
                     function initRecaptchaV3(container) {
                         const formId = container.dataset.formId;
-                        const siteKey = container.dataset.recaptchaSitekey;
-                        const action = container.dataset.recaptchaAction;
+                        const siteKey = container.dataset.sitekey;
+                        const action = container.dataset.action;
                         const form = document.getElementById(formId);
 
                         if (!form) return;
 
+                        console.log(`Initializing reCAPTCHA v3 for form ${formId}`);
+
                         const submitHandler = function(event) {
                             event.preventDefault();
+                            console.log(`reCAPTCHA v3 intercepting submit for form ${formId}`);
 
                             grecaptcha.ready(function() {
                                 grecaptcha.execute(siteKey, { action: action })
                                     .then(function(token) {
+                                        console.log(`reCAPTCHA v3 token received for form ${formId}`);
                                         addHiddenInput(form, 'data[token]', token);
                                         addHiddenInput(form, 'data[action]', action);
                                         form.removeEventListener('submit', submitHandler);
@@ -98,7 +108,7 @@
                     // Register the initializer function
                     const initializerFunctionName = 'initRecaptcha_{{ formId }}';
                     window.GravRecaptchaInitializers[initializerFunctionName] = function() {
-                        const container = document.querySelector('[data-form-id="{{ formId }}"][data-recaptcha-version="3"]');
+                        const container = document.querySelector('[data-form-id="{{ formId }}"][data-captcha-provider="recaptcha"]');
                         if (!container) return;
 
                         initRecaptchaV3(container);
@@ -120,10 +130,12 @@
                  data-recaptcha-version="2-invisible"
                  data-captcha-provider="recaptcha"
                  data-intercepts-submit="true"
-                 data-recaptcha-sitekey="{{ site_key }}"
-                 data-recaptcha-theme="{{ theme }}"
-                 data-recaptcha-lang="{{ lang }}">
+                 data-sitekey="{{ site_key }}"
+                 data-version="2-invisible"
+                 data-theme="{{ theme }}"
+                 data-lang="{{ lang }}">
                 {# Container for v2 invisible - will be managed by JS #}
+                <div id="g-recaptcha-{{ formId }}" class="g-recaptcha"></div>
             </div>
 
             <script>
@@ -132,23 +144,28 @@
 
                     function addHiddenInput(form, name, value) {
                         const existing = form.querySelector('input[type="hidden"][name="' + name + '"]');
-                        if (existing) { existing.remove(); }
-                        const input = document.createElement('input');
-                        input.setAttribute('type', 'hidden');
-                        input.setAttribute('name', name);
-                        input.setAttribute('value', value);
-                        form.insertBefore(input, form.firstChild);
+                        if (existing) {
+                            existing.value = value;
+                        } else {
+                            const input = document.createElement('input');
+                            input.setAttribute('type', 'hidden');
+                            input.setAttribute('name', name);
+                            input.setAttribute('value', value);
+                            form.insertBefore(input, form.firstChild);
+                        }
                     }
 
                     function initRecaptchaV2Invisible(container) {
                         const formId = container.dataset.formId;
-                        const siteKey = container.dataset.recaptchaSitekey;
-                        const lang = container.dataset.recaptchaLang;
-                        const theme = container.dataset.recaptchaTheme;
+                        const siteKey = container.dataset.sitekey;
+                        const lang = container.dataset.lang;
+                        const theme = container.dataset.theme;
                         const form = document.getElementById(formId);
                         let widgetId = null;
 
                         if (!form) return;
+
+                        console.log(`Initializing reCAPTCHA v2 Invisible for form ${formId}`);
 
                         const callbackName = 'captchaInvisibleOnloadCallback_' + formId;
 
@@ -168,17 +185,20 @@
 
                         const submitHandler = function(event) {
                             event.preventDefault();
+                            console.log(`reCAPTCHA v2 Invisible intercepting submit for form ${formId}`);
 
                             if (typeof grecaptcha === 'undefined' || typeof grecaptcha.render === 'undefined') {
                                 console.error('grecaptcha not ready for invisible captcha');
                                 return;
                             }
 
-                            let captchaElement = form.querySelector('#g-recaptcha-invisible-' + formId);
+                            const recaptchaId = 'g-recaptcha-' + formId;
+                            let captchaElement = document.getElementById(recaptchaId);
+
                             if (!captchaElement) {
                                 captchaElement = document.createElement('div');
-                                captchaElement.setAttribute('id', 'g-recaptcha-invisible-' + formId);
-                                captchaElement.style.display = 'none';
+                                captchaElement.setAttribute('id', recaptchaId);
+                                captchaElement.className = 'g-recaptcha';
                                 form.appendChild(captchaElement);
                             }
 
@@ -191,10 +211,11 @@
                                     }
                                 }
 
-                                widgetId = grecaptcha.render(captchaElement.id, {
+                                widgetId = grecaptcha.render(recaptchaId, {
                                     sitekey: siteKey,
                                     size: 'invisible',
                                     callback: function(token) {
+                                        console.log(`reCAPTCHA v2 Invisible token received for form ${formId}`);
                                         addHiddenInput(form, 'g-recaptcha-response', token);
                                         form.removeEventListener('submit', submitHandler);
 
@@ -245,7 +266,7 @@
                     // Register the initializer function
                     const initializerFunctionName = 'initRecaptcha_{{ formId }}';
                     window.GravRecaptchaInitializers[initializerFunctionName] = function() {
-                        const container = document.querySelector('[data-form-id="{{ formId }}"][data-recaptcha-version="2-invisible"]');
+                        const container = document.querySelector('[data-form-id="{{ formId }}"][data-captcha-provider="recaptcha"]');
                         if (!container) return;
 
                         initRecaptchaV2Invisible(container);
@@ -270,7 +291,9 @@
                  data-form-id="{{ formId }}"
                  data-captcha-provider="recaptcha"
                  data-sitekey="{{ site_key }}"
-                 data-theme="{{ theme }}">
+                 data-version="2-checkbox"
+                 data-theme="{{ theme }}"
+                 data-lang="{{ lang }}">
                 <div id="{{ container_id }}" class="g-recaptcha"></div>
             </div>
 

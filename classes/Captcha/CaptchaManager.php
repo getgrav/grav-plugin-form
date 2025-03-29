@@ -49,7 +49,7 @@ class CaptchaManager
             // Check for modern captcha type with provider
             if ($fieldType === 'captcha') {
                 $captchaField = $fieldDef;
-                $providerName = $fieldDef['provider'] ?? null;
+                $providerName = $fieldDef['provider'] ?? 'recaptcha';
                 break;
             }
 

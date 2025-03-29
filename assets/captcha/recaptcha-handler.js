@@ -6,14 +6,40 @@
         if (window.GravFormXHR && window.GravFormXHR.captcha) {
             window.GravFormXHR.captcha.register('recaptcha', {
                 reset: function(container, form) {
-                    const formId = form.id;
-                    const recaptchaId = `g-recaptcha-${formId}`;
-                    const widgetContainer = document.getElementById(recaptchaId);
-
-                    if (!widgetContainer) {
-                        console.warn(`reCAPTCHA container #${recaptchaId} not found.`);
+                    if (!form || !form.id) {
+                        console.warn('Cannot reset reCAPTCHA: form is invalid or missing ID');
                         return;
                     }
+
+                    const formId = form.id;
+                    console.log(`Attempting to reset reCAPTCHA for form: ${formId}`);
+
+                    // First try the expected ID pattern from the Twig template
+                    const recaptchaId = `g-recaptcha-${formId}`;
+                    // We need to look more flexibly for the container
+                    let widgetContainer = document.getElementById(recaptchaId);
+
+                    // If not found by ID, look for the div inside the captcha provider container
+                    if (!widgetContainer) {
+                        // Try to find it inside the captcha provider container
+                        widgetContainer = container.querySelector('.g-recaptcha');
+
+                        if (!widgetContainer) {
+                            // If that fails, look more broadly in the form
+                            widgetContainer = form.querySelector('.g-recaptcha');
+
+                            if (!widgetContainer) {
+                                // Last resort - create a new container if needed
+                                console.warn(`reCAPTCHA container #${recaptchaId} not found. Creating a new one.`);
+                                widgetContainer = document.createElement('div');
+                                widgetContainer.id = recaptchaId;
+                                widgetContainer.className = 'g-recaptcha';
+                                container.appendChild(widgetContainer);
+                            }
+                        }
+                    }
+
+                    console.log(`Found reCAPTCHA container for form: ${formId}`);
 
                     // Get configuration from data attributes
                     const parentContainer = container.closest('[data-captcha-provider="recaptcha"]');
@@ -41,8 +67,10 @@
                             if (typeof grecaptcha !== 'undefined' && typeof grecaptcha.execute === 'function') {
                                 // Create a new execution context for the form
                                 const actionName = `form_${formId}`;
-                                const tokenInput = form.querySelector('input[name="token"]');
-                                const actionInput = form.querySelector('input[name="action"]');
+                                const tokenInput = form.querySelector('input[name="token"]') ||
+                                                 form.querySelector('input[name="data[token]"]');
+                                const actionInput = form.querySelector('input[name="action"]') ||
+                                                  form.querySelector('input[name="data[action]"]');
 
                                 if (tokenInput && actionInput) {
                                     // Clear previous token
@@ -73,7 +101,7 @@
                         try {
                             // Render with a slight delay to ensure DOM is settled
                             setTimeout(() => {
-                                grecaptcha.render(recaptchaId, {
+                                grecaptcha.render(widgetContainer.id || widgetContainer, {
                                     'sitekey': sitekey,
                                     'theme': parentContainer.dataset.theme || 'light',
                                     'size': isInvisible ? 'invisible' : 'normal',
@@ -86,6 +114,7 @@
                                         }
                                     }
                                 });
+                                console.log(`Successfully rendered reCAPTCHA for form: ${formId}`);
                             }, 100);
                         } catch (e) {
                             console.error(`Error rendering reCAPTCHA widget: ${e.message}`);
