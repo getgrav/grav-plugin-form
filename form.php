@@ -395,7 +395,7 @@ class FormPlugin extends Plugin
     {
         $twig = $this->grav['twig']->twig;
         $twig->addExtension(new TwigExtension());
-        $twig->addFunction(new TwigFunction('template_exists', function ($template) use ($twig) {
+        $twig->addFunction(new TwigFunction('captcha_template_exists', function ($template) use ($twig) {
             return $twig->getLoader()->exists($template);
         }));
     }

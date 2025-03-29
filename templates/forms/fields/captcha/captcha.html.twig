@@ -3,11 +3,16 @@
 {% block field %}
     {# This main captcha field serves as a router to the appropriate provider template #}
     {% set provider = field.provider %}
+
+    {% if provider is not defined %}
+        {% set provider = 'recaptcha' %}
+    {% endif %}
+
     {% set template = 'forms/fields/' ~ provider ~ '/' ~ provider ~ '.html.twig' %}
 
-    {% if template_exists(template) %}
+    {% if captcha_template_exists(template) %}
         {% include template with {'field': field} %}
     {% else %}
-        {% include 'forms/fields/recaptcha/recaptcha.html.twig' with {'field': field} %}
+      <div class="form-error" style="color:#c00000;">ERROR - unknown captcha provider: <strong>{{ provider }}</strong></div>
     {% endif %}
 {% endblock %}
