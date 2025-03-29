@@ -83,7 +83,7 @@ class FormPlugin extends Plugin
         return [
             'onPluginsInitialized' => ['onPluginsInitialized', 0],
             'onTwigExtensions' => ['onTwigExtensions', 0],
-            'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0]
+            'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
         ];
     }
 
@@ -116,6 +116,7 @@ class FormPlugin extends Plugin
 
         // Initialize the captcha manager
         CaptchaManager::initialize();
+        
 
         if ($this->isAdmin()) {
             $this->enable([

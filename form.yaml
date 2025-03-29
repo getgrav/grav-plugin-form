@@ -20,10 +20,6 @@ recaptcha:
     theme: light
     site_key:
     secret_key:
-hcaptcha:
-    theme: light            # options: [light | dark]
-    site_key:
-    secret_key:
 turnstile:
   theme: light                # options: [light | dark]
   site_key:

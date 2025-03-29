@@ -3,24 +3,18 @@ namespace Grav\Plugin\Form\Captcha;
 
 use Grav\Common\Grav;
 use Grav\Common\Uri;
-use ReCaptcha\ReCaptcha;
-use ReCaptcha\RequestMethod\CurlPost;
 
 /**
- * Google reCAPTCHA provider
+ * Google reCAPTCHA provider implementation
  */
-class ReCaptchaProvider implements CaptchaProviderInterface
+class RecaptchaProvider implements CaptchaProviderInterface
 {
     /** @var array */
     protected $config;
 
-    /** @var int */
-    protected $version;
-
     public function __construct()
     {
         $this->config = Grav::instance()['config']->get('plugins.form.recaptcha', []);
-        $this->version = $this->config['version'] ?? 2;
     }
 
     /**
@@ -28,27 +22,33 @@ class ReCaptchaProvider implements CaptchaProviderInterface
      */
     public function validate(array $form, array $params = []): array
     {
-        $uri = Uri::getInstance();
+        $grav = Grav::instance();
+        $uri = $grav['uri'];
         $ip = Uri::ip();
         $hostname = $uri->host();
 
         try {
             $secretKey = $params['recaptcha_secret'] ?? $params['recatpcha_secret'] ??
                       $this->config['secret_key'] ?? null;
+            $version = $this->config['version'] ?? 2;
 
             if (!$secretKey) {
                 throw new \RuntimeException("reCAPTCHA secret key not configured.");
             }
 
-            $requestMethod = extension_loaded('curl') ? new CurlPost() : null;
-            $recaptcha = new ReCaptcha($secretKey, $requestMethod);
+            $requestMethod = extension_loaded('curl') ? new \ReCaptcha\RequestMethod\CurlPost() : null;
+            $recaptcha = new \ReCaptcha\ReCaptcha($secretKey, $requestMethod);
 
-            if ($this->version == 3) {
+            if ($version == 3) {
                 $token = $form['token'] ?? null;
                 $action = $form['action'] ?? null;
 
                 if (!$token) {
-                    throw new \RuntimeException("reCAPTCHA v3 response token not found.");
+                    return [
+                        'success' => false,
+                        'error' => 'missing-input-response',
+                        'details' => ['error' => 'missing-input-response']
+                    ];
                 }
 
                 $recaptcha->setExpectedHostname($hostname)
@@ -96,17 +96,23 @@ class ReCaptchaProvider implements CaptchaProviderInterface
      */
     public function getClientProperties(string $formId, array $field): array
     {
-        $version = $field['recaptcha_version'] ?? $this->version;
         $siteKey = $field['recaptcha_site_key'] ?? $this->config['site_key'] ?? null;
+        $theme = $field['recaptcha_theme'] ?? $this->config['theme'] ?? 'light';
+        $version = $this->config['version'] ?? '2-checkbox';
+
+        // Determine which version we're using
+        $isV3 = strpos($version, '3') === 0;
+        $isInvisible = strpos($version, '2-invisible') === 0;
 
         return [
             'provider' => 'recaptcha',
-            'version' => $version,
             'siteKey' => $siteKey,
-            'containerId' => $version == 2 ? "g-recaptcha-{$formId}" : null,
-            'scriptUrl' => $version == 3
-                ? "https://www.google.com/recaptcha/api.js?render={$siteKey}"
-                : "https://www.google.com/recaptcha/api.js",
+            'theme' => $theme,
+            'version' => $version,
+            'isV3' => $isV3,
+            'isInvisible' => $isInvisible,
+            'containerId' => "g-recaptcha-{$formId}",
+            'scriptUrl' => "https://www.google.com/recaptcha/api.js" . ($isV3 ? '?render=' . $siteKey : ''),
             'initFunctionName' => "initRecaptcha_{$formId}"
         ];
     }
@@ -116,7 +122,14 @@ class ReCaptchaProvider implements CaptchaProviderInterface
      */
     public function getTemplateName(): string
     {
-        // This now points to a single template file
-        return "forms/fields/recaptcha/recaptcha.html.twig";
+        // Different templates based on version
+        $version = $this->config['version'] ?? '2-checkbox';
+        $isV3 = strpos($version, '3') === 0;
+
+        if ($isV3) {
+            return 'forms/fields/recaptcha/recaptchav3.html.twig';
+        }
+
+        return 'forms/fields/recaptcha/recaptcha.html.twig';
     }
 }

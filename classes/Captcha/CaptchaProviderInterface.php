@@ -2,32 +2,32 @@
 namespace Grav\Plugin\Form\Captcha;
 
 /**
- * Interface for all captcha providers
+ * Interface for captcha providers
  */
 interface CaptchaProviderInterface
 {
     /**
-     * Validate the captcha response
+     * Validate a captcha response
      *
-     * @param array $form The form data
-     * @param array $params Optional parameters from form definition
-     * @return array Result with keys: success (bool), error (string|null), details (array|null)
+     * @param array $form Form data array
+     * @param array $params Optional parameters
+     * @return array Validation result with 'success' key and optional 'error' and 'details' keys
      */
     public function validate(array $form, array $params = []): array;
 
     /**
-     * Get client-side initialization properties
+     * Get client-side properties for the captcha
      *
-     * @param string $formId The HTML form ID
-     * @param array $field The field definition
-     * @return array Data needed for client initialization
+     * @param string $formId Form ID
+     * @param array $field Field definition
+     * @return array Client properties
      */
     public function getClientProperties(string $formId, array $field): array;
 
     /**
-     * Get the form field template to use
+     * Get the template name for the captcha field
      *
-     * @return string Template name
+     * @return string
      */
     public function getTemplateName(): string;
 }

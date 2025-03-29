@@ -4,7 +4,7 @@ namespace Grav\Plugin\Form\Captcha;
 use Grav\Common\Grav;
 
 /**
- * Factory class to get captcha providers
+ * Factory for captcha providers
  */
 class CaptchaFactory
 {
@@ -12,69 +12,73 @@ class CaptchaFactory
     protected static $providers = [];
 
     /**
-     * Register a new captcha provider
+     * Register a captcha provider
      *
      * @param string $name Provider name
-     * @param string $className Fully qualified class name
+     * @param string|CaptchaProviderInterface $provider Provider class or instance
      * @return void
      */
-    public static function registerProvider(string $name, string $className): void
+    public static function registerProvider(string $name, $provider): void
     {
-        self::$providers[$name] = $className;
+        // If it's a class name, instantiate it
+        if (is_string($provider) && class_exists($provider)) {
+            $provider = new $provider();
+        }
+
+        if (!$provider instanceof CaptchaProviderInterface) {
+            Grav::instance()['log']->error("Cannot register captcha provider '{$name}': Provider must implement CaptchaProviderInterface");
+            return;
+        }
+
+        self::$providers[$name] = $provider;
+        Grav::instance()['log']->debug("Registered captcha provider: {$name}");
     }
 
     /**
-     * Get a captcha provider instance
+     * Check if a provider is registered
      *
      * @param string $name Provider name
-     * @return CaptchaProviderInterface|null
+     * @return bool
+     */
+    public static function hasProvider(string $name): bool
+    {
+        return isset(self::$providers[$name]);
+    }
+
+    /**
+     * Get a provider by name
+     *
+     * @param string $name Provider name
+     * @return CaptchaProviderInterface|null Provider instance or null if not found
      */
     public static function getProvider(string $name): ?CaptchaProviderInterface
     {
-        // If name not found, check if it matches end of any registered provider
-        if (!isset(self::$providers[$name])) {
-            foreach (self::$providers as $key => $className) {
-                if (strtolower(substr($key, -strlen($name))) === strtolower($name)) {
-                    $name = $key;
-                    break;
-                }
-            }
-        }
-
-        if (!isset(self::$providers[$name])) {
-            return null;
-        }
-
-        $className = self::$providers[$name];
-        if (class_exists($className)) {
-            return new $className();
-        }
-
-        return null;
+        return self::$providers[$name] ?? null;
     }
 
     /**
-     * Register default providers
+     * Get all registered providers
+     *
+     * @return array
+     */
+    public static function getProviders(): array
+    {
+        return self::$providers;
+    }
+
+    /**
+     * Register all default captcha providers
      *
      * @return void
      */
     public static function registerDefaultProviders(): void
     {
-        self::registerProvider('recaptcha', ReCaptchaProvider::class);
-        self::registerProvider('hcaptcha', HCaptchaProvider::class);
-        self::registerProvider('turnstile', TurnstileProvider::class);
-        self::registerProvider('basic-captcha', BasicCaptchaProvider::class);
-    }
+        // Register built-in providers
+        self::registerProvider('recaptcha', new RecaptchaProvider());
+        self::registerProvider('turnstile', new TurnstileProvider());
+        self::registerProvider('basic-captcha', new BasicCaptchaProvider());
 
-    /**
-     * Get provider for a field definition
-     *
-     * @param array $field Field definition
-     * @return CaptchaProviderInterface|null
-     */
-    public static function getProviderForField(array $field): ?CaptchaProviderInterface
-    {
-        $provider = $field['provider'] ?? 'recaptcha';
-        return self::getProvider($provider);
+        // Log the registration
+        Grav::instance()['log']->debug('Registered default captcha providers');
     }
 }

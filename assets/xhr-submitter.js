@@ -123,9 +123,9 @@
         },
 
         /**
-         * Update wrapper content based on response parsing strategy
-         * @private
-         */
+                         * Update wrapper content based on response parsing strategy
+                         * @private
+                         */
         _updateWrapperContent: function(tempDiv, wrapperElement, wrapperId, formId) {
             // Strategy 1: Look for matching wrapper ID in response
             const newWrapperElement = tempDiv.querySelector('#' + wrapperId);
@@ -160,9 +160,9 @@
         },
 
         /**
-         * Reinitialize updated form and its components
-         * @private
-         */
+                         * Reinitialize updated form and its components
+                         * @private
+                         */
         _reinitializeUpdatedForm: function(wrapperElement, formId) {
             const updatedForm = wrapperElement.querySelector('#' + formId);
 
@@ -190,15 +190,13 @@
     };
 
     /**
-     * XHR Module - Handles XMLHttpRequest operations
-     */
+                     * XHR Module - Handles XMLHttpRequest operations
+                     */
     const XHRManager = {
         /**
-         * Send form data via XHR
-         * @param {HTMLFormElement} form - The form to submit
-         * @param {Function} onSuccess - Success callback
-         * @param {Function} onError - Error callback
-         */
+                         * Send form data via XHR
+                         * @param {HTMLFormElement} form - The form to submit
+                         */
         sendFormData: function(form) {
             const formId = form.id;
             const wrapperId = formId + '-wrapper';
@@ -256,34 +254,42 @@
     };
 
     /**
-     * CaptchaManager - Handles captcha registration and initialization
-     */
+                     * CaptchaManager - Handles captcha registration and initialization
+                     */
     const CaptchaManager = {
         providers: {},
 
         /**
-         * Register a captcha provider
-         * @param {string} name - Provider name
-         * @param {object} provider - Provider object with init and reset methods
-         */
+                         * Register a captcha provider
+                         * @param {string} name - Provider name
+                         * @param {object} provider - Provider object with init and reset methods
+                         */
         register: function(name, provider) {
             this.providers[name] = provider;
             Core.log(`Registered captcha provider: ${name}`);
         },
 
         /**
-         * Get a provider by name
-         * @param {string} name - Provider name
-         * @returns {object|null} Provider object or null if not found
-         */
+                         * Get a provider by name
+                         * @param {string} name - Provider name
+                         * @returns {object|null} Provider object or null if not found
+                         */
         getProvider: function(name) {
             return this.providers[name] || null;
         },
 
         /**
-         * Reinitialize all captchas in a form
-         * @param {HTMLFormElement} form - Form element containing captchas
-         */
+                         * Get all registered providers
+                         * @returns {object} Object containing all providers
+                         */
+        getProviders: function() {
+            return this.providers;
+        },
+
+        /**
+                         * Reinitialize all captchas in a form
+                         * @param {HTMLFormElement} form - Form element containing captchas
+                         */
         reinitializeAll: function(form) {
             if (!form || !form.id) return;
 
@@ -312,13 +318,13 @@
     };
 
     /**
-     * FormHandler - Handles form submission and event listeners
-     */
+                     * FormHandler - Handles form submission and event listeners
+                     */
     const FormHandler = {
         /**
-         * Submit a form via XHR
-         * @param {HTMLFormElement} form - Form to submit
-         */
+                         * Submit a form via XHR
+                         * @param {HTMLFormElement} form - Form to submit
+                         */
         submitForm: function(form) {
             if (!form || !form.id) {
                 console.error('submitForm called with invalid form element or form missing ID.');
@@ -329,9 +335,9 @@
         },
 
         /**
-         * Set up XHR submission listener for a form
-         * @param {string} formId - ID of the form
-         */
+                         * Set up XHR submission listener for a form
+                         * @param {string} formId - ID of the form
+                         */
         setupListener: function(formId) {
             setTimeout(() => {
                 const form = document.getElementById(formId);
@@ -360,10 +366,10 @@
         },
 
         /**
-         * Attach a direct submit event listener to a form
-         * @private
-         * @param {HTMLFormElement} form - Form element
-         */
+                         * Attach a direct submit event listener to a form
+                         * @private
+                         * @param {HTMLFormElement} form - Form element
+                         */
         _attachDirectListener: function(form) {
             // Only proceed if XHR is enabled for this form
             if (form.dataset.xhrEnabled !== 'true') {
@@ -389,108 +395,35 @@
         }
     };
 
-    /**
-     * CaptchaProviders - Standard captcha implementations
-     */
-    const CaptchaProviders = {
-        /**
-         * Initialize built-in captcha providers
-         */
-        initialize: function() {
-            // 1. reCAPTCHA (both v2 and v3)
-            CaptchaManager.register('recaptcha', {
-                reset: function(container, form) {
-                    const formId = form.id;
-                    const version = container.dataset.recaptchaVersion || '2';
-                    const initializerFuncName = `initRecaptcha_${formId}`;
+    // Initialize basic built-in captcha handlers
+    // Other providers will register themselves via separate handler JS files
+    const initializeBasicCaptchaHandlers = function() {
+        // Basic captcha handler (image refresh etc.)
+        CaptchaManager.register('basic-captcha', {
+            reset: function(container, form) {
+                const formId = form.id;
+                const captchaImg = container.querySelector('img');
+                const captchaInput = container.querySelector('input[type="text"]');
 
-                    if (window.GravRecaptchaInitializers &&
-                        typeof window.GravRecaptchaInitializers[initializerFuncName] === 'function') {
+                if (captchaImg) {
+                    // Add a timestamp to force image reload
+                    const timestamp = new Date().getTime();
+                    const imgSrc = captchaImg.src.split('?')[0] + '?t=' + timestamp;
+                    captchaImg.src = imgSrc;
 
-                        Core.log(`Re-initializing reCAPTCHA v${version} for form: ${formId}`);
-                        window.GravRecaptchaInitializers[initializerFuncName]();
-                    } else {
-                        console.warn(`Cannot reinitialize reCAPTCHA - initializer function ${initializerFuncName} not found`);
+                    // Clear any existing input
+                    if (captchaInput) {
+                        captchaInput.value = '';
                     }
+
+                    Core.log(`Reset basic-captcha for form: ${formId}`);
                 }
-            });
-
-            // 2. hCaptcha
-            CaptchaManager.register('hcaptcha', {
-                reset: function(container, form) {
-                    const formId = form.id;
-                    const hcaptchaId = `h-captcha-${formId}`;
-                    const widgetContainer = document.getElementById(hcaptchaId);
-
-                    if (widgetContainer && window.hcaptcha) {
-                        Core.log(`Re-rendering hCaptcha widget for form: ${formId}`);
-
-                        // Get the sitekey from the container
-                        const sitekey = container.dataset.sitekey;
-                        if (!sitekey) {
-                            console.warn('Cannot reinitialize hCaptcha - missing sitekey attribute');
-                            return;
-                        }
-
-                        // Reset any existing widgets in this container
-                        try {
-                            if (widgetContainer.children.length > 0) {
-                                window.hcaptcha.reset(widgetContainer);
-                            }
-                        } catch (e) {
-                            console.warn(`Error resetting existing hCaptcha widget: ${e.message}`);
-                        }
-
-                        // Render a new widget
-                        window.hcaptcha.render(hcaptchaId, {
-                            sitekey: sitekey,
-                            theme: container.dataset.theme || 'light',
-                            size: container.dataset.size || 'normal',
-                            callback: container.dataset.callbackFunction || null
-                        });
-                    } else {
-                        console.warn('Cannot reinitialize hCaptcha - widget container or global hcaptcha object not found');
-                    }
-                }
-            });
-
-            // 3. Turnstile
-            CaptchaManager.register('turnstile', {
-                reset: function(container, form) {
-                    const formId = form.id;
-                    const turnstileContainerId = `cf-turnstile-${formId}`;
-                    const widgetContainer = document.getElementById(turnstileContainerId);
-
-                    if (widgetContainer && window.turnstile) {
-                        // Force reset existing widget if it exists
-                        try {
-                            window.turnstile.reset(`#${turnstileContainerId}`);
-                            Core.log(`Reset Turnstile widget for form: ${formId}`);
-                        } catch (e) {
-                            console.warn(`Error resetting Turnstile widget: ${e.message}`);
-                        }
-                    }
-
-                    // Always call the initializer function to ensure proper re-rendering
-                    const initializerFuncName = `initTurnstile_${formId}`;
-                    if (window.GravTurnstileInitializers &&
-                        typeof window.GravTurnstileInitializers[initializerFuncName] === 'function') {
-
-                        Core.log(`Re-initializing Turnstile for form: ${formId}`);
-                        // Small delay to ensure DOM is settled
-                        setTimeout(() => {
-                            window.GravTurnstileInitializers[initializerFuncName]();
-                        }, 100);
-                    } else {
-                        console.warn(`Cannot reinitialize Turnstile - initializer function ${initializerFuncName} not found`);
-                    }
-                }
-            });
-        }
+            }
+        });
     };
 
-    // Initialize the captcha providers
-    CaptchaProviders.initialize();
+    // Initialize basic captcha handlers
+    initializeBasicCaptchaHandlers();
 
     // --- Expose Public API ---
 

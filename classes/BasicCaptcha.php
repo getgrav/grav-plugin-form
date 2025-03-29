@@ -7,7 +7,7 @@ use Grav\Common\Grav;
 class BasicCaptcha
 {
     protected $session = null;
-    protected $key = 'basic_captcha_code';
+    protected $key = 'basic_captcha_value';
 
     public function __construct()
     {
