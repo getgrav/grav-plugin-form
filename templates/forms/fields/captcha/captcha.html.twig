@@ -1,18 +1,7 @@
-{% extends "forms/field.html.twig" %}
+{% set template = 'forms/fields/' ~ provider ~ '/' ~ provider ~ '.html.twig' %}
 
-{% block field %}
-    {# This main captcha field serves as a router to the appropriate provider template #}
-    {% set provider = field.provider|default('recaptcha') %}
-
-    {% if provider == 'recaptcha' %}
-        {% include 'forms/fields/recaptcha/recaptcha.html.twig' with {'field': field} %}
-    {% elseif provider == 'hcaptcha' %}
-        {% include 'forms/fields/hcaptcha/hcaptcha.html.twig' with {'field': field} %}
-    {% elseif provider == 'turnstile' %}
-        {% include 'forms/fields/turnstile/turnstile.html.twig' with {'field': field} %}
-    {% elseif provider == 'basic-captcha' %}
-        {% include 'forms/fields/basic-captcha/basic-captcha.html.twig' with {'field': field} %}
-    {% else %}
-        <div class="form-error">Unknown captcha provider: {{ provider }}</div>
-    {% endif %}
-{% endblock %}
+{% if template_exists(template) %}
+    {% include template with {'field': field} %}
+{% else %}
+    {% include 'forms/fields/recaptcha/recaptcha.html.twig' with {'field': field} %}
+{% endif %}

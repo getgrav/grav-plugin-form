@@ -393,7 +393,11 @@ class FormPlugin extends Plugin
      */
     public function onTwigExtensions(): void
     {
-        $this->grav['twig']->twig->addExtension(new TwigExtension());
+        $twig = $this->grav['twig']->twig;
+        $twig->addExtension(new TwigExtension());
+        $twig->addFunction(new TwigFunction('template_exists', function ($template) use ($twig) {
+            return $twig->getLoader()->exists($template);
+        }));
     }
 
     /**
