@@ -1,7 +1,13 @@
-{% set template = 'forms/fields/' ~ provider ~ '/' ~ provider ~ '.html.twig' %}
+{% extends "forms/field.html.twig" %}
 
-{% if template_exists(template) %}
-    {% include template with {'field': field} %}
-{% else %}
-    {% include 'forms/fields/recaptcha/recaptcha.html.twig' with {'field': field} %}
-{% endif %}
+{% block field %}
+    {# This main captcha field serves as a router to the appropriate provider template #}
+    {% set provider = field.provider %}
+    {% set template = 'forms/fields/' ~ provider ~ '/' ~ provider ~ '.html.twig' %}
+
+    {% if template_exists(template) %}
+        {% include template with {'field': field} %}
+    {% else %}
+        {% include 'forms/fields/recaptcha/recaptcha.html.twig' with {'field': field} %}
+    {% endif %}
+{% endblock %}

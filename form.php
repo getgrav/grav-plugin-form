@@ -19,7 +19,7 @@ use Grav\Common\Yaml;
 use Grav\Framework\Form\Interfaces\FormInterface;
 use Grav\Framework\Psr7\Response;
 use Grav\Framework\Route\Route;
-use Grav\Plugin\Form\BasicCaptcha;
+use Grav\Plugin\Form\Captcha\BasicCaptcha;
 use Grav\Plugin\Form\Captcha\CaptchaManager;
 use Grav\Plugin\Form\Form;
 use Grav\Plugin\Form\Forms;

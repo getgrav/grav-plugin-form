@@ -1,6 +1,6 @@
 <?php
 
-namespace Grav\Plugin\Form;
+namespace Grav\Plugin\Form\Captcha;
 
 use Grav\Common\Grav;
 
@@ -228,7 +228,7 @@ class BasicCaptcha
         $targetCount = (int) $this->getSession();
 
         // Draw instruction text
-        $fontPath = __DIR__.'/../fonts/'.($config['chars']['font'] ?? 'zxx-xed.ttf');
+        $fontPath = __DIR__.'/../../fonts/'.($config['chars']['font'] ?? 'zxx-xed.ttf');
         $black = imagecolorallocate($image, 0, 0, 0);
         imagettftext($image, 13, 0, 10, 20, $black, $fontPath, "Count the {$colorName} dots:");
 
@@ -327,7 +327,7 @@ class BasicCaptcha
         $red = imagecolorallocate($image, 255, 0, 0);
 
         // Draw instruction text
-        $fontPath = __DIR__.'/../fonts/'.($config['chars']['font'] ?? 'zxx-xed.ttf');
+        $fontPath = __DIR__.'/../../fonts/'.($config['chars']['font'] ?? 'zxx-xed.ttf');
         imagettftext($image, 11, 0, 10, 20, $black, $fontPath, "What is the position of the symbol?");
 
         // Determine symbol position based on the target position
@@ -380,7 +380,7 @@ class BasicCaptcha
         $height = imagesy($image);
 
         // Get font and colors
-        $fontPath = __DIR__.'/../fonts/'.($config['chars']['font'] ?? 'zxx-xed.ttf');
+        $fontPath = __DIR__.'/../../fonts/'.($config['chars']['font'] ?? 'zxx-xed.ttf');
         $textColor = imagecolorallocate($image, 0, 0, 0);
 
         // Draw the math expression
@@ -409,7 +409,7 @@ class BasicCaptcha
         $height = imagesy($image);
 
         // Get font settings
-        $fontPath = __DIR__.'/../fonts/'.($config['chars']['font'] ?? 'zxx-xed.ttf');
+        $fontPath = __DIR__.'/../../fonts/'.($config['chars']['font'] ?? 'zxx-xed.ttf');
         $fontSize = $config['chars']['size'] ?? 24;
         $textColor = imagecolorallocate($image, 0, 0, 0);
 

@@ -2,7 +2,6 @@
 namespace Grav\Plugin\Form\Captcha;
 
 use Grav\Common\Grav;
-use Grav\Plugin\Form\BasicCaptcha;
 
 /**
  * Basic Captcha provider implementation

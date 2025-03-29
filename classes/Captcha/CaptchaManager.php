@@ -53,7 +53,7 @@ class CaptchaManager
                 break;
             }
 
-            // Check for legacy type-based providers (like basic-captcha, turnstile, hcaptcha)
+            // Check for legacy type-based providers (like basic-captcha and turnstile)
             // This is for backward compatibility
             elseif ($fieldType && CaptchaFactory::hasProvider($fieldType)) {
                 $captchaField = $fieldDef;
