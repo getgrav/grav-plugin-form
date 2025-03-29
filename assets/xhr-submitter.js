@@ -458,13 +458,29 @@
             CaptchaManager.register('turnstile', {
                 reset: function(container, form) {
                     const formId = form.id;
-                    const initializerFuncName = `initTurnstile_${formId}`;
+                    const turnstileContainerId = `cf-turnstile-${formId}`;
+                    const widgetContainer = document.getElementById(turnstileContainerId);
 
+                    if (widgetContainer && window.turnstile) {
+                        // Force reset existing widget if it exists
+                        try {
+                            window.turnstile.reset(`#${turnstileContainerId}`);
+                            Core.log(`Reset Turnstile widget for form: ${formId}`);
+                        } catch (e) {
+                            console.warn(`Error resetting Turnstile widget: ${e.message}`);
+                        }
+                    }
+
+                    // Always call the initializer function to ensure proper re-rendering
+                    const initializerFuncName = `initTurnstile_${formId}`;
                     if (window.GravTurnstileInitializers &&
                         typeof window.GravTurnstileInitializers[initializerFuncName] === 'function') {
 
                         Core.log(`Re-initializing Turnstile for form: ${formId}`);
-                        window.GravTurnstileInitializers[initializerFuncName]();
+                        // Small delay to ensure DOM is settled
+                        setTimeout(() => {
+                            window.GravTurnstileInitializers[initializerFuncName]();
+                        }, 100);
                     } else {
                         console.warn(`Cannot reinitialize Turnstile - initializer function ${initializerFuncName} not found`);
                     }
