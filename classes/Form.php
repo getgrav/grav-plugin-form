@@ -918,10 +918,11 @@ class Form implements FormInterface, ArrayAccess
 
         $redirect = $redirect_code = null;
         $process = $this->items['process'] ?? [];
-        $legacyUploads = !isset($process['upload']) || $process['upload'] !== false;
+        $legacyUploads = !isset($process['upload']) || $process['upload'] !== true;
 
         if ($legacyUploads) {
             $this->legacyUploads();
+            $this->copyFiles();
         }
 
         if (is_array($process)) {
@@ -947,10 +948,6 @@ class Form implements FormInterface, ArrayAccess
                     break;
                 }
             }
-        }
-
-        if ($legacyUploads) {
-            $this->copyFiles();
         }
 
         $this->getFlash()->delete();
