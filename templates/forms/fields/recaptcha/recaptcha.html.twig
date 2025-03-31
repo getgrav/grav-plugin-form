@@ -17,7 +17,7 @@
     {% else %}
         {% if version == 3 or version == '3' %}
             {# --- reCAPTCHA v3 Handling --- #}
-            {% set action = (page.route|trim('/') ~ '-' ~ form.name)|underscorize %}
+            {% set action = (page.route|trim('/') ~ '-' ~ form.name)|underscorize|md5 %}
 
             <div class="g-recaptcha-container"
                  data-form-id="{{ formId }}"
