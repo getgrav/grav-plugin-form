@@ -1,6 +1,7 @@
 en:
   PLUGIN_FORM:
     NOT_VALIDATED: "Form not validated. One or more required fields are missing."
+    FIELD_REQUIRED: "field is required."
     NONCE_NOT_VALIDATED: "Oops, your form has timed out, please reload the page and submit the form again."
     FILES: "Files Upload"
     FORM_ALREADY_SUBMITTED: "This form has already been submitted."
@@ -10,8 +11,8 @@ en:
     DESTINATION_HELP: "The location where the files should be uploaded to"
     ACCEPT: "Allowed MIME Types"
     ACCEPT_HELP: "A list of MIME Types that are allowed for upload"
-    ERROR_BASIC_CAPTCHA: "Captcha failed for this form, please try again"
-    ERROR_VALIDATING_CAPTCHA: "reCAPTCHA bot protection has identified this form submission is problematic"
+    ERROR_CAPTCHA_NOT_COMPLETED: "Human verification failed for this form, please try again"
+    ERROR_VALIDATING_CAPTCHA: "Human verification has identified this form submission is problematic"
     DATA_SUMMARY: "Here is the summary of what you wrote to us:"
     NO_FORM_DATA: "No form data available"
     RECAPTCHA: "reCAPTCHA"
@@ -26,14 +27,6 @@ en:
     RECAPTCHA_SITE_KEY_HELP: "For more info visit https://developers.google.com/recaptcha"
     RECAPTCHA_SECRET_KEY: "Secret key"
     RECAPTCHA_SECRET_KEY_HELP: "For more info visit https://developers.google.com/recaptcha"
-    HCAPTCHA: "hCaptcha"
-    HCAPTCHA_THEME: "Theme"
-    HCAPTCHA_THEME_LIGHT: "Light Theme"
-    HCAPTCHA_THEME_DARK: "Dark Theme"
-    HCAPTCHA_SITE_KEY: "Site key"
-    HCAPTCHA_SITE_KEY_HELP: "For more info visit https://www.hcaptcha.com"
-    HCAPTCHA_SECRET_KEY: "Secret key"
-    HCAPTCHA_SECRET_KEY_HELP: "For more info visit https://www.hcaptcha.com"
     GENERAL: "General"
     USE_BUILT_IN_CSS: "Use built-in CSS"
     USE_INLINE_CSS: "Use inline CSS"
@@ -98,7 +91,13 @@ en:
     TURNSTILE_CAPTCHA: "Cloudflare Turnstile Captcha"
     MODULAR_FORM_FIX: "Modular Form Fix"
     MODULAR_FORM_FIX_HELP: "Fixes the issue with modular forms not finding the correct form automatically"
-
+    XHR_FILE_UPLOAD: "XHR File Upload"
+    XHR_FILE_UPLOAD_HELP: "Enable advanced XHR support for file uploads in forms submitted via AJAX"
+    FILEPOND_REMOVE_FILE: "Remove file"
+    FILEPOND_REMOVE_FILE_CONFIRMATION: "Are you sure you want to remove this file?"
+    FILEPOND_CANCEL_UPLOAD: "Cancel upload"
+    FILEPOND_ERROR_FILESIZE: "File is too large"
+    FILEPOND_ERROR_FILETYPE: "Invalid file type"
 eu:
   PLUGIN_FORM:
     NOT_VALIDATED: "Formularioa ez da baliozkotu. Beharrezkoa den eremu bat edo gehiago falta dira."

@@ -2,17 +2,17 @@
 
 {% block field %}
     {# This main captcha field serves as a router to the appropriate provider template #}
-    {% set provider = field.provider|default('recaptcha') %}
+    {% set provider = field.provider %}
 
-    {% if provider == 'recaptcha' %}
-        {% include 'forms/fields/recaptcha/recaptcha.html.twig' with {'field': field} %}
-    {% elseif provider == 'hcaptcha' %}
-        {% include 'forms/fields/hcaptcha/hcaptcha.html.twig' with {'field': field} %}
-    {% elseif provider == 'turnstile' %}
-        {% include 'forms/fields/turnstile/turnstile.html.twig' with {'field': field} %}
-    {% elseif provider == 'basic-captcha' %}
-        {% include 'forms/fields/basic-captcha/basic-captcha.html.twig' with {'field': field} %}
+    {% if provider is not defined %}
+        {% set provider = 'recaptcha' %}
+    {% endif %}
+
+    {% set template = 'forms/fields/' ~ provider ~ '/' ~ provider ~ '.html.twig' %}
+
+    {% if captcha_template_exists(template) %}
+        {% include template with {'field': field} %}
     {% else %}
-        <div class="form-error">Unknown captcha provider: {{ provider }}</div>
+      <div class="form-error" style="color:#c00000;">ERROR - unknown captcha provider: <strong>{{ provider }}</strong></div>
     {% endif %}
 {% endblock %}

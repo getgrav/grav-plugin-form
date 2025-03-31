@@ -20,4 +20,6 @@
         }
     });",
     {'group': 'bottom', 'priority': 100, 'position': 'before'}) %}
+    {% do assets.addJs('plugin://form/assets/captcha/recaptcha-handler.js', {'group': 'bottom', 'priority': 99, 'position': 'before'}) %}
+    {% do assets.addJs('plugin://form/assets/captcha/turnstile-handler.js', {'group': 'bottom', 'priority': 98, 'position': 'before'}) %}
 {% endif %}

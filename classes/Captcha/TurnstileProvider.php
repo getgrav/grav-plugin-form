@@ -23,20 +23,37 @@ class TurnstileProvider implements CaptchaProviderInterface
      */
     public function validate(array $form, array $params = []): array
     {
-        $uri = Uri::getInstance();
+        $grav = Grav::instance();
+        $uri = $grav['uri'];
         $ip = Uri::ip();
+
+        $grav['log']->debug('Turnstile validation - entire form data: ' . json_encode(array_keys($form)));
 
         try {
             $secretKey = $params['turnstile_secret'] ??
                        $this->config['secret_key'] ?? null;
 
             if (!$secretKey) {
+                $grav['log']->error("Turnstile secret key not configured.");
                 throw new \RuntimeException("Turnstile secret key not configured.");
             }
 
-            $token = $form['cf-turnstile-response'] ?? null;
+            // First check $_POST directly, then fallback to form data
+            $token = $_POST['cf-turnstile-response'] ?? null;
+            if (!$token) {
+                $token = $form['cf-turnstile-response'] ?? null;
+            }
+
+            // Log raw POST data for debugging
+            $grav['log']->debug('Turnstile validation - raw POST data keys: ' . json_encode(array_keys($_POST)));
+            $grav['log']->debug('Turnstile validation - token present: ' . ($token ? 'YES' : 'NO'));
+
+            if ($token) {
+                $grav['log']->debug('Turnstile token length: ' . strlen($token));
+            }
 
             if (!$token) {
+                $grav['log']->warning('Turnstile validation failed: missing token response');
                 return [
                     'success' => false,
                     'error' => 'missing-input-response',
@@ -44,7 +61,9 @@ class TurnstileProvider implements CaptchaProviderInterface
                 ];
             }
 
-            $client = Client::getClient();
+            $client = \Grav\Common\HTTP\Client::getClient();
+            $grav['log']->debug('Turnstile validation - calling API with token');
+
             $response = $client->request('POST', 'https://challenges.cloudflare.com/turnstile/v0/siteverify', [
                 'body' => [
                     'secret' => $secretKey,
@@ -53,13 +72,19 @@ class TurnstileProvider implements CaptchaProviderInterface
                 ]
             ]);
 
+            $statusCode = $response->getStatusCode();
+            $grav['log']->debug('Turnstile API response status: ' . $statusCode);
+
             $content = $response->toArray();
+            $grav['log']->debug('Turnstile API response: ' . json_encode($content));
 
             if (!isset($content['success'])) {
+                $grav['log']->error("Invalid response from Turnstile verification (missing 'success' key).");
                 throw new \RuntimeException("Invalid response from Turnstile verification (missing 'success' key).");
             }
 
             if (!$content['success']) {
+                $grav['log']->warning('Turnstile validation failed: ' . json_encode($content));
                 return [
                     'success' => false,
                     'error' => 'validation-failed',
@@ -67,10 +92,12 @@ class TurnstileProvider implements CaptchaProviderInterface
                 ];
             }
 
+            $grav['log']->debug('Turnstile validation successful');
             return [
                 'success' => true
             ];
         } catch (\Exception $e) {
+            $grav['log']->error("Turnstile validation error: " . $e->getMessage());
             return [
                 'success' => false,
                 'error' => $e->getMessage(),

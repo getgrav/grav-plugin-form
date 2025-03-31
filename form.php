@@ -19,7 +19,7 @@ use Grav\Common\Yaml;
 use Grav\Framework\Form\Interfaces\FormInterface;
 use Grav\Framework\Psr7\Response;
 use Grav\Framework\Route\Route;
-use Grav\Plugin\Form\BasicCaptcha;
+use Grav\Plugin\Form\Captcha\BasicCaptcha;
 use Grav\Plugin\Form\Captcha\CaptchaManager;
 use Grav\Plugin\Form\Form;
 use Grav\Plugin\Form\Forms;
@@ -83,7 +83,7 @@ class FormPlugin extends Plugin
         return [
             'onPluginsInitialized' => ['onPluginsInitialized', 0],
             'onTwigExtensions' => ['onTwigExtensions', 0],
-            'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0]
+            'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
         ];
     }
 
@@ -116,6 +116,7 @@ class FormPlugin extends Plugin
 
         // Initialize the captcha manager
         CaptchaManager::initialize();
+        
 
         if ($this->isAdmin()) {
             $this->enable([
@@ -392,7 +393,11 @@ class FormPlugin extends Plugin
      */
     public function onTwigExtensions(): void
     {
-        $this->grav['twig']->twig->addExtension(new TwigExtension());
+        $twig = $this->grav['twig']->twig;
+        $twig->addExtension(new TwigExtension());
+        $twig->addFunction(new TwigFunction('captcha_template_exists', function ($template) use ($twig) {
+            return $twig->getLoader()->exists($template);
+        }));
     }
 
     /**

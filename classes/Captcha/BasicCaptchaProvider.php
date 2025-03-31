@@ -1,45 +1,87 @@
 <?php
 namespace Grav\Plugin\Form\Captcha;
 
-use Grav\Plugin\Form\BasicCaptcha;
 use Grav\Common\Grav;
 
 /**
- * Enhanced basic image captcha provider implementation
+ * Basic Captcha provider implementation
  */
 class BasicCaptchaProvider implements CaptchaProviderInterface
 {
+    /** @var array */
+    protected $config;
+
+    public function __construct()
+    {
+        $this->config = Grav::instance()['config']->get('plugins.form.basic_captcha', []);
+    }
+
     /**
      * {@inheritdoc}
      */
     public function validate(array $form, array $params = []): array
     {
-        $captcha = new BasicCaptcha();
+        $grav = Grav::instance();
+        $session = $grav['session'];
 
-        // Get form data from different possible structures
-        $formData = $form['data'] ?? $form;
+        try {
+            // Get the expected answer from session
+            // Make sure to use the same session key that the image generation code uses
+            $expectedValue = $session->basic_captcha_value ?? null; // Changed from basic_captcha to basic_captcha_value
 
-        // Try to find the captcha field value - handle both kebab and snake case
-        $captcha_value = trim($formData['basic-captcha'] ?? $formData['basic_captcha'] ?? '');
+            // Get the user's answer
+            $userValue = $form['basic-captcha'] ?? null;
 
-        // Log debug information if debugging is enabled
-        if (Grav::instance()['config']->get('plugins.form.basic_captcha.debug', false)) {
-            Grav::instance()['log']->debug('Basic Captcha - Form Data: ' . json_encode($formData));
-            Grav::instance()['log']->debug('Basic Captcha - Submitted Value: ' . $captcha_value);
-            Grav::instance()['log']->debug('Basic Captcha - Expected Value: ' . $captcha->getSession());
-        }
+            if (!$expectedValue) {
+                return [
+                    'success' => false,
+                    'error' => 'missing-session-data',
+                    'details' => ['error' => 'No captcha value found in session']
+                ];
+            }
 
-        if (!$captcha->validateCaptcha($captcha_value)) {
+            if (!$userValue) {
+                return [
+                    'success' => false,
+                    'error' => 'missing-input-response',
+                    'details' => ['error' => 'User did not enter a captcha value']
+                ];
+            }
+
+            // Compare the values (case-insensitive string comparison for character captchas)
+            $captchaType = $this->config['type'] ?? 'math';
+
+            if ($captchaType === 'characters') {
+                $isValid = strtolower((string)$userValue) === strtolower((string)$expectedValue);
+            } else {
+                // For math, ensure both are treated as integers
+                $isValid = (int)$userValue === (int)$expectedValue;
+            }
+
+            if (!$isValid) {
+                return [
+                    'success' => false,
+                    'error' => 'validation-failed',
+                    'details' => [
+                        'expected' => $expectedValue,
+                        'received' => $userValue
+                    ]
+                ];
+            }
+
+            // Clear the session value to prevent reuse
+            $session->basic_captcha_value = null;
+
+            return [
+                'success' => true
+            ];
+        } catch (\Exception $e) {
             return [
                 'success' => false,
-                'error' => 'invalid-captcha',
-                'details' => ['error' => 'basic-captcha-not-valid']
+                'error' => $e->getMessage(),
+                'details' => ['exception' => get_class($e)]
             ];
         }
-
-        return [
-            'success' => true
-        ];
     }
 
     /**
@@ -47,50 +89,15 @@ class BasicCaptchaProvider implements CaptchaProviderInterface
      */
     public function getClientProperties(string $formId, array $field): array
     {
-        $config = Grav::instance()['config']->get('plugins.form.basic_captcha');
-        $captchaType = $config['type'] ?? 'characters';
-
-        // Generate unique identifiers for the captcha elements
-        $containerId = "basic-captcha-{$formId}";
-        $imageId = "basic-captcha-image-{$formId}";
-        $reloadId = "basic-captcha-reload-{$formId}";
-
-        // Include proper instructions based on captcha type
-        $instructions = $this->getCaptchaInstructions($captchaType);
+        $captchaType = $field['basic_captcha_type'] ?? $this->config['type'] ?? 'math';
 
         return [
             'provider' => 'basic-captcha',
-            'containerId' => $containerId,
-            'imageId' => $imageId,
-            'reloadId' => $reloadId,
+            'type' => $captchaType,
             'imageUrl' => '/forms-basic-captcha-image.jpg',
-            'instructions' => $instructions,
-            'type' => $captchaType
+            'refreshable' => true,
+            'containerId' => "basic-captcha-{$formId}"
         ];
-    }
-
-    /**
-     * Get appropriate instructions for the captcha type
-     */
-    protected function getCaptchaInstructions($type): string
-    {
-        switch ($type) {
-            case 'dotcount':
-                return 'Count the colored dots shown in the image.';
-            case 'position':
-                return 'Identify the position of the symbol (top, bottom, left, right, center, etc).';
-            case 'colorcount':
-                return 'Count the objects of the specified color and shape.';
-            case 'pathtracing':
-                return 'Follow the path to find the number at the end.';
-            case 'equation':
-                return 'Solve the equation using the given symbol values.';
-            case 'math':
-                return 'Solve the math problem.';
-            case 'characters':
-            default:
-                return 'Enter the text shown in the image.';
-        }
     }
 
     /**
