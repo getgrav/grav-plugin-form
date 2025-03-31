@@ -2,6 +2,7 @@ en:
   PLUGIN_FORM:
     NOT_VALIDATED: "Form not validated. One or more required fields are missing."
     FIELD_REQUIRED: "field is required."
+    VALIDATION_MATCH: "%s field does not match %s field."
     NONCE_NOT_VALIDATED: "Oops, your form has timed out, please reload the page and submit the form again."
     FILES: "Files Upload"
     FORM_ALREADY_SUBMITTED: "This form has already been submitted."
