@@ -899,17 +899,39 @@ class Form implements FormInterface, ArrayAccess
             $this->data->validate();
             $this->data->filter();
 
-            $grav->fireEvent('onFormValidationProcessed', new Event(['form' => $this]));
-        } catch (ValidationException $e) {
-            $this->status = 'error';
-            $event = new Event(['form' => $this, 'message' => $e->getMessage(), 'messages' => $e->getMessages()]);
-            $grav->fireEvent('onFormValidationError', $event);
-            if ($event->isPropagationStopped()) {
-                return;
+            // Add special handling for file/filepond fields
+            foreach ($this->fields as $field) {
+                // Don't restrict to just type=file, but also other file based as long as they have filesize && accept
+                if (isset($field['filesize']) && isset($field['accept']) &&
+                    isset($field['validate']['required']) &&
+                    $field['validate']['required']) {
+
+                    // Get field name
+                    $fieldName = $field['name'];
+                    $fieldLabel = $field['label'] ?? $field['name'];
+
+                    // Check if files exist in the session for this field
+                    $flashObject = $this->getFlash();
+                    if ($flashObject->exists()) {
+                        $filesInField = $flashObject->getFilesByField($fieldName);
+
+                        // If no files found, add validation error
+                        if (empty($filesInField)) {
+                            $this->setError("$fieldLabel " . $grav['language']->translate("PLUGIN_FORM.FIELD_REQUIRED"));
+                            throw new ValidationException();
+                        }
+                    } else {
+                        // No flash object with files found
+                        $this->setError("$fieldLabel " . $grav['language']->translate("PLUGIN_FORM.FIELD_REQUIRED"));
+                        throw new ValidationException();
+                    }
+                }
             }
-        } catch (RuntimeException $e) {
+
+            $grav->fireEvent('onFormValidationProcessed', new Event(['form' => $this]));
+        } catch (ValidationException | RuntimeException $e) {
             $this->status = 'error';
-            $event = new Event(['form' => $this, 'message' => $e->getMessage(), 'messages' => []]);
+            $event = new Event(['form' => $this, 'message' => $this->message, 'messages' => $this->messages]);
             $grav->fireEvent('onFormValidationError', $event);
             if ($event->isPropagationStopped()) {
                 return;

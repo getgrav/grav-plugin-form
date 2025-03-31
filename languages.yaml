@@ -1,6 +1,7 @@
 en:
   PLUGIN_FORM:
     NOT_VALIDATED: "Form not validated. One or more required fields are missing."
+    FIELD_REQUIRED: "field is required."
     NONCE_NOT_VALIDATED: "Oops, your form has timed out, please reload the page and submit the form again."
     FILES: "Files Upload"
     FORM_ALREADY_SUBMITTED: "This form has already been submitted."
@@ -92,6 +93,11 @@ en:
     MODULAR_FORM_FIX_HELP: "Fixes the issue with modular forms not finding the correct form automatically"
     XHR_FILE_UPLOAD: "XHR File Upload"
     XHR_FILE_UPLOAD_HELP: "Enable advanced XHR support for file uploads in forms submitted via AJAX"
+    FILEPOND_REMOVE_FILE: "Remove file"
+    FILEPOND_REMOVE_FILE_CONFIRMATION: "Are you sure you want to remove this file?"
+    FILEPOND_CANCEL_UPLOAD: "Cancel upload"
+    FILEPOND_ERROR_FILESIZE: "File is too large"
+    FILEPOND_ERROR_FILETYPE: "Invalid file type"
 eu:
   PLUGIN_FORM:
     NOT_VALIDATED: "Formularioa ez da baliozkotu. Beharrezkoa den eremu bat edo gehiago falta dira."
