@@ -98,7 +98,13 @@ $form-active-color: #000;
     }
 }
 
-
+//Filepond
+.filepond--root.form-input {
+  min-height: 7rem;
+  height: auto;
+  overflow:hidden;
+  border: 0;
+}
 
 // New JS powered tabs
 .form-tabs {
