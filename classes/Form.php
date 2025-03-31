@@ -931,6 +931,8 @@ class Form implements FormInterface, ArrayAccess
             $grav->fireEvent('onFormValidationProcessed', new Event(['form' => $this]));
         } catch (ValidationException | RuntimeException $e) {
             $this->status = 'error';
+            $this->message = $this->message ?? $e->getMessage();
+            $this->messages = array_merge($this->messages, $e->getMessages());
             $event = new Event(['form' => $this, 'message' => $this->message, 'messages' => $this->messages]);
             $grav->fireEvent('onFormValidationError', $event);
             if ($event->isPropagationStopped()) {
