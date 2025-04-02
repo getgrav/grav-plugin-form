@@ -416,7 +416,7 @@ class FormPlugin extends Plugin
      * @param  Event|null  $event
      * @return void
      */
-    public function onTwigVariables(Event $event = null): void
+    public function onTwigVariables(?Event $event = null): void
     {
         if ($event && isset($event['page'])) {
             $page = $event['page'];
@@ -1086,7 +1086,7 @@ class FormPlugin extends Plugin
      * @param  PageInterface|null  $page
      * @return FormInterface|null
      */
-    protected function form(PageInterface $page = null)
+    protected function form(?PageInterface $page = null)
     {
         /** @var Forms $forms */
         $forms = $this->grav['forms'];
@@ -1138,7 +1138,7 @@ class FormPlugin extends Plugin
      * @param  array|null  $form
      * @return FormInterface|null
      */
-    protected function createForm(PageInterface $page, string $name = null, array $form = null): ?FormInterface
+    protected function createForm(PageInterface $page, ?string $name = null, ?array $form = null): ?FormInterface
     {
         /** @var Forms $forms */
         $forms = $this->grav['forms'];

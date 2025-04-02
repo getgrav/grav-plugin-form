@@ -788,7 +788,6 @@ hr:
     TURNSTILE_CAPTCHA: "Captcha Cloudflare Turnstile"
     MODULAR_FORM_FIX: "Popravljanje modularnog obrasca"
     MODULAR_FORM_FIX_HELP: "Rješava problem gdje modularni obrasci automatski ne pronalaze ispravan obrazac."
-    XHR_FILE_UPLOAD: "Weryfikacja XHR"
     XHR_FILE_UPLOAD: "XHR slanje fajla"
     XHR_FILE_UPLOAD_HELP: "Omogućava naprednu XHR podršku za slanje fajlova u obrascima poslanim putem AJAX-a."
     FILEPOND_REMOVE_FILE: "Ukloni fajl"
@@ -1278,7 +1277,7 @@ nl:
     GENERAL: "Algemeen"
     USE_BUILT_IN_CSS: "Gebruik ingebouwde CSS"
     USE_INLINE_CSS: "Gebruik inline CSS"
-    FILEUPLOAD_PREVENT_SELF: 'Kan "%s" niet buiten pagina\'s gebruiken.'
+    FILEUPLOAD_PREVENT_SELF: 'Kan "%s" niet buiten pagina''s gebruiken.'
     FILEUPLOAD_UNABLE_TO_UPLOAD: 'Niet mogelijk om bestand %s: %s te uploaden'
     FILEUPLOAD_UNABLE_TO_MOVE: 'Niet mogelijk om bestand %s naar "%s" te verplaatsen'
     FILEUPLOAD_ERR_OK: "Er is geen fout opgetreden, het bestand is succesvol geüpload."
@@ -1605,4 +1604,4 @@ lt:
     RANDOM_NAME: "Atsitiktinis pavadinimas"
     RANDOM_NAME_HELP: "Generuoti atsitiktinį 15-os simbolių ilgio pavadinimą įkeliamoms byloms"
     CLIENT_SIDE_VALIDATION: "Tikrinimas kliento pusėje"
-    CLIENT_SIDE_VALIDATION_HELP: "Pagal nut
+    CLIENT_SIDE_VALIDATION_HELP: "Pagal nutylėjimą formos naudoja HTML5 kliento pusės tikrinimą kaip pirmą gynybos liniją."
