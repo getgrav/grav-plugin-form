@@ -1,9 +1,9 @@
 {% extends "forms/field.html.twig" %}
 
 {% block field %}
-<div class="form-spacer {{ field.classes }}">
+<div class="form-field form-spacer {{ field.classes }}">
     {% if field.title %}
-        <h3>{{- field.title|t|raw -}}</h3>
+        <{{ title_type|default('h3') }}>{{- field.title|t|raw -}}</ {{ title_type|default('h3') }}>
     {% endif %}
 
     {% if field.markdown %}
