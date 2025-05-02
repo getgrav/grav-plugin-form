@@ -4,7 +4,7 @@
     {# This main captcha field serves as a router to the appropriate provider template #}
     {% set provider = field.provider %}
 
-    {% if provider is not defined %}
+    {% if provider is not defined or provider == null %}
         {% set provider = 'recaptcha' %}
     {% endif %}
 

@@ -31,7 +31,7 @@ class CaptchaFactory
         }
 
         self::$providers[$name] = $provider;
-        Grav::instance()['log']->debug("Registered captcha provider: {$name}");
+//        Grav::instance()['log']->debug("Registered captcha provider: {$name}");
     }
 
     /**
@@ -79,6 +79,6 @@ class CaptchaFactory
         self::registerProvider('basic-captcha', new BasicCaptchaProvider());
 
         // Log the registration
-        Grav::instance()['log']->debug('Registered default captcha providers');
+//        Grav::instance()['log']->debug('Registered default captcha providers');
     }
 }
