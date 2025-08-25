@@ -74,7 +74,7 @@ class CaptchaFactory
     public static function registerDefaultProviders(): void
     {
         // Register built-in providers
-        self::registerProvider('recaptcha', new RecaptchaProvider());
+        self::registerProvider('recaptcha', new ReCaptchaProvider());
         self::registerProvider('turnstile', new TurnstileProvider());
         self::registerProvider('basic-captcha', new BasicCaptchaProvider());
 

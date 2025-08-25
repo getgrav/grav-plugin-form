@@ -7,7 +7,7 @@ use Grav\Common\Uri;
 /**
  * Google reCAPTCHA provider implementation
  */
-class RecaptchaProvider implements CaptchaProviderInterface
+class ReCaptchaProvider implements CaptchaProviderInterface
 {
     /** @var array */
     protected $config;
