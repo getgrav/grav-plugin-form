@@ -2,7 +2,7 @@
 ## 08/25/2025
 
 1. [](#bugfix)
-   * Fixes for basic captcha defalt size
+   * Fixes for basic captcha default size + blueprints
 
 # v8.0.2
 ## 08/25/2025
