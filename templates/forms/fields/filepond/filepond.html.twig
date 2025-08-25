@@ -1,0 +1,128 @@
+{% extends "forms/field.html.twig" %}
+
+{% set defaults = config.plugins.form %}
+{% set files = defaults.files|merge(field|default([])) %}
+{% set limit = not field.multiple ? 1 : files.limit %}
+
+{% block input %}
+    {% set page_can_upload = exists or (type == 'page' and not exists and not (field.destination starts with '@self' or field.destination starts with 'self@')) %}
+    {% set max_filesize = (field.filesize > form_max_filesize or field.filesize == 0) ? form_max_filesize : field.filesize %}
+
+    {% block prepend %}{% endblock %}
+    {% set settings = {name: field.name, paramName: (scope ~ field.name)|fieldName ~ (files.multiple ? '[]' : ''), limit: limit, filesize: max_filesize, accept: files.accept, resolution: files.resolution, resizeWidth: field.filepond.resize_width, resizeHeight: field.filepond.resize_height, resizeQuality: field.filepond.resize_quality } %}
+    {% set filepond_settings = field.filepond|default({}) %}
+    {% set file_url_add = form.getFileUploadAjaxRoute().getUri() %}
+    {% set file_url_remove = form.getFileDeleteAjaxRoute(null, null).getUri() %}
+    <div class="{{ form_field_wrapper_classes ?: 'form-input-wrapper' }} {{ field.classes }} filepond-root form-input-file {{ field.size }}"
+         data-grav-file-settings="{{ settings|json_encode|e('html_attr') }}"
+         data-filepond-options="{{ filepond_settings|json_encode|e('html_attr') }}"
+         data-file-field-name="{{ field.name }}"
+         {% if file_url_add %}data-file-url-add="{{ file_url_add|e('html_attr') }}"{% endif %}
+         {% if file_url_remove %}data-file-url-remove="{{ file_url_remove|e('html_attr') }}"{% endif %}>
+        {% block file_extras %}{% endblock %}
+        <input
+                {# required attribute structures #}
+                {% block input_attributes %}
+                    type="file"
+                    {% if files.multiple %}multiple="multiple"{% endif %}
+                    {% if files.accept %}accept="{{ files.accept|join(',') }}"{% endif %}
+                    {% if field.disabled %}disabled="disabled"{% endif %}
+                    {% if field.random_name %}random="true"{% endif %}
+                    {% if required %}required="required"{% endif %}
+                    {{ parent() }}
+                {% endblock %}
+        />
+
+        {% for path, file in value %}
+            <div class="hidden" data-file="{{ file|merge({remove: file.remove|default(''), path: file.path|default('')})|json_encode|e('html_attr') }}"></div>
+        {% endfor %}
+        {% include 'forms/fields/hidden/hidden.html.twig' with {field: {name: '_json.' ~ field.name}, value: (value ?? [])|json_encode } %}
+
+    </div>
+    {% if inline_errors and errors %}
+    <div class="{{ form_field_inline_error_classes }}">
+      <p class="form-message"><i class="fa fa-exclamation-circle"></i> {{ errors|first|raw }}</p>
+    </div>
+    {% endif %}
+
+    {% if grav.browser.browser == 'msie' and grav.browser.version < 12 %}
+        {% do assets.addJs('plugin://form/assets/object.assign.polyfill.js') %}
+    {% endif %}
+
+    {% do assets.addJs('jquery', 101) %}
+
+    {# FilePond core and plugins #}
+    {% do assets.addJs('plugin://form/assets/filepond/filepond.min.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 98 }) %}
+    {% do assets.addJs('plugin://form/assets/filepond/filepond-plugin-file-validate-size.min.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 97 }) %}
+    {% do assets.addJs('plugin://form/assets/filepond/filepond-plugin-file-validate-type.min.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 97 }) %}
+    {% do assets.addJs('plugin://form/assets/filepond/filepond-plugin-image-preview.min.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 97 }) %}
+    {% do assets.addJs('plugin://form/assets/filepond/filepond-plugin-image-resize.min.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 97 }) %}
+    {% do assets.addJs('plugin://form/assets/filepond/filepond-plugin-image-transform.min.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 97 }) %}
+
+    {# FilePond CSS #}
+    {% do assets.addCss('plugin://form/assets/filepond/filepond.min.css') %}
+    {% do assets.addCss('plugin://form/assets/filepond/filepond-plugin-image-preview.min.css') %}
+
+    {# Custom handlers - note: load this AFTER the libraries #}
+    {% do assets.addJs('plugin://form/assets/filepond-handler.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 96 }) %}
+
+{#    {% if form.xhr_submit %}#}
+{#        {% do assets.addJs('plugin://form/assets/filepond-reinit.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 90 }) %}#}
+{#    {% endif %}#}
+
+    {% do assets.addInlineJs("
+    window.GravForm = window.GravForm || {};
+    window.GravForm = Object.assign({}, window.GravForm, {
+        translations: {
+            PLUGIN_FORM: {
+                'FILEPOND_REMOVE_FILE': " ~ 'PLUGIN_FORM.FILEPOND_REMOVE_FILE'|t|json_encode ~ ",
+                'FILEPOND_REMOVE_FILE_CONFIRMATION': " ~ 'PLUGIN_FORM.FILEPOND_REMOVE_FILE_CONFIRMATION'|t|json_encode ~ ",
+                'FILEPOND_CANCEL_UPLOAD': " ~ 'PLUGIN_FORM.FILEPOND_CANCEL_UPLOAD'|t|json_encode ~ ",
+                'FILEPOND_ERROR_FILESIZE': " ~ 'PLUGIN_FORM.FILEPOND_ERROR_FILESIZE'|t|json_encode ~ ",
+                'FILEPOND_ERROR_FILETYPE': " ~ 'PLUGIN_FORM.FILEPOND_ERROR_FILETYPE'|t|json_encode ~ "
+            }
+        }
+    });
+    ", {'group': 'bottom', 'position': 'before'}) %}
+
+  {% do assets.addInlineJs("
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof GravFormXHR !== 'undefined') {
+      // First check if DOM property exists
+      if (GravFormXHR.DOM && typeof GravFormXHR.DOM.updateFormContent === 'function') {
+        var originalUpdateFormContent = GravFormXHR.DOM.updateFormContent;
+        GravFormXHR.DOM.updateFormContent = function() {
+          var result = originalUpdateFormContent.apply(this, arguments);
+
+          // Dispatch event after form content is updated
+          setTimeout(function() {
+            document.dispatchEvent(new Event('grav-form-updated'));
+            if (window.reinitializeFilePonds) {
+              window.reinitializeFilePonds();
+            }
+          }, 50);
+
+          return result;
+        };
+      }
+      // If DOM property doesn't exist, try to hook into submit directly
+      else if (typeof GravFormXHR.submit === 'function') {
+        var originalSubmit = GravFormXHR.submit;
+        GravFormXHR.submit = function(form) {
+          var result = originalSubmit.apply(this, arguments);
+
+          // Reinitialize FilePond after form submission
+          setTimeout(function() {
+            document.dispatchEvent(new Event('grav-form-updated'));
+            if (window.reinitializeFilePonds) {
+              window.reinitializeFilePonds();
+            }
+          }, 500);
+
+          return result;
+        };
+      }
+    }
+  });
+  ", {'group': 'bottom'}) %}
+{% endblock %}

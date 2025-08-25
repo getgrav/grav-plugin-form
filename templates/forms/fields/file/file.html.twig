@@ -1,7 +1,7 @@
 {% extends "forms/field.html.twig" %}
 
 {% macro bytesToSize(bytes) -%}
-    {% spaceless %}
+  {% apply spaceless %}
         {% set kilobyte = 1024 %}
         {% set megabyte = kilobyte * 1024 %}
         {% set gigabyte = megabyte * 1024 %}
@@ -18,7 +18,7 @@
         {% else %}
             {{ (bytes / terabyte)|number_format(2, '.') ~ ' TB' }}
         {% endif %}
-    {% endspaceless %}
+    {% endapply %}
 {%- endmacro %}
 
 {% macro preview(path, value, global) %}
@@ -69,6 +69,7 @@
     <div class="{{ form_field_wrapper_classes ?: 'form-input-wrapper' }} {{ field.classes }} dropzone files-upload form-input-file {{ field.size }}"
          data-grav-file-settings="{{ settings|json_encode|e('html_attr') }}"
          data-dropzone-options="{{ dropzoneSettings|json_encode|e('html_attr') }}"
+         data-file-field-name="{{ field.name }}"
          {% if file_url_add %}data-file-url-add="{{ file_url_add|e('html_attr') }}"{% endif %}
          {% if file_url_remove %}data-file-url-remove="{{ file_url_remove|e('html_attr') }}"{% endif %}>
         {% block file_extras %}{% endblock %}
@@ -98,12 +99,16 @@
     </div>
     {% endif %}
 
+    {% if form.xhr_submit %}
+        {% do assets.addJs('plugin://form/assets/dropzone-reinit.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 90 }) %}
+    {% endif %}
+
     {% if grav.browser.browser == 'msie' and grav.browser.version < 12 %}
         {% do assets.addJs('plugin://form/assets/object.assign.polyfill.js') %}
     {% endif %}
     {% do assets.addJs('jquery', 101) %}
-    {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'group': 'bottom', 'loading': 'defer' }) %}
-    {% do assets.addJs('plugin://form/assets/form.min.js', { 'group': 'bottom', 'loading': 'defer'  }) %}
+    {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 100 }) %}
+    {% do assets.addJs('plugin://form/assets/form.min.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 99  }) %}
     {% do assets.addCss('plugin://form/assets/dropzone.min.css', { 'group': 'form'}) %}
     {{ assets.css('form')|raw }}
     {% do assets.addInlineJs("

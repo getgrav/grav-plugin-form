@@ -1,15 +1,107 @@
 {% extends "forms/field.html.twig" %}
 
-{% set config = grav.config %}
-{% set site_key = field.turnstile_site_key ?? config.plugins.form.turnstile.site_key %}
-{% set theme = field.theme ?? config.plugins.form.turnstile.theme ?? 'light' %}
-
 {% block label %}{% endblock %}
 
 {% block input %}
-  {% do assets.addJs('https://challenges.cloudflare.com/turnstile/v0/api.js', { defer: '', async: '' }) %}
+    {% set config = grav.config %}
+    {% set formId = form.id ?: form.name %}
 
-  <div class="turnstile">
-    <div class="cf-turnstile" data-sitekey="{{ site_key }}" data-theme="{{ theme }}"></div>
-  </div>
+    {# Get configuration values with fallbacks #}
+    {% set site_key = field.turnstile_site_key ?? config.plugins.form.turnstile.site_key %}
+    {% set theme = field.turnstile_theme ?? config.plugins.form.turnstile.theme ?? 'light' %}
+    {% set container_id = 'cf-turnstile-' ~ formId %}
+    {% set init_var = 'turnstile_initialized_' ~ formId %}
+
+    {% if not site_key %}
+        <div class="form-error">Turnstile site key is not set. Please set it in the form field or plugin configuration.</div>
+    {% else %}
+        {# Add a hidden field for the token directly in the INPUT block to ensure it's part of the field #}
+        <input type="hidden" name="cf-turnstile-response" value="" class="turnstile-token" />
+
+        <div class="turnstile-container"
+             data-form-id="{{ formId }}"
+             data-captcha-provider="turnstile"
+             data-sitekey="{{ site_key }}"
+             data-theme="{{ theme }}">
+            <div id="{{ container_id }}" class="cf-turnstile"></div>
+        </div>
+
+        {% do assets.addJs('https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback_' ~ formId ~ '&render=explicit', { 'loading': 'async', 'defer': '' }) %}
+
+        <script>
+            (function() {
+                // Prevent multiple initialization
+                if (window['{{ init_var }}']) {
+                    console.log('Turnstile already initialized for form {{ formId }}');
+                    return;
+                }
+
+                // Mark as initialized
+                window['{{ init_var }}'] = true;
+
+                // Use unique callback name to avoid conflicts with multiple forms
+                window['onloadTurnstileCallback_{{ formId }}'] = function() {
+                    console.log('Turnstile API loaded - initializing widget for {{ formId }}');
+
+                    const container = document.getElementById('{{ container_id }}');
+                    if (!container) {
+                        console.error('Turnstile container #{{ container_id }} not found');
+                        return;
+                    }
+
+                    const form = document.getElementById('{{ formId }}');
+                    if (!form) {
+                        console.error('Cannot find form #{{ formId }}');
+                        return;
+                    }
+
+                    // Find the token input field
+                    const tokenField = form.querySelector('input[name="cf-turnstile-response"]');
+                    if (!tokenField) {
+                        console.error('Token field not found in form #{{ formId }}');
+                    }
+
+                    // Check if this container already has a widget (avoid duplicates)
+                    if (container.querySelector('iframe')) {
+                        console.log('Turnstile widget already initialized in this container');
+                        return;
+                    }
+
+                    try {
+                        turnstile.render('#{{ container_id }}', {
+                            sitekey: '{{ site_key }}',
+                            theme: '{{ theme }}',
+                            callback: function(token) {
+                                console.log('Turnstile callback fired with token', token.substring(0, 10) + '...');
+
+                                // Update the token field
+                                if (tokenField) {
+                                    tokenField.value = token;
+                                    console.log('Updated token field with value');
+                                }
+                            },
+                            'expired-callback': function() {
+                                console.warn('Turnstile token expired');
+                                if (tokenField) {
+                                    tokenField.value = '';
+                                }
+                            },
+                            'error-callback': function(error) {
+                                console.error('Turnstile error:', error);
+                            }
+                        });
+
+                        console.log('Turnstile render call completed');
+                    } catch (e) {
+                        console.error('Error initializing Turnstile:', e);
+                    }
+                };
+
+                // Check if we can initialize immediately
+                if (document.getElementById('{{ container_id }}') && typeof turnstile !== 'undefined') {
+                    window['onloadTurnstileCallback_{{ formId }}']();
+                }
+            })();
+        </script>
+    {% endif %}
 {% endblock %}

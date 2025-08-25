@@ -14,6 +14,11 @@
   "dependencies": {
     "dropzone": "getgrav/dropzone#master",
     "exif-js": "^2.3.0",
+    "filepond": "^4.32.7",
+    "filepond-plugin-file-validate-size": "^2.2.8",
+    "filepond-plugin-file-validate-type": "^1.2.9",
+    "filepond-plugin-image-preview": "^4.6.12",
+    "filepond-plugin-image-resize": "^2.0.10",
     "sortablejs": "^1.10.2"
   },
   "devDependencies": {
@@ -22,22 +27,22 @@
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.1.0",
     "babel-polyfill": "^6.26.0",
-    "css-loader": "^3.4.2",
+    "css-loader": "^7.1.2",
     "eslint": "^6.8.0",
     "eslint-loader": "^3.0.4",
     "exports-loader": "^0.7.0",
-    "gulp": "^4.0.2",
-    "gulp-autoprefixer": "^7.0.1",
+    "gulp": "^5.0.0",
+    "gulp-autoprefixer": "^9.0.0",
     "gulp-clean-css": "^4.3.0",
-    "gulp-csscomb": "^3.1.0",
+    "gulp-csscomb": "^0.1.0",
     "gulp-rename": "^2.0.0",
-    "gulp-webpack": "^1.5.0",
+    "gulp-webpack": "^0.0.1",
     "immutable": "^4.0.0-rc.12",
     "imports-loader": "^0.8.0",
     "json-loader": "^0.5.7",
     "style-loader": "^1.1.3",
-    "uglifyjs-webpack-plugin": "^2.2.0",
-    "webpack": "^4.42.1",
-    "webpack-cli": "^3.3.11"
+    "uglifyjs-webpack-plugin": "^1.1.2",
+    "webpack": "^5.98.0",
+    "webpack-cli": "^6.0.1"
   }
 }

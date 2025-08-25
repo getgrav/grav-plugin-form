@@ -748,7 +748,7 @@ class Form implements FormInterface, ArrayAccess
      * @param Language|null $language
      * @return string File upload error message
      */
-    public function getFileUploadError(int $error, Language $language = null): string
+    public function getFileUploadError(int $error, ?Language $language = null): string
     {
         if (!$language) {
             $grav = Grav::instance();
@@ -899,17 +899,41 @@ class Form implements FormInterface, ArrayAccess
             $this->data->validate();
             $this->data->filter();
 
-            $grav->fireEvent('onFormValidationProcessed', new Event(['form' => $this]));
-        } catch (ValidationException $e) {
-            $this->status = 'error';
-            $event = new Event(['form' => $this, 'message' => $e->getMessage(), 'messages' => $e->getMessages()]);
-            $grav->fireEvent('onFormValidationError', $event);
-            if ($event->isPropagationStopped()) {
-                return;
+            // Add special handling for file/filepond fields
+            foreach ($this->fields as $field) {
+                // Don't restrict to just type=file, but also other file based as long as they have filesize && accept
+                if (isset($field['filesize']) && isset($field['accept']) &&
+                    isset($field['validate']['required']) &&
+                    $field['validate']['required']) {
+
+                    // Get field name
+                    $fieldName = $field['name'];
+                    $fieldLabel = $field['label'] ?? $field['name'];
+
+                    // Check if files exist in the session for this field
+                    $flashObject = $this->getFlash();
+                    if ($flashObject->exists()) {
+                        $filesInField = $flashObject->getFilesByField($fieldName);
+
+                        // If no files found, add validation error
+                        if (empty($filesInField)) {
+                            $this->setError("$fieldLabel " . $grav['language']->translate("PLUGIN_FORM.FIELD_REQUIRED"));
+                            throw new ValidationException();
+                        }
+                    } else {
+                        // No flash object with files found
+                        $this->setError("$fieldLabel " . $grav['language']->translate("PLUGIN_FORM.FIELD_REQUIRED"));
+                        throw new ValidationException();
+                    }
+                }
             }
-        } catch (RuntimeException $e) {
+
+            $grav->fireEvent('onFormValidationProcessed', new Event(['form' => $this]));
+        } catch (ValidationException | RuntimeException $e) {
             $this->status = 'error';
-            $event = new Event(['form' => $this, 'message' => $e->getMessage(), 'messages' => []]);
+            $this->message = $this->message ?? $e->getMessage();
+            $this->messages = array_merge($this->messages, $e->getMessages());
+            $event = new Event(['form' => $this, 'message' => $this->message, 'messages' => $this->messages]);
             $grav->fireEvent('onFormValidationError', $event);
             if ($event->isPropagationStopped()) {
                 return;
@@ -918,10 +942,11 @@ class Form implements FormInterface, ArrayAccess
 
         $redirect = $redirect_code = null;
         $process = $this->items['process'] ?? [];
-        $legacyUploads = !isset($process['upload']) || $process['upload'] !== false;
+        $legacyUploads = !isset($process['upload']) || $process['upload'] !== true;
 
         if ($legacyUploads) {
             $this->legacyUploads();
+            $this->copyFiles();
         }
 
         if (is_array($process)) {
@@ -947,10 +972,6 @@ class Form implements FormInterface, ArrayAccess
                     break;
                 }
             }
-        }
-
-        if ($legacyUploads) {
-            $this->copyFiles();
         }
 
         $this->getFlash()->delete();
@@ -1256,7 +1277,7 @@ class Form implements FormInterface, ArrayAccess
      * @param string|null $field
      * @return void
      */
-    protected function removeFlashUpload(string $filename, string $field = null)
+    protected function removeFlashUpload(string $filename, ?string $field = null)
     {
         $flash = $this->getFlash();
         $flash->removeFile($filename, $field);

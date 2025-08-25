@@ -3,3 +3,7 @@
 /.idea
 node_modules
 *.js.map
+/repomix-output.md
+/repomix.config.json
+/.repomixignore
+/grav-form-plugin.md

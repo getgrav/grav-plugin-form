@@ -1,0 +1,388 @@
+{% extends "forms/field.html.twig" %}
+
+{% block label %}{% endblock %}
+
+{% block input %}
+    {% set config = grav.config %}
+    {% set formId = form.id ?: form.name %}
+    {% set lang = grav.language.language %}
+
+    {# Get configuration values with fallbacks #}
+    {% set version = field.recaptcha_version ?? config.plugins.form.recaptcha.version ?? '2-checkbox' %}
+    {% set site_key = field.recaptcha_site_key ?? config.plugins.form.recaptcha.site_key %}
+    {% set theme = field.recaptcha_theme ?? config.plugins.form.recaptcha.theme ?? 'light' %}
+
+    {% if not site_key %}
+        <div class="form-error">reCAPTCHA site key is not set. Please set it in the form field or plugin configuration.</div>
+    {% else %}
+        {% if version == 3 or version == '3' %}
+            {# --- reCAPTCHA v3 Handling --- #}
+            {% set action = (page.route|trim('/') ~ '-' ~ form.name)|underscorize|md5 %}
+
+            <div class="g-recaptcha-container"
+                 data-form-id="{{ formId }}"
+                 data-recaptcha-version="3"
+                 data-captcha-provider="recaptcha"
+                 data-intercepts-submit="true"
+                 data-sitekey="{{ site_key }}"
+                 data-version="3"
+                 data-action="{{ action }}"
+                 data-theme="{{ theme }}"
+                 data-lang="{{ lang }}">
+                {# Container for v3 - will be managed by JS #}
+                <input type="hidden" name="data[token]" value="">
+                <input type="hidden" name="data[action]" value="{{ action }}">
+            </div>
+
+            {% do assets.addJs('https://www.google.com/recaptcha/api.js?render=' ~ site_key, { group: 'bottom' }) %}
+
+            <script>
+                (function() {
+                    window.GravRecaptchaInitializers = window.GravRecaptchaInitializers || {};
+
+                    function addHiddenInput(form, name, value) {
+                        const existing = form.querySelector('input[type="hidden"][name="' + name + '"]');
+                        if (existing) {
+                            existing.value = value;
+                        } else {
+                            const input = document.createElement('input');
+                            input.setAttribute('type', 'hidden');
+                            input.setAttribute('name', name);
+                            input.setAttribute('value', value);
+                            form.insertBefore(input, form.firstChild);
+                        }
+                    }
+
+                    function initRecaptchaV3(container) {
+                        const formId = container.dataset.formId;
+                        const siteKey = container.dataset.sitekey;
+                        const action = container.dataset.action;
+                        const form = document.getElementById(formId);
+
+                        if (!form) return;
+
+                        console.log(`Initializing reCAPTCHA v3 for form ${formId}`);
+
+                        const submitHandler = function(event) {
+                            event.preventDefault();
+                            console.log(`reCAPTCHA v3 intercepting submit for form ${formId}`);
+
+                            grecaptcha.ready(function() {
+                                grecaptcha.execute(siteKey, { action: action })
+                                    .then(function(token) {
+                                        console.log(`reCAPTCHA v3 token received for form ${formId}`);
+                                        addHiddenInput(form, 'data[token]', token);
+                                        addHiddenInput(form, 'data[action]', action);
+                                        form.removeEventListener('submit', submitHandler);
+
+                                        if (form.dataset.xhrEnabled === 'true' && window.GravFormXHR && typeof window.GravFormXHR.submit === 'function') {
+                                            window.GravFormXHR.submit(form);
+                                        } else {
+                                            if (typeof form.requestSubmit === 'function') {
+                                                form.requestSubmit();
+                                            } else {
+                                                form.submit();
+                                            }
+                                        }
+
+                                        setTimeout(() => {
+                                            const currentForm = document.getElementById(formId);
+                                            if (currentForm && !currentForm.dataset.recaptchaListenerAttached) {
+                                                currentForm.addEventListener('submit', submitHandler);
+                                                currentForm.dataset.recaptchaListenerAttached = 'true';
+                                            } else if (currentForm) {
+                                                delete currentForm.dataset.recaptchaListenerAttached;
+                                            }
+                                        }, 0);
+                                    });
+                            });
+                        };
+
+                        delete form.dataset.recaptchaListenerAttached;
+                        if (!form.dataset.recaptchaListenerAttached) {
+                            form.addEventListener('submit', submitHandler);
+                            form.dataset.recaptchaListenerAttached = 'true';
+                        }
+                    }
+
+                    // Register the initializer function
+                    const initializerFunctionName = 'initRecaptcha_{{ formId }}';
+                    window.GravRecaptchaInitializers[initializerFunctionName] = function() {
+                        const container = document.querySelector('[data-form-id="{{ formId }}"][data-captcha-provider="recaptcha"]');
+                        if (!container) return;
+
+                        initRecaptchaV3(container);
+                    };
+
+                    // Initial call
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', window.GravRecaptchaInitializers[initializerFunctionName]);
+                    } else {
+                        setTimeout(window.GravRecaptchaInitializers[initializerFunctionName], 0);
+                    }
+                })();
+            </script>
+
+        {% elseif version == '2-invisible' %}
+            {# --- reCAPTCHA v2 Invisible Handling --- #}
+            <div class="g-recaptcha-container"
+                 data-form-id="{{ formId }}"
+                 data-recaptcha-version="2-invisible"
+                 data-captcha-provider="recaptcha"
+                 data-intercepts-submit="true"
+                 data-sitekey="{{ site_key }}"
+                 data-version="2-invisible"
+                 data-theme="{{ theme }}"
+                 data-lang="{{ lang }}">
+                {# Container for v2 invisible - will be managed by JS #}
+                <div id="g-recaptcha-{{ formId }}" class="g-recaptcha"></div>
+            </div>
+
+            <script>
+                (function() {
+                    window.GravRecaptchaInitializers = window.GravRecaptchaInitializers || {};
+
+                    function addHiddenInput(form, name, value) {
+                        const existing = form.querySelector('input[type="hidden"][name="' + name + '"]');
+                        if (existing) {
+                            existing.value = value;
+                        } else {
+                            const input = document.createElement('input');
+                            input.setAttribute('type', 'hidden');
+                            input.setAttribute('name', name);
+                            input.setAttribute('value', value);
+                            form.insertBefore(input, form.firstChild);
+                        }
+                    }
+
+                    function initRecaptchaV2Invisible(container) {
+                        const formId = container.dataset.formId;
+                        const siteKey = container.dataset.sitekey;
+                        const lang = container.dataset.lang;
+                        const theme = container.dataset.theme;
+                        const form = document.getElementById(formId);
+                        let widgetId = null;
+
+                        if (!form) return;
+
+                        console.log(`Initializing reCAPTCHA v2 Invisible for form ${formId}`);
+
+                        const callbackName = 'captchaInvisibleOnloadCallback_' + formId;
+
+                        if (typeof window[callbackName] !== 'function') {
+                            window[callbackName] = function() {
+                                console.log('reCAPTCHA Invisible API ready for form ' + formId);
+                            };
+
+                            if (!document.querySelector('script[src*="recaptcha/api.js?onload=' + callbackName + '"]')) {
+                                const script = document.createElement('script');
+                                script.src = 'https://www.google.com/recaptcha/api.js?onload=' + callbackName + '&hl=' + lang + '&theme=' + theme;
+                                script.async = true;
+                                script.defer = true;
+                                document.head.appendChild(script);
+                            }
+                        }
+
+                        const submitHandler = function(event) {
+                            event.preventDefault();
+                            console.log(`reCAPTCHA v2 Invisible intercepting submit for form ${formId}`);
+
+                            if (typeof grecaptcha === 'undefined' || typeof grecaptcha.render === 'undefined') {
+                                console.error('grecaptcha not ready for invisible captcha');
+                                return;
+                            }
+
+                            const recaptchaId = 'g-recaptcha-' + formId;
+                            let captchaElement = document.getElementById(recaptchaId);
+
+                            if (!captchaElement) {
+                                captchaElement = document.createElement('div');
+                                captchaElement.setAttribute('id', recaptchaId);
+                                captchaElement.className = 'g-recaptcha';
+                                form.appendChild(captchaElement);
+                            }
+
+                            const renderCaptcha = () => {
+                                if (widgetId !== null) {
+                                    try {
+                                        grecaptcha.reset(widgetId);
+                                    } catch (e) {
+                                        console.warn("Error resetting captcha", e);
+                                    }
+                                }
+
+                                widgetId = grecaptcha.render(recaptchaId, {
+                                    sitekey: siteKey,
+                                    size: 'invisible',
+                                    callback: function(token) {
+                                        console.log(`reCAPTCHA v2 Invisible token received for form ${formId}`);
+                                        addHiddenInput(form, 'g-recaptcha-response', token);
+                                        form.removeEventListener('submit', submitHandler);
+
+                                        if (form.dataset.xhrEnabled === 'true' && window.GravFormXHR && typeof window.GravFormXHR.submit === 'function') {
+                                            window.GravFormXHR.submit(form);
+                                        } else {
+                                            if (typeof form.requestSubmit === 'function') {
+                                                form.requestSubmit();
+                                            } else {
+                                                form.submit();
+                                            }
+                                        }
+
+                                        setTimeout(() => {
+                                            const currentForm = document.getElementById(formId);
+                                            if (currentForm && !currentForm.dataset.recaptchaListenerAttached) {
+                                                currentForm.addEventListener('submit', submitHandler);
+                                                currentForm.dataset.recaptchaListenerAttached = 'true';
+                                            } else if (currentForm) {
+                                                delete currentForm.dataset.recaptchaListenerAttached;
+                                            }
+                                        }, 0);
+                                    }
+                                });
+
+                                grecaptcha.execute(widgetId);
+                            };
+
+                            if (typeof grecaptcha !== 'undefined' && grecaptcha.render) {
+                                renderCaptcha();
+                            } else {
+                                const originalOnload = window[callbackName];
+                                window[callbackName] = function() {
+                                    if(originalOnload) originalOnload();
+                                    renderCaptcha();
+                                };
+                                console.warn("grecaptcha object not found immediately, waiting for onload callback: " + callbackName);
+                            }
+                        };
+
+                        delete form.dataset.recaptchaListenerAttached;
+                        if (!form.dataset.recaptchaListenerAttached) {
+                            form.addEventListener('submit', submitHandler);
+                            form.dataset.recaptchaListenerAttached = 'true';
+                        }
+                    }
+
+                    // Register the initializer function
+                    const initializerFunctionName = 'initRecaptcha_{{ formId }}';
+                    window.GravRecaptchaInitializers[initializerFunctionName] = function() {
+                        const container = document.querySelector('[data-form-id="{{ formId }}"][data-captcha-provider="recaptcha"]');
+                        if (!container) return;
+
+                        initRecaptchaV2Invisible(container);
+                    };
+
+                    // Initial call
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', window.GravRecaptchaInitializers[initializerFunctionName]);
+                    } else {
+                        setTimeout(window.GravRecaptchaInitializers[initializerFunctionName], 0);
+                    }
+                })();
+            </script>
+
+        {% else %}
+            {# --- reCAPTCHA v2 Checkbox Handling --- #}
+            {# Add script and container #}
+            {% set container_id = 'g-recaptcha-' ~ formId %}
+            {% set onloadCallback = 'captchaCheckboxOnloadCallback_' ~ formId %}
+
+            <div class="g-recaptcha-container"
+                 data-form-id="{{ formId }}"
+                 data-captcha-provider="recaptcha"
+                 data-sitekey="{{ site_key }}"
+                 data-version="2-checkbox"
+                 data-theme="{{ theme }}"
+                 data-lang="{{ lang }}">
+                <div id="{{ container_id }}" class="g-recaptcha"></div>
+            </div>
+
+            {% do assets.addJs('https://www.google.com/recaptcha/api.js?onload=' ~ onloadCallback ~ '&render=explicit', { 'loading': 'async', 'defer': '' }) %}
+
+            <script>
+                (function() {
+                    // Explicit rendering for reCAPTCHA v2 Checkbox
+                    window.GravExplicitCaptchaInitializers = window.GravExplicitCaptchaInitializers || {};
+                    const initializerFunctionName = 'initExplicitCaptcha_{{ formId }}';
+
+                    // Define the initializer function
+                    window.GravExplicitCaptchaInitializers[initializerFunctionName] = function() {
+                        const containerId = '{{ container_id }}';
+                        const container = document.getElementById(containerId);
+
+                        if (!container) {
+                            console.warn('reCAPTCHA container #' + containerId + ' not found.');
+                            return;
+                        }
+
+                        // Prevent re-rendering if widget already exists
+                        if (container.innerHTML.trim() !== '' && container.querySelector('iframe')) {
+                            return;
+                        }
+
+                        // Get configuration from parent container
+                        const parentContainer = container.closest('.g-recaptcha-container');
+                        if (!parentContainer) {
+                            console.error('Cannot find parent container for #' + containerId);
+                            return;
+                        }
+
+                        const sitekey = parentContainer.dataset.sitekey;
+                        const theme = parentContainer.dataset.theme;
+
+                        if (!sitekey) {
+                            console.error('reCAPTCHA sitekey missing for #' + containerId);
+                            return;
+                        }
+
+                        console.log('Attempting to render reCAPTCHA in #' + containerId);
+
+                        if (typeof grecaptcha !== 'undefined' && typeof grecaptcha.render === 'function') {
+                            try {
+                                grecaptcha.render(containerId, {
+                                    sitekey: sitekey,
+                                    theme: theme,
+                                    callback: function(token) {
+                                        console.log('reCAPTCHA challenge successful for #' + containerId);
+                                    }
+                                });
+                            } catch (e) {
+                                console.error('Error calling grecaptcha.render for #' + containerId, e);
+                                container.innerHTML = '<p style="color:red;">Error initializing reCAPTCHA.</p>';
+                            }
+                        } else {
+                            console.warn('grecaptcha API not available yet for #' + containerId + '. Waiting for onload.');
+                        }
+                    };
+
+                    // Define the global onload callback
+                    window['{{ onloadCallback }}'] = function() {
+                        console.log('reCAPTCHA API loaded, triggering init for #{{ container_id }}');
+                        if (window.GravExplicitCaptchaInitializers[initializerFunctionName]) {
+                            window.GravExplicitCaptchaInitializers[initializerFunctionName]();
+                        } else {
+                            console.error("Initializer " + initializerFunctionName + " not found!");
+                        }
+                    };
+
+                    // Form submit handler to check if captcha is completed
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const form = document.getElementById('{{ formId }}');
+                        if (form) {
+                            form.addEventListener('submit', function(event) {
+                                const response = grecaptcha.getResponse();
+                                if (!response) {
+                                    event.preventDefault();
+                                    alert("{{ field.captcha_not_validated|t|default('Please complete the captcha')|e('js') }}");
+                                } else if (form.dataset.xhrEnabled === 'true' && window.GravFormXHR && typeof window.GravFormXHR.submit === 'function') {
+                                    event.preventDefault();
+                                    window.GravFormXHR.submit(form);
+                                }
+                            });
+                        }
+                    });
+                })();
+            </script>
+        {% endif %}
+    {% endif %}
+{% endblock %}

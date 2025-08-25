@@ -1,8 +1,25 @@
 {% if form.xhr_submit == true %}
-  {% do assets.addJs('plugin://form/assets/xhr-submitter.js', {'group': 'bottom', 'position': 'before'}) %}
+  {# Ensure xhr-submitter.js is loaded BEFORE the inline JS that uses it #}
+  {% do assets.addJs('plugin://form/assets/xhr-submitter.js', {'group': 'bottom', 'priority': 101, 'position': 'before'}) %}
   {% do assets.addInlineJs("
     document.addEventListener('DOMContentLoaded', () => {
+        // This now primarily sets up the *potential* for XHR submission
+        // It might not attach the listener directly if recaptcha is present
         attachFormSubmitListener('" ~ form.id ~ "');
+
+        // Re-run captcha initializers *if* the form was loaded via XHR initially
+        // This covers edge cases, might not be strictly needed if captcha script handles DOMContentLoaded
+        const formElement = document.getElementById('" ~ form.id ~ "');
+        if (formElement && window.GravRecaptchaInitializers) {
+            const initializerFuncName = 'initRecaptcha_" ~ form.id ~ "';
+            if (typeof window.GravRecaptchaInitializers[initializerFuncName] === 'function') {
+                 // Check if it needs init (e.g., if container exists but no widget/listener)
+                 // For simplicity, just call it again; the init function should be idempotent
+                 // window.GravRecaptchaInitializers[initializerFuncName]();
+            }
+        }
     });",
-    {'group': 'bottom', 'position': 'before'}) %}
+    {'group': 'bottom', 'priority': 100, 'position': 'before'}) %}
+    {% do assets.addJs('plugin://form/assets/captcha/recaptcha-handler.js', {'group': 'bottom', 'priority': 99, 'position': 'before'}) %}
+    {% do assets.addJs('plugin://form/assets/captcha/turnstile-handler.js', {'group': 'bottom', 'priority': 98, 'position': 'before'}) %}
 {% endif %}
