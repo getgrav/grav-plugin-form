@@ -31,8 +31,8 @@ basic_captcha:
 
   # Image settings
   image:
-    width: 240             # Image width
-    height: 80             # Image height
+    width: 135             # Image width (default: 135 for classic size)
+    height: 40             # Image height (default: 40 for classic size)
     bg: '#ffffff'          # Background color
 
   # Character captcha settings (used for the 'characters' type)

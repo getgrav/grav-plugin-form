@@ -159,8 +159,8 @@ class BasicCaptcha
     public function createCaptchaImage($captcha_code)
     {
         $config = Grav::instance()['config']->get('plugins.form.basic_captcha');
-        $width = $config['image']['width'] ?? 240;
-        $height = $config['image']['height'] ?? 80;
+        $width = $config['image']['width'] ?? 135;
+        $height = $config['image']['height'] ?? 40;
 
         // Create a blank image
         $image = imagecreatetruecolor($width, $height);
@@ -230,13 +230,13 @@ class BasicCaptcha
         // Draw instruction text
         $fontPath = __DIR__.'/../../fonts/'.($config['chars']['font'] ?? 'zxx-xed.ttf');
         $black = imagecolorallocate($image, 0, 0, 0);
-        imagettftext($image, 13, 0, 10, 20, $black, $fontPath, "Count the {$colorName} dots:");
+        imagettftext($image, 10, 0, 5, 15, $black, $fontPath, "Count {$colorName}:");
 
         // Simplified approach to prevent overlapping
         // Divide the image into a grid and place one dot per cell
         $gridCells = [];
-        $gridRows = 3;
-        $gridCols = 6;
+        $gridRows = 2;
+        $gridCols = 4;
 
         // Build available grid cells
         for ($y = 0; $y < $gridRows; $y++) {
@@ -249,11 +249,11 @@ class BasicCaptcha
         shuffle($gridCells);
 
         // Calculate cell dimensions
-        $cellWidth = ($width - 30) / $gridCols;
-        $cellHeight = ($height - 40) / $gridRows;
+        $cellWidth = ($width - 20) / $gridCols;
+        $cellHeight = ($height - 20) / $gridRows;
 
         // Dot size for better visibility
-        $dotSize = 14;
+        $dotSize = 8;
 
         // Draw target dots first (taking the first N cells)
         for ($i = 0; $i < $targetCount && $i < count($gridCells); $i++) {
@@ -262,8 +262,8 @@ class BasicCaptcha
             $gridY = $cell[1];
 
             // Calculate center position of cell with small random offset
-            $x = 15 + ($gridX + 0.5) * $cellWidth + mt_rand(-5, 5);
-            $y = 30 + ($gridY + 0.5) * $cellHeight + mt_rand(-5, 5);
+            $x = 10 + ($gridX + 0.5) * $cellWidth + mt_rand(-2, 2);
+            $y = 20 + ($gridY + 0.5) * $cellHeight + mt_rand(-2, 2);
 
             // Draw the dot
             imagefilledellipse($image, $x, $y, $dotSize, $dotSize, $targetColor);
@@ -288,8 +288,8 @@ class BasicCaptcha
             $gridY = $cell[1];
 
             // Calculate center position of cell with small random offset
-            $x = 15 + ($gridX + 0.5) * $cellWidth + mt_rand(-5, 5);
-            $y = 30 + ($gridY + 0.5) * $cellHeight + mt_rand(-5, 5);
+            $x = 10 + ($gridX + 0.5) * $cellWidth + mt_rand(-2, 2);
+            $y = 20 + ($gridY + 0.5) * $cellHeight + mt_rand(-2, 2);
 
             // Draw the dot with a random distraction color
             $color = $distractionColors[array_rand($distractionColors)];
@@ -299,14 +299,14 @@ class BasicCaptcha
         // Add subtle grid lines to help with counting
         $lightGray = imagecolorallocate($image, 230, 230, 230);
         for ($i = 1; $i < $gridCols; $i++) {
-            imageline($image, 15 + $i * $cellWidth, 30, 15 + $i * $cellWidth, $height - 10, $lightGray);
+            imageline($image, 10 + $i * $cellWidth, 20, 10 + $i * $cellWidth, $height - 5, $lightGray);
         }
         for ($i = 1; $i < $gridRows; $i++) {
-            imageline($image, 15, 30 + $i * $cellHeight, $width - 15, 30 + $i * $cellHeight, $lightGray);
+            imageline($image, 10, 20 + $i * $cellHeight, $width - 10, 20 + $i * $cellHeight, $lightGray);
         }
 
         // Add minimal noise
-        $this->addImageNoise($image, 30);
+        $this->addImageNoise($image, 15);
 
         return $image;
     }
@@ -328,7 +328,7 @@ class BasicCaptcha
 
         // Draw instruction text
         $fontPath = __DIR__.'/../../fonts/'.($config['chars']['font'] ?? 'zxx-xed.ttf');
-        imagettftext($image, 11, 0, 10, 20, $black, $fontPath, "What is the position of the symbol?");
+        imagettftext($image, 9, 0, 5, 15, $black, $fontPath, "Position of symbol?");
 
         // Determine symbol position based on the target position
         $symbolX = $width / 2;
@@ -337,18 +337,18 @@ class BasicCaptcha
         switch ($position) {
             case 'top':
                 $symbolX = $width / 2;
-                $symbolY = 35;
+                $symbolY = 20;
                 break;
             case 'bottom':
                 $symbolX = $width / 2;
-                $symbolY = $height - 15;
+                $symbolY = $height - 10;
                 break;
             case 'left':
-                $symbolX = 30;
+                $symbolX = 20;
                 $symbolY = $height / 2;
                 break;
             case 'right':
-                $symbolX = $width - 30;
+                $symbolX = $width - 20;
                 $symbolY = $height / 2;
                 break;
             case 'center':
@@ -358,15 +358,15 @@ class BasicCaptcha
         }
 
         // Draw the symbol - make it larger and in red for visibility
-        imagettftext($image, 36, 0, $symbolX - 15, $symbolY + 15, $red, $fontPath, $symbol);
+        imagettftext($image, 20, 0, $symbolX - 8, $symbolY + 8, $red, $fontPath, $symbol);
 
         // Draw a grid to make positions clearer
         $gray = imagecolorallocate($image, 200, 200, 200);
-        imageline($image, $width / 2, 25, $width / 2, $height - 5, $gray);
-        imageline($image, 10, $height / 2, $width - 10, $height / 2, $gray);
+        imageline($image, $width / 2, 15, $width / 2, $height - 5, $gray);
+        imageline($image, 5, $height / 2, $width - 5, $height / 2, $gray);
 
         // Add minimal noise
-        $this->addImageNoise($image, 20);
+        $this->addImageNoise($image, 10);
 
         return $image;
     }
@@ -384,7 +384,7 @@ class BasicCaptcha
         $textColor = imagecolorallocate($image, 0, 0, 0);
 
         // Draw the math expression
-        $fontSize = 24;
+        $fontSize = 16;
         $textBox = imagettfbbox($fontSize, 0, $fontPath, $mathExpression);
         $textWidth = $textBox[2] - $textBox[0];
         $textHeight = $textBox[1] - $textBox[7];
@@ -394,7 +394,7 @@ class BasicCaptcha
         imagettftext($image, $fontSize, 0, $textX, $textY, $textColor, $fontPath, $mathExpression);
 
         // Add visual noise and distortions to prevent OCR
-        $this->addImageNoise($image, 50);
+        $this->addImageNoise($image, 25);
         $this->addWaveDistortion($image);
 
         return $image;
@@ -410,7 +410,7 @@ class BasicCaptcha
 
         // Get font settings
         $fontPath = __DIR__.'/../../fonts/'.($config['chars']['font'] ?? 'zxx-xed.ttf');
-        $fontSize = $config['chars']['size'] ?? 24;
+        $fontSize = $config['chars']['size'] ?? 16;
         $textColor = imagecolorallocate($image, 0, 0, 0);
 
         // Draw each character with random rotation and position
@@ -422,7 +422,7 @@ class BasicCaptcha
             $angle = mt_rand(-15, 15); // Random rotation
 
             // Random vertical position
-            $y = mt_rand($height / 2 - 10, $height / 2 + 10);
+            $y = mt_rand($height / 2 - 5, $height / 2 + 5);
 
             imagettftext($image, $fontSize, $angle, $startX, $y, $textColor, $fontPath, $char);
 
@@ -431,7 +431,7 @@ class BasicCaptcha
         }
 
         // Add visual noise and distortions
-        $this->addImageNoise($image, 50);
+        $this->addImageNoise($image, 25);
         $this->addWaveDistortion($image);
 
         return $image;
@@ -446,7 +446,7 @@ class BasicCaptcha
         $height = imagesy($image);
 
         // For performance, reduce density
-        $density = min($density, 50);
+        $density = min($density, 30);
 
         // Add random dots
         for ($i = 0; $i < $density; $i++) {
@@ -491,8 +491,8 @@ class BasicCaptcha
         imagefill($image, 0, 0, $bg);
 
         // Apply simplified wave distortion
-        $amplitude = mt_rand(2, 4);
-        $period = mt_rand(15, 20);
+        $amplitude = mt_rand(1, 2);
+        $period = mt_rand(10, 15);
 
         // Process only every 2nd pixel for better performance
         for ($x = 0; $x < $width; $x += 2) {
