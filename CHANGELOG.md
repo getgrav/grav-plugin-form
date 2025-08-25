@@ -1,8 +1,18 @@
-# v7.4.3
-## mm/dd/2025
+# v8.0.0
+## 08/25/2025
 
+1. [](#new)
+   * Rewrote XHR support to be more robust and easier to use
+   * Added `hCpatcha` field support
+   * Added `Turnstile` XHR support
+   * Added ability to support 3rd party captcha mechanisms
+   * Added `Filepond` field support for alternate upload type
+   * Dropzone XHR support
+   * PHP 8.4 compatibility
 1. [](#improved)
    * Added support for `data_label:` in fields for use with data twig templates to override the displayed label
+   * Matched formatting of minus operator in BasicCaptcha to plus operator [#596](https://github.com/getgrav/grav-plugin-form/pull/596)
+   * Dynamic field proxying
 
 # v7.4.2
 ## 10/28/2024
