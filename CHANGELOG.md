@@ -1,3 +1,9 @@
+# v8.0.2
+## 08/25/2025
+
+1. [](#bugfix)
+   * Case sensitivity issues with `ReCaptchaProvider` class
+
 # v8.0.1
 ## 08/25/2025
 
