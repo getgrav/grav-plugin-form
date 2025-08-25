@@ -31,7 +31,7 @@ class CaptchaManager
      * @param array $params Optional parameters
      * @return bool True if validation succeeded
      */
-    public static function validateCaptcha(Form $form, mixed $params = []): bool
+    public static function validateCaptcha(Form $form, mixed $params = null): bool
     {
         // Handle case where $params is a boolean (backward compatibility)
         if (!is_array($params)) {
