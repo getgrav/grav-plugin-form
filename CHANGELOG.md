@@ -1,3 +1,9 @@
+# v8.0.3
+## 08/25/2025
+
+1. [](#bugfix)
+   * Fixes for basic captcha defalt size
+
 # v8.0.2
 ## 08/25/2025
 

@@ -248,6 +248,74 @@ form:
       title: PLUGIN_FORM.BASIC_CAPTCHA
 
       fields:
+        basic_captcha.image.width:
+          type: number
+          label: PLUGIN_FORM.BASIC_CAPTCHA_BOX_WIDTH
+          default: 135
+          append: px
+          size: small
+          validate:
+            min: 100
+            max: 500
+            type: number
+        basic_captcha.image.height:
+          type: number
+          label: PLUGIN_FORM.BASIC_CAPTCHA_BOX_HEIGHT
+          default: 40
+          append: px
+          size: small
+          validate:
+            min: 30
+            max: 200
+            type: number
+
+        basic_captcha.chars.font:
+          type: select
+          label: PLUGIN_FORM.BASIC_CAPTCHA_FONT
+          default: zxx-noise.ttf
+          options:
+            'zxx-noise.ttf': zxx-Noise
+            'zxx-xed.ttf': zxx-Xed
+            'zxx-camo.ttf': zxx-Camo
+            'zxx-sans.ttf': zxx-Sans
+        basic_captcha.chars.size:
+          type: range
+          label: PLUGIN_FORM.BASIC_CAPTCHA_SIZE
+          default: 24
+          append: px
+          validate:
+            min: 12
+            max: 32
+            step: 2
+        basic_captcha.chars.bg:
+          type: colorpicker
+          size: small
+          label: PLUGIN_FORM.BASIC_CAPTCHA_BG_COLOR
+          default: '#ffffff'
+        basic_captcha.chars.text:
+          type: colorpicker
+          size: small
+          label: PLUGIN_FORM.BASIC_CAPTCHA_TEXT_COLOR
+          default: '#000000'
+        basic_captcha.chars.start_x:
+          type: number
+          label: PLUGIN_FORM.BASIC_CAPTCHA_START_X
+          default: 5
+          append: px
+          size: small
+          validate:
+            min: 0
+            type: number
+        basic_captcha.chars.start_y:
+          type: number
+          label: PLUGIN_FORM.BASIC_CAPTCHA_START_Y
+          default: 30
+          append: px
+          size: small
+          validate:
+            min: 0
+            type: number
+
         basic_captcha.type:
           type: elements
           label: PLUGIN_FORM.BASIC_CAPTCHA_TYPE
@@ -268,70 +336,7 @@ form:
                     min: 4
                     max: 12
                   append: characters
-                basic_captcha.chars.font:
-                  type: select
-                  label: PLUGIN_FORM.BASIC_CAPTCHA_FONT
-                  default: zxx-noise.ttf
-                  options:
-                    'zxx-noise.ttf': zxx-Noise
-                    'zxx-xed.ttf': zxx-Xed
-                    'zxx-camo.ttf': zxx-Camo
-                    'zxx-sans.ttf': zxx-Sans
-                basic_captcha.chars.size:
-                  type: range
-                  label: PLUGIN_FORM.BASIC_CAPTCHA_SIZE
-                  default: 24
-                  append: px
-                  validate:
-                    min: 12
-                    max: 32
-                    step: 2
-                basic_captcha.chars.bg:
-                  type: colorpicker
-                  size: small
-                  label: PLUGIN_FORM.BASIC_CAPTCHA_BG_COLOR
-                  default: '#ffffff'
-                basic_captcha.chars.text:
-                  type: colorpicker
-                  size: small
-                  label: PLUGIN_FORM.BASIC_CAPTCHA_TEXT_COLOR
-                  default: '#000000'
-                basic_captcha.chars.start_x:
-                  type: number
-                  label: PLUGIN_FORM.BASIC_CAPTCHA_START_X
-                  default: 5
-                  append: px
-                  size: small
-                  validate:
-                    min: 0
-                    type: number
-                basic_captcha.chars.start_y:
-                  type: number
-                  label: PLUGIN_FORM.BASIC_CAPTCHA_START_Y
-                  default: 30
-                  append: px
-                  size: small
-                  validate:
-                    min: 0
-                    type: number
-                basic_captcha.chars.box_width:
-                  type: number
-                  label: PLUGIN_FORM.BASIC_CAPTCHA_BOX_WIDTH
-                  default: 135
-                  append: px
-                  size: small
-                  validate:
-                    min: 0
-                    type: number
-                basic_captcha.chars.box_height:
-                  type: number
-                  label: PLUGIN_FORM.BASIC_CAPTCHA_BOX_HEIGHT
-                  default: 40
-                  append: px
-                  size: small
-                  validate:
-                    min: 0
-                    type: number
+
             math:
               type: element
               fields:
