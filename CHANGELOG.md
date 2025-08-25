@@ -1,3 +1,9 @@
+# v8.0.1
+## 08/25/2025
+
+1. [](#bugfix)
+   * Fixed error: Default value of params with a class can only be null
+
 # v8.0.0
 ## 08/25/2025
 
