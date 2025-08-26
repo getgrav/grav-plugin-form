@@ -1,7 +1,7 @@
 {% block field %}
 <div class="form-field {{ layout_form_field_outer_classes|trim }} {{ form_field_outer_core|trim}}">
   {% block contents %}
-    {% if show_label %}
+    {% if show_label and field.type != 'checkbox' %}
       <div class="{{- layout_form_field_outer_label_classes -}}">
         {{- form_field_toggleable -}}
         <label class="{{ layout_form_field_label_classes }}{{ form_field_label_trim }}" {% if field.id %}for="{{ form_field_for }}"{% endif %}>
