@@ -1,3 +1,9 @@
+# v8.0.4
+## 08/28/2025
+
+1. [](#bugfix)
+   * Fixes `CaptchaManager::validateCaptcha()` not working with PHP 7.4
+
 # v8.0.3
 ## 08/25/2025
 
