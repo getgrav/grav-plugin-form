@@ -415,16 +415,14 @@ class BasicCaptcha
 
         // Draw each character with random rotation and position
         $charWidth = $width / (strlen($captcha_code) + 2);
-        $startX = $charWidth; // Leave some space at the beginning
-
+        $startX = $config['chars']['start_x'];
+        $startY = $config['chars']['start_y'];
+        
         for ($i = 0; $i < strlen($captcha_code); $i++) {
             $char = $captcha_code[$i];
             $angle = mt_rand(-15, 15); // Random rotation
 
-            // Random vertical position
-            $y = mt_rand($height / 2 - 5, $height / 2 + 5);
-
-            imagettftext($image, $fontSize, $angle, $startX, $y, $textColor, $fontPath, $char);
+            imagettftext($image, $fontSize, $angle, $startX, $startY, $textColor, $fontPath, $char);
 
             // Move to next character position with some randomness
             $startX += $charWidth + mt_rand(-5, 5);
