@@ -1,3 +1,9 @@
+# v8.0.5
+## 09/23/2025
+
+1. [](#bugfix)
+   * Fixes captcha when form name contains hyphens [#618](https://github.com/getgrav/grav-plugin-form/issues/618)
+
 # v8.0.4
 ## 08/28/2025
 
