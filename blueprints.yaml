@@ -1,7 +1,7 @@
 name: Form
 slug: form
 type: plugin
-version: 8.0.5
+version: 8.0.6
 description: Enables forms handling and processing
 icon: check-square
 author:
@@ -14,7 +14,7 @@ bugs: https://github.com/getgrav/grav-plugin-form/issues
 license: MIT
 
 dependencies:
-  - { name: grav, version: '>=1.7.49' }
+  - { name: grav, version: ">=1.7.49" }
 
 form:
   validation: strict
@@ -145,7 +145,7 @@ form:
           size: large
           label: PLUGIN_FORM.DESTINATION
           help: PLUGIN_FORM.DESTINATION_HELP
-          default: '@self'
+          default: "@self"
         files.accept:
           type: selectize
           size: large
@@ -155,7 +155,7 @@ form:
           default:
             - image/*
           validate:
-              type: commalist
+            type: commalist
         files.filesize:
           type: text
           label: PLUGIN_FORM.FILESIZE
@@ -213,12 +213,12 @@ form:
           type: text
           label: PLUGIN_FORM.RECAPTCHA_SITE_KEY
           help: PLUGIN_FORM.RECAPTCHA_SITE_KEY_HELP
-          default: ''
+          default: ""
         recaptcha.secret_key:
           type: text
           label: PLUGIN_FORM.RECAPTCHA_SECRET_KEY
           help: PLUGIN_FORM.RECAPTCHA_SECRET_KEY_HELP
-          default: ''
+          default: ""
 
     turnstile_captcha:
       type: section
@@ -236,12 +236,12 @@ form:
           type: text
           label: PLUGIN_FORM.RECAPTCHA_SITE_KEY
           help: PLUGIN_FORM.RECAPTCHA_SITE_KEY_HELP
-          default: ''
+          default: ""
         turnstile.secret_key:
           type: text
           label: PLUGIN_FORM.RECAPTCHA_SECRET_KEY
           help: PLUGIN_FORM.RECAPTCHA_SECRET_KEY_HELP
-          default: ''
+          default: ""
 
     basic_captcha:
       type: section
@@ -274,10 +274,10 @@ form:
           label: PLUGIN_FORM.BASIC_CAPTCHA_FONT
           default: zxx-noise.ttf
           options:
-            'zxx-noise.ttf': zxx-Noise
-            'zxx-xed.ttf': zxx-Xed
-            'zxx-camo.ttf': zxx-Camo
-            'zxx-sans.ttf': zxx-Sans
+            "zxx-noise.ttf": zxx-Noise
+            "zxx-xed.ttf": zxx-Xed
+            "zxx-camo.ttf": zxx-Camo
+            "zxx-sans.ttf": zxx-Sans
         basic_captcha.chars.size:
           type: range
           label: PLUGIN_FORM.BASIC_CAPTCHA_SIZE
@@ -291,12 +291,12 @@ form:
           type: colorpicker
           size: small
           label: PLUGIN_FORM.BASIC_CAPTCHA_BG_COLOR
-          default: '#ffffff'
+          default: "#ffffff"
         basic_captcha.chars.text:
           type: colorpicker
           size: small
           label: PLUGIN_FORM.BASIC_CAPTCHA_TEXT_COLOR
-          default: '#000000'
+          default: "#000000"
         basic_captcha.chars.start_x:
           type: number
           label: PLUGIN_FORM.BASIC_CAPTCHA_START_X
@@ -319,7 +319,7 @@ form:
         basic_captcha.type:
           type: elements
           label: PLUGIN_FORM.BASIC_CAPTCHA_TYPE
-          default: 'characters'
+          default: "characters"
           size: medium
           options:
             characters: Random Characters
@@ -360,14 +360,14 @@ form:
                   type: selectize
                   selectize:
                     options:
-                      - value: '+'
-                        text: '+ Addition'
-                      - value: '-'
-                        text: '- Subtraction'
-                      - value: '*'
-                        text: 'x Multiplication'
-                      - value: '/'
-                        text: '/ Division'
+                      - value: "+"
+                        text: "+ Addition"
+                      - value: "-"
+                        text: "- Subtraction"
+                      - value: "*"
+                        text: "x Multiplication"
+                      - value: "/"
+                        text: "/ Division"
                   label: PLUGIN_FORM.BASIC_CAPTCHA_MATH_OPERATORS
                   validate:
                     type: commalist
