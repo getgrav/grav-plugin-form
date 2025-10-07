@@ -302,7 +302,7 @@
                 <div id="{{ container_id }}" class="g-recaptcha"></div>
             </div>
 
-            {% do assets.addJs('https://www.google.com/recaptcha/api.js?onload=' ~ onloadCallback ~ '&render=explicit', { 'loading': 'async', 'defer': '' }) %}
+            {% do assets.addJs('https://www.google.com/recaptcha/api.js?onload=' ~ onloadCallback ~ '&render=explicit', { 'group': 'bottom', 'loading': 'defer' }) %}
 
             <script>
                 (function() {
