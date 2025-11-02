@@ -43,6 +43,7 @@ en:
     FILEUPLOAD_ERR_CANT_WRITE: 'Failed to write file to disk'
     FILEUPLOAD_ERR_EXTENSION: 'A PHP extension stopped the file upload'
     FILEUPLOAD_ERR_UNKNOWN: 'Unknown file upload error'
+    EXCEEDED_GRAV_FILESIZE_LIMIT: 'File exceeds the server upload size limit.'
     DROPZONE_CANCEL_UPLOAD: 'Cancel upload'
     DROPZONE_CANCEL_UPLOAD_CONFIRMATION: 'Are you sure you want to cancel this upload?'
     DROPZONE_DEFAULT_MESSAGE: 'Drop your files here or <strong>click in this area</strong>'
