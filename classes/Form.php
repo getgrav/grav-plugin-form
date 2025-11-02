@@ -892,6 +892,12 @@ class Form implements FormInterface, ArrayAccess
             $this->data->merge($data);
         }
 
+        // Ensure file field values are populated from the flash storage before validation.
+        $flash = $this->getFlash();
+        if ($flash->exists()) {
+            $this->setAllFiles($flash);
+        }
+
         // Validate and filter data
         try {
             $grav->fireEvent('onFormPrepareValidation', new Event(['form' => $this]));
