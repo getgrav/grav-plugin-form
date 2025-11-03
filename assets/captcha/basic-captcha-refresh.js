@@ -9,10 +9,17 @@
             return;
         }
 
-        // Force reload by adding/updating timestamp
+        // Get the base URL and field ID
+        const baseUrl = img.dataset.baseUrl || img.src.split('?')[0];
+        const fieldId = img.dataset.fieldId || container.dataset.fieldId;
+
+        // Force reload by adding/updating timestamp and field ID
         const timestamp = new Date().getTime();
-        const baseUrl = img.src.split('?')[0];
-        img.src = baseUrl + '?t=' + timestamp;
+        let newUrl = baseUrl + '?t=' + timestamp;
+        if (fieldId) {
+            newUrl += '&field=' + fieldId;
+        }
+        img.src = newUrl;
 
         // Also clear the input field if we can find it
         const formField = container.closest('.form-field');

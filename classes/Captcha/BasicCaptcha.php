@@ -8,27 +8,42 @@ class BasicCaptcha
 {
     protected $session = null;
     protected $key = 'basic_captcha_value';
+    protected $typeKey = 'basic_captcha_type';
+    protected $config = null;
 
-    public function __construct()
+    public function __construct($fieldConfig = null)
     {
         $this->session = Grav::instance()['session'];
+
+        // Load global configuration
+        $globalConfig = Grav::instance()['config']->get('plugins.form.basic_captcha', []);
+
+        // Merge field-specific config with global config
+        if ($fieldConfig && is_array($fieldConfig)) {
+            $this->config = array_replace_recursive($globalConfig, $fieldConfig);
+        } else {
+            $this->config = $globalConfig;
+        }
     }
 
     public function getCaptchaCode($length = null): string
     {
-        $config = Grav::instance()['config']->get('plugins.form.basic_captcha');
-        $type = $config['type'] ?? 'characters';
+        // Support both 'type' (from global config) and 'captcha_type' (from field config)
+        $type = $this->config['captcha_type'] ?? $this->config['type'] ?? 'characters';
+
+        // Store the captcha type in session for validation
+        $this->setSession($this->typeKey, $type);
 
         switch ($type) {
             case 'dotcount':
-                return $this->getDotCountCaptcha($config);
+                return $this->getDotCountCaptcha($this->config);
             case 'position':
-                return $this->getPositionCaptcha($config);
+                return $this->getPositionCaptcha($this->config);
             case 'math':
-                return $this->getMathCaptcha($config);
+                return $this->getMathCaptcha($this->config);
             case 'characters':
             default:
-                return $this->getCharactersCaptcha($config, $length);
+                return $this->getCharactersCaptcha($this->config, $length);
         }
     }
 
@@ -158,15 +173,37 @@ class BasicCaptcha
      */
     public function createCaptchaImage($captcha_code)
     {
-        $config = Grav::instance()['config']->get('plugins.form.basic_captcha');
-        $width = $config['image']['width'] ?? 135;
-        $height = $config['image']['height'] ?? 40;
+        // Determine image dimensions based on type
+        $isCharacterCaptcha = false;
+        if (strpos($captcha_code, '|') === false && !preg_match('/[\+\-x]/', $captcha_code)) {
+            $isCharacterCaptcha = true;
+        }
+
+        // Use box_width/box_height for character captchas if specified, otherwise use default image dimensions
+        if ($isCharacterCaptcha && isset($this->config['chars']['box_width'])) {
+            $width = $this->config['chars']['box_width'];
+        } else {
+            $width = $this->config['image']['width'] ?? 135;
+        }
+
+        if ($isCharacterCaptcha && isset($this->config['chars']['box_height'])) {
+            $height = $this->config['chars']['box_height'];
+        } else {
+            $height = $this->config['image']['height'] ?? 40;
+        }
 
         // Create a blank image
         $image = imagecreatetruecolor($width, $height);
 
-        // Set background color
-        $bg = $this->hexToRgb($config['image']['bg'] ?? '#ffffff');
+        // Set background color (support both image.bg and chars.bg for character captchas)
+        $bgColor = '#ffffff';
+        if ($isCharacterCaptcha && isset($this->config['chars']['bg'])) {
+            $bgColor = $this->config['chars']['bg'];
+        } elseif (isset($this->config['image']['bg'])) {
+            $bgColor = $this->config['image']['bg'];
+        }
+
+        $bg = $this->hexToRgb($bgColor);
         $backgroundColor = imagecolorallocate($image, $bg[0], $bg[1], $bg[2]);
         imagefill($image, 0, 0, $backgroundColor);
 
@@ -177,16 +214,16 @@ class BasicCaptcha
 
             switch ($type) {
                 case 'count_dots':
-                    return $this->createDotCountImage($image, $parts, $config);
+                    return $this->createDotCountImage($image, $parts, $this->config);
                 case 'position':
-                    return $this->createPositionImage($image, $parts, $config);
+                    return $this->createPositionImage($image, $parts, $this->config);
             }
         } else {
             // Assume it's a character or math captcha if no type indicator
             if (preg_match('/[\+\-x]/', $captcha_code)) {
-                return $this->createMathImage($image, $captcha_code, $config);
+                return $this->createMathImage($image, $captcha_code, $this->config);
             } else {
-                return $this->createCharacterImage($image, $captcha_code, $config);
+                return $this->createCharacterImage($image, $captcha_code, $this->config);
             }
         }
 
@@ -408,21 +445,28 @@ class BasicCaptcha
         $width = imagesx($image);
         $height = imagesy($image);
 
-        // Get font settings
+        // Get font settings with support for custom box dimensions, position, and colors
         $fontPath = __DIR__.'/../../fonts/'.($config['chars']['font'] ?? 'zxx-xed.ttf');
         $fontSize = $config['chars']['size'] ?? 16;
-        $textColor = imagecolorallocate($image, 0, 0, 0);
+
+        // Support custom text color (defaults to black)
+        $textColorHex = $config['chars']['text'] ?? '#000000';
+        $textRgb = $this->hexToRgb($textColorHex);
+        $textColor = imagecolorallocate($image, $textRgb[0], $textRgb[1], $textRgb[2]);
+
+        // Support custom start position (useful for fine-tuning text placement)
+        $startX = $config['chars']['start_x'] ?? ($width / (strlen($captcha_code) + 2));
+        $baseY = $config['chars']['start_y'] ?? ($height / 2 + 5);
 
         // Draw each character with random rotation and position
         $charWidth = $width / (strlen($captcha_code) + 2);
-        $startX = $charWidth; // Leave some space at the beginning
 
         for ($i = 0; $i < strlen($captcha_code); $i++) {
             $char = $captcha_code[$i];
             $angle = mt_rand(-15, 15); // Random rotation
 
-            // Random vertical position
-            $y = mt_rand($height / 2 - 5, $height / 2 + 5);
+            // Random vertical position with custom base Y
+            $y = $baseY + mt_rand(-5, 5);
 
             imagettftext($image, $fontSize, $angle, $startX, $y, $textColor, $fontPath, $char);
 

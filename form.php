@@ -398,6 +398,14 @@ class FormPlugin extends Plugin
         $twig->addFunction(new TwigFunction('captcha_template_exists', function ($template) use ($twig) {
             return $twig->getLoader()->exists($template);
         }));
+
+        // Add function to store basic captcha configuration in session
+        $twig->addFunction(new TwigFunction('store_basic_captcha_config', function ($fieldId, $config) {
+            $session = $this->grav['session'];
+            $sessionKey = "basic_captcha_config_{$fieldId}";
+            $session->{$sessionKey} = $config;
+            return true;
+        }));
     }
 
     /**
@@ -1242,7 +1250,19 @@ class FormPlugin extends Plugin
     protected function processBasicCaptchaImage(Uri $uri): void
     {
         if ($uri->path() === '/forms-basic-captcha-image.jpg') {
-            $captcha = new BasicCaptcha();
+            // Get field ID from query parameter
+            $fieldId = $_GET['field'] ?? null;
+            $fieldConfig = null;
+
+            // Retrieve field-specific configuration from session if available
+            if ($fieldId) {
+                $session = $this->grav['session'];
+                $sessionKey = "basic_captcha_config_{$fieldId}";
+                $fieldConfig = $session->{$sessionKey} ?? null;
+            }
+
+            // Create captcha with field-specific or global config
+            $captcha = new BasicCaptcha($fieldConfig);
             $code = $captcha->getCaptchaCode();
             $image = $captcha->createCaptchaImage($code);
             $captcha->renderCaptchaImage($image);
