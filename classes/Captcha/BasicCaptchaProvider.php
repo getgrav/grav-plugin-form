@@ -29,6 +29,9 @@ class BasicCaptchaProvider implements CaptchaProviderInterface
             // Make sure to use the same session key that the image generation code uses
             $expectedValue = $session->basic_captcha_value ?? null; // Changed from basic_captcha to basic_captcha_value
 
+            // Get the captcha type from session (stored during generation)
+            $captchaType = $session->basic_captcha_type ?? null;
+
             // Get the user's answer
             $userValue = $form['basic-captcha'] ?? null;
 
@@ -48,13 +51,16 @@ class BasicCaptchaProvider implements CaptchaProviderInterface
                 ];
             }
 
-            // Compare the values (case-insensitive string comparison for character captchas)
-            $captchaType = $this->config['type'] ?? 'math';
+            // Compare the values based on the type stored in session
+            // If type is not in session, try to infer from global/field config
+            if (!$captchaType) {
+                $captchaType = $this->config['captcha_type'] ?? $this->config['type'] ?? 'characters';
+            }
 
             if ($captchaType === 'characters') {
                 $isValid = strtolower((string)$userValue) === strtolower((string)$expectedValue);
             } else {
-                // For math, ensure both are treated as integers
+                // For math, dotcount, position - ensure both are treated as integers or exact match
                 $isValid = (int)$userValue === (int)$expectedValue;
             }
 
@@ -69,8 +75,9 @@ class BasicCaptchaProvider implements CaptchaProviderInterface
                 ];
             }
 
-            // Clear the session value to prevent reuse
+            // Clear the session values to prevent reuse
             $session->basic_captcha_value = null;
+            $session->basic_captcha_type = null;
 
             return [
                 'success' => true
@@ -89,14 +96,31 @@ class BasicCaptchaProvider implements CaptchaProviderInterface
      */
     public function getClientProperties(string $formId, array $field): array
     {
-        $captchaType = $field['basic_captcha_type'] ?? $this->config['type'] ?? 'math';
+        $grav = Grav::instance();
+        $session = $grav['session'];
+
+        // Merge field-level configuration with global defaults
+        $fieldConfig = array_replace_recursive($this->config, $field);
+
+        // Remove non-config keys from field array
+        unset($fieldConfig['type'], $fieldConfig['label'], $fieldConfig['placeholder'],
+              $fieldConfig['validate'], $fieldConfig['name'], $fieldConfig['classes']);
+
+        // Generate unique field ID for this form/field combination
+        $fieldId = md5($formId . '_basic_captcha_' . ($field['name'] ?? 'default'));
+
+        // Store field configuration in session for image generation
+        $session->{"basic_captcha_config_{$fieldId}"} = $fieldConfig;
+
+        $captchaType = $fieldConfig['type'] ?? 'math';
 
         return [
             'provider' => 'basic-captcha',
             'type' => $captchaType,
-            'imageUrl' => '/forms-basic-captcha-image.jpg',
+            'imageUrl' => "/forms-basic-captcha-image.jpg?field={$fieldId}",
             'refreshable' => true,
-            'containerId' => "basic-captcha-{$formId}"
+            'containerId' => "basic-captcha-{$formId}",
+            'fieldId' => $fieldId
         ];
     }
 
