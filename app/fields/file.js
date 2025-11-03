@@ -106,8 +106,18 @@ export default class FilesField {
             global.location.reload();
         }
 
+        if (response && response.status === 'error') {
+            return this.handleError({
+                file,
+                data: response,
+                mode: 'removeFile',
+                msg: `<p>${translations.PLUGIN_FORM.FILE_ERROR_UPLOAD} <strong>${file.name}</strong></p>
+                <pre>${response.message}</pre>`
+            });
+        }
+
         // store params for removing file from session before it gets saved
-        if (response.session) {
+        if (response && response.session) {
             file.sessionParams = response.session;
             file.removeUrl = this.options.url;
 
@@ -117,13 +127,7 @@ export default class FilesField {
             input.val(value + ' ');
         }
 
-        return this.handleError({
-            file,
-            data: response,
-            mode: 'removeFile',
-            msg: `<p>${translations.PLUGIN_FORM.FILE_ERROR_UPLOAD} <strong>${file.name}</strong></p>
-            <pre>${response.message}</pre>`
-        });
+        return true;
     }
 
     onDropzoneComplete(file) {
@@ -204,34 +208,49 @@ export default class FilesField {
     }
 
     handleError(options) {
-        return true;
-        /* let { file, data, mode, msg } = options;
-        if (data.status !== 'error' && data.status !== 'unauthorized') { return; }
+        const { file, data, msg } = options;
+        const status = data && data.status;
 
-        switch (mode) {
-            case 'addBack':
-                if (file instanceof File) {
-                    this.dropzone.addFile.call(this.dropzone, file);
-                } else {
-                    this.dropzone.files.push(file);
-                    this.dropzone.options.addedfile.call(this.dropzone, file);
-                    this.dropzone.options.thumbnail.call(this.dropzone, file, file.extras.url);
-                }
-
-                break;
-            case 'removeFile':
-            default:
-                if (~this.dropzone.files.indexOf(file)) {
-                    file.rejected = true;
-                    this.dropzone.removeFile.call(this.dropzone, file, { silent: true });
-                }
-
-                break;
+        if (status !== 'error' && status !== 'unauthorized') {
+            return false;
         }
 
-        let modal = $('[data-remodal-id="generic"]');
-        modal.find('.error-content').html(msg);
-        $.remodal.lookup[modal.data('remodal')].open(); */
+        const message = data && data.message ? data.message : (msg || translations.PLUGIN_FORM.FILEPOND_ERROR_FILESIZE);
+
+        if (file && this.dropzone) {
+            file.accepted = false;
+            file.status = Dropzone.ERROR;
+            file.rejected = true;
+
+            const preview = $(file.previewElement);
+            if (preview.length) {
+                preview.addClass('dz-error');
+                preview.find('[data-dz-errormessage]').html(message);
+            }
+
+            // Remove the errored file so the user can try again.
+            if (~this.dropzone.files.indexOf(file)) {
+                setTimeout(() => {
+                    this.dropzone.removeFile.call(this.dropzone, file, { silent: true });
+                    this.dropzone._updateMaxFilesReachedClass();
+                }, 100);
+            }
+        }
+
+        const field = this.container.closest('.form-field');
+        if (field.length) {
+            let errorBox = field.find('.form-errors');
+            if (!errorBox.length) {
+                errorBox = $('<div class="form-errors"></div>').appendTo(field);
+            }
+
+            errorBox.html(`<p class="form-message"><i class="fa fa-exclamation-circle"></i> ${message}</p>`);
+        } else if (typeof global.alert === 'function') {
+            // Fall back to alert if no inline container is present.
+            global.alert(message);
+        }
+
+        return true;
     }
 }
 
@@ -338,3 +357,12 @@ export let Instances = (() => {
 
     return instances;
 })();
+
+// Expose addNode function to global scope for XHR reinitialization and pipeline compatibility
+if (typeof window.GravForm === 'undefined') {
+    window.GravForm = {};
+}
+window.GravForm.FilesField = {
+    addNode,
+    instances: Instances
+};

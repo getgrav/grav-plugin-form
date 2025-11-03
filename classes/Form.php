@@ -550,6 +550,10 @@ class Form implements FormInterface, ArrayAccess
         $url = $uri->url;
         $post = $uri->post();
 
+        if (!empty($post['__unique_form_id__'])) {
+            $this->setUniqueId($post['__unique_form_id__']);
+        }
+
         $name = $post['name'] ?? null;
         $task = $post['task'] ?? null;
 
@@ -661,6 +665,7 @@ class Form implements FormInterface, ArrayAccess
         // Handle file size limits
         $settings->filesize *= self::BYTES_TO_MB; // 1024 * 1024 [MB in Bytes]
         if ($settings->filesize > 0 && $upload['file']['size'] > $settings->filesize) {
+            $grav['log']->warning(sprintf('Form upload rejected: %s (%d bytes) exceeds limit %d bytes', $filename, $upload['file']['size'], $settings->filesize));
             // json_response
             return [
                 'status'  => 'error',
@@ -890,6 +895,16 @@ class Form implements FormInterface, ArrayAccess
             }
 
             $this->data->merge($data);
+        }
+
+        if (!empty($post['__unique_form_id__'])) {
+            $this->setUniqueId($post['__unique_form_id__']);
+        }
+
+        // Ensure file field values are populated from the flash storage before validation.
+        $flash = $this->getFlash();
+        if ($flash->exists()) {
+            $this->setAllFiles($flash);
         }
 
         // Validate and filter data
@@ -1255,6 +1270,10 @@ class Form implements FormInterface, ArrayAccess
         // Get POST data and decode JSON fields into arrays
         $post = $uri->post();
         $post['data'] = $this->decodeData($post['data'] ?? []);
+
+        if (!empty($post['__unique_form_id__'])) {
+            $this->setUniqueId($post['__unique_form_id__']);
+        }
 
         if (empty($post['form-nonce']) || !Utils::verifyNonce($post['form-nonce'], 'form')) {
             throw new RuntimeException('Bad Request: Nonce is missing or invalid', 400);

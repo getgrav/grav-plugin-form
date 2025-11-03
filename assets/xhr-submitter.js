@@ -172,6 +172,23 @@
                 // First reinitialize any captchas
                 CaptchaManager.reinitializeAll(updatedForm);
 
+                // Trigger mutation._grav event for Dropzone and other field reinitializations
+                setTimeout(() => {
+                    Core.log('Triggering mutation._grav event for field reinitialization');
+
+                    // Trigger using jQuery if available (preferred method for compatibility)
+                    if (typeof jQuery !== 'undefined') {
+                        jQuery('body').trigger('mutation._grav', [wrapperElement]);
+                    } else {
+                        // Fallback: dispatch native custom event
+                        const event = new CustomEvent('mutation._grav', {
+                            detail: { target: wrapperElement },
+                            bubbles: true
+                        });
+                        document.body.dispatchEvent(event);
+                    }
+                }, 0);
+
                 // Then re-attach the XHR listener
                 setTimeout(() => {
                     FormHandler.setupListener(formId);
