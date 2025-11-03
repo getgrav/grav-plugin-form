@@ -357,3 +357,12 @@ export let Instances = (() => {
 
     return instances;
 })();
+
+// Expose addNode function to global scope for XHR reinitialization and pipeline compatibility
+if (typeof window.GravForm === 'undefined') {
+    window.GravForm = {};
+}
+window.GravForm.FilesField = {
+    addNode,
+    instances: Instances
+};
