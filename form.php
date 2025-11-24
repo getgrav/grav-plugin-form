@@ -116,7 +116,20 @@ class FormPlugin extends Plugin
 
         // Initialize the captcha manager
         CaptchaManager::initialize();
-        
+
+        /** @var Uri $uri */
+        $uri = $this->grav['uri'];
+
+        // Refresh Nonce Logic - Run early to catch both frontend and admin
+        // Uri::param() returns false when missing, so use fallback even on falsey values.
+        $task = $uri->param('task') ?: $uri->query('task') ?: ($_REQUEST['task'] ?? null);
+        if ($task === 'get-nonce') {
+            $action = $uri->param('action') ?: $uri->query('action') ?: ($_REQUEST['action'] ?? 'form');
+            $nonce = Utils::getNonce($action);
+            $response = new Response(200, ['Content-Type' => 'application/json'], json_encode(['nonce' => $nonce]));
+
+            $this->grav->close($response);
+        }
 
         if ($this->isAdmin()) {
             $this->enable([
@@ -126,11 +139,7 @@ class FormPlugin extends Plugin
             return;
         }
 
-        /** @var Uri $uri */
-        $uri = $this->grav['uri'];
-
         // Mini Keep-Alive Logic
-        $task = $uri->param('task');
         if ($task === 'keep-alive') {
             $response = new Response(200);
 
@@ -440,6 +449,18 @@ class FormPlugin extends Plugin
 
         if ($this->config->get('plugins.form.built_in_css')) {
             $this->grav['assets']->addCss('plugin://form/assets/form-styles.css');
+        }
+        if ($this->config->get('plugins.form.refresh_nonce')) {
+            $timeout = (int)$this->config->get('system.session.timeout', 1800);
+            // Nonce lifetime is ~12h (current + previous tick); cap refresh window to that.
+            $effectiveTimeout = min($timeout, 43200);
+            // Refresh close to expiry: 10% lead time, capped between 5s and 60s.
+            $leadTime = min(60, max(5, (int)round($effectiveTimeout * 0.10)));
+            $intervalSeconds = max(1, $effectiveTimeout - $leadTime);
+            $interval = $intervalSeconds * 1000;
+
+            $this->grav['assets']->addInlineJs("window.GravForm = window.GravForm || {}; window.GravForm.refresh_nonce_interval = $interval;", ['group' => 'bottom', 'position' => 'before']);
+            $this->grav['assets']->addJs('plugin://form/assets/form-nonce-refresh.js', ['group' => 'bottom', 'defer' => true]);
         }
         $twig->twig_vars['form_max_filesize'] = Form::getMaxFilesize();
         $twig->twig_vars['form_json_response'] = $this->json_response;
