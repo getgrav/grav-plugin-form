@@ -3,11 +3,11 @@
 {% block field %}
 <div class="form-field form-spacer {{ field.classes }}">
     {% if field.title %}
-        <{{ title_type|default('h3') }}>{{- field.title|t|raw -}}</ {{ title_type|default('h3') }}>
+        <{{ field.title_type|default('h3') }}>{{- field.title|t|raw -}}</{{ field.title_type|default('h3') }}>
     {% endif %}
 
     {% if field.markdown %}
-        <p>{{- field.text|t|markdown|raw -}}</p>
+        {{- field.text|t|markdown|raw -}}
     {% else %}
         <p>{{- field.text|t|raw -}}</p>
     {% endif %}
