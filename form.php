@@ -32,9 +32,7 @@ use RocketTheme\Toolbox\File\File;
 use RocketTheme\Toolbox\Event\Event;
 use RuntimeException;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Twig\Environment;
 use Twig\Extension\CoreExtension;
-use Twig\Extension\EscaperExtension;
 use Twig\TwigFunction;
 use function count;
 use function function_exists;
@@ -377,17 +375,15 @@ class FormPlugin extends Plugin
             new TwigFunction('forms', [$this, 'getForm'])
         );
 
-        if (Environment::VERSION_ID > 20000) {
-            // Twig 2/3
-            $this->grav['twig']->twig()->getExtension(EscaperExtension::class)->setEscaper(
-                'yaml',
-                function ($twig, $string, $charset) {
-                    return Yaml::dump($string);
-                }
-            );
+        // Grav 1.8+ has setEscaper() helper that handles all Twig versions
+        $twig = $this->grav['twig'];
+        if (method_exists($twig, 'setEscaper')) {
+            $twig->setEscaper('yaml', function ($twig, $string, $charset) {
+                return Yaml::dump($string);
+            });
         } else {
-            // Twig 1.x
-            $this->grav['twig']->twig()->getExtension(CoreExtension::class)->setEscaper(
+            // Grav 1.7 with Twig 1.x
+            $twig->twig()->getExtension(CoreExtension::class)->setEscaper(
                 'yaml',
                 function ($twig, $string, $charset) {
                     return Yaml::dump($string);
