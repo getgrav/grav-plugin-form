@@ -5,5 +5,19 @@
     {% if field.validate.min is defined %}min="{{ field.validate.min }}"{% endif %}
     {% if field.validate.max is defined %}max="{{ field.validate.max }}"{% endif %}
     {% if field.validate.step is defined %}step="{{ field.validate.step }}"{% endif %}
-    {{ parent() }}
+    {# Skip text.html.twig's minlength/maxlength and go directly to field.html.twig #}
+    {% if field.size %}size="{{ field.size }}"{% endif %}
+    {% if field.classes is defined %}class="{{ field.classes }}" {% endif %}
+    {% if field.id is defined %}id="{{ field.id }}" {% endif %}
+    {% if field.style is defined %}style="{{ field.style }}" {% endif %}
+    {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
+    {% if field.placeholder %}placeholder="{{ field.placeholder|t }}"{% endif %}
+    {% if field.autofocus in ['on', 'true', 1] %}autofocus="autofocus"{% endif %}
+    {% if field.novalidate in ['on', 'true', 1] %}novalidate="novalidate"{% endif %}
+    {% if field.readonly in ['on', 'true', 1] %}readonly="readonly"{% endif %}
+    {% if field.autocomplete is defined %}autocomplete="{{ field.autocomplete }}"{% endif %}
+    {% if field.validate.required in ['on', 'true', 1] %}required="required"{% endif %}
+    {% if field.validate.pattern %}pattern="{{ field.validate.pattern }}"{% endif %}
+    {% if field.validate.message %}title="{{ field.validate.message|t }}"
+    {% elseif field.title is defined %}title="{{ field.title|t }}" {% endif %}
 {% endblock %}
