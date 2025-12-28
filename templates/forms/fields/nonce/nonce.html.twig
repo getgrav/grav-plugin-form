@@ -1,1 +1,4 @@
-{{ nonce_field(form.getNonceAction() ?? 'form', form.getNonceName() ?? 'form-nonce')|raw }}
+{% set nonce_action = form.getNonceAction() ?? 'form' %}
+{% set nonce_name = form.getNonceName() ?? 'form-nonce' %}
+{% set nonce_value = form.getNonce() %}
+<input type="hidden" name="{{ nonce_name }}" value="{{ nonce_value }}" class="form-nonce-field" data-nonce-action="{{ nonce_action }}" />

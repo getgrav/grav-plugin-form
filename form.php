@@ -32,9 +32,7 @@ use RocketTheme\Toolbox\File\File;
 use RocketTheme\Toolbox\Event\Event;
 use RuntimeException;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Twig\Environment;
 use Twig\Extension\CoreExtension;
-use Twig\Extension\EscaperExtension;
 use Twig\TwigFunction;
 use function count;
 use function function_exists;
@@ -116,7 +114,20 @@ class FormPlugin extends Plugin
 
         // Initialize the captcha manager
         CaptchaManager::initialize();
-        
+
+        /** @var Uri $uri */
+        $uri = $this->grav['uri'];
+
+        // Refresh Nonce Logic - Run early to catch both frontend and admin
+        // Uri::param() returns false when missing, so use fallback even on falsey values.
+        $task = $uri->param('task') ?: $uri->query('task') ?: ($_REQUEST['task'] ?? null);
+        if ($task === 'get-nonce') {
+            $action = $uri->param('action') ?: $uri->query('action') ?: ($_REQUEST['action'] ?? 'form');
+            $nonce = Utils::getNonce($action);
+            $response = new Response(200, ['Content-Type' => 'application/json'], json_encode(['nonce' => $nonce]));
+
+            $this->grav->close($response);
+        }
 
         if ($this->isAdmin()) {
             $this->enable([
@@ -126,11 +137,7 @@ class FormPlugin extends Plugin
             return;
         }
 
-        /** @var Uri $uri */
-        $uri = $this->grav['uri'];
-
         // Mini Keep-Alive Logic
-        $task = $uri->param('task');
         if ($task === 'keep-alive') {
             $response = new Response(200);
 
@@ -368,17 +375,15 @@ class FormPlugin extends Plugin
             new TwigFunction('forms', [$this, 'getForm'])
         );
 
-        if (Environment::VERSION_ID > 20000) {
-            // Twig 2/3
-            $this->grav['twig']->twig()->getExtension(EscaperExtension::class)->setEscaper(
-                'yaml',
-                function ($twig, $string, $charset) {
-                    return Yaml::dump($string);
-                }
-            );
+        // Grav 1.8+ has setEscaper() helper that handles all Twig versions
+        $twig = $this->grav['twig'];
+        if (method_exists($twig, 'setEscaper')) {
+            $twig->setEscaper('yaml', function ($twig, $string, $charset) {
+                return Yaml::dump($string);
+            });
         } else {
-            // Twig 1.x
-            $this->grav['twig']->twig()->getExtension(CoreExtension::class)->setEscaper(
+            // Grav 1.7 with Twig 1.x
+            $twig->twig()->getExtension(CoreExtension::class)->setEscaper(
                 'yaml',
                 function ($twig, $string, $charset) {
                     return Yaml::dump($string);
@@ -440,6 +445,18 @@ class FormPlugin extends Plugin
 
         if ($this->config->get('plugins.form.built_in_css')) {
             $this->grav['assets']->addCss('plugin://form/assets/form-styles.css');
+        }
+        if ($this->config->get('plugins.form.refresh_nonce')) {
+            $timeout = (int)$this->config->get('system.session.timeout', 1800);
+            // Nonce lifetime is ~12h (current + previous tick); cap refresh window to that.
+            $effectiveTimeout = min($timeout, 43200);
+            // Refresh close to expiry: 10% lead time, capped between 5s and 60s.
+            $leadTime = min(60, max(5, (int)round($effectiveTimeout * 0.10)));
+            $intervalSeconds = max(1, $effectiveTimeout - $leadTime);
+            $interval = $intervalSeconds * 1000;
+
+            $this->grav['assets']->addInlineJs("window.GravForm = window.GravForm || {}; window.GravForm.refresh_nonce_interval = $interval;", ['group' => 'bottom', 'position' => 'before']);
+            $this->grav['assets']->addJs('plugin://form/assets/form-nonce-refresh.js', ['group' => 'bottom', 'defer' => true]);
         }
         $twig->twig_vars['form_max_filesize'] = Form::getMaxFilesize();
         $twig->twig_vars['form_json_response'] = $this->json_response;
