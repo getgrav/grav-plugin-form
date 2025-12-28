@@ -1,5 +1,5 @@
 # v8.2.0
-## 112/27/2025
+## 12/27/2025
 
 1. [](#improved)
     - Use new Twig::setEscaper() helper if it exists
