@@ -1,12 +1,22 @@
+# v8.2.0
+## 112/27/2025
+
+1. [](#improved)
+    - Use new Twig::setEscaper() helper if it exists
+    - Automated form none refresh `refresh_nonce` (false by default)
+1. [](#bugfix)
+    - Fix spacer field [#623](https://github.com/getgrav/grav-plugin-form/pulls/623)
+    - Fix number field
+
 # v8.1.0
 ## 11/03/2025
 
-1. [](#bugfix)
-    - Fixed an issue with DropZone file field with `js_pipeline` enabled [#621](https://github.com/getgrav/grav-plugin-form/issues/621)
-    - Fixed general pipeline issues with form javascript
 1. [](#improved)
     - Added a field-based configuration of basic-captcha [#622](https://github.com/getgrav/grav-plugin-form/issues/622)
     - Improved filesize min/max error handling
+2. [](#bugfix)
+    - Fixed an issue with DropZone file field with `js_pipeline` enabled [#621](https://github.com/getgrav/grav-plugin-form/issues/621)
+    - Fixed general pipeline issues with form javascript
 
 # v8.0.6
 ## 10/07/2025
