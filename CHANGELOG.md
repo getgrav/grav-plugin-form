@@ -1,8 +1,14 @@
+# v8.2.1
+## 12/28/2025
+
+1. [](#bugfix)
+    * Fix for bad `Twig::setEscaper()` logic
+
 # v8.2.0
-## 112/27/2025
+## 12/27/2025
 
 1. [](#improved)
-    - Use new Twig::setEscaper() helper if it exists
+    - Use new `Twig::setEscaper()` helper if it exists
     - Automated form none refresh `refresh_nonce` (false by default)
 1. [](#bugfix)
     - Fix spacer field [#623](https://github.com/getgrav/grav-plugin-form/pulls/623)
