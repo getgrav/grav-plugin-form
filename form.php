@@ -375,12 +375,21 @@ class FormPlugin extends Plugin
             new TwigFunction('forms', [$this, 'getForm'])
         );
 
-        // Grav 1.8+ has setEscaper() helper that handles all Twig versions
+        // Register yaml escaper for Twig
         $twig = $this->grav['twig'];
         if (method_exists($twig, 'setEscaper')) {
+            // Grav 1.8.0-beta.29+ has setEscaper() helper
             $twig->setEscaper('yaml', function ($twig, $string, $charset) {
                 return Yaml::dump($string);
             });
+        } elseif (class_exists('Twig\Runtime\EscaperRuntime')) {
+            // Grav 1.8.0-beta.1 to .28 with Twig 3.x (no helper yet)
+            $twig->twig()->getRuntime('Twig\Runtime\EscaperRuntime')->setEscaper(
+                'yaml',
+                function ($string, $charset) {
+                    return Yaml::dump($string);
+                }
+            );
         } else {
             // Grav 1.7 with Twig 1.x
             $twig->twig()->getExtension(CoreExtension::class)->setEscaper(
