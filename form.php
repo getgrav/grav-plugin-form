@@ -1154,7 +1154,9 @@ class FormPlugin extends Plugin
 
             if ($form) {
                 // Only set posted unique id if the form name matches to the one that was posted.
-                if ($unique_id && $form_name === $form->getFormName()) {
+                // And only if it was a successful form submit, if the validation catches an error
+                // the user need to be able to correct that.
+                if ($unique_id && $form_name === $form->getFormName() && $form->validate()) {
                     $form->setUniqueId($unique_id);
                     $form->initialize();
                 }
