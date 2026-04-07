@@ -1,3 +1,8 @@
+# v8.x.x
+## __/__/____
+1. [](#improved)
+    - Add `data.yaml.twig` handler for the form save action to write the data as valid yaml
+
 # v8.2.1
 ## 12/28/2025
 
