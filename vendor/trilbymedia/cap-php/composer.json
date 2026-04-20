@@ -1,0 +1,43 @@
+{
+    "name": "trilbymedia/cap-php",
+    "description": "PHP port of the Cap proof-of-work captcha server. Wire-compatible with @cap.js/widget.",
+    "type": "library",
+    "license": "Apache-2.0",
+    "keywords": ["captcha", "proof-of-work", "cap", "cap.js", "pow", "sha256", "security"],
+    "homepage": "https://github.com/trilbymedia/cap-php",
+    "authors": [
+        {
+            "name": "Trilby Media",
+            "homepage": "https://trilby.media"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "ext-json": "*",
+        "ext-hash": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.5",
+        "psr/simple-cache": "^2.0 || ^3.0"
+    },
+    "suggest": {
+        "psr/simple-cache": "To use Psr16Storage with any PSR-16 cache implementation."
+    },
+    "autoload": {
+        "psr-4": {
+            "TrilbyMedia\\Cap\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TrilbyMedia\\Cap\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit",
+        "test-coverage": "phpunit --coverage-html coverage"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
