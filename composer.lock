@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e8fb36e1700ad34eebfb90491db72365",
+    "content-hash": "e95bd8312202552fa874c9a1a9a187b9",
     "packages": [
         {
             "name": "google/recaptcha",
@@ -60,16 +60,16 @@
         },
         {
             "name": "trilbymedia/cap-php",
-            "version": "0.1.0",
+            "version": "0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/trilbymedia/cap-php.git",
-                "reference": "c9e17a70a506bb2d1cec15271aae3aa0797e5457"
+                "reference": "44df8baae7c56765dba5cb8908c86aa1324e3aa0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/trilbymedia/cap-php/zipball/c9e17a70a506bb2d1cec15271aae3aa0797e5457",
-                "reference": "c9e17a70a506bb2d1cec15271aae3aa0797e5457",
+                "url": "https://api.github.com/repos/trilbymedia/cap-php/zipball/44df8baae7c56765dba5cb8908c86aa1324e3aa0",
+                "reference": "44df8baae7c56765dba5cb8908c86aa1324e3aa0",
                 "shasum": ""
             },
             "require": {
@@ -113,9 +113,9 @@
             ],
             "support": {
                 "issues": "https://github.com/trilbymedia/cap-php/issues",
-                "source": "https://github.com/trilbymedia/cap-php/tree/0.1.0"
+                "source": "https://github.com/trilbymedia/cap-php/tree/0.1.1"
             },
-            "time": "2026-04-20T07:37:54+00:00"
+            "time": "2026-04-20T17:13:39+00:00"
         }
     ],
     "packages-dev": [],
