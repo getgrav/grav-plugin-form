@@ -7,20 +7,8 @@
     {% set endpoint      = base_url_relative ~ '/forms-cap/' %}
     {% set wasm_url      = url('plugin://form/assets/captcha/cap/cap_wasm_bg.wasm') %}
     {% set container_id  = 'cap-' ~ formId %}
-    {% set init_var      = 'cap_initialized_' ~ formId %}
     {% set mode          = field.mode ?? grav.config.plugins.form.cap.mode ?? 'invisible' %}
     {% if mode not in ['invisible', 'checkbox'] %}{% set mode = 'invisible' %}{% endif %}
-
-    <script>
-        (function () {
-            if (window['{{ init_var }}']) { return; }
-            window['{{ init_var }}'] = true;
-            // Serve the WASM module from the plugin instead of jsDelivr.
-            if (!window.CAP_CUSTOM_WASM_URL) {
-                window.CAP_CUSTOM_WASM_URL = {{ wasm_url|json_encode|raw }};
-            }
-        })();
-    </script>
 
     {% if mode == 'checkbox' %}
 
@@ -28,7 +16,8 @@
         <div class="cap-container"
              data-form-id="{{ formId }}"
              data-captcha-provider="cap"
-             data-cap-mode="checkbox">
+             data-cap-mode="checkbox"
+             data-cap-wasm-url="{{ wasm_url }}">
             <cap-widget
                 id="{{ container_id }}"
                 data-cap-api-endpoint="{{ endpoint }}"
@@ -37,80 +26,20 @@
 
     {% else %}
 
-        {# Invisible mode: no visible UI. Proof-of-work solves in background on form submit. #}
+        {# Invisible mode: no visible UI. cap-handler.js wires up the solve + submit-intercept. #}
         <div class="cap-container cap-invisible"
              data-form-id="{{ formId }}"
              data-captcha-provider="cap"
              data-cap-mode="invisible"
+             data-cap-api-endpoint="{{ endpoint }}"
+             data-cap-wasm-url="{{ wasm_url }}"
              aria-hidden="true"
              style="display:none;">
             <input type="hidden" name="cap-token" value="" />
         </div>
 
-        <script>
-            (function () {
-                const formId        = {{ formId|json_encode|raw }};
-                const endpoint      = {{ endpoint|json_encode|raw }};
-                const initReady = () => {
-                    const form = document.getElementById(formId);
-                    if (!form) return;
-                    const container = form.querySelector('.cap-container.cap-invisible[data-form-id="' + formId + '"]');
-                    if (!container) return;
-                    const tokenInput = container.querySelector('input[name="cap-token"]');
-                    if (!tokenInput) return;
-                    if (container.__capWired) return;
-                    container.__capWired = true;
-
-                    if (typeof window.Cap !== 'function') {
-                        console.error('[cap] window.Cap not available — widget script failed to load');
-                        return;
-                    }
-
-                    let cap = new window.Cap({ apiEndpoint: endpoint });
-                    let solvePromise = null;
-                    let verified = false;
-                    const startSolve = () => {
-                        verified = false;
-                        tokenInput.value = '';
-                        solvePromise = cap.solve().then((r) => {
-                            tokenInput.value = r.token;
-                            return r;
-                        }).catch((err) => {
-                            console.error('[cap] solve failed', err);
-                            throw err;
-                        });
-                    };
-                    startSolve();
-
-                    // Expose a reset hook so the XHR handler can re-arm after submit.
-                    container.__capReset = () => {
-                        try { cap.reset(); } catch (e) { /* ignore */ }
-                        startSolve();
-                    };
-
-                    form.addEventListener('submit', async (event) => {
-                        if (verified && tokenInput.value) return;
-                        event.preventDefault();
-                        event.stopImmediatePropagation();
-                        try {
-                            await solvePromise;
-                        } catch (e) {
-                            return;
-                        }
-                        verified = true;
-                        form.requestSubmit(event.submitter || null);
-                    }, true);
-                };
-
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', initReady);
-                } else {
-                    initReady();
-                }
-            })();
-        </script>
-
     {% endif %}
 
-    {% do assets.addJs('plugin://form/assets/captcha/cap/cap.min.js', { group: 'bottom', loading: 'defer' }) %}
+    {% do assets.addJs('plugin://form/assets/captcha/cap-handler.js', { group: 'bottom', priority: 110 }) %}
+    {% do assets.addJs('plugin://form/assets/captcha/cap/cap.min.js', { group: 'bottom', loading: 'defer', priority: 100 }) %}
 {% endblock %}
