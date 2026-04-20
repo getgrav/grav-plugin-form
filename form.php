@@ -145,6 +145,7 @@ class FormPlugin extends Plugin
         }
 
         $this->processBasicCaptchaImage($uri);
+        $this->processCapRoutes($uri);
 
         $this->enable([
             'onPageProcessed' => ['onPageProcessed', 0],
@@ -491,6 +492,7 @@ class FormPlugin extends Plugin
         switch ($action) {
             case 'basic-captcha':
             case 'turnstile':
+            case 'cap':
             case 'captcha':
                 // Convert boolean params to array if needed
                 $captcha_params = is_array($params) ? $params : [];
@@ -1292,6 +1294,55 @@ class FormPlugin extends Plugin
             $code = $captcha->getCaptchaCode();
             $image = $captcha->createCaptchaImage($code);
             $captcha->renderCaptchaImage($image);
+            exit;
+        }
+    }
+
+    /**
+     * Serve the cap.js-compatible challenge/redeem endpoints used by the
+     * Cap captcha provider. Handled here (before Grav's page pipeline) so
+     * they don't require a dedicated route page.
+     */
+    protected function processCapRoutes(Uri $uri): void
+    {
+        $path = $uri->path();
+        if ($path !== \Grav\Plugin\Form\Captcha\CapProvider::CHALLENGE_PATH
+            && $path !== \Grav\Plugin\Form\Captcha\CapProvider::REDEEM_PATH) {
+            return;
+        }
+
+        if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
+            http_response_code(405);
+            header('Allow: POST');
+            exit;
+        }
+
+        header('Content-Type: application/json; charset=utf-8');
+        header('Cache-Control: no-store');
+
+        try {
+            $cap = \Grav\Plugin\Form\Captcha\CapProvider::getCap();
+
+            if ($path === \Grav\Plugin\Form\Captcha\CapProvider::CHALLENGE_PATH) {
+                echo json_encode($cap->createChallenge(), JSON_UNESCAPED_SLASHES);
+                exit;
+            }
+
+            // Redeem: read JSON body
+            $raw = file_get_contents('php://input') ?: '';
+            $body = json_decode($raw, true);
+            if (!is_array($body) || !isset($body['token'], $body['solutions']) || !is_array($body['solutions'])) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'Invalid body']);
+                exit;
+            }
+            $solutions = array_map(static fn($v) => (int)$v, $body['solutions']);
+            echo json_encode($cap->redeemChallenge((string)$body['token'], $solutions), JSON_UNESCAPED_SLASHES);
+            exit;
+        } catch (\Throwable $e) {
+            $this->grav['log']->error('Cap endpoint error: ' . $e->getMessage());
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Server error']);
             exit;
         }
     }

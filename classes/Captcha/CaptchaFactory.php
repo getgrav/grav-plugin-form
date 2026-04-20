@@ -77,6 +77,7 @@ class CaptchaFactory
         self::registerProvider('recaptcha', new ReCaptchaProvider());
         self::registerProvider('turnstile', new TurnstileProvider());
         self::registerProvider('basic-captcha', new BasicCaptchaProvider());
+        self::registerProvider('cap', new CapProvider());
 
         // Log the registration
 //        Grav::instance()['log']->debug('Registered default captcha providers');
