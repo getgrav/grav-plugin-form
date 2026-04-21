@@ -1,0 +1,327 @@
+!((e, t) => {
+  "object" == typeof exports && "undefined" != typeof module
+    ? t(exports)
+    : "function" == typeof define && define.amd
+      ? define(["exports"], t)
+      : t(
+          ((e = "undefined" != typeof globalThis ? globalThis : e || self).hashwasm =
+            e.hashwasm || {}),
+        );
+})(void 0, (e) => {
+  function t(e, t, n, A) {
+    return new (n || (n = Promise))((i, o) => {
+      function r(e) {
+        try {
+          a(A.next(e));
+        } catch (e) {
+          o(e);
+        }
+      }
+      function E(e) {
+        try {
+          a(A.throw(e));
+        } catch (e) {
+          o(e);
+        }
+      }
+      function a(e) {
+        var t;
+        e.done
+          ? i(e.value)
+          : ((t = e.value),
+            t instanceof n
+              ? t
+              : new n((e) => {
+                  e(t);
+                })).then(r, E);
+      }
+      a((A = A.apply(e, t || [])).next());
+    });
+  }
+  "function" == typeof SuppressedError && SuppressedError;
+  class n {
+    constructor() {
+      this.mutex = Promise.resolve();
+    }
+    lock() {
+      let e = () => {};
+      return (
+        (this.mutex = this.mutex.then(() => new Promise(e))),
+        new Promise((t) => {
+          e = t;
+        })
+      );
+    }
+    dispatch(e) {
+      return t(this, void 0, void 0, function* () {
+        const t = yield this.lock();
+        try {
+          return yield Promise.resolve(e());
+        } finally {
+          t();
+        }
+      });
+    }
+  }
+  var A;
+  const i =
+      "undefined" != typeof globalThis
+        ? globalThis
+        : "undefined" != typeof self
+          ? self
+          : "undefined" != typeof window
+            ? window
+            : global,
+    o = null !== (A = i.Buffer) && void 0 !== A ? A : null,
+    r = i.TextEncoder ? new i.TextEncoder() : null;
+  function E(e, t) {
+    return (
+      (((15 & e) + ((e >> 6) | ((e >> 3) & 8))) << 4) | ((15 & t) + ((t >> 6) | ((t >> 3) & 8)))
+    );
+  }
+  const a = "a".charCodeAt(0) - 10,
+    g = "0".charCodeAt(0);
+  function s(e, t, n) {
+    let A = 0;
+    for (let i = 0; i < n; i++) {
+      let n = t[i] >>> 4;
+      ((e[A++] = n > 9 ? n + a : n + g), (n = 15 & t[i]), (e[A++] = n > 9 ? n + a : n + g));
+    }
+    return String.fromCharCode.apply(null, e);
+  }
+  const C =
+      null !== o
+        ? (e) => {
+            if ("string" == typeof e) {
+              const t = o.from(e, "utf8");
+              return new Uint8Array(t.buffer, t.byteOffset, t.length);
+            }
+            if (o.isBuffer(e)) return new Uint8Array(e.buffer, e.byteOffset, e.length);
+            if (ArrayBuffer.isView(e)) return new Uint8Array(e.buffer, e.byteOffset, e.byteLength);
+            throw new Error("Invalid data type!");
+          }
+        : (e) => {
+            if ("string" == typeof e) return r.encode(e);
+            if (ArrayBuffer.isView(e)) return new Uint8Array(e.buffer, e.byteOffset, e.byteLength);
+            throw new Error("Invalid data type!");
+          },
+    B = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+    c = new Uint8Array(256);
+  for (let e = 0; e < 64; e++) c[B.charCodeAt(e)] = e;
+  function l(e) {
+    const t = ((e) => {
+        let t = Math.floor(0.75 * e.length);
+        const n = e.length;
+        return ("=" === e[n - 1] && ((t -= 1), "=" === e[n - 2] && (t -= 1)), t);
+      })(e),
+      n = e.length,
+      A = new Uint8Array(t);
+    let i = 0;
+    for (let t = 0; t < n; t += 4) {
+      const n = c[e.charCodeAt(t)],
+        o = c[e.charCodeAt(t + 1)],
+        r = c[e.charCodeAt(t + 2)],
+        E = c[e.charCodeAt(t + 3)];
+      ((A[i] = (n << 2) | (o >> 4)),
+        (i += 1),
+        (A[i] = ((15 & o) << 4) | (r >> 2)),
+        (i += 1),
+        (A[i] = ((3 & r) << 6) | (63 & E)),
+        (i += 1));
+    }
+    return A;
+  }
+  const h = 16384,
+    f = new n(),
+    d = new Map();
+  function u(e, n) {
+    return t(this, void 0, void 0, function* () {
+      let A = null,
+        i = null,
+        o = !1;
+      if ("undefined" == typeof WebAssembly)
+        throw new Error("WebAssembly is not supported in this environment!");
+      const r = () => new DataView(A.exports.memory.buffer).getUint32(A.exports.STATE_SIZE, !0),
+        a = f.dispatch(() =>
+          t(this, void 0, void 0, function* () {
+            if (!d.has(e.name)) {
+              const t = l(e.data),
+                n = WebAssembly.compile(t);
+              d.set(e.name, n);
+            }
+            const t = yield d.get(e.name);
+            A = yield WebAssembly.instantiate(t, {});
+          }),
+        ),
+        g = () => {
+          const e = arguments.length > 0 && void 0 !== arguments[0] ? arguments[0] : null;
+          ((o = !0), A.exports.Hash_Init(e));
+        },
+        B = (e) => {
+          if (!o) throw new Error("update() called before init()");
+          ((e) => {
+            let t = 0;
+            for (; t < e.length; ) {
+              const n = e.subarray(t, t + h);
+              ((t += n.length), i.set(n), A.exports.Hash_Update(n.length));
+            }
+          })(C(e));
+        },
+        c = new Uint8Array(2 * n),
+        u = (e) => {
+          const t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null;
+          if (!o) throw new Error("digest() called before init()");
+          return ((o = !1), A.exports.Hash_Final(t), "binary" === e ? i.slice(0, n) : s(c, i, n));
+        },
+        v = (e) => ("string" == typeof e ? e.length < 4096 : e.byteLength < h);
+      let N = v;
+      switch (e.name) {
+        case "argon2":
+        case "scrypt":
+          N = () => !0;
+          break;
+        case "blake2b":
+        case "blake2s":
+          N = (e, t) => t <= 512 && v(e);
+          break;
+        case "blake3":
+          N = (e, t) => 0 === t && v(e);
+          break;
+        case "xxhash64":
+        case "xxhash3":
+        case "xxhash128":
+          N = () => !1;
+      }
+      return (
+        yield (() =>
+          t(this, void 0, void 0, function* () {
+            A || (yield a);
+            const e = A.exports.Hash_GetBuffer(),
+              t = A.exports.memory.buffer;
+            i = new Uint8Array(t, e, h);
+          }))(),
+        {
+          getMemory: () => i,
+          writeMemory: (e) => {
+            const t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : 0;
+            i.set(e, t);
+          },
+          getExports: () => A.exports,
+          setMemorySize: (e) => {
+            A.exports.Hash_SetMemorySize(e);
+            const t = A.exports.Hash_GetBuffer(),
+              n = A.exports.memory.buffer;
+            i = new Uint8Array(n, t, e);
+          },
+          init: g,
+          update: B,
+          digest: u,
+          save: () => {
+            if (!o) throw new Error("save() can only be called after init() and before digest()");
+            const t = A.exports.Hash_GetState(),
+              n = r(),
+              i = A.exports.memory.buffer,
+              a = new Uint8Array(i, t, n),
+              g = new Uint8Array(4 + n);
+            return (
+              ((e, t) => {
+                const n = t.length >> 1;
+                for (let A = 0; A < n; A++) {
+                  const n = A << 1;
+                  e[A] = E(t.charCodeAt(n), t.charCodeAt(n + 1));
+                }
+              })(g, e.hash),
+              g.set(a, 4),
+              g
+            );
+          },
+          load: (t) => {
+            if (!(t instanceof Uint8Array))
+              throw new Error("load() expects an Uint8Array generated by save()");
+            const n = A.exports.Hash_GetState(),
+              i = r(),
+              a = 4 + i,
+              g = A.exports.memory.buffer;
+            if (t.length !== a)
+              throw new Error(
+                "Bad state length (expected ".concat(a, " bytes, got ").concat(t.length, ")"),
+              );
+            if (
+              !((e, t) => {
+                if (e.length !== 2 * t.length) return !1;
+                for (let n = 0; n < t.length; n++) {
+                  const A = n << 1;
+                  if (t[n] !== E(e.charCodeAt(A), e.charCodeAt(A + 1))) return !1;
+                }
+                return !0;
+              })(e.hash, t.subarray(0, 4))
+            )
+              throw new Error("This state was written by an incompatible hash implementation");
+            const s = t.subarray(4);
+            (new Uint8Array(g, n, i).set(s), (o = !0));
+          },
+          calculate: (e) => {
+            const t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : null,
+              o = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : null;
+            if (!N(e, t)) return (g(t), B(e), u("hex", o));
+            const r = C(e);
+            return (i.set(r), A.exports.Hash_Calculate(r.length, t, o), s(c, i, n));
+          },
+          hashLength: n,
+        }
+      );
+    });
+  }
+  let v =
+    "AGFzbQE||BEAF/YAF/AG|AGACf38|wgH|EBAQAw$AQECAgYOAn8BQfCJBQt/AEGACAsHcAgGbWVtb3J5AÔHZXRCdWZmZX|lº0luaXQ|Qtº1VwZGF0ZQACCkhhc2hfRmluYWwABA1º0dldFN0YXRl|UÔDYWxjdWxhdGUABgpTVEFURV9TSVpFAwEKoEoHBQBBkLnQEABCADcDwÈBHEEgBB4AFGIbNgL#QFBAEKnn+anxvST/b5/Qquzj/yRo7Pw2wABs3A+CQrGWgP6fooWs6ABC/6S5iMWR2oKbfy|GzcD2ÈCl7rDg5Onlod3QvLmu+Ojp/2npX8Bs3A9CQti9loj8oLW+NkLnzKfQ1tDrs7t/AbNwPI¥L7wICAX4Gf0EAApA8CJASCtfDcDw`AkACQAJAGnQT9xIgINAEGACSEDDAELAkBBw|msiBC|QEkbIgNFDQA0EDcSEFJBg`aiEGAhAgJANBBEkNACADQfwAcSEHAhAgNAYm#AyACQYAJDFqJBgQ¿NBAmokGCCÀ0ED\vCQYMJHJBBG#AkcN|sLVFDQADQCAGJqJB¿JBAWohAiAFQX9gUN|sLQEsNAU»y|RrIQAgBEGACWohAwsCQC|Qc|SQ0|0AxADNBwABQMEFAaiQT9LDQALCy|RQ0AAhAkÊUDQCACQYCJAWoyACCFQICAFFgVB/wFxSw0ACwsLoz4BRX9BAC|KAI8IgFËU¡AB$§FBGXc$OA$Ì¶OCICÏJ?k±JÒC\vµg!R>BE£BE}¶HF\vµE!Z>Bk£Bk}¶AH\vµk!hqJAk=Ak\bgN hgCÜK[K]µUtqJ hADEM[M]µM1 jADmo¶CCIJÏl?gC$Idk<lÒPÝ9-9.Z igEGo$PBB{C$PJJ{E$PRR{EkEPSS{E2o¶NCIUh0R?gFE±RÒVV-V.5qJ iwiFÜW[W]Q\vR\vIÝh-h.RqlqV>B$OB$ÌgCmoÇC0L[L]M\vV\vNÝ1-1.9qZqNA0=A0\bhRFE=FE\bhdF0=F0\bhÂlGÉGU\bhpGk=Gk\bhtG0=G0\bhx>HE£HE}ÜC[C]V\vY\vOÝ5-5.ZqdqB>EE£EE}gCGogFGogE0EPTT{H$Pdd{HkEPee{HE0T[T]Y\vDÝN-N.Fqlq9H0=H0\biBqJ>Ek£Ek}gFHE$ZR[R]U\ve\vJÝl-l.Nq1qxHE=HE\biFIÉIU\biJIk=Ik\biNI0=I0\biRqt>G0£G0}gH¢IGÜa[a]d\vi\vZl-l.NCFqh>GE£GE}ÍHGogF0X[X]R\vb\vUR-R.lqpCBIE=IE\biVJÉJU\biZJk=Jk\bidJ0=J0\bihKE=KE\bilKÉKU\bipKk=Kk\bit>K0£K0}gH0f[f]b\vn\ve5-5.pCZq1>H$OH$ÌgGÇJÇJEEPkk{LEEPss{L$Ptt{L¢JEk[k]n\vg¸B-ICB.xChC5Lk=Lk\bi9CN>I0£I0}gJ¢L¢IÜi[i]l\vt\vh¸F-ICF.ICBCxCtK0=K0\bjBME=ME\bjFMÉMU\bjJMk=Mk\bjNCp>Kk£Kk}gLÇM¢K$Zp[p]s\vx\vo¸h-ICh.ICRDBCd>J0£J0}gIKJÜm[m]i\vq\vl¸V-ICV.ICFClC9L0=L0\bjRNE=NE\bjVNÉNU\bjZNk=Nk\bjdN0=N0\bjhOE=OE\bjlOÉOU\bjogOCA0IC4gLCAhsgG,D4gBEY¥iO0ª7(7d3c0k¥iPGp4`Ij13`Ij5zIDtxID1z\vHakGY36iUBG#B0U¥iP2#ACAM\v71D4gDP,G\vAID4gO3NxID5z\vA¦BBGRid2JB2#QEQ¥iQW#DC|IDt7Ãz/eDrntkJz`IkNg0gDC|c3EHNq1%D$VDUaW3181+aiJE·siJASP0gDHÙxHbhNvKA2#RSBBIEMHNxIEMHÚB®EETAEE«dgZgdqUgDCiAN\vLxqcgDyANDXfGjxM8FKYHMgQ3EgBi|pIX+kXlgs¼A×PQ¨HVvfHYem#QC*ER½EBHZjVnsB9aiJCRW#DG#BÇFiAH\vQ9qggBGogB,Ö$aF(FgbaNlAFgg¼N^\vKNPU¨G+i8ahAm#Di*qt½FBXcP7sagFQ9Lr5lQdhY¼N×F\vBRqIgBF,P\vFQ¨z\vF¦VVH+4/qGeG#By*qhÐgYgB,EBHNqZ%BkEVBkaeN8N55EEÕ,NDmÛ#DCAGVFÃ9OLvjHxgUÎNQDNwgBnÙZz\vN¦11HB0+2kfm#CC\tZÐg8gFE,N\vUxqkgB¢DyANxMD0ªP(Pho/5/X5gYHCJ8gDXÙ1³HGu4b+AG#DCR¯EgC,PD3~czDsqACNBW#AW#FCßÄ79ik7wJg8ICX\vTRqgEiAJ\vXQÁX¦ddGqidLTBG#GCZgNgkgFyAUFH©dzTwuUFUDG°,JdXÅ2pHmtwdhcNC&HSovnBeW#GS9¯Nq4ÍGiAR\vd;e2Mx8F6aGG#AWyM+MgHthgUCHH/+X6e2#FCdgN@fOXgLd8XGW°ICAS\vcFq8_x6KerX1àHRxqk2a:G#A259KkoQFhgUai&GFldy9Am#FCABdgJhMgIJiAS\viFCU_uMLs8AJØH827HpBG#GS\tpZOa4JkFa\fGG1OapqAZhgUDT\voJCQJyAJ\v)G7laizB2#FC\tdgFa6Si454X\fGWÛhdnIk3lhkaD&Gh0f+Vem#Gi\thÐhNCoÍL,R\vp;cvM6cB6Y\fFGÛ8JauknxhQXDGjo7G7fG#Fy\tlgF@ZnQy4x9Z\fGmÛ#EMCAS\vvFCs_pIzktH1hoYDGF67igf2#GC\tRfDAqoMBU\fF2loKTzQFØTIDZDIÍN,R\vx;YjY3fEBZGm#AWzO6hugJhoYCG1+cKlA2#GCRgN@bOZ8MgDUF2°LEs[s]o\v0\vz93IDN¬IDN­XJDcMyAJ\v)HK1OL2BG#GyABlgJc+U89wFZ:m#A289+5wQZhoYai&Huhb6kB2#HCABRgJhNC5>Lk£Lk}gK¢N¢L$Zt[t]p\v1\vX93d¬d­U93R¬R­YJDkFCAJ\v)HvxpXFB2#CSt¯E¾~ZTwoaZ4bGW°iARNTÆiISc5nhà)H6//uFeW#Gix¯QgPGo2AuSID8Jaitg:W#AaJajYC1`AgP,v¸9-IC9.ICtDdqÂgFCATJSÄ69nBonphkW#EWo2AuCIEEgC,DCc,JNxJ¹ll\vZaiajYC0`AgPiAwIDB-IDB.IC9qdDpOk=Ok\bBJqEgFCATE3~ffH5vd7XJhJqNgLcCBDEgCXM3E,JF2Ûo2AsyIDsgNE0[0]w\v4\vY93h¬h­\vT\vSEgFHNxR´Hy8cWzfG#E,Damo2AtiAÎJRamo2AsiJAQu2BgIEfwF+·sCJASJ29xIgFÞCIoAgBBfy|N0IgB0QX9zcUG|,AdHM2ACQAJ|kA$OSQ0|kA$ORw0ABBADYCv`C0»0ÊMMAQs$NRg0BFBAWohAwsyE|kBBBiADa0EHcSICRQ0ANÞaiEBMh|NAFBADYCACABRQEEEBaiEAJBf2#Ag0ACws0F5akEHSQ0ABBAnQhAQNAFBmkigIG#A$4Rw0ACwtBACEBBBACkDw`IgSnIgBBG3QEELdEGAgPwHcXIEEFdk<BBA3RjYCv`AgBEIdiKc2AriJAU»0EA·uS 5È4gEc¥2Aty·ti 2È1UEQ¥2AtC·sy zÈyI¥CQE#QEiAkUNAEÊADQCABQYAJ\vBQciJAÀ$BaiEBIEEBaiQf8BcUsN|sLCwYAQYCJAQujAQBBAENwPAEEcQ,UHUYiARs2AuiQqef5qfG9JP9vn9Cq7OP/JGjs/DbACABGzcD4ÈCsZaA/p+ihazoAEL/pLmIxZHagpt/EbNwPYEKXusODk6eWh3dC8ua746On/aelfyABGzcD0ÈC2L2WiPygtb42QufMp9DW0Ouzu38Rs3A8iJA,AÊBAsLCwEAQYAICwRw||IAd3MgcyAMnMXEyACcXM0EeDÑDÓ,DCc,BNxB¹FF\vACÚÙIXÚJ®kETAkE«c,CFxC¹JJ\v\bEKdnN\tADJzFxMnÚN®0ETA0E«\vaiA\fE3MnE,Dd3c2pBIBBD3cgBB3dzakiC$YdCAJ¤l²Jh2cnIiiAEEYdC|¤B²Ah2cnIaiIgAQQdyAEHd3NqQyACBc,DJxD¹NN\vqINzJxE3ÚF®$TA$«c`IgBËE¡|EEYdnJyNgLQRBFXdz JASÏB?E±BjYC!IgNË0¡AD0E§#oi$UE%BGncg&SEgCXÙl´(V3)TIÁT¦NN*ANxzZx0gDHÚ1BHncgD$TD$Kd3N,SA-BDndz.BA3Zz:IXM3EÎcXMkEeCÑCÓG;lqMgEiAREXNqN%E0EVE0<GA/gNx=EN>BGXcg?BgP4Dc$IdHI@hIgE,JCXNqJ%EkEVEk[53]N2^c,MZxM¹xx_gCÇEyASFRE0ªT(T`IkB{p2c2#|AA}EÌ~NqF%E$VEURkgE3NxNz\vR¦FFQG#DG#BCAÖEªE(EJMgEnNxJ³IglËgCU¡AJgC$§#C,TJSC$aJ(J#E,JNTÅcXM$eBÑBÓc3EgÎDBGHZych2QYD+A3E`akNwFBNqd%B0EVB0gk¾©Û#EißÆz\vP¦99CIDÏN?0±NÒ13EAKALcXMgBkEeGÑGÓJA$ABE3dzl3BACgC2ogai0|Do|CAEZYÕgBiANÐhEgC,TE3~zc,iQFBABCndzgEÇ qAoA¡<h0ci¢mog£EO¤QYD+A3FBCHRy¥iQE¦p3§YdnJyIg¨gB3Ùd©Nql%C$VCUªEa«Kd3Nq¬BDXdz­BCnZz®BHnc¯gNh°#AW#E±EIdk<²BCHZBgP4Dc,³z\vJ¦ll´z\vS¦JJµAKAI¶CgC·AoA¸IC¹53ºIYXNoX»GA¥QA¼gDCAG½gZgcgDyA¾gEyASEn¿lqLQ|OAÀWot|A6|AÁgEXNxFz\vÂhGE=GE\bhÃDEªM(MÄFEªU(UÅE$aR(RÆEkªS(SÇWogÈ`BÉ$NÊEAIQËBGHQÌDdnMÍgE¢ÎiABÏh0ÐgFÑN3ÒiIÓp3ÔOSGFzaF9ÕgDXMgDHEÖH9PB×^aiBCNØhcZDÙNxÚFzÛ#AmÜkÝÞBAnRBg`ßARlJàhkaC";
+  const N =
+    "àßÞÝÜÛÚÙØ×ÖÕÔÓÒÑÐÏÎÍÌËÊÉÈÇÆÅÄÃÂÁÀ¿¾½¼»º¹¸·¶µ´³²±°¯®­¬«ª©¨§¦¥¤£¢¡ ~}|{`_^][@?>=<;:.-,*)(&%$#! \f\v\t\b";
+  let D;
+  for (D in N) {
+    const e = v.split(N[D]);
+    v = e.join(e.pop());
+  }
+  var G = { name: "sha256", data: v, hash: "64f06674" };
+  const y = new n();
+  let J = null;
+  ((e.createSHA256 = () =>
+    u(G, 32).then((e) => {
+      e.init(256);
+      const t = {
+        init: () => (e.init(256), t),
+        update: (n) => (e.update(n), t),
+        digest: (t) => e.digest(t),
+        save: () => e.save(),
+        load: (n) => (e.load(n), t),
+        blockSize: 64,
+        digestSize: 32,
+      };
+      return t;
+    })),
+    (e.sha256 = (e) => {
+      if (null === J)
+        return (function (e, n) {
+          return t(this, void 0, void 0, function* () {
+            const t = yield e.lock(),
+              A = yield u(n, 32);
+            return (t(), A);
+          });
+        })(y, G).then((t) => ((J = t), J.calculate(e, 256)));
+      try {
+        const t = J.calculate(e, 256);
+        return Promise.resolve(t);
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    }));
+});
+
+console.warn(
+  `[cap]
+%cYou're using a deprecated version of Cap's widget that still relies on this file.
+
+It may continue to work for now, but could break at any time since this dependency was removed several versions ago.
+
+Please update Cap to fix this.`,
+  "font-size:15px;background-image:url('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fpreview.colorkit.co%2Fcolor%2FEEEEEE.png%3Ftype%3Darticle-preview-logo%26size%3Dsocial%26colorname%3DSuper%2520Silver&f=1&nofb=1&ipt=49845e9195461b7c779182793c2ebf7834102eaf5561c15fa2cbb55494b77a9b');background-size:10px",
+);

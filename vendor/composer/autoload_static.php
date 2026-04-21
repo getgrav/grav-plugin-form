@@ -7,22 +7,30 @@ namespace Composer\Autoload;
 class ComposerStaticInitd9f2f96e3ad6fd86ce688af0527a1d7b
 {
     public static $prefixLengthsPsr4 = array (
-        'R' => 
+        'T' =>
+        array (
+            'TrilbyMedia\\Cap\\' => 16,
+        ),
+        'R' =>
         array (
             'ReCaptcha\\' => 10,
         ),
-        'G' => 
+        'G' =>
         array (
             'Grav\\Plugin\\Form\\' => 17,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'ReCaptcha\\' => 
+        'TrilbyMedia\\Cap\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/trilbymedia/cap-php/src',
+        ),
+        'ReCaptcha\\' =>
         array (
             0 => __DIR__ . '/..' . '/google/recaptcha/src/ReCaptcha',
         ),
-        'Grav\\Plugin\\Form\\' => 
+        'Grav\\Plugin\\Form\\' =>
         array (
             0 => __DIR__ . '/../..' . '/classes',
         ),

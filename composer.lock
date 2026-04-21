@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e0e2ccc2fca6a3cb5d548cf61bb80f66",
+    "content-hash": "e95bd8312202552fa874c9a1a9a187b9",
     "packages": [
         {
             "name": "google/recaptcha",
@@ -57,21 +57,80 @@
                 "source": "https://github.com/google/recaptcha"
             },
             "time": "2020-03-31T17:50:54+00:00"
+        },
+        {
+            "name": "trilbymedia/cap-php",
+            "version": "0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/trilbymedia/cap-php.git",
+                "reference": "44df8baae7c56765dba5cb8908c86aa1324e3aa0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/trilbymedia/cap-php/zipball/44df8baae7c56765dba5cb8908c86aa1324e3aa0",
+                "reference": "44df8baae7c56765dba5cb8908c86aa1324e3aa0",
+                "shasum": ""
+            },
+            "require": {
+                "ext-hash": "*",
+                "ext-json": "*",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^10.5",
+                "psr/simple-cache": "^2.0 || ^3.0"
+            },
+            "suggest": {
+                "psr/simple-cache": "To use Psr16Storage with any PSR-16 cache implementation."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "TrilbyMedia\\Cap\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Trilby Media",
+                    "homepage": "https://trilby.media"
+                }
+            ],
+            "description": "PHP port of the Cap proof-of-work captcha server. Wire-compatible with @cap.js/widget.",
+            "homepage": "https://github.com/trilbymedia/cap-php",
+            "keywords": [
+                "cap",
+                "cap.js",
+                "captcha",
+                "pow",
+                "proof-of-work",
+                "security",
+                "sha256"
+            ],
+            "support": {
+                "issues": "https://github.com/trilbymedia/cap-php/issues",
+                "source": "https://github.com/trilbymedia/cap-php/tree/0.1.1"
+            },
+            "time": "2026-04-20T17:13:39+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.3.6 || ^8.0",
+        "php": "^8.1",
         "ext-json": "*"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "platform-overrides": {
-        "php": "7.3.6"
+        "php": "8.1.0"
     },
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.9.0"
 }

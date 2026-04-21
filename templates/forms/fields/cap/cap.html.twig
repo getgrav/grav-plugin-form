@@ -1,0 +1,45 @@
+{% extends "forms/field.html.twig" %}
+
+{% block label %}{% endblock %}
+
+{% block input %}
+    {% set formId        = form.id ?: form.name %}
+    {% set endpoint      = base_url_relative ~ '/forms-cap/' %}
+    {% set wasm_url      = url('plugin://form/assets/captcha/cap/cap_wasm_bg.wasm') %}
+    {% set container_id  = 'cap-' ~ formId %}
+    {% set mode          = field.mode ?? grav.config.plugins.form.cap.mode ?? 'invisible' %}
+    {% if mode not in ['invisible', 'checkbox'] %}{% set mode = 'invisible' %}{% endif %}
+
+    {% if mode == 'checkbox' %}
+
+        {# The <cap-widget> renders its own <input type="hidden" name="cap-token"> internally. #}
+        <div class="cap-container"
+             data-form-id="{{ formId }}"
+             data-captcha-provider="cap"
+             data-cap-mode="checkbox"
+             data-cap-wasm-url="{{ wasm_url }}">
+            <cap-widget
+                id="{{ container_id }}"
+                data-cap-api-endpoint="{{ endpoint }}"
+                data-cap-hidden-field-name="cap-token"></cap-widget>
+        </div>
+
+    {% else %}
+
+        {# Invisible mode: no visible UI. cap-handler.js wires up the solve + submit-intercept. #}
+        <div class="cap-container cap-invisible"
+             data-form-id="{{ formId }}"
+             data-captcha-provider="cap"
+             data-cap-mode="invisible"
+             data-cap-api-endpoint="{{ endpoint }}"
+             data-cap-wasm-url="{{ wasm_url }}"
+             aria-hidden="true"
+             style="display:none;">
+            <input type="hidden" name="cap-token" value="" />
+        </div>
+
+    {% endif %}
+
+    {% do assets.addJs('plugin://form/assets/captcha/cap-handler.js', { group: 'bottom', priority: 110 }) %}
+    {% do assets.addJs('plugin://form/assets/captcha/cap/cap.min.js', { group: 'bottom', loading: 'defer', priority: 100 }) %}
+{% endblock %}

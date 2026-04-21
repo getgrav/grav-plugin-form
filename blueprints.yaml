@@ -1,7 +1,7 @@
 name: Form
 slug: form
 type: plugin
-version: 8.2.1
+version: 9.0.0
 description: Enables forms handling and processing
 icon: check-square
 author:
@@ -12,6 +12,8 @@ keywords: plugin, form
 homepage: https://github.com/getgrav/grav-plugin-form
 bugs: https://github.com/getgrav/grav-plugin-form/issues
 license: MIT
+compatibility: 
+  grav: ['1.7','2.0']
 
 dependencies:
   - { name: grav, version: ">=1.7.49" }
@@ -242,6 +244,67 @@ form:
           label: PLUGIN_FORM.RECAPTCHA_SECRET_KEY
           help: PLUGIN_FORM.RECAPTCHA_SECRET_KEY_HELP
           default: ""
+
+    cap_captcha:
+      type: section
+      title: Cap (Proof-of-Work) Captcha
+
+      fields:
+        cap.mode:
+          type: select
+          label: Default Mode
+          help: "Invisible solves proof-of-work in the background on submit. Checkbox shows the cap.js widget and requires a user click."
+          default: invisible
+          options:
+            invisible: Invisible (auto-solve on submit)
+            checkbox: Checkbox widget
+        cap.storage:
+          type: select
+          label: Token Storage Backend
+          help: "Where to persist outstanding challenges and issued tokens. Grav cache is recommended for production."
+          default: grav-cache
+          options:
+            grav-cache: Grav Cache (PSR-16)
+            filesystem: Filesystem (user/data/cap)
+        cap.challenge_count:
+          type: number
+          label: Challenge Count
+          help: "Number of sub-challenges per captcha. Higher = more work for client."
+          default: 50
+          size: small
+          validate:
+            min: 1
+            max: 200
+            type: number
+        cap.challenge_size:
+          type: number
+          label: Salt Size
+          help: "Length of each sub-challenge salt in hex characters."
+          default: 32
+          size: small
+          validate:
+            min: 8
+            max: 64
+            type: number
+        cap.challenge_difficulty:
+          type: number
+          label: Difficulty
+          help: "Target hex-prefix length each SHA-256 solution must match. Higher = slower solve."
+          default: 4
+          size: small
+          validate:
+            min: 1
+            max: 8
+            type: number
+        cap.expires_ms:
+          type: number
+          label: Challenge TTL (ms)
+          help: "How long an issued challenge remains redeemable."
+          default: 600000
+          size: small
+          validate:
+            min: 30000
+            type: number
 
     basic_captcha:
       type: section
