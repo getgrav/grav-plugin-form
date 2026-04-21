@@ -1,3 +1,9 @@
+# v9.0.0
+## 04/21/20265
+
+1. [](#new)
+    * Added new open source Cap.js powered Proof of Work (POW) captcha option, local PHP-based server, so no 3rd party services required, and 'invisible', no checkboxes or visual interaction required.
+
 # v8.2.1
 ## 12/28/2025
 
