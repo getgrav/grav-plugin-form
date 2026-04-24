@@ -1,5 +1,5 @@
 # v9.0.1
-## 04/23/2026
+## 04/24/2026
 
 1. [](#bugfix)
    * [security] Fixed stored XSS in select-field option text (GHSA-c2q3-p4jr-c55f). Removed the `|raw` filter from `templates/forms/fields/select/select.html.twig`; option labels — including taxonomy values that propagate cross-page through the admin's shared selection pool — are now autoescaped, so a lower-privileged editor can no longer inject script that runs in an admin's browser when they open any page editor.
