@@ -34,7 +34,7 @@
                     {% endfor %}
                 {% endif %}
                 >
-            {% if field.placeholder %}<option value="" disabled selected>{{ field.placeholder|t|raw }}</option>{% endif %}
+            {% if field.placeholder %}<option value="" disabled selected>{{ field.placeholder|t }}</option>{% endif %}
 
             {% set options = field.options %}
             {% if field.selectize.create and value %}
@@ -52,7 +52,10 @@
                         {{ item_value.label    ? 'label=' ~ item_value.label : '' }}
                         value="{{ akey }}"
                     >
-                        {{ avalue|raw }}
+                        {# GHSA-c2q3-p4jr-c55f: dropped |raw — option text is now
+                           autoescaped so taxonomy/option values supplied by
+                           lower-privileged editors can no longer inject script. #}
+                        {{ avalue }}
                     </option>
                 {% elseif item_value is iterable %}
                     {% set optgroup_label = item_value|keys|first %}
@@ -62,14 +65,14 @@
                           {% set item_value = (field.selectize and field.multiple ? suboption : subkey)|string %}
                           {% set selected = (field.selectize ? suboption : subkey)|string %}
                           <option {% if subkey is same as (value) or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ subkey }}">
-                            {{ suboption|t|raw }}
+                            {{ suboption|t }}
                           </option>
                       {% endfor %}
                     </optgroup>
                 {% else %}
                     {% set val = (field.selectize and field.multiple ? item_value : key)|string %}
                     {% set selected = (field.selectize ? item_value : key)|string %}
-                    <option {% if val is same as (value) or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ val }}">{{ item_value|t|raw }}</option>
+                    <option {% if val is same as (value) or (field.multiple and selected in value) %}selected="selected"{% endif %} value="{{ val }}">{{ item_value|t }}</option>
                 {% endif %}
             {% endfor %}
 
