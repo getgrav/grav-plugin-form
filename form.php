@@ -1305,6 +1305,11 @@ class FormPlugin extends Plugin
      */
     protected function processCapRoutes(Uri $uri): void
     {
+        // Cap provider depends on trilbymedia/cap-php which requires PHP 8.1+
+        if (PHP_VERSION_ID < 80100) {
+            return;
+        }
+
         $path = $uri->path();
         if ($path !== \Grav\Plugin\Form\Captcha\CapProvider::CHALLENGE_PATH
             && $path !== \Grav\Plugin\Form\Captcha\CapProvider::REDEEM_PATH) {
@@ -1336,7 +1341,7 @@ class FormPlugin extends Plugin
                 echo json_encode(['success' => false, 'message' => 'Invalid body']);
                 exit;
             }
-            $solutions = array_map(static fn($v) => (int)$v, $body['solutions']);
+            $solutions = array_map(static function ($v) { return (int)$v; }, $body['solutions']);
             echo json_encode($cap->redeemChallenge((string)$body['token'], $solutions), JSON_UNESCAPED_SLASHES);
             exit;
         } catch (\Throwable $e) {
