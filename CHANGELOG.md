@@ -1,3 +1,9 @@
+# v9.0.2
+## 04/25/2026
+
+1. [](#bugfix)
+   * Don't require PHP 8.1+ due to Cap POW Captcha
+
 # v9.0.1
 ## 04/24/2026
 
