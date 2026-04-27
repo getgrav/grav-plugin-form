@@ -1,4 +1,10 @@
 # v9.0.2
+## 04/27/2026
+
+1. [](#improved)
+   * Support saving keys in selectize field
+
+# v9.0.2
 ## 04/25/2026
 
 1. [](#bugfix)
