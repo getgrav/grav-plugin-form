@@ -1,7 +1,7 @@
 name: Form
 slug: form
 type: plugin
-version: 9.0.2
+version: 9.0.3
 description: Enables forms handling and processing
 icon: check-square
 author:
@@ -16,7 +16,7 @@ compatibility:
   grav: ['1.7','2.0']
 
 dependencies:
-  - { name: grav, version: ">=1.7.49" }
+  - { name: grav, version: ">=1.7.51 }
 
 form:
   validation: strict
