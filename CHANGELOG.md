@@ -1,3 +1,9 @@
+# v9.0.3
+## 04/28/2026
+
+1. [](#bugfix)
+   * fix for selectize to support selectize with keys
+
 # v9.0.2
 ## 04/27/2026
 
