@@ -580,7 +580,11 @@ class Form implements FormInterface, ArrayAccess
         $grav->fireEvent('onFormUploadSettings', new Event(['settings' => &$settings, 'post' => $post]));
 
         $upload = json_decode(json_encode($this->normalizeFiles($_FILES['data'], $settings->name)), true);
-        $filename = $post['filename'] ?? $upload['file']['name'];
+        // Strip any path component from the POST-supplied filename. The admin
+        // controllers already do this; the public form path historically did
+        // not, which let an attacker collide the upload with files outside
+        // the intended destination.
+        $filename = Utils::basename((string) ($post['filename'] ?? $upload['file']['name']));
         $field = $upload['field'];
 
         // Handle errors and breaks without proceeding further
@@ -602,6 +606,21 @@ class Form implements FormInterface, ArrayAccess
                 'status'  => 'error',
                 'message' => sprintf($language->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_UPLOAD', null),
                     $filename, 'Bad filename')
+            ];
+        }
+
+        // Hard-block page-content extensions regardless of the configurable
+        // dangerous-extensions list. With destination: self@ (the default),
+        // an upload lands in the page directory, and a permissive accept
+        // policy would otherwise let an unauthenticated user overwrite the
+        // page's own .md/.yaml — turning a file upload into arbitrary
+        // page-content takeover (GHSA-w4rc-p66m-x6qq).
+        $extension = strtolower((string) pathinfo($filename, PATHINFO_EXTENSION));
+        if (in_array($extension, ['md', 'yaml', 'yml', 'json', 'twig', 'ini'], true)) {
+            return [
+                'status'  => 'error',
+                'message' => sprintf($language->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_UPLOAD', null),
+                    $filename, 'File type not allowed')
             ];
         }
 

@@ -1,3 +1,9 @@
+# v9.1.0
+## 04/29/2026
+
+1. [](#bugfix)
+   * [security] Fixed unauthenticated page-content overwrite via file upload (GHSA-w4rc-p66m-x6qq). Public form uploads now strip path components from the POST-supplied filename and hard-block page-content extensions (`md`, `yaml`, `yml`, `json`, `twig`, `ini`) regardless of the configurable dangerous-extensions list. A permissive `accept` policy combined with the default `destination: self@` could otherwise let an attacker overwrite the page's own `.md` and pivot to super-admin via a `process: save` action.
+
 # v9.0.3
 ## 04/28/2026
 
