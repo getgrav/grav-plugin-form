@@ -17,6 +17,7 @@ compatibility:
 
 dependencies:
   - { name: grav, version: ">=1.7.51" }
+  - { name: php, version: ">=8.1" }
 
 form:
   validation: strict
