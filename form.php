@@ -344,7 +344,7 @@ class FormPlugin extends Plugin
                     $formParam = $form->get('uniqueid_param', 'fid');
                     $uniqueId = $route->getGravParam($formParam);
 
-                    if ($uniqueId && preg_match('/[a-z\d]+/', $uniqueId)) {
+                    if ($uniqueId && preg_match('/[a-z\d]+/', (string) $uniqueId)) {
                         // URL contains unique id, initialize the current form.
                         $form->setUniqueId($uniqueId);
                         $form->initialize();
@@ -563,7 +563,7 @@ class FormPlugin extends Plugin
                 if (!$route || $route[0] !== '/') {
                     /** @var Uri $uri */
                     $uri = $this->grav['uri'];
-                    $route = rtrim($uri->route(), '/').'/'.($route ?: '');
+                    $route = rtrim((string) $uri->route(), '/').'/'.($route ?: '');
                 }
 
                 /** @var Twig $twig */
@@ -584,7 +584,7 @@ class FormPlugin extends Plugin
             case 'remember':
                 foreach ($params as $remember_field) {
                     $field_cookie = 'forms-'.$form['name'].'-'.$remember_field;
-                    setcookie($field_cookie, $form->value($remember_field), time() + 60 * 60 * 24 * 60);
+                    setcookie($field_cookie, (string) $form->value($remember_field), time() + 60 * 60 * 24 * 60);
                 }
                 break;
             case 'upload':
@@ -597,7 +597,7 @@ class FormPlugin extends Plugin
                 $format = $params['dateformat'] ?? 'Ymd-His-u';
                 $raw_format = (bool) ($params['dateraw'] ?? false);
                 $postfix = $params['filepostfix'] ?? '';
-                $ext = !empty($params['extension']) ? '.'.trim($params['extension'], '.') : '.txt';
+                $ext = !empty($params['extension']) ? '.'.trim((string) $params['extension'], '.') : '.txt';
                 $filename = $params['filename'] ?? '';
                 $folder = !empty($params['folder']) ? $params['folder'] : $form->getName();
                 $operation = $params['operation'] ?? 'create';

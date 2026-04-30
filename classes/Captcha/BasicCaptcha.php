@@ -175,7 +175,7 @@ class BasicCaptcha
     {
         // Determine image dimensions based on type
         $isCharacterCaptcha = false;
-        if (strpos($captcha_code, '|') === false && !preg_match('/[\+\-x]/', $captcha_code)) {
+        if (strpos((string) $captcha_code, '|') === false && !preg_match('/[\+\-x]/', (string) $captcha_code)) {
             $isCharacterCaptcha = true;
         }
 
@@ -208,8 +208,8 @@ class BasicCaptcha
         imagefill($image, 0, 0, $backgroundColor);
 
         // Parse the captcha code to determine type
-        if (strpos($captcha_code, '|') !== false) {
-            $parts = explode('|', $captcha_code);
+        if (strpos((string) $captcha_code, '|') !== false) {
+            $parts = explode('|', (string) $captcha_code);
             $type = $parts[0];
 
             switch ($type) {
@@ -220,7 +220,7 @@ class BasicCaptcha
             }
         } else {
             // Assume it's a character or math captcha if no type indicator
-            if (preg_match('/[\+\-x]/', $captcha_code)) {
+            if (preg_match('/[\+\-x]/', (string) $captcha_code)) {
                 return $this->createMathImage($image, $captcha_code, $this->config);
             } else {
                 return $this->createCharacterImage($image, $captcha_code, $this->config);
@@ -236,7 +236,7 @@ class BasicCaptcha
     protected function createDotCountImage($image, $parts, $config)
     {
         $colorName = $parts[1];
-        $targetColorRGB = explode(',', $parts[2]);
+        $targetColorRGB = explode(',', (string) $parts[2]);
 
         $width = imagesx($image);
         $height = imagesy($image);
@@ -395,7 +395,7 @@ class BasicCaptcha
         }
 
         // Draw the symbol - make it larger and in red for visibility
-        imagettftext($image, 20, 0, $symbolX - 8, $symbolY + 8, $red, $fontPath, $symbol);
+        imagettftext($image, 20, 0, $symbolX - 8, $symbolY + 8, $red, $fontPath, (string) $symbol);
 
         // Draw a grid to make positions clearer
         $gray = imagecolorallocate($image, 200, 200, 200);
@@ -422,13 +422,13 @@ class BasicCaptcha
 
         // Draw the math expression
         $fontSize = 16;
-        $textBox = imagettfbbox($fontSize, 0, $fontPath, $mathExpression);
+        $textBox = imagettfbbox($fontSize, 0, $fontPath, (string) $mathExpression);
         $textWidth = $textBox[2] - $textBox[0];
         $textHeight = $textBox[1] - $textBox[7];
         $textX = ($width - $textWidth) / 2;
         $textY = ($height + $textHeight) / 2;
 
-        imagettftext($image, $fontSize, 0, $textX, $textY, $textColor, $fontPath, $mathExpression);
+        imagettftext($image, $fontSize, 0, $textX, $textY, $textColor, $fontPath, (string) $mathExpression);
 
         // Add visual noise and distortions to prevent OCR
         $this->addImageNoise($image, 25);
@@ -455,20 +455,20 @@ class BasicCaptcha
         $textColor = imagecolorallocate($image, $textRgb[0], $textRgb[1], $textRgb[2]);
 
         // Support custom start position (useful for fine-tuning text placement)
-        $startX = $config['chars']['start_x'] ?? ($width / (strlen($captcha_code) + 2));
+        $startX = $config['chars']['start_x'] ?? ($width / (strlen((string) $captcha_code) + 2));
         $baseY = $config['chars']['start_y'] ?? ($height / 2 + 5);
 
         // Draw each character with random rotation and position
-        $charWidth = $width / (strlen($captcha_code) + 2);
+        $charWidth = $width / (strlen((string) $captcha_code) + 2);
 
-        for ($i = 0; $i < strlen($captcha_code); $i++) {
+        for ($i = 0; $i < strlen((string) $captcha_code); $i++) {
             $char = $captcha_code[$i];
             $angle = mt_rand(-15, 15); // Random rotation
 
             // Random vertical position with custom base Y
             $y = $baseY + mt_rand(-5, 5);
 
-            imagettftext($image, $fontSize, $angle, $startX, $y, $textColor, $fontPath, $char);
+            imagettftext($image, $fontSize, $angle, $startX, $y, $textColor, $fontPath, (string) $char);
 
             // Move to next character position with some randomness
             $startX += $charWidth + mt_rand(-5, 5);
