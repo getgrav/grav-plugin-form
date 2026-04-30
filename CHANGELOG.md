@@ -1,3 +1,9 @@
+# v9.1.1
+## 04/30/2026
+
+1. [](#bugfix)
+   * Fix Changelog date on v9.0.0 entry
+
 # v9.1.0
 ## 04/29/2026
 
@@ -31,7 +37,7 @@
    * [security] Fixed stored XSS in select-field option text (GHSA-c2q3-p4jr-c55f). Removed the `|raw` filter from `templates/forms/fields/select/select.html.twig`; option labels — including taxonomy values that propagate cross-page through the admin's shared selection pool — are now autoescaped, so a lower-privileged editor can no longer inject script that runs in an admin's browser when they open any page editor.
 
 # v9.0.0
-## 04/21/20265
+## 04/21/2026
 
 1. [](#new)
     * Added new open source Cap.js powered Proof of Work (POW) captcha option, local PHP-based server, so no 3rd party services required, and 'invisible', no checkboxes or visual interaction required.
