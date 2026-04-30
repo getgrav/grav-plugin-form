@@ -1,7 +1,7 @@
 name: Form
 slug: form
 type: plugin
-version: 9.1.1
+version: 9.1.2
 description: Enables forms handling and processing
 icon: check-square
 author:
@@ -12,8 +12,8 @@ keywords: plugin, form
 homepage: https://github.com/getgrav/grav-plugin-form
 bugs: https://github.com/getgrav/grav-plugin-form/issues
 license: MIT
-compatibility: 
-  grav: ['1.7','2.0']
+compatibility:
+  grav: ['1.7', '2.0']
 
 dependencies:
   - { name: grav, version: ">=1.7.51" }

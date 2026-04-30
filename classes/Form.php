@@ -650,7 +650,7 @@ class Form implements FormInterface, ArrayAccess
                 break;
             }
 
-            $isMime = strstr($type, '/');
+            $isMime = strstr((string) $type, '/');
             $find   = str_replace(['.', '*', '+'], ['\.', '.*', '\+'], $type);
 
             if ($isMime) {

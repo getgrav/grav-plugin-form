@@ -49,7 +49,7 @@ class TurnstileProvider implements CaptchaProviderInterface
             $grav['log']->debug('Turnstile validation - token present: ' . ($token ? 'YES' : 'NO'));
 
             if ($token) {
-                $grav['log']->debug('Turnstile token length: ' . strlen($token));
+                $grav['log']->debug('Turnstile token length: ' . strlen((string) $token));
             }
 
             if (!$token) {
