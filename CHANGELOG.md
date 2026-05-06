@@ -1,3 +1,9 @@
+# v9.1.3
+## 05/06/2026
+
+1. [](#bugfix)
+    * Bumped `trilbymedia/cap-php` to `^1.0` (was `^0.1.1`) to pull in 1.0.0, which fixes a fatal `Cache key length must be less than 65 characters` error from `Psr16Storage` when using the Cap captcha provider with a strict PSR-16 cache backend (e.g. Grav's default cache). Cap challenge/redeem endpoints would 500 immediately on issuance.
+
 # v9.1.2
 ## 04/30/2026
 

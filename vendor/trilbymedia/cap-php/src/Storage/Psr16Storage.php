@@ -67,8 +67,11 @@ final class Psr16Storage implements ChallengeStorageInterface, TokenStorageInter
 
     private function key(string $prefix, string $raw): string
     {
-        // PSR-16 reserves some chars in keys. Colons are fine in most
-        // implementations but we hash to be safe across the ecosystem.
-        return $prefix . hash('sha256', $raw);
+        // PSR-16 caps keys at 64 chars and reserves some characters; we hash
+        // for safety across implementations, then truncate so prefix+hash
+        // never exceeds the limit. 232+ bits of entropy is well beyond what
+        // we need for a cache key and well clear of birthday-bound concerns.
+        $room = max(8, 64 - strlen($prefix));
+        return $prefix . substr(hash('sha256', $raw), 0, $room);
     }
 }
