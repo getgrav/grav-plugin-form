@@ -95,7 +95,9 @@
 {% set form_field_for = toggleable ? 'toggleable_' ~ field.name : field.id|e %}
 
 {# Field Label #}
-{% set form_field_label = field.markdown ? field.label|markdown(false) : field.label %}
+{% set form_field_label = field.label %}
+{% set form_field_label = field.markdown ? form_field_label|markdown(false) : form_field_label %}
+{% set form_field_label = field.twig ? evaluate_twig(form_field_label) : form_field_label %}
 {% set form_field_label = form_field_label|default(field.name|capitalize)|t %}
 
 {# Field Help #}
