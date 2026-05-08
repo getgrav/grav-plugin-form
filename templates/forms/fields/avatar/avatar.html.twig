@@ -5,6 +5,6 @@
 {% if avatar %}
     <label class="{{ field.classes }}"><img class="{{ field.img_classes }}" style="max-width:200px;" src="{{ base_url_simple ~ '/' ~ (avatar|first).path }}" /></label>
 {% else %}
-    <label class="{{ field.classes }}"><img class="{{ field.img_classes }}" src="https://www.gravatar.com/avatar/{{ form.value('email')|md5 }}?s=200" /></label>
+    <label class="{{ field.classes }}"><i class="fa fa-user-circle-o fa-4x" aria-hidden="true"></i></label>
 {% endif %}
 {% endblock %}
