@@ -1,5 +1,5 @@
 # v9.1.4
-## 05/28/2026
+## 05/29/2026
 
 1. [](#bugfix)
     * **FilePond previews for files whose names contain `#` or `?` no longer 404.** The `image_url` and `thumb_url` returned by the upload handler now percent-encode those characters in the path so the browser doesn't treat them as fragment/query delimiters.
