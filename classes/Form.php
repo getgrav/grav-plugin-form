@@ -240,12 +240,16 @@ class Form implements FormInterface, ArrayAccess
                 if ($file) {
                     $imagePath = $original->getTmpFile();
                     $thumbPath = $file->getTmpFile();
+                    // Filenames may contain '#' or '?' which would otherwise be
+                    // treated as URL fragment/query delimiters by the browser.
+                    $imageRel = str_replace(['#', '?'], ['%23', '%3F'], Folder::getRelativePath($imagePath));
+                    $thumbRel = str_replace(['#', '?'], ['%23', '%3F'], Folder::getRelativePath($thumbPath));
                     $list[$basename] = [
                         'name' => $file->getClientFilename(),
                         'type' => $file->getClientMediaType(),
                         'size' => $file->getSize(),
-                        'image_url' => $url->rootUrl() . '/' . Folder::getRelativePath($imagePath) . '?' . filemtime($imagePath),
-                        'thumb_url' => $url->rootUrl() . '/' . Folder::getRelativePath($thumbPath) . '?' . filemtime($thumbPath),
+                        'image_url' => $url->rootUrl() . '/' . $imageRel . '?' . filemtime($imagePath),
+                        'thumb_url' => $url->rootUrl() . '/' . $thumbRel . '?' . filemtime($thumbPath),
                         'cropData' => $original->getMetaData()['crop'] ?? []
                     ];
                 }
