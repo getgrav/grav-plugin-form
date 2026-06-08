@@ -1,3 +1,9 @@
+# v9.1.5
+## 06/08/2026
+
+1. [](#bugfix)
+    * Fixed a typo in the form data email template that referenced a non-existent `emarkdown` filter, which on Grav 2.0 could cause form notification emails to arrive with the raw `{% include %}` tag in the body instead of the submitted data.
+
 # v9.1.4
 ## 05/29/2026
 
