@@ -15,7 +15,7 @@
               {% block field_label %}
                 <strong>
                   {%- if field.markdown -%}
-                    {{ field.data_label ? field.data_label|t|e|markdown(false) : field.label|t|emarkdown(false) }}
+                    {{ field.data_label ? field.data_label|t|e|markdown(false) : field.label|t|e|markdown(false) }}
                   {%- else -%}
                     {{ field.data_label ? field.data_label|t|e : field.label|t|e }}
                   {%- endif -%}
