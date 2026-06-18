@@ -753,6 +753,15 @@ class FormPlugin extends Plugin
             $form->messages = $event['messages'];
         }
 
+        // Refresh prevention records the form's unique id before validation runs (see shouldProcessForm).
+        // A failed submission must not consume that id, otherwise the user can't correct the mistake
+        // (e.g. a mistyped captcha) and resubmit the same form. Release it here so the corrected
+        // resubmission is allowed; a successful submission keeps the id recorded and still blocks refreshes.
+        $uniqueId = $form->getUniqueId();
+        if ($uniqueId && ($this->grav['session']->unique_form_id ?? null) === $uniqueId) {
+            $this->grav['session']->unique_form_id = null;
+        }
+
         /** @var Uri $uri */
         $uri = $this->grav['uri'];
         $route = $uri->route();
