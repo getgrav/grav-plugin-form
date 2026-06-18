@@ -1,3 +1,10 @@
+# v9.1.6
+## 06/18/2026
+
+1. [](#bugfix)
+    * Failing a captcha (or any other validation error) no longer blocks you from correcting the form and resubmitting when refresh prevention is enabled.
+    * Custom captcha failure messages set with the older `recaptcha_not_validated` key work again alongside the current `captcha_not_validated` key.
+
 # v9.1.5
 ## 06/08/2026
 
