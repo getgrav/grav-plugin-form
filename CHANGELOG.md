@@ -1,3 +1,9 @@
+# v9.1.7
+## 06/23/2026
+
+1. [](#improved)
+    * The `datetime` form field now renders a real date and time picker that follows the visitor's language and region, instead of falling back to a plain text box.
+
 # v9.1.6
 ## 06/18/2026
 
