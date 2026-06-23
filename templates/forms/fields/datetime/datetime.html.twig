@@ -1,2 +1,9 @@
-{# DEPRECATED. Switched to Text field until implemented properly #}
-{% extends "forms/fields/text/text.html.twig" %}
+{% extends "forms/field.html.twig" %}
+
+{% block input_attributes %}
+    type="datetime-local"
+    {% if field.validate.min is defined %}min="{{ field.validate.min }}"{% endif %}
+    {% if field.validate.max is defined %}max="{{ field.validate.max }}"{% endif %}
+    {% if field.validate.step is defined %}step="{{ field.validate.step }}"{% endif %}
+    {{ parent() }}
+{% endblock %}
