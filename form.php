@@ -602,6 +602,11 @@ class FormPlugin extends Plugin
                 $folder = !empty($params['folder']) ? $params['folder'] : $form->getName();
                 $operation = $params['operation'] ?? 'create';
 
+                // Reject path traversal in the folder parameter (folder is never run through checkFilename).
+                if (str_contains($folder, '..') || str_contains($folder, "\0")) {
+                    throw new RuntimeException(sprintf('Form save: Invalid folder path: %s', $folder));
+                }
+
                 if (!$filename) {
                     if ($operation === 'add') {
                         throw new RuntimeException('Form save: \'operation: add\' is only supported with a static filename');
@@ -624,10 +629,29 @@ class FormPlugin extends Plugin
                 // Process with Twig
                 $filename = $twig->processString($filename, $vars);
 
+                // Re-validate the rendered filename: checkFilename() above ran on the raw template, but Twig may
+                // expand submitted form values into traversal sequences or dangerous extensions.
+                if (!Utils::checkFilename($filename)) {
+                    throw new RuntimeException(sprintf('Form save: Invalid rendered filename: %s', $filename));
+                }
+
                 $locator = $this->grav['locator'];
                 $path = $locator->findResource('user-data://', true);
                 $dir = $path.DS.$folder;
                 $fullFileName = $dir.DS.$filename;
+
+                // Final containment check: the resolved target must stay within user-data://. The target dir may
+                // not exist yet on first save, so resolve the nearest existing ancestor instead of $dir itself.
+                $dataRoot = realpath($path);
+                $ancestor = $dir;
+                while ($ancestor && !file_exists($ancestor) && dirname($ancestor) !== $ancestor) {
+                    $ancestor = dirname($ancestor);
+                }
+                $realAncestor = $ancestor ? realpath($ancestor) : false;
+                if ($dataRoot === false || $realAncestor === false
+                    || ($realAncestor !== $dataRoot && !str_starts_with($realAncestor, $dataRoot.DS))) {
+                    throw new RuntimeException('Form save: Resolved path escapes the data directory.');
+                }
 
                 if (!empty($params['raw']) || !empty($params['template'])) {
                     // Save data as it comes from the form.
