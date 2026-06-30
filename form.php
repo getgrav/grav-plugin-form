@@ -82,6 +82,14 @@ class FormPlugin extends Plugin
             'onPluginsInitialized' => ['onPluginsInitialized', 0],
             'onTwigExtensions' => ['onTwigExtensions', 0],
             'onTwigTemplatePaths' => ['onTwigTemplatePaths', 0],
+            // Register the `form` page template unconditionally. This must NOT be
+            // gated behind isAdmin(): under Admin Next the admin context (the API
+            // plugin's AdminProxy) isn't established until route dispatch, long
+            // after onPluginsInitialized runs — so an isAdmin() check here would be
+            // false and the template would never appear in the page-type list.
+            // The handler is context-free (just registers a type), so it is safe
+            // to subscribe in every context; the event only fires from getTypes().
+            'onGetPageTemplates' => ['onGetPageTemplates', 0],
         ];
     }
 
@@ -132,7 +140,6 @@ class FormPlugin extends Plugin
         if ($this->isAdmin()) {
             $this->enable([
                 'onPageInitialized' => ['onPageInitialized', 0],
-                'onGetPageTemplates' => ['onGetPageTemplates', 0],
             ]);
             return;
         }
