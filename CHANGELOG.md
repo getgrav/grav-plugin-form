@@ -1,3 +1,9 @@
+# v9.1.9
+## 06/30/2026
+
+1. [](#bugfix)
+    * The `form` page template now appears in the Add Page template list in the new Grav 2.0 admin.
+
 # v9.1.8
 ## 06/25/2026
 
