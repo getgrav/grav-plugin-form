@@ -1,3 +1,11 @@
+# v9.1.10
+## 07/02/2026
+
+1. [](#improved)
+    * The `array` field's sort, remove, and add controls now get comfortable spacing and padded hit targets, with a muted look that brightens on hover and reads correctly on dark themes.
+1. [](#bugfix)
+    * Active tab labels in the `tabs` field no longer force black text, keeping them readable on dark themes.
+
 # v9.1.9
 ## 06/30/2026
 
