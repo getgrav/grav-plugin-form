@@ -1,5 +1,6 @@
 $form-border-color: #ccc;
-$form-active-color: #000;
+// inherit (not a fixed color) so active tabs stay readable on dark themes
+$form-active-color: inherit;
 
 .form-group.has-errors {
     background: rgba(255,0,0,0.05);
@@ -309,14 +310,42 @@ $form-active-color: #000;
 [data-grav-field="array"] .form-row {
     display: flex;
     align-items: center;
+    gap: 0.5rem;
     margin-bottom: 0.5rem;
-}
 
-[data-grav-field="array"] .form-row > input,
-[data-grav-field="array"] .form-row > textarea
-{
-    margin: 0 0.5rem;
-    display: inline-block;
+    > input,
+    > textarea {
+        margin: 0;
+        display: inline-block;
+    }
+
+    // Sort / remove / add controls: padded hit targets, muted until hovered
+    > span[data-grav-array-action] {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.9rem;
+        min-height: 1.9rem;
+        padding: 0.25rem;
+        border-radius: 3px;
+        cursor: pointer;
+        color: inherit;
+        opacity: 0.45;
+        transition: opacity 0.2s ease;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    > span[data-grav-array-action="sort"] {
+        cursor: grab;
+
+        &:active {
+            cursor: grabbing;
+        }
+    }
 }
 
 .form-data.basic-captcha {
