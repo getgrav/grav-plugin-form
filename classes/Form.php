@@ -466,7 +466,12 @@ class Form implements FormInterface, ArrayAccess
     public function value($name = null, $fallback = false)
     {
         if (!$name) {
-            return $this->data;
+            // Return the values as a plain array rather than the Data object.
+            // Twig resolves `form.value.<field>` as native array access, which
+            // the content sandbox does not gate — a Data object would trip the
+            // sandbox on the sub-key (regression #4207) and, more broadly, this
+            // is the safer "get all values" contract to hand a template.
+            return $this->data ? $this->data->toArray() : [];
         }
 
         if (isset($this->data[$name])) {
