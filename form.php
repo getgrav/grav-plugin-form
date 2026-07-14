@@ -90,7 +90,32 @@ class FormPlugin extends Plugin
             // The handler is context-free (just registers a type), so it is safe
             // to subscribe in every context; the event only fires from getTypes().
             'onGetPageTemplates' => ['onGetPageTemplates', 0],
+            'onBuildTwigSandboxPolicy' => ['onBuildTwigSandboxPolicy', 0],
         ];
+    }
+
+    /**
+     * Allow the Form object's safe, read-only value accessors under the Twig
+     * content sandbox.
+     *
+     * Form `process.redirect` and `process.message` strings are rendered with
+     * the sandboxed Twig::processString(), and a form's front matter is
+     * editor-reachable (expert mode), so the sandbox must stay on. But a
+     * redirect like `?x={{ form.value.email }}` needs to read the submitted
+     * values, and `Form` is not a class the base sandbox allow-lists, so the
+     * expression was throwing and soft-failing to the raw string (#4207,
+     * regression from the content-sandbox hardening). We register only the
+     * value getters — the data the submitter already controls — not the whole
+     * object.
+     *
+     * @param Event $event
+     * @return void
+     */
+    public function onBuildTwigSandboxPolicy(Event $event): void
+    {
+        $methods = $event['methods'];
+        $methods[] = ['class' => Form::class, 'methods' => 'value, getValue, getValues, data'];
+        $event['methods'] = $methods;
     }
 
     /**
