@@ -568,13 +568,22 @@ class FormPlugin extends Plugin
                 break;
             case 'redirect':
                 $this->grav['session']->setFlashObject('form', $form);
-                $url = ((string) $params);
+                $template = ((string) $params);
                 $vars = array(
                     'form' => $form
                 );
                 /** @var Twig $twig */
                 $twig = $this->grav['twig'];
-                $url = $twig->processString($url, $vars);
+                $url = $twig->processString($template, $vars);
+
+                // The redirect target is authored by the site, but the values it interpolates are
+                // submitted by the visitor. Only honor an off-site jump where the site asked for one:
+                // the authored template was already external, or the rendered URL still points here.
+                // Anything else means the off-site part arrived in form data.
+                if (Uri::isExternal($url) && !Uri::isExternal($template) && !$this->isSameHost($url)) {
+                    $this->grav['log']->warning(sprintf('plugin.form: blocked off-site redirect to "%s" coming from form data (redirect: "%s")', $url, $template));
+                    $url = $this->getCurrentPageRoute();
+                }
 
                 $message = $form->message;
                 if ($message) {
@@ -1104,6 +1113,36 @@ class FormPlugin extends Plugin
         $path = $this->grav['uri']->route();
 
         return $path ?: '/';
+    }
+
+    /**
+     * Check if a URL points back at this site.
+     *
+     * Both the requested host and the host of the configured base URL count as our own, as the
+     * two differ when `system.custom_base_url` is set or the site runs behind a reverse proxy.
+     *
+     * @param  string $url
+     * @return bool
+     */
+    protected function isSameHost(string $url): bool
+    {
+        $host = parse_url($url, PHP_URL_HOST);
+        if (!is_string($host) || $host === '') {
+            return false;
+        }
+
+        /** @var Uri $uri */
+        $uri = $this->grav['uri'];
+
+        $own_hosts = [$uri->host(), parse_url((string) $uri->rootUrl(true), PHP_URL_HOST)];
+
+        foreach ($own_hosts as $own_host) {
+            if (is_string($own_host) && $own_host !== '' && strcasecmp($host, $own_host) === 0) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
