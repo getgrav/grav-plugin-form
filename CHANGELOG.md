@@ -1,3 +1,9 @@
+# v9.1.13
+## 07/15/2026
+
+1. [](#bugfix)
+    * A form's `redirect` now ignores an off-site destination that arrives through submitted form data, while redirects the site itself specifies keep working as before
+
 # v9.1.12
 ## 07/14/2026
 
