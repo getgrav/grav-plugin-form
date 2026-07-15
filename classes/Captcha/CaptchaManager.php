@@ -42,7 +42,7 @@ class CaptchaManager
         $captchaField = null;
         $providerName = null;
 
-        $formFields = $form->value()->blueprints()->get('form/fields');
+        $formFields = $form->getBlueprint()->get('form/fields');
         foreach ($formFields as $fieldName => $fieldDef) {
             $fieldType = $fieldDef['type'] ?? null;
 
@@ -86,7 +86,7 @@ class CaptchaManager
 
         // Validate using the provider
         try {
-            $result = $provider->validate($form->value()->toArray(), $params);
+            $result = $provider->validate($form->value(), $params);
 
             if (!$result['success']) {
                 $logDetails = $result['details'] ?? [];
