@@ -539,7 +539,7 @@ class FormPlugin extends Plugin
             case 'timestamp':
                 $label = $params['label'] ?? 'Timestamp';
                 $format = $params['format'] ?? 'Y-m-d H:i:s';
-                $blueprint = $form->value()->blueprints();
+                $blueprint = $form->getBlueprint();
                 $blueprint->set('form/fields/timestamp',
                     ['name' => 'timestamp', 'label' => $label, 'type' => 'hidden']);
                 $now = new DateTime('now');
@@ -549,7 +549,7 @@ class FormPlugin extends Plugin
                 break;
             case 'ip':
                 $label = $params['label'] ?? 'User IP';
-                $blueprint = $form->value()->blueprints();
+                $blueprint = $form->getBlueprint();
                 $blueprint->set('form/fields/ip', ['name' => 'ip', 'label' => $label, 'type' => 'hidden']);
                 $form->setFields($blueprint->fields());
                 $form->setData('ip', Uri::ip());
@@ -738,7 +738,7 @@ class FormPlugin extends Plugin
                         file_put_contents($fullFileName, $body, FILE_APPEND | LOCK_EX);
                     } else {
                         // serialize YAML out to file for easier parsing as data sets
-                        $vars = $vars['form']->value()->toArray();
+                        $vars = $vars['form']->value();
 
                         foreach ($form->fields as $field) {
                             if (!empty($field['process']['ignore'])) {
