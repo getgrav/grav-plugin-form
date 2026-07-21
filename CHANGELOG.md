@@ -1,3 +1,9 @@
+# v9.1.14
+## 07/21/2026
+
+1. [](#bugfix)
+    * Saving a form a second time into the same folder no longer fails with "Resolved path escapes the data directory" on Windows
+
 # v9.1.13
 ## 07/15/2026
 
