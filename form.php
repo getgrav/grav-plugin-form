@@ -683,14 +683,18 @@ class FormPlugin extends Plugin
 
                 // Final containment check: the resolved target must stay within user-data://. The target dir may
                 // not exist yet on first save, so resolve the nearest existing ancestor instead of $dir itself.
-                $dataRoot = realpath($path);
-                $ancestor = $dir;
+                // Separators are normalized to '/' throughout: the locator emits '/'-style paths while DS and
+                // realpath() use '\' on Windows, so $dir is mixed-separator. realpath() on a mixed-separator path
+                // is unreliable on Windows, and a mismatched separator would break the prefix compare (#637).
+                $normalize = static fn($p) => is_string($p) ? str_replace('\\', '/', $p) : $p;
+                $dataRoot = $normalize(realpath($path));
+                $ancestor = $normalize($dir);
                 while ($ancestor && !file_exists($ancestor) && dirname($ancestor) !== $ancestor) {
                     $ancestor = dirname($ancestor);
                 }
-                $realAncestor = $ancestor ? realpath($ancestor) : false;
+                $realAncestor = $ancestor ? $normalize(realpath($ancestor)) : false;
                 if ($dataRoot === false || $realAncestor === false
-                    || ($realAncestor !== $dataRoot && !str_starts_with($realAncestor, $dataRoot.DS))) {
+                    || ($realAncestor !== $dataRoot && !str_starts_with($realAncestor, $dataRoot.'/'))) {
                     throw new RuntimeException('Form save: Resolved path escapes the data directory.');
                 }
 
