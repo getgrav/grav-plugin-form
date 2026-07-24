@@ -15,7 +15,8 @@
                    {% if required %}required="required"{% endif %}
                    {% if field.tabindex %}tabindex="{{ field.tabindex }}"{% endif %}
             />
-            <label style="display: inline" class="inline" for="{{ id|e }}">{{ text|t|raw }}</label>
+            {# GHSA-5xv4-g337-2pg7: option labels are autoescaped (no |raw), matching the select fix for GHSA-c2q3-p4jr-c55f. #}
+            <label style="display: inline" class="inline" for="{{ id|e }}">{{ text|t }}</label>
         </div>
     {% endfor %}
 {% endblock %}

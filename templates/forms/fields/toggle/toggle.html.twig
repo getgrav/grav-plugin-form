@@ -2,7 +2,8 @@
 
 {% macro spanToggle(input, length) %}
   {% set space = repeat('&nbsp;&nbsp;', (length - input|length) / 2) %}
-  {{ (space ~ input ~ space)|raw }}
+  {# GHSA-5xv4-g337-2pg7: escape the option label; only the &nbsp; padding stays raw. #}
+  {{ (space ~ (input|e) ~ space)|raw }}
 {% endmacro %}
 
 {% import _self as macro %}

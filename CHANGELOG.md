@@ -1,3 +1,9 @@
+# v9.1.15
+## 07/24/2026
+
+1. [](#bugfix)
+    * [security] Radio and toggle field option labels are now escaped instead of being rendered as raw HTML, so a form definition can no longer place a script in an option label that runs when the form is viewed ([GHSA-5xv4-g337-2pg7](https://github.com/getgrav/grav/security/advisories/GHSA-5xv4-g337-2pg7)).
+
 # v9.1.14
 ## 07/21/2026
 
