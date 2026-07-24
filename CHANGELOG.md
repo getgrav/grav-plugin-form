@@ -1,3 +1,10 @@
+# v9.1.15
+## 07/24/2026
+
+1. [](#bugfix)
+    * [security] Radio and toggle field option labels are now escaped instead of being rendered as raw HTML, so a form definition can no longer place a script in an option label that runs when the form is viewed ([GHSA-5xv4-g337-2pg7](https://github.com/getgrav/grav/security/advisories/GHSA-5xv4-g337-2pg7)).
+    * The Cap captcha now actually uses the WASM binary that ships with the plugin. `cap.min.js` starts fetching it as soon as it runs and remembers whichever URL it resolved first, but `CAP_CUSTOM_WASM_URL` was only being set on `DOMContentLoaded`, which happens after that fetch has begun. Every visitor was therefore downloading the binary from the jsDelivr CDN, giving the contact form a third party dependency it does not need and leaking a request to anyone running one
+
 # v9.1.14
 ## 07/21/2026
 
