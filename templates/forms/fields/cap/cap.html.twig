@@ -10,6 +10,18 @@
     {% set mode          = field.mode ?? grav.config.plugins.form.cap.mode ?? 'invisible' %}
     {% if mode not in ['invisible', 'checkbox'] %}{% set mode = 'invisible' %}{% endif %}
 
+    {# cap.min.js fetches the WASM the moment it executes and memoizes whichever
+       URL it resolved first. cap-handler.js only sets CAP_CUSTOM_WASM_URL on
+       DOMContentLoaded, by which time that fetch has already started -- so the
+       vendored binary went unused and every visitor pulled it from the jsDelivr
+       CDN instead.
+
+       This has to be a plain inline tag rather than assets.addInlineJs: Grav
+       emits all external JS before any inline JS, so an asset-registered
+       snippet lands after cap.min.js no matter what priority it is given. Here
+       in the field markup it parses well ahead of the bottom-group scripts. #}
+    <script>window.CAP_CUSTOM_WASM_URL={{ wasm_url|json_encode|raw }};</script>
+
     {% if mode == 'checkbox' %}
 
         {# The <cap-widget> renders its own <input type="hidden" name="cap-token"> internally. #}
