@@ -97,6 +97,69 @@
   {% endblock %}
 {% endset %}
 
+{# BC-friendly override point for the whole buttons loop, mirroring the fields pattern above #}
+{% set override_inner_markup_buttons %}
+  {% block inner_markup_buttons %}
+    {% if form.isEnabled() ?? true %}
+      {% for button in form.buttons %}
+        {% if not button.access or authorize(button.access) %}
+
+          {% block inner_markup_button_open %}
+            {% if button.outerclasses is defined %}<div class="{{ button.outerclasses }}">{% endif %}
+          {% endblock %}
+
+          {% if button.url %}
+            {% set button_url = button.url starts with 'http' ? button.url : base_url ~ button.url %}
+          {% endif %}
+
+          {% embed 'forms/layouts/button.html.twig' %}
+            {% block embed_button_core %}
+              {% if button.id %}id="{{ button.id }}"{% endif %}
+              {% if button.disabled %}disabled="disabled"{% endif %}
+              {% if button.name %}
+                name="{{ button.name }}"
+              {% else %}
+                {% if button.task %}name="task" value="{{ button.task }}"{% endif %}
+              {% endif %}
+              type="{{ button.type|default('submit') }}"
+              {% if button.attributes is defined %}
+                {% for key,attribute in button.attributes %}
+                  {% if attribute|of_type('array') %}
+                    {{ attribute.name }}="{{ attribute.value|e('html_attr') }}"
+                  {% else %}
+                    {{ key }}="{{ attribute|e('html_attr') }}"
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            {% endblock %}
+
+            {% block embed_button_classes %}
+              {% block button_classes %}
+                class="{{ form_button_classes ?: 'button' }} {{ button.classes }}"
+              {% endblock %}
+            {% endblock %}
+
+            {% block embed_button_content -%}
+              {%- set button_value = button.value|t|default('Submit') -%}
+              {%- if button.html -%}
+                {{- button_value|trim|raw -}}
+              {%- else -%}
+                {{- button_value|trim|e -}}
+              {%- endif -%}
+            {%- endblock %}
+
+          {% endembed %}
+
+          {% block inner_markup_button_close %}
+            {% if button.outerclasses is defined %}</div>{% endif %}
+          {% endblock %}
+
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  {% endblock %}
+{% endset %}
+
 {# Embed for HTML layout #}
 {% embed 'forms/layouts/form.html.twig' %}
 
@@ -146,57 +209,7 @@
   {% block embed_buttons %}
     {{ override_inner_markup_buttons_start|raw }}
 
-    {% if form.isEnabled() ?? true %}
-    {% for button in form.buttons %}
-      {% if not button.access or authorize(button.access) %}
-      {% if button.outerclasses is defined %}<div class="{{ button.outerclasses }}">{% endif %}
-
-      {% if button.url %}
-      {% set button_url = button.url starts with 'http' ? button.url : base_url ~ button.url %}
-      {% endif %}
-
-      {% embed 'forms/layouts/button.html.twig' %}
-        {% block embed_button_core %}
-          {% if button.id %}id="{{ button.id }}"{% endif %}
-          {% if button.disabled %}disabled="disabled"{% endif %}
-          {% if button.name %}
-            name="{{ button.name }}"
-          {% else %}
-            {% if button.task %}name="task" value="{{ button.task }}"{% endif %}
-          {% endif %}
-          type="{{ button.type|default('submit') }}"
-          {% if button.attributes is defined %}
-            {% for key,attribute in button.attributes %}
-              {% if attribute|of_type('array') %}
-                {{ attribute.name }}="{{ attribute.value|e('html_attr') }}"
-              {% else %}
-                {{ key }}="{{ attribute|e('html_attr') }}"
-              {% endif %}
-            {% endfor %}
-          {% endif %}
-        {% endblock %}
-
-        {% block embed_button_classes %}
-          {% block button_classes %}
-            class="{{ form_button_classes ?: 'button' }} {{ button.classes }}"
-          {% endblock %}
-        {% endblock %}
-
-        {% block embed_button_content -%}
-          {%- set button_value = button.value|t|default('Submit') -%}
-          {%- if button.html -%}
-            {{- button_value|trim|raw -}}
-          {%- else -%}
-            {{- button_value|trim|e -}}
-          {%- endif -%}
-        {%- endblock %}
-
-      {% endembed %}
-
-      {% if button.outerclasses is defined %}</div>{% endif %}
-      {% endif %}
-    {% endfor %}
-    {% endif %}
+    {{ override_inner_markup_buttons|raw }}
 
     {{ override_inner_markup_buttons_end }}
   {% endblock %}
