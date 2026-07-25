@@ -1,3 +1,9 @@
+# v9.1.16
+## 07/25/2026
+
+1. [](#improved)
+    * A theme can now override just the form's button loop through template blocks, matching how field markup can already be overridden, instead of having to copy the whole form template ([#638](https://github.com/getgrav/grav-plugin-form/pull/638)).
+
 # v9.1.15
 ## 07/24/2026
 
