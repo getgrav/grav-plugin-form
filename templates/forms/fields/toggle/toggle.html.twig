@@ -1,9 +1,11 @@
 {% extends "forms/field.html.twig" %}
 
-{% macro spanToggle(input, length) %}
+{% macro spanToggle(input, length, markdown) %}
   {% set space = repeat('&nbsp;&nbsp;', (length - input|length) / 2) %}
-  {# GHSA-5xv4-g337-2pg7: escape the option label; only the &nbsp; padding stays raw. #}
-  {{ (space ~ (input|e) ~ space)|raw }}
+  {# GHSA-5xv4-g337-2pg7: escape the option label unless the field opts in with `markdown: true`;
+     only the &nbsp; padding is always raw. #}
+  {% set label = markdown ? input|markdown(false) : input|e %}
+  {{ (space ~ label ~ space)|raw }}
 {% endmacro %}
 
 {% import _self as macro %}
@@ -47,7 +49,7 @@
              {% if required %}required="required"{% endif %}
              {% if field.tabindex %}tabindex="{{ field.tabindex }}"{% endif %}
       />
-      <label for="{{ id }}">{{ (macro.spanToggle(translation, maxLen)|trim)|raw }}</label>
+      <label for="{{ id }}">{{ (macro.spanToggle(translation, maxLen, field.markdown)|trim)|raw }}</label>
     {% endfor %}
   </div>
 {% endblock %}

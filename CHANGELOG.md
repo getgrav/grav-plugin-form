@@ -1,3 +1,9 @@
+# v9.1.17
+## 07/26/2026
+
+1. [](#improved)
+    * Radio, toggle and checkboxes option labels can render HTML again by setting `markdown: true` on the field, the same flag that already enables markup in a field's label, help and description ([#639](https://github.com/getgrav/grav-plugin-form/issues/639)).
+
 # v9.1.16
 ## 07/25/2026
 

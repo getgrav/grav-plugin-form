@@ -15,8 +15,10 @@
                    {% if required %}required="required"{% endif %}
                    {% if field.tabindex %}tabindex="{{ field.tabindex }}"{% endif %}
             />
-            {# GHSA-5xv4-g337-2pg7: option labels are autoescaped (no |raw), matching the select fix for GHSA-c2q3-p4jr-c55f. #}
-            <label style="display: inline" class="inline" for="{{ id|e }}">{{ text|t }}</label>
+            {# GHSA-5xv4-g337-2pg7: option labels are autoescaped by default. Set `markdown: true` on the
+               field to opt into rich option labels, the same flag that already enables markup in the
+               field's label, help and description. #}
+            <label style="display: inline" class="inline" for="{{ id|e }}">{% if field.markdown %}{{ text|t|markdown(false) }}{% else %}{{ text|t }}{% endif %}</label>
         </div>
     {% endfor %}
 {% endblock %}
