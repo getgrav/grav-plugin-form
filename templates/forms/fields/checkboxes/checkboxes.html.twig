@@ -28,11 +28,15 @@
                     {% if checked %}checked="checked"{% endif %}
                     {% if disabled %}disabled="disabled"{% endif %}
                 >
+                {# Option labels are escaped by default. Set `markdown: true` on the field to opt into rich
+                   option labels, the same flag that already enables markup in the field's label, help and
+                   description. #}
+                {% set option_label = field.markdown ? text|t|markdown(false) : text|t|e %}
                 <label style="display: inline; {% if disabled %}opacity: 0.6; cursor: no-drop;{% endif %}" for="{{ id|e }}">
                     {% if help %}
-                        <span class="hint--bottom" data-hint="{{ help|t|e('html_attr') }}">{{ text|t|e }}</span>
+                        <span class="hint--bottom" data-hint="{{ help|t|e('html_attr') }}">{{ option_label|raw }}</span>
                     {% else %}
-                        {{ text|t|e }}
+                        {{ option_label|raw }}
                     {% endif %}
                 </label>
             {% endfor %}
