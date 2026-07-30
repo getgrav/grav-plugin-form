@@ -6,6 +6,11 @@ use Grav\Common\Grav;
 
 class BasicCaptcha
 {
+    /**
+     * Field types that share the 'type' key with the captcha type setting
+     */
+    protected const FIELD_TYPES = ['basic-captcha', 'captcha'];
+
     protected $session = null;
     protected $key = 'basic_captcha_value';
     protected $typeKey = 'basic_captcha_type';
@@ -26,10 +31,31 @@ class BasicCaptcha
         }
     }
 
+    /**
+     * Resolve the configured captcha type.
+     *
+     * 'captcha_type' is checked first because this config can have a form field merged
+     * into it, and the field's own 'type' ('basic-captcha' or 'captcha') would otherwise
+     * mask the configured type. When that has happened, fall back to the global setting,
+     * which no field can overwrite.
+     */
+    protected function getCaptchaType(): string
+    {
+        foreach ([$this->config['captcha_type'] ?? null, $this->config['type'] ?? null] as $type) {
+            if ($type && !in_array($type, static::FIELD_TYPES, true)) {
+                return $type;
+            }
+        }
+
+        $global = Grav::instance()['config']->get('plugins.form.basic_captcha', []);
+        $type = $global['captcha_type'] ?? $global['type'] ?? 'characters';
+
+        return in_array($type, static::FIELD_TYPES, true) ? 'characters' : $type;
+    }
+
     public function getCaptchaCode($length = null): string
     {
-        // Support both 'type' (from global config) and 'captcha_type' (from field config)
-        $type = $this->config['captcha_type'] ?? $this->config['type'] ?? 'characters';
+        $type = $this->getCaptchaType();
 
         // Store the captcha type in session for validation
         $this->setSession($this->typeKey, $type);
@@ -48,12 +74,11 @@ class BasicCaptcha
     }
 
     /**
-     * Creates a dot counting captcha - user has to count dots of a specific color
+     * Dot colors available to the dot counting captcha
      */
-    protected function getDotCountCaptcha($config): string
+    protected function getDotColors(): array
     {
-        // Define colors with names
-        $colors = [
+        return [
             'red' => [255, 0, 0],
             'blue' => [0, 0, 255],
             'green' => [0, 128, 0],
@@ -61,20 +86,55 @@ class BasicCaptcha
             'purple' => [128, 0, 128],
             'orange' => [255, 165, 0]
         ];
+    }
+
+    /**
+     * Resolve the dot grid layout and the range of target dots that will fit in it.
+     * Shared by the generator and the renderer so the expected answer can never be
+     * larger than the number of dots the image is able to draw.
+     */
+    protected function getDotGrid($config): array
+    {
+        $rows = max(1, (int) ($config['dots']['rows'] ?? 2));
+        $cols = max(1, (int) ($config['dots']['cols'] ?? 4));
+        $capacity = $rows * $cols;
+
+        // Always leave at least one cell for a different colored dot, otherwise every
+        // dot is the target color and the answer is just "count all of them".
+        $max = min((int) ($config['dots']['max'] ?? 5), $capacity - 1);
+        $max = max(1, $max);
+        $min = max(1, min((int) ($config['dots']['min'] ?? 2), $max));
+
+        return [
+            'rows' => $rows,
+            'cols' => $cols,
+            'capacity' => $capacity,
+            'min' => $min,
+            'max' => $max,
+        ];
+    }
+
+    /**
+     * Creates a dot counting captcha - user has to count dots of a specific color
+     */
+    protected function getDotCountCaptcha($config): string
+    {
+        $colors = $this->getDotColors();
 
         // Pick a random color to count
         $colorNames = array_keys($colors);
         $targetColorName = $colorNames[array_rand($colorNames)];
         $targetColor = $colors[$targetColorName];
 
-        // Generate a random number of dots for the target color (between 5-10)
-        $targetCount = mt_rand(5, 10);
+        // Keep the count within what the grid can actually display
+        $grid = $this->getDotGrid($config);
+        $targetCount = random_int($grid['min'], $grid['max']);
 
         // Store the expected answer
         $this->setSession($this->key, (string) $targetCount);
 
-        // Return description text
-        return "count_dots|{$targetColorName}|".implode(',', $targetColor);
+        // Carry the count in the code so the renderer draws exactly this many dots
+        return "count_dots|{$targetColorName}|".implode(',', $targetColor)."|{$targetCount}";
     }
 
     /**
@@ -108,6 +168,12 @@ class BasicCaptcha
         $max = $config['math']['max'] ?? 12;
         $operators = $config['math']['operators'] ?? ['+', '-', '*'];
 
+        // Fall back to addition if the configured operators are all unsupported
+        $operators = array_values(array_intersect((array) $operators, ['+', '-', '*', '/']));
+        if (!$operators) {
+            $operators = ['+'];
+        }
+
         $first_num = random_int($min, $max);
         $second_num = random_int($min, $max);
         $operator = $operators[array_rand($operators)];
@@ -124,13 +190,18 @@ class BasicCaptcha
         } elseif ($operator === '*') {
             $result = "{$first_num} x {$second_num}";
             $captcha_code = $first_num * $second_num;
-        } elseif ($operator === '+') {
+        } elseif ($operator === '/') {
+            // Multiply back up from the divisor so the answer is always a whole number
+            $divisor = max(1, $second_num);
+            $result = ($first_num * $divisor)." / {$divisor}";
+            $captcha_code = $first_num;
+        } else {
             $result = "$first_num + $second_num";
             $captcha_code = $first_num + $second_num;
         }
 
         $this->setSession($this->key, (string) $captcha_code);
-        return $result;
+        return "math|{$result}";
     }
 
     /**
@@ -169,15 +240,40 @@ class BasicCaptcha
     }
 
     /**
+     * Work out which kind of captcha a code represents.
+     *
+     * Codes are prefixed with their type, so anything without a prefix is a plain
+     * character code. The bare math expression is still recognised for older callers
+     * that generated a code before the prefix was added.
+     */
+    protected function getCaptchaKind($captcha_code): string
+    {
+        $captcha_code = (string) $captcha_code;
+
+        if (strpos($captcha_code, '|') !== false) {
+            $type = explode('|', $captcha_code)[0];
+            if (in_array($type, ['count_dots', 'position', 'math'], true)) {
+                return $type;
+            }
+        }
+
+        // Legacy: math used to be returned as a bare "3 + 4" expression. Anchor the
+        // match so a character code that happens to contain an "x" isn't caught.
+        if (preg_match('#^\s*\d+\s*[+\-x/]\s*\d+\s*$#', $captcha_code)) {
+            return 'math';
+        }
+
+        return 'characters';
+    }
+
+    /**
      * Create captcha image based on the type
      */
     public function createCaptchaImage($captcha_code)
     {
         // Determine image dimensions based on type
-        $isCharacterCaptcha = false;
-        if (strpos((string) $captcha_code, '|') === false && !preg_match('/[\+\-x]/', (string) $captcha_code)) {
-            $isCharacterCaptcha = true;
-        }
+        $kind = $this->getCaptchaKind($captcha_code);
+        $isCharacterCaptcha = $kind === 'characters';
 
         // Use box_width/box_height for character captchas if specified, otherwise use default image dimensions
         if ($isCharacterCaptcha && isset($this->config['chars']['box_width'])) {
@@ -207,27 +303,21 @@ class BasicCaptcha
         $backgroundColor = imagecolorallocate($image, $bg[0], $bg[1], $bg[2]);
         imagefill($image, 0, 0, $backgroundColor);
 
-        // Parse the captcha code to determine type
-        if (strpos((string) $captcha_code, '|') !== false) {
-            $parts = explode('|', (string) $captcha_code);
-            $type = $parts[0];
+        // Render according to the resolved type
+        $parts = explode('|', (string) $captcha_code);
 
-            switch ($type) {
-                case 'count_dots':
-                    return $this->createDotCountImage($image, $parts, $this->config);
-                case 'position':
-                    return $this->createPositionImage($image, $parts, $this->config);
-            }
-        } else {
-            // Assume it's a character or math captcha if no type indicator
-            if (preg_match('/[\+\-x]/', (string) $captcha_code)) {
-                return $this->createMathImage($image, $captcha_code, $this->config);
-            } else {
+        switch ($kind) {
+            case 'count_dots':
+                return $this->createDotCountImage($image, $parts, $this->config);
+            case 'position':
+                return $this->createPositionImage($image, $parts, $this->config);
+            case 'math':
+                // Strip the type prefix, if the code carries one
+                $expression = count($parts) > 1 ? $parts[1] : $parts[0];
+                return $this->createMathImage($image, $expression, $this->config);
+            default:
                 return $this->createCharacterImage($image, $captcha_code, $this->config);
-            }
         }
-
-        return $image;
     }
 
     /**
@@ -246,23 +336,18 @@ class BasicCaptcha
 
         // Create other distraction colors
         $distractionColors = [];
-        $colorOptions = [
-            [255, 0, 0],    // red
-            [0, 0, 255],    // blue
-            [0, 128, 0],    // green
-            [255, 255, 0],  // yellow
-            [128, 0, 128],  // purple
-            [255, 165, 0]   // orange
-        ];
 
-        foreach ($colorOptions as $rgb) {
+        foreach ($this->getDotColors() as $rgb) {
             if ($rgb[0] != $targetColorRGB[0] || $rgb[1] != $targetColorRGB[1] || $rgb[2] != $targetColorRGB[2]) {
                 $distractionColors[] = imagecolorallocate($image, $rgb[0], $rgb[1], $rgb[2]);
             }
         }
 
-        // Get target count from session
-        $targetCount = (int) $this->getSession();
+        // Prefer the count carried in the code, falling back to the session for
+        // anything still calling this with an older two-part code
+        $grid = $this->getDotGrid($config);
+        $targetCount = (int) ($parts[3] ?? $this->getSession());
+        $targetCount = max(1, min($targetCount, $grid['capacity']));
 
         // Draw instruction text
         $fontPath = __DIR__.'/../../fonts/'.($config['chars']['font'] ?? 'zxx-xed.ttf');
@@ -272,8 +357,8 @@ class BasicCaptcha
         // Simplified approach to prevent overlapping
         // Divide the image into a grid and place one dot per cell
         $gridCells = [];
-        $gridRows = 2;
-        $gridCols = 4;
+        $gridRows = $grid['rows'];
+        $gridCols = $grid['cols'];
 
         // Build available grid cells
         for ($y = 0; $y < $gridRows; $y++) {
@@ -309,8 +394,9 @@ class BasicCaptcha
             imageellipse($image, $x, $y, $dotSize + 2, $dotSize + 2, $black);
         }
 
-        // Draw distraction dots using remaining grid cells
-        $distractionCount = min(mt_rand(8, 15), count($gridCells) - $targetCount);
+        // Fill every remaining cell with a distraction dot, so the target dots can't be
+        // picked out by looking for the occupied cells
+        $distractionCount = max(0, count($gridCells) - $targetCount);
 
         for ($i = 0; $i < $distractionCount; $i++) {
             // Get the next available cell
@@ -571,9 +657,11 @@ class BasicCaptcha
         $isValid = false;
         $capchaSessionData = $this->getSession();
 
-        // Make validation case-insensitive
-        if (strtolower((string) $capchaSessionData) == strtolower((string) $formData)) {
-            $isValid = true;
+        // With no challenge in the session there is nothing to match against, so an
+        // empty answer must not be allowed to pass
+        if ($capchaSessionData !== null && $capchaSessionData !== '') {
+            // Make validation case-insensitive
+            $isValid = strtolower($capchaSessionData) === strtolower(trim((string) $formData));
         }
 
         // Debug validation if enabled

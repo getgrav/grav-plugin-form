@@ -35,7 +35,9 @@ class BasicCaptchaProvider implements CaptchaProviderInterface
             // Get the user's answer
             $userValue = $form['basic-captcha'] ?? null;
 
-            if (!$expectedValue) {
+            // Compare against null/empty rather than falsy, so a legitimate answer of
+            // "0" (from a subtraction such as 7 - 7) isn't read as a missing value
+            if ($expectedValue === null || $expectedValue === '') {
                 return [
                     'success' => false,
                     'error' => 'missing-session-data',
@@ -43,7 +45,7 @@ class BasicCaptchaProvider implements CaptchaProviderInterface
                 ];
             }
 
-            if (!$userValue) {
+            if (!is_scalar($userValue) || trim((string)$userValue) === '') {
                 return [
                     'success' => false,
                     'error' => 'missing-input-response',
@@ -57,11 +59,16 @@ class BasicCaptchaProvider implements CaptchaProviderInterface
                 $captchaType = $this->config['captcha_type'] ?? $this->config['type'] ?? 'characters';
             }
 
-            if ($captchaType === 'characters') {
-                $isValid = strtolower((string)$userValue) === strtolower((string)$expectedValue);
+            $expected = trim((string)$expectedValue);
+            $given = trim((string)$userValue);
+
+            if ($captchaType !== 'characters' && is_numeric($expected)) {
+                // math and dotcount answers are numbers, so compare them as numbers.
+                // Reject non-numeric input rather than casting it to 0.
+                $isValid = is_numeric($given) && (int)$given === (int)$expected;
             } else {
-                // For math, dotcount, position - ensure both are treated as integers or exact match
-                $isValid = (int)$userValue === (int)$expectedValue;
+                // characters, and word answers such as the position type's "top"
+                $isValid = strtolower($given) === strtolower($expected);
             }
 
             if (!$isValid) {
@@ -112,7 +119,8 @@ class BasicCaptchaProvider implements CaptchaProviderInterface
         // Store field configuration in session for image generation
         $session->{"basic_captcha_config_{$fieldId}"} = $fieldConfig;
 
-        $captchaType = $fieldConfig['type'] ?? 'math';
+        // 'type' was unset above because it holds the field type, not the captcha type
+        $captchaType = $fieldConfig['captcha_type'] ?? $this->config['captcha_type'] ?? $this->config['type'] ?? 'characters';
 
         return [
             'provider' => 'basic-captcha',
