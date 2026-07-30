@@ -35,7 +35,7 @@ turnstile:
   secret_key:
 
 basic_captcha:
-  type: math           # Options: dotcount, position, math, characters
+  type: characters         # Options: characters, math, dotcount, position
   debug: false             # Enable debug logging for troubleshooting
 
   # Image settings
@@ -61,3 +61,10 @@ basic_captcha:
     min: 1                 # Minimum number value
     max: 12                # Maximum number value
     operators: ['+','-','*']  # Available operators
+
+  # Dot counting settings (used for the 'dotcount' type)
+  dots:
+    rows: 2                # Grid rows available for dots
+    cols: 4                # Grid columns available for dots
+    min: 2                 # Fewest dots to count
+    max: 5                 # Most dots to count (capped at rows * cols - 1)

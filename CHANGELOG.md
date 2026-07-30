@@ -1,3 +1,18 @@
+# v9.1.18
+## 07/30/2026
+
+1. [](#bugfix)
+    * The Basic Captcha dot counting challenge could ask for more dots than it had room to draw, leaving around a third of its challenges impossible to answer ([#640](https://github.com/getgrav/grav-plugin-form/issues/640)).
+    * The Basic Captcha dot counting challenge now always includes dots in other colors, instead of sometimes filling every slot with the color being counted.
+    * [security] The Basic Captcha position challenge accepted any word as its answer, so it let every submission through.
+    * The Basic Captcha type selected in the plugin settings was ignored and always fell back to random characters.
+    * The Basic Captcha math challenge produced an unanswerable puzzle when division was the only chosen operator.
+    * A Basic Captcha math challenge whose answer is zero, such as 7 - 7, was rejected as though no answer had been given.
+    * Basic Captcha character challenges containing a lowercase "x" ignored the configured image size, colors and text position.
+
+2. [](#improved)
+    * The dot counting challenge's grid size and the range of dots to count can now be configured.
+
 # v9.1.17
 ## 07/26/2026
 
