@@ -7,7 +7,7 @@
 {% block prepend %}
 {% if field.prepend %}
     <div class="form-input-addon form-input-prepend">
-        {{- field.prepend|t|raw -}}
+        {%- if field.markdown -%}{{- field.prepend|t|markdown|raw -}}{%- else -%}{{- field.prepend|t|e -}}{%- endif -%}
     </div>
 {% endif %}
 {% endblock %}
@@ -26,12 +26,12 @@
             {% if field.copy_to_clipboard in ['0', '1'] %}
                 <i class="fa fa-clipboard"></i>
             {% else %}
-                {{- field.copy_to_clipboard|t|raw -}}
+                {%- if field.markdown -%}{{- field.copy_to_clipboard|t|markdown|raw -}}{%- else -%}{{- field.copy_to_clipboard|t|e -}}{%- endif -%}
             {% endif %}
         </div>
     {% elseif field.append %}
         <div class="form-input-addon form-input-append">
-            {{- field.append|t|raw -}}
+            {%- if field.markdown -%}{{- field.append|t|markdown|raw -}}{%- else -%}{{- field.append|t|e -}}{%- endif -%}
         </div>
     {% endif %}
 {% endblock %}

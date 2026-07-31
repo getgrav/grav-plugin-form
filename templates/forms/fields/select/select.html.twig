@@ -55,7 +55,11 @@
                     {% set avalue = item_value.value|t %}
                     <option {{ item_value.disabled ? 'disabled="disabled"' : '' }}
                         {{ item_value.selected or key == value ? 'selected="selected"' : '' }}
-                        {{ item_value.label    ? 'label=' ~ item_value.label : '' }}
+                        {# GHSA-5jrr-wfgh-mhg9: quote + html_attr-escape the label,
+                           matching the optgroup branch below; the previous
+                           unquoted `label=` ~ value let a value with a space
+                           inject a new attribute onto the <option>. #}
+                        {% if item_value.label %}label="{{ item_value.label|t|e('html_attr') }}"{% endif %}
                         value="{{ akey }}"
                     >
                         {# GHSA-c2q3-p4jr-c55f: dropped |raw — option text is now
