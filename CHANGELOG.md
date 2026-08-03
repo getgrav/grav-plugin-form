@@ -1,3 +1,10 @@
+# v9.1.19
+## 08/03/2026
+
+1. [](#bugfix)
+    * [security] Text a form definition places around a field, such as prepend and append labels, spacer titles and section text, is now escaped by default, with a `markdown: true` option for the fields that genuinely need HTML.
+    * [security] A select option's `label` property is now quoted and escaped, so a label containing a space can no longer add its own attributes to the option.
+
 # v9.1.18
 ## 07/30/2026
 

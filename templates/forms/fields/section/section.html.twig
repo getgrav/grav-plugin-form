@@ -9,7 +9,7 @@
     {% endif %}
 
     {% if field.text %}
-    <p>{{ field.text|t|raw }}</p>
+    {% if field.markdown %}<p>{{ field.text|t|markdown|raw }}</p>{% else %}<p>{{ field.text|t|e }}</p>{% endif %}
     {% endif %}
 
   {% embed 'forms/default/fields.html.twig' with {name: field.name, fields: field.fields} %}
