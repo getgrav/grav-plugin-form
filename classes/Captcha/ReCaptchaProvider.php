@@ -34,9 +34,14 @@ class ReCaptchaProvider implements CaptchaProviderInterface
             $defaultVersion = $this->normalizeVersion($this->config['version'] ?? '2-checkbox');
             $version = $this->normalizeVersion($params['recaptcha_version'] ?? $defaultVersion);
 
-            $payloadVersion = $this->detectVersionFromPayload($form);
-            if ($payloadVersion !== null) {
-                $version = $payloadVersion;
+            // The configured version (site config, or the per-form blueprint override that
+            // CaptchaManager passes in) is authoritative. The submitted payload may only
+            // ever move validation to the stricter v3 branch, which applies the score
+            // threshold and expected action -- it can never downgrade validation out of one.
+            // Letting the payload pick the branch allowed a v3 site to be validated as v2,
+            // skipping the score check entirely (GHSA-89j6-8h38-2cc3).
+            if ($version !== '3' && $this->detectVersionFromPayload($form) === '3') {
+                $version = '3';
             }
 
             if (!$secretKey) {
