@@ -74,6 +74,15 @@ class CaptchaManager
             return false;
         }
 
+        // A per-form reCAPTCHA version override comes from the blueprint field
+        // definition, on the server -- never from the submitted payload. Hand it to the
+        // provider as a validation parameter so it does not have to sniff the request to
+        // find it (GHSA-89j6-8h38-2cc3).
+        if (!isset($params['recaptcha_version']) && is_array($captchaField) && isset($captchaField['recaptcha_version'])) {
+            $params = (array) $params;
+            $params['recaptcha_version'] = $captchaField['recaptcha_version'];
+        }
+
         // Allow plugins to modify the validation parameters
         $validationEvent = new Event([
             'form' => $form,
