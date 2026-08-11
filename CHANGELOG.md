@@ -1,5 +1,5 @@
 # v9.1.20
-## 08/10/2026
+## 08/11/2026
 
 1. [](#bugfix)
     * [security] A reCAPTCHA v3 form no longer accepts a submission that names the v2 response field to skip the score check; the version now comes from configuration and the payload can only make validation stricter ([GHSA-89j6-8h38-2cc3](https://github.com/getgrav/grav/security/advisories/GHSA-89j6-8h38-2cc3)).
