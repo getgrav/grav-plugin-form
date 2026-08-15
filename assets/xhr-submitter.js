@@ -363,9 +363,6 @@
                     return;
                 }
 
-                // Remove stale marker from previous runs
-                delete form.dataset.directXhrListenerAttached;
-
                 // Check if any captcha provider is handling the submission
                 const captchaContainer = form.querySelector('[data-captcha-provider][data-intercepts-submit="true"]');
 
@@ -376,8 +373,7 @@
                     // Captcha will intercept, don't attach direct listener
                     const providerName = captchaContainer.dataset.captchaProvider;
                     Core.log(`XHR listener deferred: ${providerName} should intercept submit for form: ${formId}`);
-                    // Ensure no stale listener marker remains
-                    delete form.dataset.directXhrListenerAttached;
+                    this._detachDirectListener(form);
                 }
             }, 0);
         },
@@ -387,6 +383,14 @@
                          * @private
                          * @param {HTMLFormElement} form - Form element
                          */
+        _detachDirectListener: function(form) {
+            if (form.__gravDirectXhrHandler) {
+                form.removeEventListener('submit', form.__gravDirectXhrHandler);
+                delete form.__gravDirectXhrHandler;
+            }
+            delete form.dataset.directXhrListenerAttached;
+        },
+
         _attachDirectListener: function(form) {
             // Only proceed if XHR is enabled for this form
             if (form.dataset.xhrEnabled !== 'true') {
@@ -394,11 +398,14 @@
                 return;
             }
 
-            // Check if we already attached a listener
-            if (form.dataset.directXhrListenerAttached === 'true') {
-                Core.log(`Direct XHR listener already attached for form: ${form.id}`);
-                return;
-            }
+            // Re-arm rather than stack another listener. setupListener() legitimately
+            // runs more than once for the same element (on page load, and again after
+            // every XHR wrapper update), and the old dataset guard could never catch
+            // that because setupListener() deleted the marker immediately before
+            // calling this. The result was one listener per call, so a single submit
+            // fired N XHR requests -- with cap + xhr_submit that showed up as a
+            // duplicate POST whose response replaced the real one.
+            this._detachDirectListener(form);
 
             const directXhrSubmitHandler = (event) => {
                 Core.log(`Direct XHR submit handler triggered for form: ${form.id}`);
@@ -407,6 +414,7 @@
             };
 
             Core.log(`Attaching direct XHR listener for form: ${form.id}`);
+            form.__gravDirectXhrHandler = directXhrSubmitHandler;
             form.addEventListener('submit', directXhrSubmitHandler);
             form.dataset.directXhrListenerAttached = 'true';
         }
