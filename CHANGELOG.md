@@ -1,3 +1,9 @@
+# v9.1.21
+## 08/15/2026
+
+1. [](#bugfix)
+    * Fixed a single form submission firing multiple XHR requests when `xhr_submit` is enabled. `setupListener()` deleted the "listener already attached" marker immediately before `_attachDirectListener()` checked it, so the guard could never match and every call stacked another submit listener. Attachment is now idempotent and re-arms in place, which matters because `setupListener()` legitimately runs again after each XHR wrapper update.
+
 # v9.1.20
 ## 08/11/2026
 
