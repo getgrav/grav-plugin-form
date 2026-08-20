@@ -6,6 +6,7 @@ use Composer\Autoload\ClassLoader;
 use DateTime;
 use Doctrine\Common\Cache\Cache;
 use Exception;
+use Grav\Common\Data\Data;
 use Grav\Common\Data\ValidationException;
 use Grav\Common\Filesystem\Folder;
 use Grav\Common\Page\Interfaces\PageInterface;
@@ -986,6 +987,20 @@ class FormPlugin extends Plugin
             [$route, $name, $form] = $first;
 
             $page = $pages->find($route);
+
+            // The form lives on a different page than the one being requested.
+            // Page access rules are only ever evaluated against the requested
+            // page, so without this check an anonymous visitor could POST to any
+            // public route with `__form-name__` set to a form that lives behind a
+            // login wall and run its process actions (GHSA-33m4-m988-5fvh).
+            if (null === $page || !$this->isPageAccessible($page)) {
+                $this->grav['debugger']->addMessage(sprintf(
+                    'Form %s was found on page %s, but that page is not accessible to the current user',
+                    $name, $route
+                ), 'warning');
+
+                return null;
+            }
         }
 
         // Form can be saved as an array or an object. If it's an array, we need to create object from it.
@@ -1155,6 +1170,37 @@ class FormPlugin extends Plugin
      * @param  string  $name
      * @return array
      */
+    /**
+     * Can the current user reach the page that owns a form?
+     *
+     * Access rules belong to the Login plugin, so ask it rather than re-reading
+     * the `access:` header here: rules can be inherited from a parent when
+     * `parent_acl` is enabled, a session that has not completed its 2FA challenge
+     * must still be denied, and other plugins can veto through the same event.
+     * With no Login plugin installed there are no page access rules on the site
+     * at all, so there is nothing to enforce. (GHSA-33m4-m988-5fvh)
+     *
+     * @param  PageInterface  $page
+     * @return bool
+     */
+    protected function isPageAccessible(PageInterface $page): bool
+    {
+        if (!$page->published()) {
+            return false;
+        }
+
+        $login = $this->grav['login'] ?? null;
+        if (null === $login || !method_exists($login, 'isUserAuthorizedForPage')) {
+            return true;
+        }
+
+        return $login->isUserAuthorizedForPage(
+            $this->grav['user'],
+            $page,
+            new Data((array) $this->grav['config']->get('plugins.login'))
+        );
+    }
+
     protected function findFormByName(string $name): array
     {
         $list = [];
