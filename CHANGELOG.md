@@ -1,3 +1,9 @@
+# v9.1.22
+## 08/21/2026
+
+1. [](#bugfix)
+    * [security] A form defined on a page restricted by an `access:` rule, or on an unpublished page, can no longer be submitted from a different page by someone who could not reach that page in the first place ([GHSA-33m4-m988-5fvh](https://github.com/getgrav/grav-plugin-form/security/advisories/GHSA-33m4-m988-5fvh)).
+
 # v9.1.21
 ## 08/15/2026
 
