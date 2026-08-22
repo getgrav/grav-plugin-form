@@ -1,3 +1,9 @@
+# v9.1.23
+## 08/22/2026
+
+1. [](#improved)
+    * The base field template no longer wraps the whole file in a condition, so forms keep working on the next major version of Twig, which only allows a template to say what it extends at the very top
+
 # v9.1.22
 ## 08/21/2026
 

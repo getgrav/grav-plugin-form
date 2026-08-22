@@ -1,8 +1,21 @@
-{% if not field.validate.ignore  %}
+{#
+DO NOT MODIFY!
 
+Default layout can be found in form plugin or your theme:
+
+templates/forms/layouts/field/default-field.html.twig
+
+The `extends` and `use` tags have to sit at the root of a template. Twig 3.28
+deprecates them anywhere else and Twig 4 rejects them outright, so a field with
+`validate.ignore` is switched off by extending an empty layout rather than by
+wrapping the whole file in a condition.
+#}
+{% extends field.validate.ignore ? 'forms/default/field-ignored.html.twig' : 'forms/layouts/field.html.twig' %}
 {% use 'forms/layouts/field-variables.html.twig' %}
+
 {% block field_override_variables_before %}{% endblock %}
 
+{% if not field.validate.ignore %}
 {% set field_name = (scope ~ field.name)|fieldName %}
 {% set vertical = field.style == 'vertical' %}
 
@@ -108,8 +121,7 @@
 
 {# Field Description #}
 {% set form_field_description = field.markdown ? field.description|t|markdown(false)|raw : field.description|t|raw %}
-
-{% extends 'forms/layouts/field.html.twig' %}
+{% endif %}
 
 {% block global_attributes %}
   data-grav-field="{{ field.type }}"
@@ -154,5 +166,3 @@
     {% endfor %}
   {% endif %}
 {% endblock %}
-
-{% endif %}
