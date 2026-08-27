@@ -1,3 +1,9 @@
+# v9.1.24
+## 08/27/2026
+
+1. [](#bugfix)
+    * The Cloudflare Turnstile site key and secret key settings now link to Cloudflare's documentation instead of Google's reCAPTCHA docs [#641](https://github.com/getgrav/grav-plugin-form/issues/641)
+
 # v9.1.23
 ## 08/22/2026
 

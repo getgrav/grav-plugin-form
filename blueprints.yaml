@@ -1,7 +1,7 @@
 name: Form
 slug: form
 type: plugin
-version: 9.1.23
+version: 9.1.24
 description: Enables forms handling and processing
 icon: check-square
 author:
@@ -238,12 +238,12 @@ form:
         turnstile.site_key:
           type: text
           label: PLUGIN_FORM.RECAPTCHA_SITE_KEY
-          help: PLUGIN_FORM.RECAPTCHA_SITE_KEY_HELP
+          help: PLUGIN_FORM.TURNSTILE_SITE_KEY_HELP
           default: ""
         turnstile.secret_key:
           type: text
           label: PLUGIN_FORM.RECAPTCHA_SECRET_KEY
-          help: PLUGIN_FORM.RECAPTCHA_SECRET_KEY_HELP
+          help: PLUGIN_FORM.TURNSTILE_SECRET_KEY_HELP
           default: ""
 
     cap_captcha:
