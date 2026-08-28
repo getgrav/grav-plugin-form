@@ -1,10 +1,32 @@
 {% extends "forms/field.html.twig" %}
 
-{% block input_attributes %}
-    type="email"
-    {% if field.multiple in ['on', 'true', 1] %}multiple="multiple"{% endif %}
-    {% if field.size %}size="{{ field.size }}"{% endif %}
-    {% if field.minlength is defined or field.validate.min is defined %}minlength="{{ field.minlength | default(field.validate.min) }}"{% endif %}
-    {% if field.maxlength is defined or field.validate.max is defined %}maxlength="{{ field.maxlength | default(field.validate.max) }}"{% endif %}
-    {{ parent() }}
+{% block global_attributes %}
+  data-grav-field="{{ field.type }}"
+  data-grav-disabled="{{ toggleable and toggleableChecked }}"
+  data-grav-default="{{ default ? default|json_encode()|safe_email|raw }}"
+{% endblock %}
+
+{% block input %}
+  <div class="{{ layout_form_field_wrapper_classes }} {{ field.size }}">
+    {% block prepend %}{% endblock prepend %}
+    {% set input_value = value is iterable ? value|join(',') : value|string %}
+    <input
+      name="{{ (scope ~ field.name)|fieldName }}"
+      value="{{ input_value|safe_email|raw }}"
+      {% block input_attributes %}
+          type="email"
+          {% if field.multiple in ['on', 'true', 1] %}multiple="multiple"{% endif %}
+          {% if field.size %}size="{{ field.size }}"{% endif %}
+          {% if field.minlength is defined or field.validate.min is defined %}minlength="{{ field.minlength | default(field.validate.min) }}"{% endif %}
+          {% if field.maxlength is defined or field.validate.max is defined %}maxlength="{{ field.maxlength | default(field.validate.max) }}"{% endif %}
+          {{ parent() }}
+      {% endblock %}
+    />
+    {% block append %}{% endblock append %}
+    {% if inline_errors and errors %}
+    <div class="{{ form_field_inline_error_classes }}">
+      <p class="form-message"><i class="fa fa-exclamation-circle"></i> {{ errors|first|raw }}</p>
+    </div>
+    {% endif %}
+  </div>
 {% endblock %}
