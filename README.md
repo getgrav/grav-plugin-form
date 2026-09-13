@@ -24,6 +24,46 @@ The Learn site has two pages describing how to use the Form Plugin:
 - [Forms](https://learn.getgrav.org/17/forms)
 - [Add a contact form](https://learn.getgrav.org/17/forms/forms/example-form)
 
+# Custom processing actions
+
+Plugins can handle submitted values through their own process action. Add the
+action under `process` in your existing form definition:
+
+```yaml
+process:
+  myplugin-handle-order: true
+```
+
+In your plugin class, add an `onFormProcessed` subscription to the array returned
+by `getSubscribedEvents()`:
+
+```php
+'onFormProcessed' => ['onFormProcessed', 0],
+```
+
+Import `RocketTheme\Toolbox\Event\Event` and handle your action:
+
+```php
+public function onFormProcessed(Event $event): void
+{
+    if ($event['action'] !== 'myplugin-handle-order') {
+        return;
+    }
+
+    $form = $event['form'];
+    $data = $form->getData();
+
+    // Your order-processing code can use $data here.
+}
+```
+
+`onFormProcessed` runs once per configured action, so check `action` to avoid
+running your logic for other entries. The event also provides `params`, containing
+the action's configuration (`true` in this example, or a mapping of options).
+Setting an action to `false` disables it. With no process entries, this event is
+not dispatched. Your custom action can be the only entry; a built-in action such
+as `message`, `email`, or `save` is not required.
+
 # Using email
 
 Note: when using email functionality in your forms, make sure you have configured the Email plugin correctly. In particular, make sure you configured the "Email from" and "Email to" email addresses in the Email plugin with your email address.
