@@ -1,3 +1,13 @@
+# v9.1.25
+## 09/13/2026
+
+1. [](#bugfix)
+    * The Cloudflare Turnstile settings now show their own labels instead of reCAPTCHA's, completing the fix started in 9.1.24 [#590](https://github.com/getgrav/grav-plugin-form/issues/590)
+    * A failed CAPTCHA now highlights the field and shows the error next to it, rather than only at the top of the form [#627](https://github.com/getgrav/grav-plugin-form/issues/627)
+    * Custom checkbox templates can once again add content before and after the checkbox [#565](https://github.com/getgrav/grav-plugin-form/issues/565)
+    * A field holding several values now lists them readably in Flex listings instead of showing raw JSON [#606](https://github.com/getgrav/grav-plugin-form/issues/606)
+    * Values passed in to the form data template, such as the site URL, are available again inside field output [#569](https://github.com/getgrav/grav-plugin-form/issues/569)
+
 # v9.1.24
 ## 08/27/2026
 
