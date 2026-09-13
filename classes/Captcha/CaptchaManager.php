@@ -67,6 +67,8 @@ class CaptchaManager
             return true;
         }
 
+        $captchaFieldName = $captchaField['name'] ?? $fieldName;
+
         // --- 2. Get provider and validate ---
         $provider = CaptchaFactory::getProvider($providerName);
         if (!$provider) {
@@ -105,6 +107,7 @@ class CaptchaManager
                 Grav::instance()->fireEvent('onFormValidationError', new Event([
                     'form' => $form,
                     'message' => $errorMessage,
+                    'messages' => array_merge($form->messages ?? [], [$captchaFieldName => [$errorMessage]]),
                     'provider' => $providerName
                 ]));
 
@@ -136,6 +139,7 @@ class CaptchaManager
             Grav::instance()->fireEvent('onFormValidationError', new Event([
                 'form' => $form,
                 'message' => $errorMessage,
+                'messages' => array_merge($form->messages ?? [], [$captchaFieldName => [$errorMessage]]),
                 'provider' => $providerName,
                 'exception' => $e
             ]));
