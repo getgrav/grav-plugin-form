@@ -18,6 +18,17 @@ Simply copy the `user/plugins/form/form.yaml` into `user/config/plugins/form.yam
 enabled: true
 ```  
 
+## reCAPTCHA v3 score threshold
+
+For reCAPTCHA v3, the score threshold can be configured in `user/config/plugins/form.yaml`:
+
+```yaml
+recaptcha:
+  score_threshold: 0.5
+```
+
+This example preserves the default threshold of `0.5`. Add the setting alongside your existing reCAPTCHA configuration; keep your version, site key, and secret key settings. The threshold applies to reCAPTCHA v3 validation across forms using this plugin configuration. It is not a per-form process parameter.
+
 # How to use the Form Plugin
 
 The Learn site has two pages describing how to use the Form Plugin:
