@@ -11,6 +11,7 @@
 
 1. [](#improved)
     * The readme now explains the reCAPTCHA v3 score threshold and how to change it [#600](https://github.com/getgrav/grav-plugin-form/issues/600)
+    * The readme now shows how a plugin handles its own form process action, which does not need a built-in action alongside it [#3879](https://github.com/getgrav/grav/issues/3879)
 
 # v9.1.24
 ## 08/27/2026
