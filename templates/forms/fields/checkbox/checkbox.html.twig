@@ -6,6 +6,7 @@
 {% block input %}
     {% set id = field.id|default(field.name)|hyphenize %}
     <div class="{{ form_field_wrapper_classes ?: 'form-input-wrapper' }} {{ field.size }} {{ field.wrapper_classes }}">
+        {% block prepend %}{% endblock prepend %}
         <input
             {# required attribute structures #}
             name="{{ (scope ~ field.name)|fieldName }}"
@@ -42,5 +43,6 @@
             {% endif %}
             {{ field.validate.required in ['on', 'true', 1] ? '<span class="required">*</span>' }}
         </label>
+        {% block append %}{% endblock append %}
     </div>
 {% endblock %}
