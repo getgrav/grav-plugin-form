@@ -39,7 +39,8 @@ The Learn site has two pages describing how to use the Form Plugin:
 
 The `save` action uses `forms/data.save.txt.twig` when creating a text file without
 an explicit `body`. This template preserves literal submitted text, including
-ampersands, quotes and markup. It is intended for file output, not HTML emails.
+ampersands, quotes and markup. It is intended for plain-text file output. Do not use it
+in HTML emails, or for saved files that are later rendered as HTML or Markdown.
 
 The existing `forms/data.txt.twig` template remains escaped because it is also
 used in HTML email bodies. An explicit save `body` keeps using the template or
