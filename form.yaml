@@ -18,6 +18,7 @@ files:
     - image/*
 recaptcha:
     version: 2-checkbox
+    score_threshold: 0.5
     theme: light
     site_key:
     secret_key:

@@ -20,7 +20,7 @@ enabled: true
 
 # reCAPTCHA v3 score threshold
 
-For reCAPTCHA v3, the score threshold can be configured in `user/config/plugins/form.yaml`:
+For reCAPTCHA v3, set **v3 score threshold** in the Form plugin's Admin settings (under reCAPTCHA), or configure it in `user/config/plugins/form.yaml`:
 
 ```yaml
 recaptcha:

@@ -21,6 +21,8 @@ en:
     RECAPTCHA_VERSION_V2_CHECKBOX: "v2 - Checkbox"
     RECAPTCHA_VERSION_V2_INVISIBLE: "v2 - Invisible"
     RECAPTCHA_VERSION_V3_LATEST: "v3 - Latest"
+    RECAPTCHA_SCORE_THRESHOLD: "v3 score threshold"
+    RECAPTCHA_SCORE_THRESHOLD_HELP: "Minimum accepted score from 0 to 1. Higher values are stricter. Applies only to reCAPTCHA v3; default is 0.5."
     RECAPTCHA_THEME: "Theme"
     RECAPTCHA_THEME_LIGHT: "Light Theme"
     RECAPTCHA_THEME_DARK: "Dark Theme"
