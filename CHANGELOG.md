@@ -7,6 +7,10 @@
     * Custom checkbox templates can once again add content before and after the checkbox [#565](https://github.com/getgrav/grav-plugin-form/issues/565)
     * A field holding several values now lists them readably in Flex listings instead of showing raw JSON [#606](https://github.com/getgrav/grav-plugin-form/issues/606)
     * Values passed in to the form data template, such as the site URL, are available again inside field output [#569](https://github.com/getgrav/grav-plugin-form/issues/569)
+    * A placeholder set to `0` now shows, instead of being treated as no placeholder at all, on text, textarea, number, select and key fields [#511](https://github.com/getgrav/grav-plugin-form/issues/511)
+
+1. [](#improved)
+    * The readme now explains the reCAPTCHA v3 score threshold and how to change it [#600](https://github.com/getgrav/grav-plugin-form/issues/600)
 
 # v9.1.24
 ## 08/27/2026

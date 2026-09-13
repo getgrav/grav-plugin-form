@@ -18,7 +18,7 @@ Simply copy the `user/plugins/form/form.yaml` into `user/config/plugins/form.yam
 enabled: true
 ```  
 
-## reCAPTCHA v3 score threshold
+# reCAPTCHA v3 score threshold
 
 For reCAPTCHA v3, the score threshold can be configured in `user/config/plugins/form.yaml`:
 
