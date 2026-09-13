@@ -735,7 +735,7 @@ class FormPlugin extends Plugin
                 $form->copyFiles();
 
                 if ($operation === 'create') {
-                    $body = $twig->processString($params['body'] ?? '{% include "forms/data.txt.twig" %}', $vars);
+                    $body = $twig->processString($params['body'] ?? '{% include "forms/data.save.txt.twig" %}', $vars);
                     $file->save($body);
                 } elseif ($operation === 'add') {
                     if (!empty($params['body'])) {

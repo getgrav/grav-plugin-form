@@ -35,6 +35,18 @@ The Learn site has two pages describing how to use the Form Plugin:
 - [Forms](https://learn.getgrav.org/17/forms)
 - [Add a contact form](https://learn.getgrav.org/17/forms/forms/example-form)
 
+# Default saved text
+
+The `save` action uses `forms/data.save.txt.twig` when creating a text file without
+an explicit `body`. This template preserves literal submitted text, including
+ampersands, quotes and markup. It is intended for file output, not HTML emails.
+
+The existing `forms/data.txt.twig` template remains escaped because it is also
+used in HTML email bodies. An explicit save `body` keeps using the template or
+format you specify. Themes or plugins that customized the old template for saved
+files can override `forms/data.save.txt.twig` for the new default; their existing
+`forms/data.txt.twig` overrides continue to apply to email includes.
+
 # Custom processing actions
 
 Plugins can handle submitted values through their own process action. Add the
