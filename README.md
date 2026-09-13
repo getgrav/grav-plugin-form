@@ -44,7 +44,14 @@ in HTML emails, or for saved files that are later rendered as HTML or Markdown.
 
 The existing `forms/data.txt.twig` template remains escaped because it is also
 used in HTML email bodies. An explicit save `body` keeps using the template or
-format you specify. Themes or plugins that customized the old template for saved
+format you specify.
+
+If your form already sets an explicit body on its `save` action, such as
+`body: "{% include 'forms/data.txt.twig' %}"`, it will keep the old escaped output.
+That line was only restating the previous default, so you can either delete it and
+get the literal template, or point it at `forms/data.save.txt.twig`. Leave the body
+on any `email` action alone: email is rendered as HTML and needs the escaped
+template. Themes or plugins that customized the old template for saved
 files can override `forms/data.save.txt.twig` for the new default; their existing
 `forms/data.txt.twig` overrides continue to apply to email includes.
 

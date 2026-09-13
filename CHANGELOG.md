@@ -7,7 +7,7 @@
     * Custom checkbox templates can once again add content before and after the checkbox [#565](https://github.com/getgrav/grav-plugin-form/issues/565)
     * A field holding several values now lists them readably in Flex listings instead of showing raw JSON [#606](https://github.com/getgrav/grav-plugin-form/issues/606)
     * Values passed in to the form data template, such as the site URL, are available again inside field output [#569](https://github.com/getgrav/grav-plugin-form/issues/569)
-    * Files written by the save action keep submitted text exactly as entered, instead of turning characters like `&` into HTML entities. Email bodies are unaffected and still escape [#556](https://github.com/getgrav/grav-plugin-form/issues/556)
+    * Files written by the save action keep submitted text exactly as entered, instead of turning characters like `&` into HTML entities. Email bodies are unaffected and still escape. A form that sets an explicit `body` on its save action keeps the old output until that line is removed or repointed, and the readme says how [#556](https://github.com/getgrav/grav-plugin-form/issues/556)
     * A placeholder set to `0` now shows, instead of being treated as no placeholder at all, on text, textarea, number, select and key fields [#511](https://github.com/getgrav/grav-plugin-form/issues/511)
 
 1. [](#improved)
