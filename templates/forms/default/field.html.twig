@@ -134,7 +134,7 @@ wrapping the whole file in a condition.
   {% if field.id is defined %}id="{{ field.id|e }}" {% endif %}
   {% if field.style is defined %}style="{{ field.style|e }}" {% endif %}
   {% if field.disabled or isDisabledToggleable %}disabled="disabled"{% endif %}
-  {% if field.placeholder %}placeholder="{{ field.placeholder|t|e('html_attr') }}"{% endif %}
+  {% if field.placeholder is not empty %}placeholder="{{ field.placeholder|t|e('html_attr') }}"{% endif %}
   {% if autofocus %}autofocus="autofocus"{% endif %}
   {% if field.novalidate in ['on', 'true', 1] %}novalidate="novalidate"{% endif %}
   {% if field.readonly in ['on', 'true', 1] %}readonly="readonly"{% endif %}
