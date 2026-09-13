@@ -1,15 +1,17 @@
-{% macro render_field(form, fields, scope) %}
+{% macro render_field(form, fields, scope, context = {}) %}
   {% import _self as self %}
 
   {% for index, field in fields %}
     {%- set show_field = attribute(field, "input@") ?? field.store ?? true %}
     {% if field.fields %}
       {%- set new_scope = field.nest_id ? scope ~ field.name ~ '.' : scope -%}
-      {{- self.render_field(form, field.fields, new_scope) }}
+      {{- self.render_field(form, field.fields, new_scope, context) }}
     {% else %}
       {% if show_field %}
         {%- set value = form.value(scope ~ (field.name ?? index)) -%}
         {% if value %}
+          {# Restore caller variables without replacing the current field's data. #}
+          {% with context|merge(_context) %}
           {% block field %}
             <div>
               {% block field_label %}
@@ -72,6 +74,7 @@
               {% endblock %}
             </div>
           {% endblock %}
+          {% endwith %}
         {% endif %}
       {% endif %}
     {% endif %}
@@ -80,4 +83,4 @@
 
 {% import _self as macro %}
 
-{{ macro.render_field(form, form.fields, '') }}
+{{ macro.render_field(form, form.fields, '', _context) }}
