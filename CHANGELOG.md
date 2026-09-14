@@ -1,3 +1,19 @@
+# v9.1.25
+## 09/13/2026
+
+1. [](#bugfix)
+    * The Cloudflare Turnstile settings now show their own labels instead of reCAPTCHA's, completing the fix started in 9.1.24 [#590](https://github.com/getgrav/grav-plugin-form/issues/590)
+    * A failed CAPTCHA now highlights the field and shows the error next to it, rather than only at the top of the form [#627](https://github.com/getgrav/grav-plugin-form/issues/627)
+    * Custom checkbox templates can once again add content before and after the checkbox [#565](https://github.com/getgrav/grav-plugin-form/issues/565)
+    * A field holding several values now lists them readably in Flex listings instead of showing raw JSON [#606](https://github.com/getgrav/grav-plugin-form/issues/606)
+    * Values passed in to the form data template, such as the site URL, are available again inside field output [#569](https://github.com/getgrav/grav-plugin-form/issues/569)
+    * Files written by the save action keep submitted text exactly as entered, instead of turning characters like `&` into HTML entities. Email bodies are unaffected and still escape. A form that sets an explicit `body` on its save action keeps the old output until that line is removed or repointed, and the readme says how [#556](https://github.com/getgrav/grav-plugin-form/issues/556)
+    * A placeholder set to `0` now shows, instead of being treated as no placeholder at all, on text, textarea, number, select and key fields [#511](https://github.com/getgrav/grav-plugin-form/issues/511)
+
+1. [](#improved)
+    * The reCAPTCHA v3 score threshold is now a setting in the plugin's Admin configuration, and the readme explains how to use it [#600](https://github.com/getgrav/grav-plugin-form/issues/600)
+    * The readme now shows how a plugin handles its own form process action, which does not need a built-in action alongside it [#3879](https://github.com/getgrav/grav/issues/3879)
+
 # v9.1.24
 ## 08/27/2026
 

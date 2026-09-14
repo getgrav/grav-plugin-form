@@ -34,7 +34,7 @@
                     {% endfor %}
                 {% endif %}
                 >
-            {% if field.placeholder %}<option value="" disabled selected>{{ field.placeholder|t }}</option>{% endif %}
+            {% if field.placeholder is not empty %}<option value="" disabled selected>{{ field.placeholder|t }}</option>{% endif %}
 
             {% set options = field.options %}
             {% if field.selectize.create and value %}
