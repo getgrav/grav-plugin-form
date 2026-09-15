@@ -1,3 +1,9 @@
+# v9.1.28
+## 09/15/2026
+
+1. [](#bugfix)
+    * The FilePond uploader is no longer unstyled on some themes. Its two stylesheets were registered for the page head, which on a theme that writes its stylesheets out without deferring them has already been written by the time a form field renders, so they never reached the page at all. They now go out with the field [#653](https://github.com/getgrav/grav-plugin-form/issues/653)
+
 # v9.1.27
 ## 09/15/2026
 

@@ -59,9 +59,16 @@
     {% do assets.addJs('plugin://form/assets/filepond/filepond-plugin-image-resize.min.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 97 }) %}
     {% do assets.addJs('plugin://form/assets/filepond/filepond-plugin-image-transform.min.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 97 }) %}
 
-    {# FilePond CSS #}
-    {% do assets.addCss('plugin://form/assets/filepond/filepond.min.css') %}
-    {% do assets.addCss('plugin://form/assets/filepond/filepond-plugin-image-preview.min.css') %}
+    {# FilePond CSS. These go in their own group and are written out right here
+       rather than left to the theme's assets.css(). On a theme whose asset block
+       is not deferred, the head group has already been rendered by the time a form
+       field runs, so head-group stylesheets never reach the page at all. The JS
+       above survives that because 'bottom' is emitted after the form. #}
+    {% if assets.css('filepond', {}, false) is empty %}
+        {% do assets.addCss('plugin://form/assets/filepond/filepond.min.css', { 'group': 'filepond', 'priority': 99 }) %}
+        {% do assets.addCss('plugin://form/assets/filepond/filepond-plugin-image-preview.min.css', { 'group': 'filepond', 'priority': 98 }) %}
+        {{ assets.css('filepond', {}, false)|raw }}
+    {% endif %}
 
     {# Custom handlers - note: load this AFTER the libraries #}
     {% do assets.addJs('plugin://form/assets/filepond-handler.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 96 }) %}
