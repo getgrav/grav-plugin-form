@@ -10,8 +10,15 @@
       {% if show_field %}
         {%- set value = form.value(scope ~ (field.name ?? index)) -%}
         {% if value %}
-          {# Restore caller variables without replacing the current field's data. #}
-          {% with context|merge(_context) %}
+          {# Restore caller variables without replacing the current field's data.
+             Merge the named locals rather than _context: _context also carries
+             Twig's internal _parent/_seq/loop keys, and merging those into the
+             `with` scope clobbers the enclosing for loop's bookkeeping on the
+             Twig 1.x that Grav 1.7 ships. #}
+          {% with context|merge({
+               form: form, fields: fields, scope: scope, index: index,
+               field: field, show_field: show_field, value: value
+             }) %}
           {% block field %}
             <div>
               {% block field_label %}
