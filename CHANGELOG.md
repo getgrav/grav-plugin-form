@@ -1,3 +1,11 @@
+# v9.1.26
+## 09/14/2026
+
+1. [](#bugfix)
+    * **Form emails work again on Grav 1.7.** A change in 9.1.25 that made page variables available inside the form data template stopped that template rendering at all on the older Twig that Grav 1.7 ships, so form emails went out as the raw include tag instead of the submission. Grav 2 sites were unaffected [#654](https://github.com/getgrav/grav-plugin-form/issues/654)
+    * The Turnstile field's script now loads with the rest of the form's scripts, so the widget appears on themes that write their scripts into the page head [#653](https://github.com/getgrav/grav-plugin-form/issues/653)
+    * The Basic Captcha refresh button works on those same themes, for the same reason
+
 # v9.1.25
 ## 09/13/2026
 

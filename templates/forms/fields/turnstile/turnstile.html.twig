@@ -26,7 +26,7 @@
             <div id="{{ container_id }}" class="cf-turnstile"></div>
         </div>
 
-        {% do assets.addJs('https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback_' ~ formId ~ '&render=explicit', { 'loading': 'async', 'defer': '' }) %}
+        {% do assets.addJs('https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onloadTurnstileCallback_' ~ formId ~ '&render=explicit', { 'group': 'bottom', 'loading': 'async', 'defer': '' }) %}
 
         <script>
             (function() {
