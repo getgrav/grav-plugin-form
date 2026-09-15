@@ -6,6 +6,7 @@
     {% set formId        = form.id ?: form.name %}
     {% set endpoint      = base_url_relative ~ '/forms-cap/' %}
     {% set wasm_url      = url('plugin://form/assets/captcha/cap/cap_wasm_bg.wasm') %}
+    {% set pako_url      = url('plugin://form/assets/captcha/cap/pako_inflate.min.js') %}
     {% set container_id  = 'cap-' ~ formId %}
     {% set mode          = field.mode ?? grav.config.plugins.form.cap.mode ?? 'invisible' %}
     {% if mode not in ['invisible', 'checkbox'] %}{% set mode = 'invisible' %}{% endif %}
@@ -19,8 +20,13 @@
        This has to be a plain inline tag rather than assets.addInlineJs: Grav
        emits all external JS before any inline JS, so an asset-registered
        snippet lands after cap.min.js no matter what priority it is given. Here
-       in the field markup it parses well ahead of the bottom-group scripts. #}
-    <script>window.CAP_CUSTOM_WASM_URL={{ wasm_url|json_encode|raw }};</script>
+       in the field markup it parses well ahead of the bottom-group scripts.
+
+       CAP_PAKO_URL is set for the same reason. The widget falls back to pako when
+       the browser has no DecompressionStream -- Safari before 16.4, Firefox
+       before 113 -- and without this it would pull that from jsDelivr, which is
+       the third-party runtime dependency vendoring this widget exists to avoid. #}
+    <script>window.CAP_CUSTOM_WASM_URL={{ wasm_url|json_encode|raw }};window.CAP_PAKO_URL={{ pako_url|json_encode|raw }};</script>
 
     {% if mode == 'checkbox' %}
 
