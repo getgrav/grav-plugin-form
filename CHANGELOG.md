@@ -1,3 +1,10 @@
+# v9.1.27
+## 09/15/2026
+
+1. [](#improved)
+    * **The Cap captcha checkbox no longer trips accessibility checks.** The widget put the whole box in a button role with its credit and troubleshooting links inside it, which auditing tools flag as serious and which reads to a screen reader as a button containing links. The bundled widget is updated to 0.1.57, where the box is a group, the part you click is its own button, and both links sit beside it rather than inside. Thanks @onetrev [#655](https://github.com/getgrav/grav-plugin-form/issues/655)
+    * The Cap captcha stays fully self-hosted on older browsers. The updated widget falls back to a compression library when the browser has none built in, which Safari before 16.4 and Firefox before 113 do not, and it would have fetched that from a CDN. It is bundled alongside the widget and served from your own site, like the rest of Cap
+
 # v9.1.26
 ## 09/14/2026
 
