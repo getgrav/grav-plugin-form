@@ -45,13 +45,8 @@
     </div>
     {% endif %}
 
-    {% if grav.browser.browser == 'msie' and grav.browser.version < 12 %}
-        {% do assets.addJs('plugin://form/assets/object.assign.polyfill.js') %}
-    {% endif %}
-
-    {% do assets.addJs('jquery', 101) %}
-
-    {# FilePond core and plugins #}
+    {# FilePond core and plugins. Nothing this field loads uses jQuery, so it is
+       not registered here. #}
     {% do assets.addJs('plugin://form/assets/filepond/filepond.min.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 98 }) %}
     {% do assets.addJs('plugin://form/assets/filepond/filepond-plugin-file-validate-size.min.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 97 }) %}
     {% do assets.addJs('plugin://form/assets/filepond/filepond-plugin-file-validate-type.min.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 97 }) %}

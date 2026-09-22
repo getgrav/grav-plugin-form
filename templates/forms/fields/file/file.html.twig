@@ -103,10 +103,14 @@
         {% do assets.addJs('plugin://form/assets/dropzone-reinit.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 90 }) %}
     {% endif %}
 
-    {% if grav.browser.browser == 'msie' and grav.browser.version < 12 %}
-        {% do assets.addJs('plugin://form/assets/object.assign.polyfill.js') %}
+    {# jQuery goes in 'bottom' so it still loads on themes that write the head group
+       out before the form renders. If the theme registered it already, leave that
+       alone: assets are keyed by path, so adding it again would move the theme's
+       own copy out of the head. #}
+    {% set jquery_src = assets.getCollections().jquery ?? 'jquery' %}
+    {% if jquery_src is iterable or assets.getJs(jquery_src) is null %}
+        {% do assets.addJs('jquery', { 'group': 'bottom', 'priority': 101 }) %}
     {% endif %}
-    {% do assets.addJs('jquery', 101) %}
     {% do assets.addJs('plugin://form/assets/form.vendor.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 100 }) %}
     {% do assets.addJs('plugin://form/assets/form.min.js', { 'group': 'bottom', 'loading': 'defer', 'priority': 99  }) %}
     {% do assets.addCss('plugin://form/assets/dropzone.min.css', { 'group': 'form'}) %}
