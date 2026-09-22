@@ -1,3 +1,13 @@
+# v9.1.29
+## 09/22/2026
+
+1. [](#improved)
+    * The FilePond upload field no longer pulls in jQuery, because nothing it loads uses it
+    * The Object.assign polyfill for Internet Explorer is gone, along with the browser check that loaded it. Grav 2 does not support a browser that needs it
+
+1. [](#bugfix)
+    * The File upload field works again on themes that write their scripts into the page head. The jQuery library it depends on was registered for the head, which those themes have already written out by the time a form field renders, so the uploader never started. It now loads with the rest of the form's scripts, and a theme that loads jQuery itself keeps its own copy where it was. Thanks @onetrev [#656](https://github.com/getgrav/grav-plugin-form/issues/656)
+
 # v9.1.28
 ## 09/15/2026
 
