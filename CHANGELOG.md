@@ -1,3 +1,9 @@
+# v9.1.30
+## 09/24/2026
+
+1. [](#bugfix)
+    * Pages with a Cap captcha no longer fail the Lighthouse "Links are not crawlable" SEO check. The widget adds a hidden troubleshooting link with no address until a solve fails, and it now carries the troubleshooting URL from the start
+
 # v9.1.29
 ## 09/22/2026
 
