@@ -41,6 +41,8 @@
         container.__capWired = true;
 
         const cap = new window.Cap({ apiEndpoint: endpoint });
+        // Invisible mode: Cap appends its own hidden <cap-widget> to <html>.
+        fillTroubleshootLink(cap.widget);
         let solvePromise = null;
         let verified = false;
 
@@ -94,6 +96,26 @@
         containers.forEach(wireInvisibleContainer);
     }
 
+    /**
+     * Cap renders its troubleshooting link with no href until a failed solve
+     * reveals it, and SEO audits flag the empty anchor as an uncrawlable link
+     * (Lighthouse "Links are not crawlable"). Give it the URL Cap would use
+     * up front; Cap still sets the href itself when it shows the link.
+     */
+    const TROUBLESHOOT_URL = 'https://trycap.dev/guide/troubleshooting/instrumentation.html';
+
+    function fillTroubleshootLink(widget) {
+        const link = widget && widget.shadowRoot && widget.shadowRoot.querySelector('.cap-troubleshoot-link:not([href])');
+        if (link) link.setAttribute('href', widget.getAttribute('data-cap-troubleshooting-url') || TROUBLESHOOT_URL);
+    }
+
+    function fillTroubleshootLinks(root) {
+        if (!window.customElements) return;
+        customElements.whenDefined('cap-widget').then(() => {
+            (root || document).querySelectorAll('cap-widget').forEach(fillTroubleshootLink);
+        });
+    }
+
     function registerXhrHandler() {
         if (!window.GravFormXHR || !window.GravFormXHR.captcha) return false;
 
@@ -121,6 +143,7 @@
                 }
 
                 // Checkbox mode: reset the <cap-widget> if it's solved.
+                fillTroubleshootLinks(capContainer);
                 const widget = capContainer.querySelector('cap-widget');
                 if (!widget || !widget.isConnected || !widget.token) return;
                 try { widget.reset(); } catch (e) { console.error('Error resetting Cap widget:', e); }
@@ -134,6 +157,7 @@
     function init() {
         ensureWasmUrl(document);
         wireAllInvisible(document);
+        fillTroubleshootLinks(document);
         registerXhrHandler();
     }
 
