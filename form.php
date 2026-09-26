@@ -56,6 +56,8 @@ class FormPlugin extends Plugin
     protected $form;
     /** @var array[]|FormInterface[] */
     protected $forms = [];
+    /** @var string|null The cache id the forms were last saved under */
+    protected $forms_cache_id;
     /** @var FormInterface[] */
     protected $active_forms = [];
     /** @var array */
@@ -253,6 +255,13 @@ class FormPlugin extends Plugin
     public function onPagesInitialized(): void
     {
         $this->loadCachedForms();
+
+        // A pages rebuild fires onPageProcessed, and so saves the forms, before it sets its final cache
+        // id. Save them again under that id, or the next request misses them and forms from other pages,
+        // such as a signup form included in the footer, are unknown until the cache is cleared again.
+        if ($this->forms && $this->forms_cache_id !== null && $this->forms_cache_id !== $this->getFormCacheId()) {
+            $this->saveCachedForms();
+        }
     }
 
     /**
@@ -1387,6 +1396,7 @@ class FormPlugin extends Plugin
         }
 
         $cache->save($cache_id, $this->forms);
+        $this->forms_cache_id = $cache_id;
         if ($this->config()['debug']) {
             $this->grav['log']->debug(sprintf(">>>> Saved cached forms: %s\n%s", $this->getFormCacheId(),
                 $this->arrayToString($this->forms)));

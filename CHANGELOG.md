@@ -1,3 +1,9 @@
+# v9.1.31
+## 09/26/2026
+
+1. [](#bugfix)
+    * Forms defined on another page, such as a signup form included in a theme footer, stayed unknown after a cache clear. The pages rebuild saved the forms cache before Grav settled its final pages cache id, so from the second request on the form rendered with no name and its XHR submit came back as the whole page. The forms are now saved again under the final id
+
 # v9.1.30
 ## 09/24/2026
 
