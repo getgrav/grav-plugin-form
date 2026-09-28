@@ -34,7 +34,7 @@
             {% block append %}{% endblock append %}
             {% if inline_errors and errors %}
             <div class="{{ form_field_inline_error_classes }}">
-              <p class="form-message"><i class="fa fa-exclamation-circle"></i> {{ errors|first|raw }}</p>
+              <p class="form-message"><i class="fa fa-exclamation-circle"></i> {{ errors|first|e }}</p>
             </div>
             {% endif %}
           </div>
