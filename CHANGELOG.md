@@ -1,3 +1,10 @@
+# v9.1.32
+## 09/28/2026
+
+1. [](#bugfix)
+    * An invisible Cap captcha no longer fails on a page that was left open for a while. The widget solved once when the page loaded and posted that token whenever the form was sent, but the server only keeps a token for 20 minutes and each one works once, so a login or signup form that sat open, or was sent a second time without a page reload, came back with a captcha error. The token is now solved again before sending when it is older than 15 minutes or was already used, and that new solve starts as soon as the visitor clicks into the form
+    * A form with an invisible Cap captcha no longer does nothing when the solve fails, for example on a network error. The form is sent anyway, so the visitor sees the server's captcha error instead of a button that does not respond
+
 # v9.1.31
 ## 09/26/2026
 
