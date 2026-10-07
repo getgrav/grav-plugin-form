@@ -1,3 +1,9 @@
+# v9.1.33
+## 10/07/2026
+
+1. [](#improved)
+    * The Cap checkbox widget's labels can now be translated, and a site can change them in its own language files without overriding the template. Thanks @bago [#657](https://github.com/getgrav/grav-plugin-form/pull/657)
+
 # v9.1.32
 ## 09/28/2026
 
