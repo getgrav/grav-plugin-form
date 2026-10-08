@@ -39,7 +39,19 @@
             <cap-widget
                 id="{{ container_id }}"
                 data-cap-api-endpoint="{{ endpoint }}"
-                data-cap-hidden-field-name="cap-token"></cap-widget>
+                data-cap-hidden-field-name="cap-token"
+                data-cap-i18n-initial-state="{{ 'PLUGIN_FORM.CAP_I18N_INITIAL_STATE'|t|e('html_attr') }}"
+                data-cap-i18n-verifying-label="{{ 'PLUGIN_FORM.CAP_I18N_VERIFYING_LABEL'|t|e('html_attr') }}"
+                data-cap-i18n-solved-label="{{ 'PLUGIN_FORM.CAP_I18N_SOLVED_LABEL'|t|e('html_attr') }}"
+                data-cap-i18n-error-label="{{ 'PLUGIN_FORM.CAP_I18N_ERROR_LABEL'|t|e('html_attr') }}"
+                data-cap-i18n-troubleshooting-label="{{ 'PLUGIN_FORM.CAP_I18N_TROUBLESHOOTING_LABEL'|t|e('html_attr') }}"
+                data-cap-i18n-wasm-disabled="{{ 'PLUGIN_FORM.CAP_I18N_WASM_DISABLED'|t|e('html_attr') }}"
+                data-cap-i18n-verify-aria-label="{{ 'PLUGIN_FORM.CAP_I18N_VERIFY_ARIA_LABEL'|t|e('html_attr') }}"
+                data-cap-i18n-verifying-aria-label="{{ 'PLUGIN_FORM.CAP_I18N_VERIFYING_ARIA_LABEL'|t|e('html_attr') }}"
+                data-cap-i18n-verified-aria-label="{{ 'PLUGIN_FORM.CAP_I18N_VERIFIED_ARIA_LABEL'|t|e('html_attr') }}"
+                data-cap-i18n-required-label="{{ 'PLUGIN_FORM.CAP_I18N_REQUIRED_LABEL'|t|e('html_attr') }}"
+                data-cap-i18n-error-aria-label="{{ 'PLUGIN_FORM.CAP_I18N_ERROR_ARIA_LABEL'|t|e('html_attr') }}"
+                data-cap-i18n-group-aria-label="{{ 'PLUGIN_FORM.CAP_I18N_GROUP_ARIA_LABEL'|t|e('html_attr') }}"></cap-widget>
         </div>
 
     {% else %}
