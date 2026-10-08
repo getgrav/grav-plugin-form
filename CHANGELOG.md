@@ -3,6 +3,8 @@
 
 1. [](#improved)
     * The Cap checkbox widget's labels can now be translated, and a site can change them in its own language files without overriding the template. Thanks @bago [#657](https://github.com/getgrav/grav-plugin-form/pull/657)
+1. [](#bugfix)
+    * A page with a Cap captcha no longer crashes Safari 17 and older. The widget solves on one worker per CPU core and hands them all the same compiled solver, and Safari 17.6 kills the page when several workers run it at once, so a page with an invisible Cap form reloaded in a loop and ended on "A problem repeatedly occurred". Safari 17 and older, and every browser on iOS 17 and older, now solve on a single worker, which takes a second or two
 
 # v9.1.32
 ## 09/28/2026

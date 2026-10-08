@@ -22,6 +22,31 @@
     const TOKEN_MAX_AGE_MS = 15 * 60 * 1000;
 
     /**
+     * Safari 17 and older kills the page when several workers run the solver
+     * from the one WebAssembly module the widget hands to all of them (seen on
+     * Safari 17.6: the page reloads in a loop and ends on "A problem repeatedly
+     * occurred"). One worker runs fine there and solves in a second or two, so
+     * those browsers get a single worker. Every iOS browser is WebKit
+     * underneath, so on iOS it's the system version that counts.
+     */
+    const SINGLE_WORKER = (function () {
+        if (navigator.vendor !== 'Apple Computer, Inc.') return false;
+        const ua = navigator.userAgent;
+        const m = ua.match(/\b(?:iPhone|iPad|iPod)\b.*?\bOS (\d+)_/) || ua.match(/\bVersion\/(\d+)/);
+        return !!m && parseInt(m[1], 10) < 18;
+    })();
+
+    /**
+     * Checkbox mode: hold each <cap-widget> to one worker where SINGLE_WORKER
+     * applies. The widget reads the attribute when it connects and again
+     * whenever it changes, so this works before or after it is defined.
+     */
+    function limitWorkers(root) {
+        if (!SINGLE_WORKER) return;
+        (root || document).querySelectorAll('cap-widget').forEach((w) => w.setAttribute('data-cap-worker-count', '1'));
+    }
+
+    /**
      * Wire up a single invisible-mode Cap container:
      *   - starts a speculative background solve
      *   - intercepts the enclosing form's submit and solves again first when
@@ -49,7 +74,10 @@
 
         container.__capWired = true;
 
-        const cap = new window.Cap({ apiEndpoint: endpoint });
+        // Cap copies every key onto the widget as an attribute.
+        const cap = new window.Cap(SINGLE_WORKER
+            ? { apiEndpoint: endpoint, 'data-cap-worker-count': 1 }
+            : { apiEndpoint: endpoint });
         // Invisible mode: Cap appends its own hidden <cap-widget> to <html>.
         fillTroubleshootLink(cap.widget);
         let solvePromise = null; // the solve in flight, null when idle
@@ -181,6 +209,7 @@
                 }
 
                 // Checkbox mode: reset the <cap-widget> if it's solved.
+                limitWorkers(capContainer);
                 fillTroubleshootLinks(capContainer);
                 const widget = capContainer.querySelector('cap-widget');
                 if (!widget || !widget.isConnected || !widget.token) return;
@@ -194,6 +223,7 @@
 
     function init() {
         ensureWasmUrl(document);
+        limitWorkers(document);
         wireAllInvisible(document);
         fillTroubleshootLinks(document);
         registerXhrHandler();
