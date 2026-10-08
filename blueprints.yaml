@@ -2,7 +2,7 @@ name: Form
 slug: form
 type: plugin
 version: 9.1.33
-description: Enables forms handling and processing
+description: PLUGIN_FORM.PLUGIN_DESCRIPTION
 icon: check-square
 author:
   name: Team Grav
@@ -39,7 +39,7 @@ form:
       fields:
         debug:
           type: toggle
-          label: Debug
+          label: PLUGIN_FORM.DEBUG
           highlight: 1
           default: 0
           options:
@@ -264,24 +264,24 @@ form:
       fields:
         cap.mode:
           type: select
-          label: Default Mode
-          help: "Invisible solves proof-of-work in the background on submit. Checkbox shows the cap.js widget and requires a user click."
+          label: PLUGIN_FORM.CAP_DEFAULT_MODE
+          help: PLUGIN_FORM.CAP_DEFAULT_MODE_HELP
           default: invisible
           options:
-            invisible: Invisible (auto-solve on submit)
-            checkbox: Checkbox widget
+            invisible: PLUGIN_FORM.CAP_MODE_INVISIBLE_OPTION
+            checkbox: PLUGIN_FORM.CAP_MODE_CHECKBOX_OPTION
         cap.storage:
           type: select
-          label: Token Storage Backend
-          help: "Where to persist outstanding challenges and issued tokens. Grav cache is recommended for production."
+          label: PLUGIN_FORM.CAP_TOKEN_STORAGE_BACKEND
+          help: PLUGIN_FORM.CAP_TOKEN_STORAGE_BACKEND_HELP
           default: grav-cache
           options:
-            grav-cache: Grav Cache (PSR-16)
-            filesystem: Filesystem (user/data/cap)
+            grav-cache: PLUGIN_FORM.CAP_STORAGE_GRAV_CACHE_OPTION
+            filesystem: PLUGIN_FORM.CAP_STORAGE_FILESYSTEM_OPTION
         cap.challenge_count:
           type: number
-          label: Challenge Count
-          help: "Number of sub-challenges per captcha. Higher = more work for client."
+          label: PLUGIN_FORM.CAP_CHALLENGE_COUNT
+          help: PLUGIN_FORM.CAP_CHALLENGE_COUNT_HELP
           default: 50
           size: small
           validate:
@@ -290,8 +290,8 @@ form:
             type: number
         cap.challenge_size:
           type: number
-          label: Salt Size
-          help: "Length of each sub-challenge salt in hex characters."
+          label: PLUGIN_FORM.CAP_SALT_SIZE
+          help: PLUGIN_FORM.CAP_SALT_SIZE_HELP
           default: 32
           size: small
           validate:
@@ -300,8 +300,8 @@ form:
             type: number
         cap.challenge_difficulty:
           type: number
-          label: Difficulty
-          help: "Target hex-prefix length each SHA-256 solution must match. Higher = slower solve."
+          label: PLUGIN_FORM.CAP_DIFFICULTY
+          help: PLUGIN_FORM.CAP_DIFFICULTY_HELP
           default: 4
           size: small
           validate:
@@ -310,8 +310,8 @@ form:
             type: number
         cap.expires_ms:
           type: number
-          label: Challenge TTL (ms)
-          help: "How long an issued challenge remains redeemable."
+          label: PLUGIN_FORM.CAP_CHALLENGE_TTL_MS
+          help: PLUGIN_FORM.CAP_CHALLENGE_TTL_MS_HELP
           default: 600000
           size: small
           validate:
@@ -397,8 +397,8 @@ form:
           default: "characters"
           size: medium
           options:
-            characters: Random Characters
-            math: Math Puzzle
+            characters: PLUGIN_FORM.BASIC_CAPTCHA_TYPE_CHARACTERS_OPTION
+            math: PLUGIN_FORM.BASIC_CAPTCHA_TYPE_MATH_OPTION
           fields:
             characters:
               type: element
@@ -436,13 +436,13 @@ form:
                   selectize:
                     options:
                       - value: "+"
-                        text: "+ Addition"
+                        text: PLUGIN_FORM.BASIC_CAPTCHA_OPERATOR_ADDITION
                       - value: "-"
-                        text: "- Subtraction"
+                        text: PLUGIN_FORM.BASIC_CAPTCHA_OPERATOR_SUBTRACTION
                       - value: "*"
-                        text: "x Multiplication"
+                        text: PLUGIN_FORM.BASIC_CAPTCHA_OPERATOR_MULTIPLICATION
                       - value: "/"
-                        text: "/ Division"
+                        text: PLUGIN_FORM.BASIC_CAPTCHA_OPERATOR_DIVISION
                   label: PLUGIN_FORM.BASIC_CAPTCHA_MATH_OPERATORS
                   validate:
                     type: commalist
