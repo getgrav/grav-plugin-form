@@ -1,3 +1,9 @@
+# v9.1.34
+## 10/09/2026
+
+1. [](#improved)
+    * The Cap and Debug settings in the Form plugin's configuration can now be translated, and the Spanish translation is more complete. Thanks @pmoreno-rodriguez [#659](https://github.com/getgrav/grav-plugin-form/pull/659)
+
 # v9.1.33
 ## 10/07/2026
 
