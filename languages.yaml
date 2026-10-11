@@ -373,7 +373,7 @@ es:
     CAP_I18N_GROUP_ARIA_LABEL: "Verificación CAPTCHA"
     DATA_SUMMARY: "Este es el resumen de lo que nos has escrito:"
     NO_FORM_DATA: "No hay datos disponibles del formulario"
-    RECAPTCHA: "ReCAPTCHA"
+    RECAPTCHA: "reCAPTCHA"
     RECAPTCHA_VERSION: "Versión"
     RECAPTCHA_VERSION_V2_CHECKBOX: "v2 - Casilla"
     RECAPTCHA_VERSION_V2_INVISIBLE: "v2 - Invisible"
