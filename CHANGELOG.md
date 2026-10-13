@@ -1,5 +1,5 @@
 # v9.1.35
-## 10/11/2026
+## 10/13/2026
 
 1. [](#improved)
     * The Spanish translation covers the Cap widget and the Turnstile and reCAPTCHA settings. Thanks @pmoreno-rodriguez [#660](https://github.com/getgrav/grav-plugin-form/pull/660)
