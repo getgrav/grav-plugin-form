@@ -60,12 +60,14 @@ RUN printf '%s\n' '#!/bin/sh' 'pgrep -x apache2 >/dev/null || apachectl start' >
 COPY . /src
 WORKDIR /src
 
-# The site, from the current grav-admin release, with its bundled form plugin swapped for this checkout. The plugin
-# commits its runtime vendor/, so nothing is installed into /src.
+# The site, from the current grav-admin release with every bundled plugin and theme updated to its latest GPM release,
+# then its form plugin swapped for this checkout. The plugin commits its runtime vendor/, so nothing is installed into
+# /src.
 RUN curl -fsSL -o /tmp/grav-admin.zip https://getgrav.org/download/core/grav-admin/latest \
     && unzip -q /tmp/grav-admin.zip -d /opt \
     && mv /opt/grav-admin /var/www/grav \
     && rm /tmp/grav-admin.zip \
+    && (cd /var/www/grav && php bin/gpm update -y) \
     && rm -rf /var/www/grav/user/plugins/form \
     && ln -s /src /var/www/grav/user/plugins/form \
     && mkdir -p /var/www/grav/user/config/plugins \
