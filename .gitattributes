@@ -10,3 +10,4 @@
 /.gitattributes        export-ignore
 /package.json          export-ignore
 /package-lock.json     export-ignore
+/.oss-scanner          export-ignore
