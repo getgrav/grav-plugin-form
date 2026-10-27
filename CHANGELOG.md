@@ -1,3 +1,9 @@
+# v9.1.36
+## 10/26/2026
+
+1. [](#bugfix)
+    * A form included from Twig in page content gets the real site settings again, so its script no longer breaks and file and honeypot fields render [#661](https://github.com/getgrav/grav-plugin-form/issues/661)
+
 # v9.1.35
 ## 10/13/2026
 
