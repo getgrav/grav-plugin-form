@@ -729,7 +729,24 @@ class Form implements FormInterface, ArrayAccess
 
         // Special Sanitization for SVG
         if (method_exists('Grav\Common\Security', 'sanitizeSVG') && Utils::contains($mime, 'svg', false)) {
-            Security::sanitizeSVG($upload['file']['tmp_name']);
+            $tmp_name = $upload['file']['tmp_name'];
+            try {
+                Security::sanitizeSVG($tmp_name);
+            } catch (\Exception $e) {
+                // Core moved the file to quarantine; refused just below.
+            }
+
+            // The sanitizer writes back whatever its parser kept, which is
+            // nothing for a file that isn't SVG markup. Refuse the upload
+            // rather than save an empty file.
+            clearstatcache(true, $tmp_name);
+            if (!is_file($tmp_name) || filesize($tmp_name) === 0) {
+                // json_response
+                return [
+                    'status' => 'error',
+                    'message' => sprintf($language->translate('PLUGIN_FORM.INVALID_SVG', null, true), $filename)
+                ];
+            }
         }
 
         // We need to store the file into flash object or it will not be available upon save later on.

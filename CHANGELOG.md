@@ -1,3 +1,9 @@
+# v9.1.37
+## 10/30/2026
+
+1. [](#bugfix)
+    * An SVG upload that can't be read as SVG markup is refused with an error, instead of the sanitizer quietly saving it as an empty file
+
 # v9.1.36
 ## 10/26/2026
 
