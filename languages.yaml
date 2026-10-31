@@ -92,6 +92,7 @@ en:
     INVALID_MIME_TYPE: "The MIME type %s for the file %s is not accepted."
     INVALID_FILE_EXTENSION: "The File Extension for the file %s is not accepted."
     INVALID_SVG: "The file %s could not be read as SVG, so it was not uploaded."
+    FORM_STATE_TOO_LARGE: "The form has too much data to keep. Please reduce it and try again."
     BASIC_CAPTCHA: "Basic Captcha"
     BASIC_CAPTCHA_TYPE: "Captcha challenge type"
     BASIC_CAPTCHA_LENGTH: "Number of characters"

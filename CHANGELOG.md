@@ -1,3 +1,12 @@
+# v9.1.38
+## 10/31/2026
+
+1. [](#bugfix)
+    * [security] The security fixes below were found by Anthropic's OSS Scanner
+    * [security] A file upload is now accepted only for a file field the form declares, or one a plugin has set up through `onFormUploadSettings`
+    * [security] A form that holds too much data, or nests it too deeply, to keep between steps now answers with an error message instead of failing
+    * [security] An SVG upload that can't be cleaned is now refused and removed, instead of being kept as it was sent
+
 # v9.1.37
 ## 10/30/2026
 
