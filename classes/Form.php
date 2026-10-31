@@ -25,6 +25,7 @@ use Grav\Framework\Route\Route;
 use RocketTheme\Toolbox\ArrayTraits\NestedArrayAccessWithGetters;
 use RocketTheme\Toolbox\Event\Event;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
+use LengthException;
 use RuntimeException;
 use stdClass;
 use function is_array;
@@ -783,7 +784,18 @@ class Form implements FormInterface, ArrayAccess
             ];
         }
 
-        $flash->save();
+        try {
+            $flash->save();
+        } catch (RuntimeException $e) {
+            // The form state is over the size or depth limit of the flash storage.
+            $flash->removeFile($filename, $field);
+
+            // json_response
+            return [
+                'status' => 'error',
+                'message' => $language->translate('PLUGIN_FORM.FORM_STATE_TOO_LARGE', null, true)
+            ];
+        }
 
         // json_response
         $json_response = [
@@ -1338,7 +1350,15 @@ class Form implements FormInterface, ArrayAccess
 
         $this->values = new Data($post);
 
-        $json_response = $callable($post);
+        try {
+            $json_response = $callable($post);
+        } catch (LengthException $e) {
+            http_response_code(400);
+            $json_response = [
+                'status' => 'error',
+                'message' => $grav['language']->translate('PLUGIN_FORM.FORM_STATE_TOO_LARGE', null, true)
+            ];
+        }
 
         // Return JSON
         header('Content-Type: application/json');
@@ -1357,7 +1377,23 @@ class Form implements FormInterface, ArrayAccess
     {
         $flash = $this->getFlash();
         $flash->removeFile($filename, $field);
-        $flash->save();
+        $this->saveFlash($flash);
+    }
+
+    /**
+     * Save the flash object. Form state over the size or depth limit of the flash storage is refused with a
+     * LengthException, which sendJsonResponse() answers as a Bad Request.
+     *
+     * @param FormFlash $flash
+     * @return void
+     */
+    protected function saveFlash(FormFlash $flash): void
+    {
+        try {
+            $flash->save();
+        } catch (RuntimeException $e) {
+            throw new LengthException('Form state is too large or nested too deep', 400, $e);
+        }
     }
 
     /**
@@ -1381,7 +1417,7 @@ class Form implements FormInterface, ArrayAccess
         $this->data->merge($data);
 
         $flash->setData($this->data->toArray());
-        $flash->save();
+        $this->saveFlash($flash);
     }
 
     /**
