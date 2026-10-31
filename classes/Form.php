@@ -572,7 +572,8 @@ class Form implements FormInterface, ArrayAccess
         /** @var Config $config */
         $config = $grav['config'];
 
-        $settings = $this->getBlueprint()->schema()->getProperty($name);
+        $schemaSettings = $this->getBlueprint()->schema()->getProperty($name);
+        $isDeclared = is_array($schemaSettings) && ($schemaSettings['type'] ?? null) === 'file';
         $settings = (object) array_merge(
             ['destination' => $config->get('plugins.form.files.destination', 'self@'),
                 'avoid_overwriting' => $config->get('plugins.form.files.avoid_overwriting', false),
@@ -581,12 +582,23 @@ class Form implements FormInterface, ArrayAccess
                 'limit' => $config->get('plugins.form.files.limit', 10),
                 'filesize' => static::getMaxFilesize(),
             ],
-            (array) $settings,
+            (array) $schemaSettings,
             ['name' => $name]
         );
+        $defaultSettings = (array) $settings;
+
         // Allow plugins to adapt settings for a given post name
         // Useful if schema retrieval is not an option, e.g. dynamically created forms
         $grav->fireEvent('onFormUploadSettings', new Event(['settings' => &$settings, 'post' => $post]));
+
+        // Only accept an upload for a file field the form declares, or one a plugin changed the settings for.
+        if (!$isDeclared && (array) $settings == $defaultSettings) {
+            return [
+                'status'  => 'error',
+                'message' => sprintf($language->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_UPLOAD', null),
+                    Utils::basename((string) ($post['filename'] ?? $name)), 'Unknown upload field')
+            ];
+        }
 
         $upload = json_decode(json_encode($this->normalizeFiles($_FILES['data'], $settings->name)), true);
         // Strip any path component from the POST-supplied filename. The admin
