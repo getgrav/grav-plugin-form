@@ -743,17 +743,23 @@ class Form implements FormInterface, ArrayAccess
         // Special Sanitization for SVG
         if (method_exists('Grav\Common\Security', 'sanitizeSVG') && Utils::contains($mime, 'svg', false)) {
             $tmp_name = $upload['file']['tmp_name'];
+            $sanitized = false;
             try {
                 Security::sanitizeSVG($tmp_name);
-            } catch (\Exception $e) {
-                // Core moved the file to quarantine; refused just below.
+                $sanitized = true;
+            } catch (\Throwable $e) {
+                // The sanitizer failed. Core quarantines the file in most cases, but never rely on that.
             }
 
             // The sanitizer writes back whatever its parser kept, which is
             // nothing for a file that isn't SVG markup. Refuse the upload
-            // rather than save an empty file.
+            // rather than save an empty file or a file that was not sanitized.
             clearstatcache(true, $tmp_name);
-            if (!is_file($tmp_name) || filesize($tmp_name) === 0) {
+            if (!$sanitized || !is_file($tmp_name) || filesize($tmp_name) === 0) {
+                if (is_file($tmp_name)) {
+                    @unlink($tmp_name);
+                }
+
                 // json_response
                 return [
                     'status' => 'error',
