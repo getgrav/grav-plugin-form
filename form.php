@@ -696,7 +696,9 @@ class FormPlugin extends Plugin
                 // Separators are normalized to '/' throughout: the locator emits '/'-style paths while DS and
                 // realpath() use '\' on Windows, so $dir is mixed-separator. realpath() on a mixed-separator path
                 // is unreliable on Windows, and a mismatched separator would break the prefix compare (#637).
-                $normalize = static fn($p) => is_string($p) ? str_replace('\\', '/', $p) : $p;
+                $normalize = static function ($p) {
+                    return is_string($p) ? str_replace('\\', '/', $p) : $p;
+                };
                 $dataRoot = $normalize(realpath($path));
                 $ancestor = $normalize($dir);
                 while ($ancestor && !file_exists($ancestor) && dirname($ancestor) !== $ancestor) {

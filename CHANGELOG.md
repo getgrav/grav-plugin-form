@@ -1,3 +1,11 @@
+# v9.1.39
+## 11/01/2026
+
+1. [](#improved)
+    * Form runs on PHP 7.3 and newer again, so Grav 1.7 sites on older PHP get updates; only the Cap captcha needs PHP 8.1 [#662](https://github.com/getgrav/grav-plugin-form/issues/662)
+1. [](#bugfix)
+    * A form using the Cap captcha on PHP older than 8.1 is now refused instead of skipping the captcha
+
 # v9.1.38
 ## 10/31/2026
 
