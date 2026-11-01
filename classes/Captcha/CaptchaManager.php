@@ -54,8 +54,9 @@ class CaptchaManager
             }
 
             // Check for legacy type-based providers (like basic-captcha and turnstile)
-            // This is for backward compatibility
-            elseif ($fieldType && CaptchaFactory::hasProvider($fieldType)) {
+            // This is for backward compatibility. A `cap` field still counts when its provider isn't
+            // registered (PHP < 8.1), so the form is refused below instead of skipping the captcha.
+            elseif ($fieldType && (CaptchaFactory::hasProvider($fieldType) || $fieldType === 'cap')) {
                 $captchaField = $fieldDef;
                 $providerName = $fieldType;
                 break;
@@ -72,7 +73,8 @@ class CaptchaManager
         // --- 2. Get provider and validate ---
         $provider = CaptchaFactory::getProvider($providerName);
         if (!$provider) {
-            Grav::instance()['log']->error("Form Captcha: Unknown provider '{$providerName}' requested");
+            $reason = $providerName === 'cap' && PHP_VERSION_ID < 80100 ? ' (Cap needs PHP 8.1 or newer)' : '';
+            Grav::instance()['log']->error("Form Captcha: Unknown provider '{$providerName}' requested{$reason}");
             return false;
         }
 
