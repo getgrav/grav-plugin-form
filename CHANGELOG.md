@@ -1,3 +1,9 @@
+# v9.1.40
+## 11/02/2026
+
+1. [](#bugfix)
+    * Resolve the Cap captcha storage folder from the user data stream so it works when Grav's public folder is separate from the install folder
+
 # v9.1.39
 ## 11/01/2026
 
