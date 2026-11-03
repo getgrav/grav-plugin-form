@@ -44,7 +44,7 @@ class CapProvider implements CaptchaProviderInterface
 
         $backend = $config['storage'] ?? 'grav-cache';
         if ($backend === 'filesystem') {
-            $dir = rtrim(GRAV_ROOT, '/') . '/user/data/cap';
+            $dir = $grav['locator']->findResource('user://data/cap', true, true);
             $storage = new FilesystemStorage($dir);
         } else {
             $storage = new Psr16Storage($grav['cache']->getSimpleCache());
