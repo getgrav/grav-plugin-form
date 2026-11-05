@@ -1,3 +1,9 @@
+# v9.1.40
+## 11/05/2026
+
+1. [](#bugfix)
+    * [security] File uploads are checked as SVG by every extension in their name, not only the last, and a file under an extension Grav doesn't recognise is refused when it holds HTML or XML markup
+
 # v9.1.39
 ## 11/01/2026
 

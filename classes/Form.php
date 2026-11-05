@@ -740,9 +740,23 @@ class Form implements FormInterface, ArrayAccess
         $upload['file']['name'] = $filename;
         $upload['file']['path'] = $path;
 
-        // Special Sanitization for SVG
-        if (method_exists('Grav\Common\Security', 'sanitizeSVG') && Utils::contains($mime, 'svg', false)) {
-            $tmp_name = $upload['file']['tmp_name'];
+        $tmp_name = $upload['file']['tmp_name'];
+
+        // A file under an extension Grav can't type is one the web server may send
+        // with no Content-Type at all (Apache, Caddy), and the browser then sniffs
+        // markup in it as HTML or XML and runs its script in the site's origin.
+        if ($mime === 'application/octet-stream' && !static::isSvgUpload($filename, $mime, $tmp_name)
+            && static::startsWithMarkup($tmp_name)) {
+            return [
+                'status'  => 'error',
+                'message' => sprintf($language->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_UPLOAD', null),
+                    $filename, 'File type not allowed')
+            ];
+        }
+
+        // Special Sanitization for SVG, decided from every extension of the name and
+        // not just the last: Apache serves `drawing.svg.foo` as image/svg+xml.
+        if (method_exists('Grav\Common\Security', 'sanitizeSVG') && static::isSvgUpload($filename, $mime, $tmp_name)) {
             $sanitized = false;
             try {
                 Security::sanitizeSVG($tmp_name);
@@ -1300,6 +1314,55 @@ class Form implements FormInterface, ArrayAccess
         ];
 
         $this->doTraitUnserialize($data + $defaults);
+    }
+
+    /**
+     * Is this upload an SVG, by any extension of its name or by its last extension's type?
+     *
+     * @param string $filename Name the file is stored under
+     * @param string $mime Type of the last extension
+     * @param string $file Path to the uploaded file
+     * @return bool
+     */
+    protected static function isSvgUpload(string $filename, string $mime, string $file): bool
+    {
+        if (Utils::contains($mime, 'svg', false)) {
+            return true;
+        }
+        if (method_exists(Security::class, 'isSvgFile')) {
+            return Security::isSvgFile($filename, $file);
+        }
+
+        // Grav 1.7 core has no Security::isSvgFile(); this is the same rule.
+        $extensions = array_map('mb_strtolower', array_slice(explode('.', Utils::basename($filename)), 1));
+        if (!in_array('svg', $extensions, true)) {
+            return false;
+        }
+        $head = ltrim(static::readHead($file), "\xEF\xBB\xBF\xFE\xFF\0 \t\r\n");
+
+        return $head === '' || $head[0] === '<';
+    }
+
+    /**
+     * Does the file start with markup (`<`), once a byte order mark and whitespace are skipped?
+     *
+     * @param string $file
+     * @return bool
+     */
+    protected static function startsWithMarkup(string $file): bool
+    {
+        $head = ltrim(static::readHead($file), "\xEF\xBB\xBF\xFE\xFF\0 \t\r\n\f");
+
+        return $head !== '' && $head[0] === '<';
+    }
+
+    /**
+     * @param string $file
+     * @return string
+     */
+    private static function readHead(string $file): string
+    {
+        return is_file($file) ? (string)file_get_contents($file, false, null, 0, 1024) : '';
     }
 
     /**
