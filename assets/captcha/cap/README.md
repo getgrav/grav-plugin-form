@@ -2,7 +2,7 @@
 
 Vendored from:
 - `@cap.js/widget` (see `VERSION`)
-- `@cap.js/wasm@0.0.7` — `cap_wasm_bg.wasm`
+- `@cap.js/wasm@0.0.8` — `cap_wasm_bg.wasm`, `hashwx.wasm`
 - `pako@2.1.0` — `pako_inflate.min.js` (+ `LICENSE.pako`)
 
 Upstream: https://github.com/tiagozip/cap
@@ -14,7 +14,7 @@ npm pack @cap.js/widget
 npm pack @cap.js/wasm
 npm pack pako
 # extract and copy cap.min.js, cap.d.ts, wasm-hashes.min.js, LICENSE,
-# browser/cap_wasm_bg.wasm and dist/pako_inflate.min.js into this
+# browser/cap_wasm_bg.wasm, browser/hashwx.wasm and dist/pako_inflate.min.js into this
 # directory, then update VERSION.
 #
 # Check the widget's default CDN URLs after every bump:

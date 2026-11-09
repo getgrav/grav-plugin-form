@@ -34,6 +34,10 @@ cap:
   adaptive_window: 600        # window length in seconds
   adaptive_max_level: 8       # each level past the free allowance doubles the work; 8 = 256x
   min_time: 3                 # seconds a form must be on the page before it can be sent; 0 turns it off
+  instrumentation: true       # a browser check runs with every challenge (needs PHP 8.1 and cap-php 1.1)
+  block_automated_browsers: true  # refuse headless and automated browsers the check detects
+  behavior: off               # off | report | block: score mouse and keyboard behavior (experimental)
+  block_agents: off           # off | identified | all: refuse AI agents (needs behavior on)
 
 turnstile:
   theme: light                # options: [light | dark]

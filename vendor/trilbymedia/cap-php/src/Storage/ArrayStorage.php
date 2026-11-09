@@ -8,9 +8,9 @@ namespace TrilbyMedia\Cap\Storage;
  * In-memory storage. Useful for tests and single-request flows.
  * Not persistent across requests; do not use in production.
  */
-final class ArrayStorage implements ChallengeStorageInterface, TokenStorageInterface
+final class ArrayStorage implements AtomicChallengeStorageInterface, AtomicTokenStorageInterface
 {
-    /** @var array<string, array{c:int,s:int,d:int,expires:int}> */
+    /** @var array<string, array<string, mixed>> */
     private array $challenges = [];
 
     /** @var array<string, int> */
@@ -29,6 +29,13 @@ final class ArrayStorage implements ChallengeStorageInterface, TokenStorageInter
     public function deleteChallenge(string $token): void
     {
         unset($this->challenges[$token]);
+    }
+
+    public function consumeChallenge(string $token): ?array
+    {
+        $data = $this->readChallenge($token);
+        $this->deleteChallenge($token);
+        return $data;
     }
 
     public function deleteExpiredChallenges(): void
@@ -54,6 +61,13 @@ final class ArrayStorage implements ChallengeStorageInterface, TokenStorageInter
     public function deleteToken(string $key): void
     {
         unset($this->tokens[$key]);
+    }
+
+    public function consumeToken(string $key): ?int
+    {
+        $expires = $this->readToken($key);
+        $this->deleteToken($key);
+        return $expires;
     }
 
     public function deleteExpiredTokens(): void

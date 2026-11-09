@@ -8,7 +8,8 @@ use Psr\SimpleCache\CacheInterface;
 
 /**
  * Backs Cap storage with any PSR-16 cache (APCu, Redis, Memcached,
- * Grav cache, etc.). Recommended for production.
+ * Grav cache, etc.). PSR-16 does not provide atomic read-and-delete: concurrent
+ * single-use guarantees require a custom adapter implementing the atomic interfaces.
  *
  * Note: PSR-16 has no "list all keys" primitive, so deleteExpired*()
  * is a no-op — cache backends should evict via their own TTL.

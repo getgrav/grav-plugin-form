@@ -456,6 +456,17 @@ class FormPlugin extends Plugin
         $twig->addFunction(new TwigFunction('cap_scope', function ($formName) {
             return \Grav\Plugin\Form\Captcha\CapGuard::scopeSegment((string)$formName);
         }));
+        // Version suffix for the Cap widget files, so browsers fetch a new widget after an update
+        // instead of running a cached one the server no longer matches.
+        $twig->addFunction(new TwigFunction('cap_asset_version', function () {
+            static $version = null;
+            if ($version === null) {
+                $widget = trim((string)@file_get_contents(__DIR__ . '/assets/captcha/cap/VERSION'));
+                $plugin = (string)$this->getBlueprint()->get('version');
+                $version = rawurlencode(trim($widget . '-' . $plugin, '-'));
+            }
+            return $version;
+        }));
         $twig->addFunction(new TwigFunction('cap_stamp', function ($formName) {
             return \Grav\Plugin\Form\Captcha\CapGuard::stamp((string)$formName);
         }));
@@ -1513,16 +1524,25 @@ class FormPlugin extends Plugin
                 exit;
             }
 
-            // Redeem: read JSON body
-            $raw = file_get_contents('php://input') ?: '';
+            // Redeem: the widget's JSON body goes through as sent (it carries the browser checks' results).
+            $raw = (string)file_get_contents('php://input', false, null, 0, 524289);
+            if (strlen($raw) > 524288) {
+                http_response_code(413);
+                echo json_encode(['success' => false, 'message' => 'Request body too large']);
+                exit;
+            }
             $body = json_decode($raw, true);
-            if (!is_array($body) || !isset($body['token'], $body['solutions']) || !is_array($body['solutions'])) {
+            if (!is_array($body)) {
                 http_response_code(400);
                 echo json_encode(['success' => false, 'message' => 'Invalid body']);
                 exit;
             }
-            $solutions = array_map(static function ($v) { return (int)$v; }, $body['solutions']);
-            echo json_encode(\Grav\Plugin\Form\Captcha\CapProvider::redeemChallenge((string)$body['token'], $solutions, $scope), JSON_UNESCAPED_SLASHES);
+            $result = \Grav\Plugin\Form\Captcha\CapProvider::redeemChallenge($body, $scope);
+            if (isset($result['status'])) {
+                http_response_code((int)$result['status']);
+                unset($result['status']);
+            }
+            echo json_encode($result, JSON_UNESCAPED_SLASHES);
             exit;
         } catch (\Throwable $e) {
             $this->grav['log']->error('Cap endpoint error: ' . $e->getMessage());

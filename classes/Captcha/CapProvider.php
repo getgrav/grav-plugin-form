@@ -2,8 +2,10 @@
 namespace Grav\Plugin\Form\Captcha;
 
 use Grav\Common\Grav;
+use TrilbyMedia\Cap\BehaviorOptions;
 use TrilbyMedia\Cap\Cap;
 use TrilbyMedia\Cap\Config as CapConfig;
+use TrilbyMedia\Cap\InstrumentationOptions;
 use TrilbyMedia\Cap\Storage\FilesystemStorage;
 use TrilbyMedia\Cap\Storage\Psr16Storage;
 
@@ -70,16 +72,52 @@ class CapProvider implements CaptchaProviderInterface
         $config  = Grav::instance()['config']->get('plugins.form.cap', []);
         $storage = self::getStorage();
 
-        $capConfig = new CapConfig(
-            challengeStorage:     $storage,
-            tokenStorage:         $storage,
-            challengeCount:       (int)($config['challenge_count']      ?? 50),
-            challengeSize:        (int)($config['challenge_size']       ?? 32),
-            challengeDifficulty:  (int)($config['challenge_difficulty'] ?? 4),
-            expiresMs:            (int)($config['expires_ms']           ?? 600_000),
-        );
+        $args = [
+            'challengeStorage'    => $storage,
+            'tokenStorage'        => $storage,
+            'challengeCount'      => (int)($config['challenge_count']      ?? 50),
+            'challengeSize'       => (int)($config['challenge_size']       ?? 32),
+            'challengeDifficulty' => (int)($config['challenge_difficulty'] ?? 4),
+            'expiresMs'           => (int)($config['expires_ms']           ?? 600_000),
+        ];
 
-        return self::$cap = new Cap($capConfig);
+        // Browser checks need cap-php 1.1. Another plugin (the API plugin) bundles cap-php too,
+        // and whichever copy loads first wins; with an older one, Cap runs without them.
+        if (self::supportsBrowserChecks()) {
+            $behavior = (string)($config['behavior'] ?? 'off');
+            if ((bool)($config['instrumentation'] ?? true)) {
+                $args['instrumentation'] = new InstrumentationOptions(
+                    blockAutomatedBrowsers: (bool)($config['block_automated_browsers'] ?? true),
+                    detectAutomatedInteractions: $behavior !== 'off',
+                    blockAutomatedInteractions: $behavior === 'block',
+                );
+            }
+            if ($behavior === 'report' || $behavior === 'block') {
+                $agents = (string)($config['block_agents'] ?? 'off');
+                $args['behavior'] = new BehaviorOptions(
+                    block: $behavior === 'block',
+                    // Invisible Cap solves when the page loads, before anyone has touched the form.
+                    requireInteraction: false,
+                    blockAgents: in_array($agents, ['identified', 'all'], true) ? $agents : false,
+                );
+            }
+        }
+
+        return self::$cap = new Cap(new CapConfig(...$args));
+    }
+
+    /**
+     * Whether the loaded cap-php has browser instrumentation (1.1+).
+     */
+    public static function supportsBrowserChecks(): bool
+    {
+        static $supported = null;
+        if ($supported === null) {
+            $supported = class_exists(InstrumentationOptions::class)
+                && method_exists(Cap::class, 'redeemChallengeBody');
+        }
+
+        return $supported;
     }
 
     /**
@@ -108,28 +146,74 @@ class CapProvider implements CaptchaProviderInterface
     /**
      * Redeem a solved challenge, and tie the token to the form it was requested for.
      *
-     * @param string $token     Challenge token
-     * @param int[]  $solutions
-     * @param string $scope     Form name, or '' for the shared endpoint
+     * @param array  $body  The widget's redeem body as sent: token, solutions and, with
+     *                      browser checks on, their results
+     * @param string $scope Form name, or '' for the shared endpoint
+     * @return array The result, plus 'status' (HTTP status code) when it failed
      */
-    public static function redeemChallenge(string $token, array $solutions, string $scope): array
+    public static function redeemChallenge(array $body, string $scope): array
     {
+        $token = $body['token'] ?? null;
+        $solutions = $body['solutions'] ?? null;
+        if (!is_string($token) || !is_array($solutions)) {
+            return ['success' => false, 'message' => 'Invalid body', 'status' => 400];
+        }
+
         // Only a challenge token (50 hex characters) may reach storage: the guard keeps its own
         // records in the same storage, and redeem deletes whatever key it is given.
         if (!preg_match('/^[a-f0-9]{50}$/D', $token)) {
-            return ['success' => false, 'message' => 'Challenge invalid or expired'];
+            return ['success' => false, 'message' => 'Challenge invalid or expired', 'status' => 403];
         }
 
         // redeemChallenge() deletes the challenge, so read its cost first.
-        $challenge = $token !== '' ? self::getStorage()->readChallenge($token) : null;
-        $result = self::getCap()->redeemChallenge($token, $solutions);
+        $challenge = self::getStorage()->readChallenge($token);
+        $cap = self::getCap();
+        if (self::supportsBrowserChecks()) {
+            $behavior = (string)(Grav::instance()['config']->get('plugins.form.cap.behavior') ?? 'off');
+            $result = $cap->redeemChallengeBody($body, $behavior !== 'off' ? self::requestHeaders() : []);
+        } else {
+            $result = $cap->redeemChallenge($token, $solutions);
+        }
 
         if (!empty($result['success']) && isset($result['token'], $result['expires'])) {
             $guard = self::getGuard();
             $guard->bind((string)$result['token'], $scope, $challenge ? $guard->levelOf($challenge) : 0, (int)$result['expires']);
+            if (!empty($result['riskFlags']) || isset($result['agent'])) {
+                Grav::instance()['log']->info('Cap redeem allowed with risk flags: ' . json_encode(array_intersect_key($result, array_flip(['riskFlags', 'agent', 'behavior']))));
+            }
+            // The widget only needs the token; risk details stay on the server.
+            return ['success' => true, 'token' => $result['token'], 'expires' => $result['expires']];
         }
 
+        if (!empty($result['reason']) || !empty($result['instr_error'])) {
+            Grav::instance()['log']->info('Cap redeem refused by browser checks: ' . json_encode(array_intersect_key($result, array_flip(['reason', 'blockedBy', 'riskFlags', 'agent']))));
+        }
+        $result['status'] = ($result['reason'] ?? '') === 'instr_timeout' ? 429 : 403;
+
         return $result;
+    }
+
+    /**
+     * The request's headers, for the agent checks. Taken from the request, never from the body.
+     *
+     * @return array<string, string>
+     */
+    protected static function requestHeaders(): array
+    {
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders();
+            if (is_array($headers)) {
+                return $headers;
+            }
+        }
+        $headers = [];
+        foreach ($_SERVER as $key => $value) {
+            if (is_string($value) && strncmp($key, 'HTTP_', 5) === 0) {
+                $headers[str_replace('_', '-', strtolower(substr($key, 5)))] = $value;
+            }
+        }
+
+        return $headers;
     }
 
     /**

@@ -1,7 +1,7 @@
 name: Form
 slug: form
 type: plugin
-version: 9.1.41
+version: 9.2.0
 description: Enables forms handling and processing
 icon: check-square
 author:
@@ -365,6 +365,46 @@ form:
             min: 0
             max: 60
             type: number
+        cap.instrumentation:
+          type: toggle
+          label: PLUGIN_FORM.CAP_INSTRUMENTATION
+          help: PLUGIN_FORM.CAP_INSTRUMENTATION_HELP
+          highlight: 1
+          default: 1
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
+        cap.block_automated_browsers:
+          type: toggle
+          label: PLUGIN_FORM.CAP_BLOCK_AUTOMATED_BROWSERS
+          help: PLUGIN_FORM.CAP_BLOCK_AUTOMATED_BROWSERS_HELP
+          highlight: 1
+          default: 1
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
+        cap.behavior:
+          type: select
+          label: PLUGIN_FORM.CAP_BEHAVIOR
+          help: PLUGIN_FORM.CAP_BEHAVIOR_HELP
+          default: 'off'
+          options:
+            'off': PLUGIN_FORM.CAP_BEHAVIOR_OFF
+            report: PLUGIN_FORM.CAP_BEHAVIOR_REPORT
+            block: PLUGIN_FORM.CAP_BEHAVIOR_BLOCK
+        cap.block_agents:
+          type: select
+          label: PLUGIN_FORM.CAP_BLOCK_AGENTS
+          help: PLUGIN_FORM.CAP_BLOCK_AGENTS_HELP
+          default: 'off'
+          options:
+            'off': PLUGIN_FORM.CAP_BLOCK_AGENTS_OFF
+            identified: PLUGIN_FORM.CAP_BLOCK_AGENTS_IDENTIFIED
+            all: PLUGIN_FORM.CAP_BLOCK_AGENTS_ALL
 
     basic_captcha:
       type: section
