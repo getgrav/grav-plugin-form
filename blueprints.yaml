@@ -273,8 +273,9 @@ form:
           type: select
           label: PLUGIN_FORM.CAP_TOKEN_STORAGE_BACKEND
           help: PLUGIN_FORM.CAP_TOKEN_STORAGE_BACKEND_HELP
-          default: grav-cache
+          default: files
           options:
+            files: PLUGIN_FORM.CAP_STORAGE_FILES_OPTION
             grav-cache: PLUGIN_FORM.CAP_STORAGE_GRAV_CACHE_OPTION
             filesystem: PLUGIN_FORM.CAP_STORAGE_FILESYSTEM_OPTION
         cap.challenge_count:

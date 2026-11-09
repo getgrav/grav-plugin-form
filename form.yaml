@@ -24,7 +24,7 @@ recaptcha:
     secret_key:
 cap:
   mode: invisible             # options: invisible | checkbox
-  storage: grav-cache         # options: grav-cache | filesystem
+  storage: files              # options: files | grav-cache | filesystem
   challenge_count: 50         # number of sub-challenges per captcha
   challenge_size: 32          # salt size (hex chars)
   challenge_difficulty: 4     # target prefix length (hex chars)

@@ -19,9 +19,9 @@ composer require trilbymedia/cap-php
 ```php
 use TrilbyMedia\Cap\Cap;
 use TrilbyMedia\Cap\Config;
-use TrilbyMedia\Cap\Storage\FilesystemStorage;
+use TrilbyMedia\Cap\Storage\DirectoryStorage;
 
-$storage = new FilesystemStorage('/var/lib/cap');
+$storage = new DirectoryStorage('/var/lib/cap');
 $cap = new Cap(new Config(
     challengeStorage: $storage,
     tokenStorage:     $storage,
@@ -133,8 +133,17 @@ This library remains stateful. It does not issue or accept capjs-core's signed J
 
 ## Storage and concurrent replay
 
-`ArrayStorage` and `FilesystemStorage` implement optional `AtomicChallengeStorageInterface::consumeChallenge` and `AtomicTokenStorageInterface::consumeToken`. Cap uses these when available. Filesystem mutations use stable `.lock` files and atomic renames, so separate PHP processes cannot redeem the same challenge or consume the same verification token twice. All writers must use the updated class and a filesystem supporting advisory locks. Corrupt/unreadable JSON or failed writes now throw instead of silently discarding records. Keep storage outside the web root.
+| Storage | Single use under concurrency | Notes |
+|---|---|---|
+| `DirectoryStorage` | Yes | One file per record. Recommended for a single server. Cost per operation stays flat as records grow. |
+| `FilesystemStorage` | Yes | One JSON file per kind, rewritten under a lock on every change. Slows down as records grow (about 9 ms per store and consume at 10,000 records), and every request waits its turn. |
+| `ArrayStorage` | Yes | Memory only, for tests and long-running processes. |
+| `Psr16Storage` | **No** | PSR-16 has no atomic read-and-delete, so simultaneous requests can spend one token more than once. |
 
-Existing storage interfaces and all three backends still accept arbitrary arrays containing an `expires` key, including Grav's rate/binding records. Redeem rejects non-challenge token names without reading or deleting those records. PSR-16 has no atomic read-and-delete operation; `Psr16Storage` and older custom adapters retain their read/delete fallback, which does not guarantee single use under concurrency. For that guarantee, implement the two optional interfaces with an atomic backend operation, such as Redis GETDEL. `keepToken: true` intentionally permits reuse.
+`DirectoryStorage` (1.2.0) keeps each record in its own file, sharded by the SHA-256 of its key, so keys never become paths. Taking a record renames its file first; only one process can rename a given file, so it is consumed exactly once. A record file's modification time is its expiry, so the sweep skips live records without opening them, and the sweep runs at most once per `$sweepInterval` seconds (default 300) however often Cap asks. That matters on PHP-FPM, where every request builds a new `Cap` and would otherwise sweep on each one. A damaged record file reads as missing, which refuses it. The directory must be private and local to the server; use a shared atomic backend for several servers.
+
+`ArrayStorage`, `FilesystemStorage` and `DirectoryStorage` implement optional `AtomicChallengeStorageInterface::consumeChallenge` and `AtomicTokenStorageInterface::consumeToken`. Cap uses these when available. Filesystem mutations use stable `.lock` files and atomic renames, so separate PHP processes cannot redeem the same challenge or consume the same verification token twice. All writers must use the updated class and a filesystem supporting advisory locks. Corrupt/unreadable JSON or failed writes now throw instead of silently discarding records. Keep storage outside the web root.
+
+Existing storage interfaces and all four backends still accept arbitrary arrays containing an `expires` key, including Grav's rate/binding records. Redeem rejects non-challenge token names without reading or deleting those records. PSR-16 has no atomic read-and-delete operation; `Psr16Storage` and older custom adapters retain their read/delete fallback, which does not guarantee single use under concurrency. For that guarantee, implement the two optional interfaces with an atomic backend operation, such as Redis GETDEL. `keepToken: true` intentionally permits reuse.
 
 Challenge expiry remains 10 minutes; `tokenTtlMs` is configurable and defaults to 1,200,000 milliseconds. Cleanup remains lazy every five minutes unless `disableAutoCleanup` is true; `cleanup()` can be called explicitly. PSR-16 uses backend TTL eviction. The library performs no background network requests.

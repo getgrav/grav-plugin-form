@@ -57,17 +57,17 @@
         },
         {
             "name": "trilbymedia/cap-php",
-            "version": "1.1.0",
-            "version_normalized": "1.1.0.0",
+            "version": "1.2.0",
+            "version_normalized": "1.2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/trilbymedia/cap-php.git",
-                "reference": "2eee3c1e96a0a795e1d116232f299571c089c33b"
+                "reference": "2989e361192a74fd6dde3e9c6dedb23789723bf6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/trilbymedia/cap-php/zipball/2eee3c1e96a0a795e1d116232f299571c089c33b",
-                "reference": "2eee3c1e96a0a795e1d116232f299571c089c33b",
+                "url": "https://api.github.com/repos/trilbymedia/cap-php/zipball/2989e361192a74fd6dde3e9c6dedb23789723bf6",
+                "reference": "2989e361192a74fd6dde3e9c6dedb23789723bf6",
                 "shasum": ""
             },
             "require": {
@@ -82,7 +82,7 @@
             "suggest": {
                 "psr/simple-cache": "To use Psr16Storage with any PSR-16 cache implementation."
             },
-            "time": "2026-11-09T17:36:16+00:00",
+            "time": "2026-11-09T18:45:05+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {
@@ -113,7 +113,7 @@
             ],
             "support": {
                 "issues": "https://github.com/trilbymedia/cap-php/issues",
-                "source": "https://github.com/trilbymedia/cap-php/tree/1.1.0"
+                "source": "https://github.com/trilbymedia/cap-php/tree/1.2.0"
             },
             "install-path": "../trilbymedia/cap-php"
         }

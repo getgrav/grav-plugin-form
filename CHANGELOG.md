@@ -9,8 +9,9 @@
     * A form with Cap has to be on the page for 3 seconds before it can be sent, since bots usually send at once
 1. [](#improved)
     * A form with a captcha field but no `captcha: true` process action now checks the captcha anyway and logs a warning, instead of letting every submission through
-    * The bundled Cap widget is updated to 0.1.61 and the Cap server library to 1.1.0, both still served from your own site
+    * The bundled Cap widget is updated to 0.1.61 and the Cap server library to 1.2.0, both still served from your own site
 1. [](#bugfix)
+    * A Cap token can no longer be used on several submissions sent at the same moment. Cap now keeps one file per record in `tmp/cap` by default, and the Grav cache option only takes effect with a Redis or Memcached cache
     * A captcha placed inside columns, a fieldset or tabs is now checked on submit; before, it was only checked when it sat at the top level of the form
 
 # v9.1.40

@@ -6,6 +6,7 @@ use TrilbyMedia\Cap\BehaviorOptions;
 use TrilbyMedia\Cap\Cap;
 use TrilbyMedia\Cap\Config as CapConfig;
 use TrilbyMedia\Cap\InstrumentationOptions;
+use TrilbyMedia\Cap\Storage\DirectoryStorage;
 use TrilbyMedia\Cap\Storage\FilesystemStorage;
 use TrilbyMedia\Cap\Storage\Psr16Storage;
 
@@ -35,14 +36,20 @@ class CapProvider implements CaptchaProviderInterface
     /** @var CapGuard|null */
     protected static $guard = null;
 
-    /** @var FilesystemStorage|Psr16Storage|null */
+    /** @var DirectoryStorage|FilesystemStorage|Psr16Storage|null */
     protected static $storage = null;
 
     /**
-     * Shared storage for challenges, tokens and the guard's records. The backend is
-     * chosen from plugin config: 'grav-cache' (PSR-16 via Grav cache) or 'filesystem'.
+     * Shared storage for challenges, tokens and the guard's records, from `cap.storage`:
      *
-     * @return FilesystemStorage|Psr16Storage
+     * - `files` (default): one file per record in tmp/cap. Each challenge and token is
+     *   used exactly once, even when several requests arrive at the same moment.
+     * - `grav-cache`: Grav's cache. PSR-16 can't take a record atomically, so this is only
+     *   used with a Redis or Memcached cache, which several servers can share. With a
+     *   cache local to this server (file, APCu) it gains nothing, so `files` is used.
+     * - `filesystem`: one JSON file in user/data/cap, rewritten under a lock on every change.
+     *
+     * @return DirectoryStorage|FilesystemStorage|Psr16Storage
      */
     public static function getStorage()
     {
@@ -51,13 +58,23 @@ class CapProvider implements CaptchaProviderInterface
         }
 
         $grav    = Grav::instance();
-        $backend = $grav['config']->get('plugins.form.cap.storage', 'grav-cache');
+        $backend = (string)$grav['config']->get('plugins.form.cap.storage', 'files');
         if ($backend === 'filesystem') {
             $dir = rtrim(GRAV_ROOT, '/') . '/user/data/cap';
             return self::$storage = new FilesystemStorage($dir);
         }
 
-        return self::$storage = new Psr16Storage($grav['cache']->getSimpleCache());
+        $cache = $grav['cache'];
+        $shared = $backend === 'grav-cache' && method_exists($cache, 'getDriverName')
+            && in_array($cache->getDriverName(), ['redis', 'memcached', 'memcache'], true);
+
+        // DirectoryStorage needs cap-php 1.2; whichever plugin's copy loads first wins.
+        if (!$shared && class_exists(DirectoryStorage::class)) {
+            $dir = $grav['locator']->findResource('tmp://', true, true) . '/cap';
+            return self::$storage = new DirectoryStorage($dir);
+        }
+
+        return self::$storage = new Psr16Storage($cache->getSimpleCache());
     }
 
     /**
@@ -256,7 +273,9 @@ class CapProvider implements CaptchaProviderInterface
             }
 
             $bindError = $guard->checkToken((string)$token, $scope, $required);
-            $ok = self::getCap()->validateToken((string)$token);
+            // With no binding left, another request already took this token (or it never
+            // existed), so leave the token to that request instead of spending it here.
+            $ok = $bindError !== 'invalid-or-expired-token' && self::getCap()->validateToken((string)$token);
 
             if ($bindError !== null) {
                 return [

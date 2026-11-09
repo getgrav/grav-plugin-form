@@ -5,6 +5,7 @@ use Grav\Common\Grav;
 use Grav\Common\Security;
 use Grav\Common\Uri;
 use TrilbyMedia\Cap\ChallengeOptions;
+use TrilbyMedia\Cap\Storage\AtomicChallengeStorageInterface;
 use TrilbyMedia\Cap\Storage\ChallengeStorageInterface;
 
 /**
@@ -22,7 +23,7 @@ use TrilbyMedia\Cap\Storage\ChallengeStorageInterface;
  *   before it's sent.
  *
  * Records go in Cap's own challenge storage, so they expire and clean up the same
- * way challenges do, on either storage backend.
+ * way challenges do, on any storage backend.
  */
 class CapGuard
 {
@@ -151,8 +152,12 @@ class CapGuard
         }
 
         $key = self::bindKey($id);
-        $record = $this->storage->readChallenge($key);
-        $this->storage->deleteChallenge($key);
+        if ($this->storage instanceof AtomicChallengeStorageInterface) {
+            $record = $this->storage->consumeChallenge($key);
+        } else {
+            $record = $this->storage->readChallenge($key);
+            $this->storage->deleteChallenge($key);
+        }
 
         if ($record === null || ($record['expires'] ?? 0) <= $this->nowMs()) {
             return 'invalid-or-expired-token';
