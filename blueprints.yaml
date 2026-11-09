@@ -1,7 +1,7 @@
 name: Form
 slug: form
 type: plugin
-version: 9.1.40
+version: 9.2.0
 description: Enables forms handling and processing
 icon: check-square
 author:
@@ -273,8 +273,9 @@ form:
           type: select
           label: PLUGIN_FORM.CAP_TOKEN_STORAGE_BACKEND
           help: PLUGIN_FORM.CAP_TOKEN_STORAGE_BACKEND_HELP
-          default: grav-cache
+          default: files
           options:
+            files: PLUGIN_FORM.CAP_STORAGE_FILES_OPTION
             grav-cache: PLUGIN_FORM.CAP_STORAGE_GRAV_CACHE_OPTION
             filesystem: PLUGIN_FORM.CAP_STORAGE_FILESYSTEM_OPTION
         cap.challenge_count:
@@ -316,6 +317,95 @@ form:
           validate:
             min: 30000
             type: number
+        cap.adaptive:
+          type: toggle
+          label: PLUGIN_FORM.CAP_ADAPTIVE
+          help: PLUGIN_FORM.CAP_ADAPTIVE_HELP
+          highlight: 1
+          default: 1
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
+        cap.adaptive_free:
+          type: number
+          label: PLUGIN_FORM.CAP_ADAPTIVE_FREE
+          help: PLUGIN_FORM.CAP_ADAPTIVE_FREE_HELP
+          default: 10
+          size: small
+          validate:
+            min: 1
+            type: number
+        cap.adaptive_window:
+          type: number
+          label: PLUGIN_FORM.CAP_ADAPTIVE_WINDOW
+          help: PLUGIN_FORM.CAP_ADAPTIVE_WINDOW_HELP
+          default: 600
+          size: small
+          validate:
+            min: 60
+            type: number
+        cap.adaptive_max_level:
+          type: number
+          label: PLUGIN_FORM.CAP_ADAPTIVE_MAX_LEVEL
+          help: PLUGIN_FORM.CAP_ADAPTIVE_MAX_LEVEL_HELP
+          default: 8
+          size: small
+          validate:
+            min: 0
+            max: 16
+            type: number
+        cap.min_time:
+          type: number
+          label: PLUGIN_FORM.CAP_MIN_TIME
+          help: PLUGIN_FORM.CAP_MIN_TIME_HELP
+          default: 3
+          size: small
+          validate:
+            min: 0
+            max: 60
+            type: number
+        cap.instrumentation:
+          type: toggle
+          label: PLUGIN_FORM.CAP_INSTRUMENTATION
+          help: PLUGIN_FORM.CAP_INSTRUMENTATION_HELP
+          highlight: 1
+          default: 1
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
+        cap.block_automated_browsers:
+          type: toggle
+          label: PLUGIN_FORM.CAP_BLOCK_AUTOMATED_BROWSERS
+          help: PLUGIN_FORM.CAP_BLOCK_AUTOMATED_BROWSERS_HELP
+          highlight: 1
+          default: 1
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
+        cap.behavior:
+          type: select
+          label: PLUGIN_FORM.CAP_BEHAVIOR
+          help: PLUGIN_FORM.CAP_BEHAVIOR_HELP
+          default: 'off'
+          options:
+            'off': PLUGIN_FORM.CAP_BEHAVIOR_OFF
+            report: PLUGIN_FORM.CAP_BEHAVIOR_REPORT
+            block: PLUGIN_FORM.CAP_BEHAVIOR_BLOCK
+        cap.block_agents:
+          type: select
+          label: PLUGIN_FORM.CAP_BLOCK_AGENTS
+          help: PLUGIN_FORM.CAP_BLOCK_AGENTS_HELP
+          default: 'off'
+          options:
+            'off': PLUGIN_FORM.CAP_BLOCK_AGENTS_OFF
+            identified: PLUGIN_FORM.CAP_BLOCK_AGENTS_IDENTIFIED
+            all: PLUGIN_FORM.CAP_BLOCK_AGENTS_ALL
 
     basic_captcha:
       type: section

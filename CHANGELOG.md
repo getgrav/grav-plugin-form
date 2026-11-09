@@ -1,3 +1,19 @@
+# v9.2.0
+## 11/09/2026
+
+1. [](#new)
+    * Cap runs a browser check with every challenge and refuses headless and automated browsers, so scripts that only solve the proof of work no longer get through. It can be switched off, or set to log instead of block, in the Cap settings
+    * Experimental behavior and AI agent checks for Cap, off by default, that can report or refuse forms sent by scripts
+    * Cap gets harder for floods: once one IP address has sent 10 submissions in 10 minutes, each further one doubles the work, up to 256 times the normal cost
+    * A Cap token now only works on the form that asked for it
+    * A form with Cap has to be on the page for 3 seconds before it can be sent, since bots usually send at once
+1. [](#improved)
+    * A form with a captcha field but no `captcha: true` process action now checks the captcha anyway and logs a warning, instead of letting every submission through
+    * The bundled Cap widget is updated to 0.1.61 and the Cap server library to 1.2.0, both still served from your own site
+1. [](#bugfix)
+    * A Cap token can no longer be used on several submissions sent at the same moment. Cap now keeps one file per record in `tmp/cap` by default, and the Grav cache option only takes effect with a Redis or Memcached cache
+    * A captcha placed inside columns, a fieldset or tabs is now checked on submit; before, it was only checked when it sat at the top level of the form
+
 # v9.1.40
 ## 11/05/2026
 

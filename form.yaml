@@ -24,11 +24,20 @@ recaptcha:
     secret_key:
 cap:
   mode: invisible             # options: invisible | checkbox
-  storage: grav-cache         # options: grav-cache | filesystem
+  storage: files              # options: files | grav-cache | filesystem
   challenge_count: 50         # number of sub-challenges per captcha
   challenge_size: 32          # salt size (hex chars)
   challenge_difficulty: 4     # target prefix length (hex chars)
   expires_ms: 600000          # challenge TTL in milliseconds
+  adaptive: true              # repeat submissions from one IP make its challenges harder
+  adaptive_free: 10           # submissions per IP per window at the normal cost
+  adaptive_window: 600        # window length in seconds
+  adaptive_max_level: 8       # each level past the free allowance doubles the work; 8 = 256x
+  min_time: 3                 # seconds a form must be on the page before it can be sent; 0 turns it off
+  instrumentation: true       # a browser check runs with every challenge (needs PHP 8.1 and cap-php 1.1)
+  block_automated_browsers: true  # refuse headless and automated browsers the check detects
+  behavior: off               # off | report | block: score mouse and keyboard behavior (experimental)
+  block_agents: off           # off | identified | all: refuse AI agents (needs behavior on)
 
 turnstile:
   theme: light                # options: [light | dark]

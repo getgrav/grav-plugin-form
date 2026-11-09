@@ -4,9 +4,12 @@
 
 {% block input %}
     {% set formId        = form.id ?: form.name %}
-    {% set endpoint      = base_url_relative ~ '/forms-cap/' %}
-    {% set wasm_url      = url('plugin://form/assets/captcha/cap/cap_wasm_bg.wasm') %}
-    {% set pako_url      = url('plugin://form/assets/captcha/cap/pako_inflate.min.js') %}
+    {# The form's own endpoint: a token it hands out only works on this form. #}
+    {% set endpoint      = base_url_relative ~ '/forms-cap/' ~ cap_scope(form.name) ~ '/' %}
+    {% set capv          = cap_asset_version() %}
+    {% set wasm_url      = url('plugin://form/assets/captcha/cap/cap_wasm_bg.wasm') ~ '?v=' ~ capv %}
+    {% set pako_url      = url('plugin://form/assets/captcha/cap/pako_inflate.min.js') ~ '?v=' ~ capv %}
+    {% set hashwx_url    = url('plugin://form/assets/captcha/cap/hashwx.wasm') ~ '?v=' ~ capv %}
     {% set container_id  = 'cap-' ~ formId %}
     {% set mode          = field.mode ?? grav.config.plugins.form.cap.mode ?? 'invisible' %}
     {% if mode not in ['invisible', 'checkbox'] %}{% set mode = 'invisible' %}{% endif %}
@@ -26,7 +29,10 @@
        the browser has no DecompressionStream -- Safari before 16.4, Firefox
        before 113 -- and without this it would pull that from jsDelivr, which is
        the third-party runtime dependency vendoring this widget exists to avoid. #}
-    <script>window.CAP_CUSTOM_WASM_URL={{ wasm_url|json_encode|raw }};window.CAP_PAKO_URL={{ pako_url|json_encode|raw }};</script>
+    <script>window.CAP_CUSTOM_WASM_URL={{ wasm_url|json_encode|raw }};window.CAP_CUSTOM_HASHWX_URL={{ hashwx_url|json_encode|raw }};window.CAP_PAKO_URL={{ pako_url|json_encode|raw }};</script>
+
+    {# When the form was put on the page, signed, for the minimum-time check. #}
+    <input type="hidden" name="cap-stamp" value="{{ cap_stamp(form.name) }}" />
 
     {% if mode == 'checkbox' %}
 
@@ -70,6 +76,7 @@
 
     {% endif %}
 
-    {% do assets.addJs('plugin://form/assets/captcha/cap-handler.js', { group: 'bottom', priority: 110 }) %}
-    {% do assets.addJs('plugin://form/assets/captcha/cap/cap.min.js', { group: 'bottom', loading: 'defer', priority: 100 }) %}
+    {# Versioned, so returning visitors get the widget this server expects, not a cached older one. #}
+    {% do assets.addJs('plugin://form/assets/captcha/cap-handler.js?v=' ~ capv, { group: 'bottom', priority: 110 }) %}
+    {% do assets.addJs('plugin://form/assets/captcha/cap/cap.min.js?v=' ~ capv, { group: 'bottom', loading: 'defer', priority: 100 }) %}
 {% endblock %}
