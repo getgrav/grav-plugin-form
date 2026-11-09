@@ -129,7 +129,7 @@ class CapGuard
             return;
         }
 
-        $this->storage->storeChallenge(self::BIND_PREFIX . $id, [
+        $this->storage->storeChallenge(self::bindKey($id), [
             'scope' => hash('sha256', $scope),
             'level' => $level,
             'expires' => $expires,
@@ -150,7 +150,7 @@ class CapGuard
             return 'invalid-or-expired-token';
         }
 
-        $key = self::BIND_PREFIX . $id;
+        $key = self::bindKey($id);
         $record = $this->storage->readChallenge($key);
         $this->storage->deleteChallenge($key);
 
@@ -228,6 +228,11 @@ class CapGuard
         return substr(hash_hmac('sha256', 'cap-stamp|' . $time . '|' . $formName, self::secret()), 0, 32);
     }
 
+    private static function bindKey(string $id): string
+    {
+        return self::BIND_PREFIX . hash_hmac('sha256', $id, self::secret());
+    }
+
     private static function secret(): string
     {
         // Grav 2.0 keeps its HMAC key outside the config tree; 1.7 has security.salt.
@@ -266,7 +271,8 @@ class CapGuard
             $ip = bin2hex(substr($packed, 0, 8)) . '::/64';
         }
 
-        return self::RATE_PREFIX . hash('sha256', $ip);
+        // Keyed with the site secret, so the key can't be worked out from outside.
+        return self::RATE_PREFIX . hash_hmac('sha256', $ip, self::secret());
     }
 
     private function nowMs(): int

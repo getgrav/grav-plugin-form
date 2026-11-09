@@ -114,6 +114,12 @@ class CapProvider implements CaptchaProviderInterface
      */
     public static function redeemChallenge(string $token, array $solutions, string $scope): array
     {
+        // Only a challenge token (50 hex characters) may reach storage: the guard keeps its own
+        // records in the same storage, and redeem deletes whatever key it is given.
+        if (!preg_match('/^[a-f0-9]{50}$/D', $token)) {
+            return ['success' => false, 'message' => 'Challenge invalid or expired'];
+        }
+
         // redeemChallenge() deletes the challenge, so read its cost first.
         $challenge = $token !== '' ? self::getStorage()->readChallenge($token) : null;
         $result = self::getCap()->redeemChallenge($token, $solutions);
