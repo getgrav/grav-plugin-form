@@ -1,3 +1,11 @@
+# v9.1.41
+## 11/09/2026
+
+1. [](#improved)
+    * A form with a captcha field but no `captcha: true` process action now checks the captcha anyway and logs a warning, instead of letting every submission through
+1. [](#bugfix)
+    * A captcha placed inside columns, a fieldset or tabs is now checked on submit; before, it was only checked when it sat at the top level of the form
+
 # v9.1.40
 ## 11/05/2026
 

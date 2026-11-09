@@ -39,34 +39,12 @@ class CaptchaManager
         }
 
         // --- 1. Find the captcha field in the form ---
-        $captchaField = null;
-        $providerName = null;
-
-        $formFields = $form->getBlueprint()->get('form/fields');
-        foreach ($formFields as $fieldName => $fieldDef) {
-            $fieldType = $fieldDef['type'] ?? null;
-
-            // Check for modern captcha type with provider
-            if ($fieldType === 'captcha') {
-                $captchaField = $fieldDef;
-                $providerName = $fieldDef['provider'] ?? 'recaptcha';
-                break;
-            }
-
-            // Check for legacy type-based providers (like basic-captcha and turnstile)
-            // This is for backward compatibility. A `cap` field still counts when its provider isn't
-            // registered (PHP < 8.1), so the form is refused below instead of skipping the captcha.
-            elseif ($fieldType && (CaptchaFactory::hasProvider($fieldType) || $fieldType === 'cap')) {
-                $captchaField = $fieldDef;
-                $providerName = $fieldType;
-                break;
-            }
-        }
-
-        if (!$captchaField || !$providerName) {
+        $found = self::findCaptchaField($form);
+        if ($found === null) {
             // No captcha field found or no provider specified
             return true;
         }
+        [$fieldName, $captchaField, $providerName] = $found;
 
         $captchaFieldName = $captchaField['name'] ?? $fieldName;
 
@@ -148,6 +126,87 @@ class CaptchaManager
 
             return false;
         }
+    }
+
+    /**
+     * Process actions that validate a captcha. They all end up in validateCaptcha().
+     */
+    public const PROCESS_ACTIONS = ['captcha', 'cap', 'turnstile', 'basic-captcha'];
+
+    /**
+     * Find the form's captcha field, including one nested in columns, fieldsets, tabs
+     * or any other field that holds `fields`.
+     *
+     * @param Form $form
+     * @return array|null [field name, field definition, provider name], or null when the form has no captcha
+     */
+    public static function findCaptchaField(Form $form): ?array
+    {
+        $fields = $form->getBlueprint()->get('form/fields');
+
+        return is_array($fields) ? self::searchFields($fields) : null;
+    }
+
+    /**
+     * @param array $fields
+     * @return array|null
+     */
+    protected static function searchFields(array $fields): ?array
+    {
+        foreach ($fields as $fieldName => $fieldDef) {
+            if (!is_array($fieldDef)) {
+                continue;
+            }
+            $fieldType = $fieldDef['type'] ?? null;
+
+            // Modern captcha type with provider
+            if ($fieldType === 'captcha') {
+                return [$fieldName, $fieldDef, $fieldDef['provider'] ?? 'recaptcha'];
+            }
+
+            // Legacy type-based providers (like basic-captcha and turnstile), kept for
+            // backward compatibility. A `cap` field still counts when its provider isn't
+            // registered (PHP < 8.1), so the form is refused instead of skipping the captcha.
+            if ($fieldType && (CaptchaFactory::hasProvider($fieldType) || $fieldType === 'cap')) {
+                return [$fieldName, $fieldDef, $fieldType];
+            }
+
+            if (isset($fieldDef['fields']) && is_array($fieldDef['fields'])) {
+                $found = self::searchFields($fieldDef['fields']);
+                if ($found !== null) {
+                    return $found;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Whether a form's `process` list already has a captcha action, including an
+     * explicit `captcha: false`, which turns the check off on purpose.
+     *
+     * @param array $process
+     * @return bool
+     */
+    public static function hasProcessAction(array $process): bool
+    {
+        foreach ($process as $action => $data) {
+            if (is_numeric($action)) {
+                if (is_string($data)) {
+                    $action = $data;
+                } elseif (is_array($data)) {
+                    $action = key($data);
+                } else {
+                    continue;
+                }
+            }
+            if (in_array($action, self::PROCESS_ACTIONS, true)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

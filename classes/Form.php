@@ -22,6 +22,7 @@ use Grav\Framework\Form\FormFlashFile;
 use Grav\Framework\Form\Interfaces\FormInterface;
 use Grav\Framework\Form\Traits\FormTrait;
 use Grav\Framework\Route\Route;
+use Grav\Plugin\Form\Captcha\CaptchaManager;
 use RocketTheme\Toolbox\ArrayTraits\NestedArrayAccessWithGetters;
 use RocketTheme\Toolbox\Event\Event;
 use RocketTheme\Toolbox\ResourceLocator\UniformResourceLocator;
@@ -1054,10 +1055,24 @@ class Form implements FormInterface, ArrayAccess
         }
 
         if (is_array($process)) {
+            // A captcha field only puts the captcha on the page; the `captcha` process
+            // action is what checks it. A form that has the field but leaves the action
+            // out would let every submission through, so check it anyway, first.
+            if (!CaptchaManager::hasProcessAction($process) && CaptchaManager::findCaptchaField($this) !== null) {
+                $grav['log']->warning("Form '{$this->name}' has a captcha field but no `captcha: true` process action; checking the captcha anyway. Add it as the first process action.");
+                $process = ['captcha' => true] + $process;
+            }
+
             foreach ($process as $action => $data) {
                 if (is_numeric($action)) {
-                    $action = key($data);
-                    $data = $data[$action];
+                    // `- captcha` (a bare action name) is the same as `- captcha: true`
+                    if (is_string($data)) {
+                        $action = $data;
+                        $data = true;
+                    } else {
+                        $action = key($data);
+                        $data = $data[$action];
+                    }
                 }
 
                 // do not execute action, if deactivated
