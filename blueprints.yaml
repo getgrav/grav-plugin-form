@@ -316,6 +316,55 @@ form:
           validate:
             min: 30000
             type: number
+        cap.adaptive:
+          type: toggle
+          label: PLUGIN_FORM.CAP_ADAPTIVE
+          help: PLUGIN_FORM.CAP_ADAPTIVE_HELP
+          highlight: 1
+          default: 1
+          options:
+            1: PLUGIN_ADMIN.ENABLED
+            0: PLUGIN_ADMIN.DISABLED
+          validate:
+            type: bool
+        cap.adaptive_free:
+          type: number
+          label: PLUGIN_FORM.CAP_ADAPTIVE_FREE
+          help: PLUGIN_FORM.CAP_ADAPTIVE_FREE_HELP
+          default: 10
+          size: small
+          validate:
+            min: 1
+            type: number
+        cap.adaptive_window:
+          type: number
+          label: PLUGIN_FORM.CAP_ADAPTIVE_WINDOW
+          help: PLUGIN_FORM.CAP_ADAPTIVE_WINDOW_HELP
+          default: 600
+          size: small
+          validate:
+            min: 60
+            type: number
+        cap.adaptive_max_level:
+          type: number
+          label: PLUGIN_FORM.CAP_ADAPTIVE_MAX_LEVEL
+          help: PLUGIN_FORM.CAP_ADAPTIVE_MAX_LEVEL_HELP
+          default: 8
+          size: small
+          validate:
+            min: 0
+            max: 16
+            type: number
+        cap.min_time:
+          type: number
+          label: PLUGIN_FORM.CAP_MIN_TIME
+          help: PLUGIN_FORM.CAP_MIN_TIME_HELP
+          default: 3
+          size: small
+          validate:
+            min: 0
+            max: 60
+            type: number
 
     basic_captcha:
       type: section

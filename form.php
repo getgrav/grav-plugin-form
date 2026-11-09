@@ -452,6 +452,14 @@ class FormPlugin extends Plugin
     {
         $twig = $this->grav['twig']->twig;
         $twig->addExtension(new TwigExtension());
+        // Cap field: the form's own endpoint segment and its signed render stamp.
+        $twig->addFunction(new TwigFunction('cap_scope', function ($formName) {
+            return \Grav\Plugin\Form\Captcha\CapGuard::scopeSegment((string)$formName);
+        }));
+        $twig->addFunction(new TwigFunction('cap_stamp', function ($formName) {
+            return \Grav\Plugin\Form\Captcha\CapGuard::stamp((string)$formName);
+        }));
+
         $twig->addFunction(new TwigFunction('captcha_template_exists', function ($template) use ($twig) {
             return $twig->getLoader()->exists($template);
         }));
@@ -1476,11 +1484,19 @@ class FormPlugin extends Plugin
             return;
         }
 
-        $path = $uri->path();
-        if ($path !== \Grav\Plugin\Form\Captcha\CapProvider::CHALLENGE_PATH
-            && $path !== \Grav\Plugin\Form\Captcha\CapProvider::REDEEM_PATH) {
+        // /forms-cap/{challenge|redeem} is the shared endpoint; /forms-cap/<form>/{challenge|redeem}
+        // is a form's own, and the token it hands out only works on that form.
+        if (!preg_match('#^/forms-cap/(?:([A-Za-z0-9_-]+)/)?(challenge|redeem)$#', $uri->path(), $m)) {
             return;
         }
+        $scope = '';
+        if ($m[1] !== '') {
+            $scope = \Grav\Plugin\Form\Captcha\CapGuard::scopeFromSegment($m[1]);
+            if ($scope === null) {
+                return;
+            }
+        }
+        $action = $m[2];
 
         if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
             http_response_code(405);
@@ -1492,10 +1508,8 @@ class FormPlugin extends Plugin
         header('Cache-Control: no-store');
 
         try {
-            $cap = \Grav\Plugin\Form\Captcha\CapProvider::getCap();
-
-            if ($path === \Grav\Plugin\Form\Captcha\CapProvider::CHALLENGE_PATH) {
-                echo json_encode($cap->createChallenge(), JSON_UNESCAPED_SLASHES);
+            if ($action === 'challenge') {
+                echo json_encode(\Grav\Plugin\Form\Captcha\CapProvider::createChallenge(), JSON_UNESCAPED_SLASHES);
                 exit;
             }
 
@@ -1508,7 +1522,7 @@ class FormPlugin extends Plugin
                 exit;
             }
             $solutions = array_map(static function ($v) { return (int)$v; }, $body['solutions']);
-            echo json_encode($cap->redeemChallenge((string)$body['token'], $solutions), JSON_UNESCAPED_SLASHES);
+            echo json_encode(\Grav\Plugin\Form\Captcha\CapProvider::redeemChallenge((string)$body['token'], $solutions, $scope), JSON_UNESCAPED_SLASHES);
             exit;
         } catch (\Throwable $e) {
             $this->grav['log']->error('Cap endpoint error: ' . $e->getMessage());

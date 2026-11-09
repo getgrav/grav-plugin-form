@@ -65,6 +65,9 @@ class CaptchaManager
             $params['recaptcha_version'] = $captchaField['recaptcha_version'];
         }
 
+        // The form being submitted, so a provider can tie its token to this form (Cap does).
+        $params['form_name'] = $form->getName();
+
         // Allow plugins to modify the validation parameters
         $validationEvent = new Event([
             'form' => $form,
@@ -220,6 +223,12 @@ class CaptchaManager
     protected static function getErrorMessage(array $field, string $errorCode, string $provider): string
     {
         $grav = Grav::instance();
+
+        // Sent before the form could have been read: say so, whatever the field's own message is,
+        // since the fix is simply to send it again.
+        if ($errorCode === 'submitted-too-fast') {
+            return $grav['language']->translate('PLUGIN_FORM.ERROR_CAPTCHA_TOO_FAST');
+        }
 
         // First check for specific message in field definition. `captcha_not_validated`
         // is the canonical key; `recaptcha_not_validated` is the legacy key kept for

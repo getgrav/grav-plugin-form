@@ -1,6 +1,10 @@
 # v9.1.41
 ## 11/09/2026
 
+1. [](#new)
+    * Cap gets harder for floods: once one IP address has sent 10 submissions in 10 minutes, each further one doubles the work, up to 256 times the normal cost
+    * A Cap token now only works on the form that asked for it
+    * A form with Cap has to be on the page for 3 seconds before it can be sent, since bots usually send at once
 1. [](#improved)
     * A form with a captcha field but no `captcha: true` process action now checks the captcha anyway and logs a warning, instead of letting every submission through
 1. [](#bugfix)

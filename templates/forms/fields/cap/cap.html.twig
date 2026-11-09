@@ -4,7 +4,8 @@
 
 {% block input %}
     {% set formId        = form.id ?: form.name %}
-    {% set endpoint      = base_url_relative ~ '/forms-cap/' %}
+    {# The form's own endpoint: a token it hands out only works on this form. #}
+    {% set endpoint      = base_url_relative ~ '/forms-cap/' ~ cap_scope(form.name) ~ '/' %}
     {% set wasm_url      = url('plugin://form/assets/captcha/cap/cap_wasm_bg.wasm') %}
     {% set pako_url      = url('plugin://form/assets/captcha/cap/pako_inflate.min.js') %}
     {% set container_id  = 'cap-' ~ formId %}
@@ -27,6 +28,9 @@
        before 113 -- and without this it would pull that from jsDelivr, which is
        the third-party runtime dependency vendoring this widget exists to avoid. #}
     <script>window.CAP_CUSTOM_WASM_URL={{ wasm_url|json_encode|raw }};window.CAP_PAKO_URL={{ pako_url|json_encode|raw }};</script>
+
+    {# When the form was put on the page, signed, for the minimum-time check. #}
+    <input type="hidden" name="cap-stamp" value="{{ cap_stamp(form.name) }}" />
 
     {% if mode == 'checkbox' %}
 

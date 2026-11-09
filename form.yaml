@@ -29,6 +29,11 @@ cap:
   challenge_size: 32          # salt size (hex chars)
   challenge_difficulty: 4     # target prefix length (hex chars)
   expires_ms: 600000          # challenge TTL in milliseconds
+  adaptive: true              # repeat submissions from one IP make its challenges harder
+  adaptive_free: 10           # submissions per IP per window at the normal cost
+  adaptive_window: 600        # window length in seconds
+  adaptive_max_level: 8       # each level past the free allowance doubles the work; 8 = 256x
+  min_time: 3                 # seconds a form must be on the page before it can be sent; 0 turns it off
 
 turnstile:
   theme: light                # options: [light | dark]

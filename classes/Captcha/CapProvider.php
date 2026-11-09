@@ -17,6 +17,7 @@ class CapProvider implements CaptchaProviderInterface
     public const CHALLENGE_PATH    = '/forms-cap/challenge';
     public const REDEEM_PATH       = '/forms-cap/redeem';
     public const HIDDEN_FIELD_NAME = 'cap-token';
+    public const STAMP_FIELD_NAME  = 'cap-stamp';
 
     /** @var array */
     protected $config;
@@ -29,9 +30,36 @@ class CapProvider implements CaptchaProviderInterface
         $this->config = Grav::instance()['config']->get('plugins.form.cap', []);
     }
 
+    /** @var CapGuard|null */
+    protected static $guard = null;
+
+    /** @var FilesystemStorage|Psr16Storage|null */
+    protected static $storage = null;
+
     /**
-     * Get (or build) a shared Cap instance. Storage backend is chosen from
-     * plugin config: 'grav-cache' (PSR-16 via Grav cache) or 'filesystem'.
+     * Shared storage for challenges, tokens and the guard's records. The backend is
+     * chosen from plugin config: 'grav-cache' (PSR-16 via Grav cache) or 'filesystem'.
+     *
+     * @return FilesystemStorage|Psr16Storage
+     */
+    public static function getStorage()
+    {
+        if (self::$storage !== null) {
+            return self::$storage;
+        }
+
+        $grav    = Grav::instance();
+        $backend = $grav['config']->get('plugins.form.cap.storage', 'grav-cache');
+        if ($backend === 'filesystem') {
+            $dir = rtrim(GRAV_ROOT, '/') . '/user/data/cap';
+            return self::$storage = new FilesystemStorage($dir);
+        }
+
+        return self::$storage = new Psr16Storage($grav['cache']->getSimpleCache());
+    }
+
+    /**
+     * Get (or build) a shared Cap instance.
      */
     public static function getCap(): Cap
     {
@@ -39,16 +67,8 @@ class CapProvider implements CaptchaProviderInterface
             return self::$cap;
         }
 
-        $grav   = Grav::instance();
-        $config = $grav['config']->get('plugins.form.cap', []);
-
-        $backend = $config['storage'] ?? 'grav-cache';
-        if ($backend === 'filesystem') {
-            $dir = rtrim(GRAV_ROOT, '/') . '/user/data/cap';
-            $storage = new FilesystemStorage($dir);
-        } else {
-            $storage = new Psr16Storage($grav['cache']->getSimpleCache());
-        }
+        $config  = Grav::instance()['config']->get('plugins.form.cap', []);
+        $storage = self::getStorage();
 
         $capConfig = new CapConfig(
             challengeStorage:     $storage,
@@ -60,6 +80,50 @@ class CapProvider implements CaptchaProviderInterface
         );
 
         return self::$cap = new Cap($capConfig);
+    }
+
+    /**
+     * Get (or build) the shared guard: adaptive cost, form binding and minimum time.
+     */
+    public static function getGuard(): CapGuard
+    {
+        if (self::$guard !== null) {
+            return self::$guard;
+        }
+
+        return self::$guard = new CapGuard(
+            self::getStorage(),
+            Grav::instance()['config']->get('plugins.form.cap', [])
+        );
+    }
+
+    /**
+     * Issue a challenge at the cost the requesting IP is on.
+     */
+    public static function createChallenge(): array
+    {
+        return self::getCap()->createChallenge(self::getGuard()->challengeOptions());
+    }
+
+    /**
+     * Redeem a solved challenge, and tie the token to the form it was requested for.
+     *
+     * @param string $token     Challenge token
+     * @param int[]  $solutions
+     * @param string $scope     Form name, or '' for the shared endpoint
+     */
+    public static function redeemChallenge(string $token, array $solutions, string $scope): array
+    {
+        // redeemChallenge() deletes the challenge, so read its cost first.
+        $challenge = $token !== '' ? self::getStorage()->readChallenge($token) : null;
+        $result = self::getCap()->redeemChallenge($token, $solutions);
+
+        if (!empty($result['success']) && isset($result['token'], $result['expires'])) {
+            $guard = self::getGuard();
+            $guard->bind((string)$result['token'], $scope, $challenge ? $guard->levelOf($challenge) : 0, (int)$result['expires']);
+        }
+
+        return $result;
     }
 
     /**
@@ -81,7 +145,36 @@ class CapProvider implements CaptchaProviderInterface
                 ];
             }
 
+            $guard = self::getGuard();
+            $scope = isset($params['form_name']) ? (string)$params['form_name'] : null;
+
+            // Every submission counts toward the IP's cost, whether it passes or not.
+            $required = $guard->level();
+            $guard->recordSubmission();
+
+            // Form plugin forms carry a signed stamp from when the form was rendered.
+            if ($scope !== null) {
+                $stampError = $guard->checkStamp($_POST[self::STAMP_FIELD_NAME] ?? null, $scope);
+                if ($stampError !== null) {
+                    self::getCap()->validateToken((string)$token); // spend it anyway
+                    return [
+                        'success' => false,
+                        'error'   => $stampError,
+                        'details' => ['error' => $stampError]
+                    ];
+                }
+            }
+
+            $bindError = $guard->checkToken((string)$token, $scope, $required);
             $ok = self::getCap()->validateToken((string)$token);
+
+            if ($bindError !== null) {
+                return [
+                    'success' => false,
+                    'error'   => 'validation-failed',
+                    'details' => ['error' => $bindError, 'required_level' => $required]
+                ];
+            }
 
             if (!$ok) {
                 return [
@@ -115,7 +208,7 @@ class CapProvider implements CaptchaProviderInterface
         return [
             'provider'         => 'cap',
             'mode'             => $mode,
-            'endpoint'         => self::ENDPOINT_BASE,
+            'endpoint'         => self::ENDPOINT_BASE . CapGuard::scopeSegment($formId) . '/',
             'hiddenFieldName'  => self::HIDDEN_FIELD_NAME,
             'containerId'      => "cap-{$formId}",
         ];
