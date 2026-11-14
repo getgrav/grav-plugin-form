@@ -1004,32 +1004,15 @@ class Form implements FormInterface, ArrayAccess
             $this->data->validate();
             $this->data->filter();
 
-            // Add special handling for file/filepond fields
-            foreach ($this->fields as $field) {
-                // Don't restrict to just type=file, but also other file based as long as they have filesize && accept
-                if (isset($field['filesize']) && isset($field['accept']) &&
-                    isset($field['validate']['required']) &&
-                    $field['validate']['required']) {
-
-                    // Get field name
-                    $fieldName = $field['name'];
+            // Required upload fields: the files live in the form flash, not in the
+            // posted data, so check them there. Fields inside steps, columns,
+            // fieldsets and tabs count too.
+            foreach ($this->requiredUploadFields($this->fields) as $field) {
+                $flashObject = $this->getFlash();
+                if (!$flashObject->exists() || empty($flashObject->getFilesByField($field['name']))) {
                     $fieldLabel = $field['label'] ?? $field['name'];
-
-                    // Check if files exist in the session for this field
-                    $flashObject = $this->getFlash();
-                    if ($flashObject->exists()) {
-                        $filesInField = $flashObject->getFilesByField($fieldName);
-
-                        // If no files found, add validation error
-                        if (empty($filesInField)) {
-                            $this->setError("$fieldLabel " . $grav['language']->translate("PLUGIN_FORM.FIELD_REQUIRED"));
-                            throw new ValidationException();
-                        }
-                    } else {
-                        // No flash object with files found
-                        $this->setError("$fieldLabel " . $grav['language']->translate("PLUGIN_FORM.FIELD_REQUIRED"));
-                        throw new ValidationException();
-                    }
+                    $this->setError("$fieldLabel " . $grav['language']->translate("PLUGIN_FORM.FIELD_REQUIRED"));
+                    throw new ValidationException();
                 }
             }
 
@@ -1175,6 +1158,35 @@ class Form implements FormInterface, ArrayAccess
         }
 
         $flash->clearFiles();
+    }
+
+    /**
+     * The upload fields marked required, including ones nested in other fields.
+     * A field counts as an upload when it's a `file` or `filepond` field, or when
+     * it sets both `filesize` and `accept`, as custom upload fields do.
+     *
+     * @param array $fields
+     * @return array
+     */
+    protected function requiredUploadFields(array $fields): array
+    {
+        $found = [];
+        foreach ($fields as $key => $field) {
+            if (!is_array($field)) {
+                continue;
+            }
+            $isUpload = in_array($field['type'] ?? null, ['file', 'filepond'], true)
+                || (isset($field['filesize']) && isset($field['accept']));
+            if ($isUpload && !empty($field['validate']['required'])) {
+                $field['name'] = $field['name'] ?? $key;
+                $found[] = $field;
+            }
+            if (isset($field['fields']) && is_array($field['fields'])) {
+                array_push($found, ...$this->requiredUploadFields($field['fields']));
+            }
+        }
+
+        return $found;
     }
 
     /**

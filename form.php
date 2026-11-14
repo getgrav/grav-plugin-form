@@ -559,7 +559,7 @@ class FormPlugin extends Plugin
                 $captcha_params = is_array($params) ? $params : [];
 
                 // Use the captcha manager to validate
-                $validated = CaptchaManager::validateCaptcha($form, $captcha_params);
+                $validated = CaptchaManager::validateCaptcha($form, $captcha_params, $action);
                 if (!$validated) {
                     $event->stopPropagation();
                 }
