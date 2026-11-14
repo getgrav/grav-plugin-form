@@ -29,9 +29,10 @@ class CaptchaManager
      *
      * @param Form $form The form to validate
      * @param array|null $params Optional parameters
+     * @param string|null $action The process action that asked for the check
      * @return bool True if validation succeeded
      */
-    public static function validateCaptcha(Form $form, $params = null): bool
+    public static function validateCaptcha(Form $form, $params = null, ?string $action = null): bool
     {
         // Handle case where $params is a boolean (backward compatibility)
         if (!is_array($params)) {
@@ -41,6 +42,22 @@ class CaptchaManager
         // --- 1. Find the captcha field in the form ---
         $found = self::findCaptchaField($form);
         if ($found === null) {
+            // A `cap` action needs the Cap field to mint its token, so without one the
+            // check could never pass: refuse the form rather than let everything
+            // through. Other actions keep passing, as older forms rely on that.
+            if ($action === 'cap') {
+                Grav::instance()['log']->error("Form Captcha: form '{$form->getName()}' has a cap action but no Cap field");
+                $errorMessage = Grav::instance()['language']->translate('PLUGIN_FORM.ERROR_VALIDATING_CAPTCHA');
+                Grav::instance()->fireEvent('onFormValidationError', new Event([
+                    'form' => $form,
+                    'message' => $errorMessage,
+                    'messages' => $form->messages ?? [],
+                    'provider' => 'cap'
+                ]));
+
+                return false;
+            }
+
             // No captcha field found or no provider specified
             return true;
         }
@@ -67,6 +84,9 @@ class CaptchaManager
 
         // The form being submitted, so a provider can tie its token to this form (Cap does).
         $params['form_name'] = $form->getName();
+        // The captcha field's name, so a provider that reads its answer from the
+        // posted data (basic-captcha does) finds it whatever the field is called.
+        $params['field_name'] = $fieldName;
 
         // Allow plugins to modify the validation parameters
         $validationEvent = new Event([

@@ -1,3 +1,12 @@
+# v9.2.1
+## 11/13/2026
+
+1. [](#bugfix)
+    * A basic captcha field now works under any field name, not only `basic-captcha`, so it can also be added as `type: captcha` with `provider: basic-captcha`
+    * A form with the `cap` process action but no Cap field now refuses submissions and logs an error, instead of accepting them all
+    * With inline errors on, the message above the form no longer reads just "Validation failed:" with nothing after it; it now asks the visitor to check the highlighted fields
+    * A required file upload no longer stops the browser from sending the form after the file has been uploaded; the server now refuses the form when no file was sent, for every upload field including ones inside steps, columns and fieldsets
+
 # v9.2.0
 ## 11/09/2026
 
