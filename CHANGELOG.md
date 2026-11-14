@@ -1,3 +1,9 @@
+# v9.2.1
+## 11/13/2026
+
+1. [](#bugfix)
+    * A basic captcha field now works under any field name, not only `basic-captcha`, so it can also be added as `type: captcha` with `provider: basic-captcha`
+
 # v9.2.0
 ## 11/09/2026
 

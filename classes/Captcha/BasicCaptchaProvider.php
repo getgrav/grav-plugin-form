@@ -32,8 +32,10 @@ class BasicCaptchaProvider implements CaptchaProviderInterface
             // Get the captcha type from session (stored during generation)
             $captchaType = $session->basic_captcha_type ?? null;
 
-            // Get the user's answer
-            $userValue = $form['basic-captcha'] ?? null;
+            // The answer is posted under the captcha field's own name, which any
+            // form can choose; `basic-captcha` is the name the docs' examples use.
+            $fieldName = $params['field_name'] ?? 'basic-captcha';
+            $userValue = $form[$fieldName] ?? $form['basic-captcha'] ?? null;
 
             // Compare against null/empty rather than falsy, so a legitimate answer of
             // "0" (from a subtraction such as 7 - 7) isn't read as a missing value

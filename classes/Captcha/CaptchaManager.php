@@ -67,6 +67,9 @@ class CaptchaManager
 
         // The form being submitted, so a provider can tie its token to this form (Cap does).
         $params['form_name'] = $form->getName();
+        // The captcha field's name, so a provider that reads its answer from the
+        // posted data (basic-captcha does) finds it whatever the field is called.
+        $params['field_name'] = $fieldName;
 
         // Allow plugins to modify the validation parameters
         $validationEvent = new Event([
