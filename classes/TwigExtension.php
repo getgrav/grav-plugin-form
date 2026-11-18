@@ -17,7 +17,8 @@ class TwigExtension extends AbstractExtension
     public function getFilters()
     {
        return [
-            new TwigFilter('value_and_label', [$this, 'valueAndLabel'])
+            new TwigFilter('value_and_label', [$this, 'valueAndLabel']),
+            new TwigFilter('form_attributes', [$this, 'formAttributes']),
        ];
     }
 
@@ -47,6 +48,69 @@ class TwigExtension extends AbstractExtension
         }
 
         return $list;
+    }
+
+    /**
+     * Turns an `attributes` (or `datasets`) map from a form definition into a list
+     * of `{name, value}` pairs, leaving out any name that is not a plain attribute
+     * name. Accepts both the `key: value` style and the `{name: ..., value: ...}`
+     * list style. Values are left as they are; templates still escape them.
+     *
+     * @param mixed $attributes
+     * @param string $prefix Prepended to every name, e.g. `data-` for datasets
+     * @return array<int, array{name: string, value: mixed}>
+     */
+    public function formAttributes($attributes, string $prefix = ''): array
+    {
+        if (!is_iterable($attributes)) {
+            return [];
+        }
+
+        $list = [];
+        foreach ($attributes as $key => $attribute) {
+            if (is_array($attribute)) {
+                $name = $attribute['name'] ?? null;
+                $value = $attribute['value'] ?? '';
+            } else {
+                $name = $key;
+                $value = $attribute;
+            }
+            if (!is_string($name) && !is_int($name)) {
+                continue;
+            }
+
+            $name = $prefix . $name;
+            if (!static::isSafeAttributeName($name)) {
+                continue;
+            }
+
+            $list[] = ['name' => $name, 'value' => $value];
+        }
+
+        return $list;
+    }
+
+    /**
+     * An attribute name is letter-led and made of letters, digits, `-`, `_`, `:`
+     * and `.` only. Event handlers (`on*`) and names that open a script context
+     * whatever their value (`formaction`, `srcdoc`, `xmlns`) are refused.
+     *
+     * @param string $name
+     * @return bool
+     */
+    public static function isSafeAttributeName(string $name): bool
+    {
+        // `D` keeps `$` from matching before a trailing newline.
+        if (!preg_match('/^[A-Za-z][A-Za-z0-9_:.\-]*$/D', $name)) {
+            return false;
+        }
+
+        $lower = strtolower($name);
+        if (strpos($lower, 'on') === 0) {
+            return false;
+        }
+
+        return !in_array($lower, ['formaction', 'srcdoc', 'xmlns'], true);
     }
 
     /**

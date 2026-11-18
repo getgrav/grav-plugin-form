@@ -23,16 +23,12 @@
                 {% if field.key %}
                     data-key-observe="{{ (scope ~ field.name)|fieldName }}"
                 {% endif %}
-                {% if field.datasets %}
-                    {% for datakey, datavalue in field.datasets %}
-                        data-{{ datakey }}="{{ datavalue|e('html_attr') }}"
-                    {% endfor %}
-                {% endif %}
-                {% if field.attributes %}
-                    {% for key, value in field.attributes %}
-                        {{ key }}="{{ value|e('html_attr') }}"
-                    {% endfor %}
-                {% endif %}
+                {% for attribute in field.datasets|default([])|form_attributes('data-') %}
+                    {{ attribute.name }}="{{ attribute.value|e('html_attr') }}"
+                {% endfor %}
+                {% for attribute in field.attributes|default([])|form_attributes %}
+                    {{ attribute.name }}="{{ attribute.value|e('html_attr') }}"
+                {% endfor %}
                 >
             {% if field.placeholder is not empty %}<option value="" disabled selected>{{ field.placeholder|t }}</option>{% endif %}
 
