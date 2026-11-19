@@ -149,20 +149,12 @@ wrapping the whole file in a condition.
   {% elseif field.title is defined %}title="{{ field.title|t|e }}" {% endif %}
 
   {# Support key/value and .name/.value styles #}
-  {% if field.attributes is defined %}
-    {% for key,attribute in field.attributes %}
-      {% if attribute|of_type('array') %}
-        {{ attribute.name }}="{{ attribute.value|e('html_attr') }}"
-      {% else %}
-        {{ key }}="{{ attribute|e('html_attr') }}"
-      {% endif %}
-    {% endfor %}
-  {% endif %}
+  {% for attribute in field.attributes|default([])|form_attributes %}
+    {{ attribute.name }}="{{ attribute.value|e('html_attr') }}"
+  {% endfor %}
 
   {# Support for Custom data attributes#}
-  {% if field.datasets %}
-    {% for key, attribute in field.datasets %}
-      data-{{ key }}="{{ attribute|e('html_attr') }}"
-    {% endfor %}
-  {% endif %}
+  {% for attribute in field.datasets|default([])|form_attributes('data-') %}
+    {{ attribute.name }}="{{ attribute.value|e('html_attr') }}"
+  {% endfor %}
 {% endblock %}

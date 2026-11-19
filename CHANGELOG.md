@@ -1,3 +1,9 @@
+# v9.2.2
+## 11/18/2026
+
+1. [](#bugfix)
+    * Attribute names from a form's or field's `attributes` and `datasets` are checked the same way as core's media `attribute()` before they're printed, so only plain attribute names are output. Thanks @arpitjain099
+
 # v9.2.1
 ## 11/13/2026
 
