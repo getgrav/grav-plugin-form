@@ -1,3 +1,9 @@
+# v9.2.3
+## 11/20/2026
+
+1. [](#improved)
+    * Added PHP 8.6 compatibility (while keeping PHP 7.3+ support): a posted `__unique_form_id__` or remembered-state URL id containing a NUL byte is now ignored instead of reaching the form flash path, where PHP 8.6 filesystem functions throw a `ValueError`; `addForm()` no longer uses a null route as an array offset; the basic captcha casts its drawing coordinates to integers and only calls `imagedestroy()` on PHP before 8.0; and the `case 'errors';` statement in `Form::get()` now ends with a colon
+
 # v9.2.2
 ## 11/18/2026
 

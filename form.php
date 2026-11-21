@@ -386,7 +386,8 @@ class FormPlugin extends Plugin
                     $formParam = $form->get('uniqueid_param', 'fid');
                     $uniqueId = $route->getGravParam($formParam);
 
-                    if ($uniqueId && preg_match('/[a-z\d]+/', (string) $uniqueId)) {
+                    // A NUL byte would reach the form flash path (PHP 8.6 throws a ValueError), so treat it as no id.
+                    if ($uniqueId && preg_match('/[a-z\d]+/', (string) $uniqueId) && strpos((string) $uniqueId, "\0") === false) {
                         // URL contains unique id, initialize the current form.
                         $form->setUniqueId($uniqueId);
                         $form->initialize();
@@ -914,6 +915,8 @@ class FormPlugin extends Plugin
 
         $lang = $this->grav['language']->getLanguage();
         $name = $form->getName();
+        // PHP 8.5 deprecates null as an array offset; it has always meant '' here.
+        $route = $route ?? '';
 
         if (!isset($this->forms[$lang][$route][$name])) {
             $form['_page_routable'] = true;

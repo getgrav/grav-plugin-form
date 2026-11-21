@@ -5,3 +5,5 @@
 $root = getenv('GRAV_ROOT') ?: dirname(__DIR__, 4);
 require $root . '/vendor/autoload.php';
 require dirname(__DIR__) . '/classes/TwigExtension.php';
+// The plugin's own autoloader, for the Form and Captcha classes.
+require dirname(__DIR__) . '/vendor/autoload.php';
