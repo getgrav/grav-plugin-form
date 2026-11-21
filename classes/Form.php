@@ -60,6 +60,7 @@ class Form implements FormInterface, ArrayAccess
     }
     use FormTrait {
         FormTrait::reset as private traitReset;
+        FormTrait::setUniqueId as private traitSetUniqueId;
         FormTrait::doSerialize as private doTraitSerialize;
         FormTrait::doUnserialize as private doTraitUnserialize;
     }
@@ -286,6 +287,23 @@ class Form implements FormInterface, ArrayAccess
     }
 
     /**
+     * A posted `__unique_form_id__` (or the remembered-state URL parameter) ends up in the form flash
+     * folder path, and PHP 8.6 filesystem functions throw a ValueError on a NUL byte, so a unique id
+     * with one is ignored and the form keeps its current id.
+     *
+     * @param string $uniqueId
+     * @return void
+     */
+    public function setUniqueId(string $uniqueId): void
+    {
+        if (strpos($uniqueId, "\0") !== false) {
+            return;
+        }
+
+        $this->traitSetUniqueId($uniqueId);
+    }
+
+    /**
      * @param string $name
      * @param mixed|null $default
      * @param string|null $separator
@@ -302,7 +320,7 @@ class Form implements FormInterface, ArrayAccess
             case 'action':
             case 'data':
             case 'files':
-            case 'errors';
+            case 'errors':
             case 'fields':
             case 'blueprint':
             case 'page':

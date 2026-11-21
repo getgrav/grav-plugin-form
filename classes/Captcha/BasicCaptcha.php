@@ -384,8 +384,8 @@ class BasicCaptcha
             $gridY = $cell[1];
 
             // Calculate center position of cell with small random offset
-            $x = 10 + ($gridX + 0.5) * $cellWidth + mt_rand(-2, 2);
-            $y = 20 + ($gridY + 0.5) * $cellHeight + mt_rand(-2, 2);
+            $x = (int) (10 + ($gridX + 0.5) * $cellWidth + mt_rand(-2, 2));
+            $y = (int) (20 + ($gridY + 0.5) * $cellHeight + mt_rand(-2, 2));
 
             // Draw the dot
             imagefilledellipse($image, $x, $y, $dotSize, $dotSize, $targetColor);
@@ -411,8 +411,8 @@ class BasicCaptcha
             $gridY = $cell[1];
 
             // Calculate center position of cell with small random offset
-            $x = 10 + ($gridX + 0.5) * $cellWidth + mt_rand(-2, 2);
-            $y = 20 + ($gridY + 0.5) * $cellHeight + mt_rand(-2, 2);
+            $x = (int) (10 + ($gridX + 0.5) * $cellWidth + mt_rand(-2, 2));
+            $y = (int) (20 + ($gridY + 0.5) * $cellHeight + mt_rand(-2, 2));
 
             // Draw the dot with a random distraction color
             $color = $distractionColors[array_rand($distractionColors)];
@@ -422,10 +422,10 @@ class BasicCaptcha
         // Add subtle grid lines to help with counting
         $lightGray = imagecolorallocate($image, 230, 230, 230);
         for ($i = 1; $i < $gridCols; $i++) {
-            imageline($image, 10 + $i * $cellWidth, 20, 10 + $i * $cellWidth, $height - 5, $lightGray);
+            imageline($image, (int) (10 + $i * $cellWidth), 20, (int) (10 + $i * $cellWidth), $height - 5, $lightGray);
         }
         for ($i = 1; $i < $gridRows; $i++) {
-            imageline($image, 10, 20 + $i * $cellHeight, $width - 10, 20 + $i * $cellHeight, $lightGray);
+            imageline($image, 10, (int) (20 + $i * $cellHeight), $width - 10, (int) (20 + $i * $cellHeight), $lightGray);
         }
 
         // Add minimal noise
@@ -481,12 +481,12 @@ class BasicCaptcha
         }
 
         // Draw the symbol - make it larger and in red for visibility
-        imagettftext($image, 20, 0, $symbolX - 8, $symbolY + 8, $red, $fontPath, (string) $symbol);
+        imagettftext($image, 20, 0, (int) ($symbolX - 8), (int) ($symbolY + 8), $red, $fontPath, (string) $symbol);
 
         // Draw a grid to make positions clearer
         $gray = imagecolorallocate($image, 200, 200, 200);
-        imageline($image, $width / 2, 15, $width / 2, $height - 5, $gray);
-        imageline($image, 5, $height / 2, $width - 5, $height / 2, $gray);
+        imageline($image, intdiv($width, 2), 15, intdiv($width, 2), $height - 5, $gray);
+        imageline($image, 5, intdiv($height, 2), $width - 5, intdiv($height, 2), $gray);
 
         // Add minimal noise
         $this->addImageNoise($image, 10);
@@ -514,7 +514,7 @@ class BasicCaptcha
         $textX = ($width - $textWidth) / 2;
         $textY = ($height + $textHeight) / 2;
 
-        imagettftext($image, $fontSize, 0, $textX, $textY, $textColor, $fontPath, (string) $mathExpression);
+        imagettftext($image, $fontSize, 0, (int) $textX, (int) $textY, $textColor, $fontPath, (string) $mathExpression);
 
         // Add visual noise and distortions to prevent OCR
         $this->addImageNoise($image, 25);
@@ -554,7 +554,7 @@ class BasicCaptcha
             // Random vertical position with custom base Y
             $y = $baseY + mt_rand(-5, 5);
 
-            imagettftext($image, $fontSize, $angle, $startX, $y, $textColor, $fontPath, (string) $char);
+            imagettftext($image, $fontSize, $angle, (int) $startX, (int) $y, $textColor, $fontPath, (string) $char);
 
             // Move to next character position with some randomness
             $startX += $charWidth + mt_rand(-5, 5);
@@ -590,9 +590,9 @@ class BasicCaptcha
         // Add a few random lines
         $lineCount = min(3, mt_rand(2, 3));
         for ($i = 0; $i < $lineCount; $i++) {
-            $x1 = mt_rand(0, $width / 4);
+            $x1 = mt_rand(0, intdiv($width, 4));
             $y1 = mt_rand(0, $height - 1);
-            $x2 = mt_rand(3 * $width / 4, $width - 1);
+            $x2 = mt_rand(intdiv(3 * $width, 4), $width - 1);
             $y2 = mt_rand(0, $height - 1);
             $shade = mt_rand(150, 200);
             $color = imagecolorallocate($image, $shade, $shade, $shade);
@@ -632,7 +632,7 @@ class BasicCaptcha
                 $yp = $y + $wave;
 
                 if ($yp >= 0 && $yp < $height) {
-                    $color = imagecolorat($temp, $x, $yp);
+                    $color = imagecolorat($temp, $x, (int) $yp);
                     imagesetpixel($image, $x, $y, $color);
 
                     // Fill adjacent pixel for better performance
@@ -643,7 +643,10 @@ class BasicCaptcha
             }
         }
 
-        imagedestroy($temp);
+        // GD images are objects freed automatically since PHP 8.0, and imagedestroy() is deprecated in 8.5.
+        if (PHP_VERSION_ID < 80000) {
+            imagedestroy($temp);
+        }
     }
 
     public function renderCaptchaImage($imageData): void
