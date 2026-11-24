@@ -747,6 +747,19 @@ class Form implements FormInterface, ArrayAccess
             $destination = $this->getPagePathFromToken(Folder::getRelativePath(rtrim($settings->destination, '/')));
         }
 
+        // The destination is set by whoever edits the page and the file comes from
+        // whoever submits the form, so keep it inside user/ and out of every folder
+        // Twig loads templates from.
+        if (!static::isAllowedUploadFolder((string) $destination)) {
+            $grav['log']->warning(sprintf('Form upload refused: destination "%s" is outside user/ or in a Twig template folder', $settings->destination));
+
+            return [
+                'status'  => 'error',
+                'message' => sprintf($language->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_UPLOAD', null),
+                    $filename, 'Destination not allowed')
+            ];
+        }
+
         // Handle conflicting name if needed
         if ($settings->avoid_overwriting) {
             if (file_exists($destination . '/' . $filename)) {
@@ -1161,7 +1174,8 @@ class Form implements FormInterface, ArrayAccess
                 $filesystem = Filesystem::getInstance();
                 $folder = $filesystem->dirname($destination);
 
-                if (!is_dir($folder) && !@mkdir($folder, 0777, true) && !is_dir($folder)) {
+                if (!static::isAllowedUploadFolder($folder)
+                    || (!is_dir($folder) && !@mkdir($folder, 0777, true) && !is_dir($folder))) {
                     $grav = Grav::instance();
                     throw new RuntimeException(sprintf($grav['language']->translate('PLUGIN_FORM.FILEUPLOAD_UNABLE_TO_MOVE', null, true), '"' . $upload->getClientFilename() . '"', $destination));
                 }
@@ -1399,6 +1413,113 @@ class Form implements FormInterface, ArrayAccess
         $head = ltrim(static::readHead($file), "\xEF\xBB\xBF\xFE\xFF\0 \t\r\n\f");
 
         return $head !== '' && $head[0] === '<';
+    }
+
+    /**
+     * Can a form upload be stored in this folder? Only inside user/, and never in a
+     * folder Twig loads templates from: every file there is template code, whatever
+     * its extension, and a theme template can include it by name.
+     *
+     * @param string $folder A path relative to the Grav root, an absolute path or a stream.
+     * @return bool
+     */
+    public static function isAllowedUploadFolder(string $folder): bool
+    {
+        $grav = Grav::instance();
+
+        /** @var UniformResourceLocator $locator */
+        $locator = $grav['locator'];
+
+        try {
+            if ($locator->isStream($folder)) {
+                $folder = (string) $locator->findResource($folder, true, true);
+            }
+            $user = (string) $locator->findResource('user://', true);
+
+            $twig = $grav['twig'];
+            $twig->init();
+            $templates = (array) $twig->twig_paths;
+            $loader = $twig->loader();
+            foreach ($loader->getNamespaces() as $namespace) {
+                $templates = array_merge($templates, $loader->getPaths($namespace));
+            }
+        } catch (\Throwable $e) {
+            return false;
+        }
+
+        return static::uploadFolderAllowed($folder, $user, $templates);
+    }
+
+    /**
+     * The check behind {@see isAllowedUploadFolder()}, on paths given to it.
+     *
+     * @param string $folder
+     * @param string $userRoot
+     * @param array $templatePaths
+     * @return bool
+     */
+    public static function uploadFolderAllowed(string $folder, string $userRoot, array $templatePaths): bool
+    {
+        $folder = static::normalizeFolder($folder);
+        $userRoot = static::normalizeFolder($userRoot);
+        if ($folder === '' || $userRoot === '' || !str_starts_with($folder, $userRoot . '/')) {
+            return false;
+        }
+
+        // The templates folder of every theme and plugin, enabled or not.
+        if (preg_match('#^(?:themes|plugins)/[^/]+/(?:.+/)?templates(?:/|$)#', substr($folder, strlen($userRoot) + 1))) {
+            return false;
+        }
+
+        foreach ($templatePaths as $path) {
+            $path = is_string($path) ? static::normalizeFolder($path) : '';
+            if ($path !== '' && ($folder === $path || str_starts_with($folder, $path . '/'))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Absolute, lower-cased path of a folder that may not exist yet: a relative path
+     * is taken from the Grav root, `.` and `..` are resolved, and the deepest part
+     * that exists goes through realpath(), so a symlink is matched by where it leads.
+     *
+     * @param string $path
+     * @return string
+     */
+    protected static function normalizeFolder(string $path): string
+    {
+        $path = str_replace('\\', '/', trim($path));
+        if ($path === '') {
+            return '';
+        }
+        if (!preg_match('#^(?:[a-z]:)?/#i', $path)) {
+            $path = (defined('GRAV_ROOT') ? GRAV_ROOT : getcwd()) . '/' . $path;
+        }
+        preg_match('#^(?:[a-z]:)?/#i', $path, $match);
+        $prefix = $match[0];
+
+        $parts = [];
+        foreach (explode('/', substr($path, strlen($prefix))) as $part) {
+            if ($part === '' || $part === '.') {
+                continue;
+            }
+            if ($part === '..') {
+                array_pop($parts);
+                continue;
+            }
+            $parts[] = $part;
+        }
+
+        $missing = [];
+        while (($real = realpath($prefix . implode('/', $parts))) === false && $parts) {
+            array_unshift($missing, array_pop($parts));
+        }
+        $base = $real !== false ? str_replace('\\', '/', $real) : $prefix;
+
+        return strtolower(rtrim(rtrim($base, '/') . '/' . implode('/', $missing), '/'));
     }
 
     /**
