@@ -1103,6 +1103,15 @@ class FormPlugin extends Plugin
                     'type' => 'ignore'
                 ]
             ],
+            // the FilePond uploader stores the same value as `file`; without these defaults its value is
+            // filtered as text, which turns the uploaded file list into an empty string
+            'filepond' => [
+                'array' => true,
+                'media_field' => true,
+                'validate' => [
+                    'type' => 'ignore'
+                ]
+            ],
             'formname' => [
                 'input@' => false
             ],
