@@ -1,3 +1,9 @@
+# v9.2.4
+## 11/24/2026
+
+1. [](#bugfix)
+    * File field uploads are only stored inside `user/`, and never in a theme or plugin `templates` folder or another folder Twig loads templates from. A form whose destination points outside `user/` or into one of those folders now refuses the upload
+
 # v9.2.3
 ## 11/20/2026
 
