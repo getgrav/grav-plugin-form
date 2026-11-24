@@ -1,3 +1,10 @@
+# v9.2.5
+## 11/24/2026
+
+1. [](#bugfix)
+    * FilePond upload fields work again. The check added in 9.1.38 that refuses uploads for fields a form doesn't declare only counted `file` fields, so every FilePond upload failed with "Unknown upload field"
+    * A FilePond field's value is no longer run through the text filter, which turned its uploaded file list into an empty string. FilePond fields now get the same field type defaults as `file` fields
+
 # v9.2.4
 ## 11/24/2026
 
