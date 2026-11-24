@@ -30,8 +30,11 @@ class UploadDestinationTest extends TestCase
             'page folder' => ['user/pages/01.home'],
             'data folder' => ['user/data/uploads'],
             'folder not created yet' => ['user/data/not/yet/created'],
-            'theme folder Twig does not load' => ['user/themes/quark/uploads'],
-            'plugin folder Twig does not load' => ['user/plugins/blog/files'],
+            'self@ style page subfolder' => ['user/pages/01.home/uploads'],
+            'data folder with a config-like name' => ['user/data/config'],
+            'page folder named like an account' => ['user/pages/accounts'],
+            'folder starting like a refused one' => ['user/configuration'],
+            'images folder' => ['user/images/uploads'],
         ];
     }
 
@@ -57,6 +60,22 @@ class UploadDestinationTest extends TestCase
             'dot-dot into templates' => ['user/data/../themes/quark/templates'],
             'symlink into templates' => ['user/data/linked'],
             'absolute path elsewhere' => ['/etc'],
+            'config folder' => ['user/config'],
+            'config subfolder' => ['user/config/system'],
+            'config folder named like a file' => ['user/config/system/debugger/enabled/x.yaml'],
+            'environment folder' => ['user/env'],
+            'environment subfolder' => ['user/env/example.com/config'],
+            'accounts folder' => ['user/accounts'],
+            'accounts subfolder' => ['user/accounts/avatars'],
+            'config folder in capitals' => ['user/CONFIG/system'],
+            'dot-dot into config' => ['user/data/../config/system'],
+            'themes folder' => ['user/themes'],
+            'theme folder' => ['user/themes/quark'],
+            'theme subfolder' => ['user/themes/quark/uploads'],
+            'plugins folder' => ['user/plugins'],
+            'plugin folder' => ['user/plugins/blog/files'],
+            'blueprints folder' => ['user/blueprints'],
+            'blueprints subfolder' => ['user/blueprints/pages'],
         ];
     }
 

@@ -1,3 +1,9 @@
+# v9.2.6
+## 11/24/2026
+
+1. [](#bugfix)
+    * File field uploads are also refused in the `user/config`, `user/env` and `user/accounts` folders, and in the `user/themes`, `user/plugins` and `user/blueprints` folders, with all their subfolders. A form whose destination points into one of them now refuses the upload
+
 # v9.2.5
 ## 11/24/2026
 
