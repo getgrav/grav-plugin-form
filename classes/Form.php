@@ -593,7 +593,7 @@ class Form implements FormInterface, ArrayAccess
         $config = $grav['config'];
 
         $schemaSettings = $this->getBlueprint()->schema()->getProperty($name);
-        $isDeclared = is_array($schemaSettings) && ($schemaSettings['type'] ?? null) === 'file';
+        $isDeclared = is_array($schemaSettings) && in_array($schemaSettings['type'] ?? null, ['file', 'filepond'], true);
         $settings = (object) array_merge(
             ['destination' => $config->get('plugins.form.files.destination', 'self@'),
                 'avoid_overwriting' => $config->get('plugins.form.files.avoid_overwriting', false),
