@@ -204,8 +204,9 @@ class FormPlugin extends Plugin
 
     /**
      * The `[form]` shortcode (Shortcode Core): `[form /]` for the page's own form,
-     * `[form name="contact" /]` for a named one, and `route="/forms/contact"` for a
-     * form defined on another page.
+     * `[form name="contact" /]` (or `[form]contact[/form]`) for a named one, and
+     * `route="/forms/contact"` for a form defined on another page. `class` wraps
+     * the form in a box with those classes.
      *
      * Page content is cached, and a form can't be: it carries the visitor's
      * session nonce, and its fields, captcha and XHR submit add their own
@@ -216,9 +217,13 @@ class FormPlugin extends Plugin
     public function onShortcodeHandlers(Event $event): void
     {
         $this->grav['shortcode']->getHandlers()->add('form', static function (ShortcodeInterface $sc) {
+            // The name can also be given as `form`, or between the tags:
+            // [form]contact[/form], the same as the Forms Pro shortcode.
+            $name = (string) ($sc->getParameter('name') ?? $sc->getParameter('form') ?? strip_tags((string) $sc->getContent()));
             $args = array_filter([
-                'name' => trim((string) $sc->getParameter('name', '')),
+                'name' => trim($name),
                 'route' => trim((string) $sc->getParameter('route', '')),
+                'class' => trim((string) preg_replace('/[^A-Za-z0-9_\- ]/', '', (string) $sc->getParameter('class', ''))),
             ], static fn ($value) => $value !== '');
 
             return '<!--grav-form:' . base64_encode((string) json_encode($args)) . '-->';
@@ -275,6 +280,10 @@ class FormPlugin extends Plugin
                 $args = json_decode((string) base64_decode($match[2], true), true);
                 $form = $this->formForShortcode(is_array($args) ? $args : [], $page);
                 $html = $form ? $twig->processTemplate('forms/form.html.twig', ['form' => $form, 'page' => $page]) : '';
+                $class = is_array($args) && is_string($args['class'] ?? null) ? $args['class'] : '';
+                if ($html !== '' && $class !== '') {
+                    $html = '<div class="' . htmlspecialchars($class, ENT_QUOTES) . '">' . $html . '</div>';
+                }
 
                 $open = $match[1] ?? '';
                 $close = $match[3] ?? '';
