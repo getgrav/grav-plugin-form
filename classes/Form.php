@@ -1417,8 +1417,9 @@ class Form implements FormInterface, ArrayAccess
 
     /**
      * Can a form upload be stored in this folder? Only inside user/, and never in a
-     * folder Twig loads templates from: every file there is template code, whatever
-     * its extension, and a theme template can include it by name.
+     * folder Twig loads templates from (every file there is template code, whatever
+     * its extension, and a theme template can include it by name), nor in the
+     * configuration, environment, account, theme, plugin or blueprint folders.
      *
      * @param string $folder A path relative to the Grav root, an absolute path or a stream.
      * @return bool
@@ -1466,8 +1467,15 @@ class Form implements FormInterface, ArrayAccess
             return false;
         }
 
-        // The templates folder of every theme and plugin, enabled or not.
-        if (preg_match('#^(?:themes|plugins)/[^/]+/(?:.+/)?templates(?:/|$)#', substr($folder, strlen($userRoot) + 1))) {
+        $relative = substr($folder, strlen($userRoot) + 1);
+
+        // Folders Grav reads configuration, environments and accounts from.
+        if (preg_match('#^(?:config|env|accounts)(?:/|$)#', $relative)) {
+            return false;
+        }
+
+        // Folders Grav loads code, templates and blueprints from: every theme and plugin, enabled or not.
+        if (preg_match('#^(?:themes|plugins|blueprints)(?:/|$)#', $relative)) {
             return false;
         }
 
