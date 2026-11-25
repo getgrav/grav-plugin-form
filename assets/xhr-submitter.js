@@ -94,8 +94,10 @@
          * @param {string} wrapperId - ID of the wrapper to update
          * @param {string} formId - ID of the original form
          */
-        updateFormContent: function(responseText, wrapperId, formId) {
-            const wrapperElement = document.getElementById(wrapperId);
+        updateFormContent: function(responseText, wrapperId, formId, wrapper) {
+            // The same form can be rendered several times on one page, all with the same id,
+            // so prefer the wrapper of the form that was actually submitted.
+            const wrapperElement = wrapper || document.getElementById(wrapperId);
             if (!wrapperElement) {
                 console.error(`Cannot update content: Wrapper #${wrapperId} not found`);
                 return;
@@ -191,7 +193,7 @@
 
                 // Then re-attach the XHR listener
                 setTimeout(() => {
-                    FormHandler.setupListener(formId);
+                    FormHandler.setupFormElement(updatedForm);
                 }, 10);
             } else {
                 // Check if this was a successful submission with just a message
@@ -217,7 +219,7 @@
         sendFormData: function(form) {
             const formId = form.id;
             const wrapperId = formId + '-wrapper';
-            const wrapperElement = DOM.getFormWrapper(formId);
+            const wrapperElement = form.closest('.form-wrapper') || DOM.getFormWrapper(formId);
 
             if (!wrapperElement) {
                 console.error(`XHR submission: Target wrapper element #${wrapperId} not found on the page! Cannot proceed.`);
@@ -242,7 +244,7 @@
                 DOM.updateLoadingState(form, wrapperElement, false);
 
                 if (xhr.status >= 200 && xhr.status < 300) {
-                    DOM.updateFormContent(xhr.responseText, wrapperId, formId);
+                    DOM.updateFormContent(xhr.responseText, wrapperId, formId, wrapperElement);
                 } else {
                     Core.log(`Form submission failed for form: ${formId}, HTTP Status: ${xhr.status} ${xhr.statusText}`, 'error');
                     Core.displayError(wrapperElement, `An error occurred during submission (Status: ${xhr.status}). Please check the form and try again.`);
@@ -357,25 +359,34 @@
                          */
         setupListener: function(formId) {
             setTimeout(() => {
-                const form = document.getElementById(formId);
-                if (!form) {
+                // Every instance, not just the first: a form rendered several times on one
+                // page repeats its id, and getElementById() only ever returns the first copy.
+                const forms = document.querySelectorAll('form[id="' + CSS.escape(formId) + '"]');
+                if (!forms.length) {
                     Core.log(`XHR Setup (delayed): Form with ID "${formId}" not found.`, 'warn');
                     return;
                 }
-
-                // Check if any captcha provider is handling the submission
-                const captchaContainer = form.querySelector('[data-captcha-provider][data-intercepts-submit="true"]');
-
-                if (!captchaContainer) {
-                    // No intercepting captcha found, attach direct listener
-                    this._attachDirectListener(form);
-                } else {
-                    // Captcha will intercept, don't attach direct listener
-                    const providerName = captchaContainer.dataset.captchaProvider;
-                    Core.log(`XHR listener deferred: ${providerName} should intercept submit for form: ${formId}`);
-                    this._detachDirectListener(form);
-                }
+                forms.forEach(form => this.setupFormElement(form));
             }, 0);
+        },
+
+        /**
+         * Set up the XHR submission listener on one form element
+         * @param {HTMLFormElement} form
+         */
+        setupFormElement: function(form) {
+            // Check if any captcha provider is handling the submission
+            const captchaContainer = form.querySelector('[data-captcha-provider][data-intercepts-submit="true"]');
+
+            if (!captchaContainer) {
+                // No intercepting captcha found, attach direct listener
+                this._attachDirectListener(form);
+            } else {
+                // Captcha will intercept, don't attach direct listener
+                const providerName = captchaContainer.dataset.captchaProvider;
+                Core.log(`XHR listener deferred: ${providerName} should intercept submit for form: ${form.id}`);
+                this._detachDirectListener(form);
+            }
         },
 
         /**

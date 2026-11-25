@@ -1,3 +1,9 @@
+# v9.2.7
+## 11/25/2026
+
+1. [](#bugfix)
+    * A form with `xhr_submit` that appears more than once on a page now submits over XHR from every copy, and the result shows only in the copy that was submitted. Before, only the first copy used XHR and the others reloaded the page with the message in every copy [#665](https://github.com/getgrav/grav-plugin-form/issues/665)
+
 # v9.2.6
 ## 11/24/2026
 
