@@ -1,3 +1,11 @@
+# v9.2.7
+## 11/25/2026
+
+1. [](#new)
+    * New `[form]` shortcode (needs Shortcode Core) puts a form in page content: `[form /]` for the page's own form, `[form name="contact" /]` or `[form]contact[/form]` for a named one, or `[form route="/forms/contact" /]` for a form defined on another page, with an optional `class` for a wrapper. The form is added fresh on every request, after the page content comes out of the cache, so its security token, file uploads, captcha and AJAX submit all work without turning off caching or using Twig in content [shortcode-core#137](https://github.com/getgrav/grav-plugin-shortcode-core/issues/137)
+2. [](#bugfix)
+    * A form with `xhr_submit` that appears more than once on a page now submits over XHR from every copy, and the result shows only in the copy that was submitted. Before, only the first copy used XHR and the others reloaded the page with the message in every copy [#665](https://github.com/getgrav/grav-plugin-form/issues/665)
+
 # v9.2.6
 ## 11/24/2026
 

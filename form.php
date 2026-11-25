@@ -31,6 +31,7 @@ use RocketTheme\Toolbox\File\JsonFile;
 use RocketTheme\Toolbox\File\YamlFile;
 use RocketTheme\Toolbox\File\File;
 use RocketTheme\Toolbox\Event\Event;
+use Thunder\Shortcode\Shortcode\ShortcodeInterface;
 use RuntimeException;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Twig\Extension\CoreExtension;
@@ -60,6 +61,10 @@ class FormPlugin extends Plugin
     protected $forms_cache_id;
     /** @var FormInterface[] */
     protected $active_forms = [];
+    /** @var list<PageInterface> pages whose [form] placeholders wait for Twig to be ready */
+    protected $pending_form_shortcodes = [];
+    /** @var bool */
+    protected $twig_site_ready = false;
     /** @var array */
     protected $json_response = [];
 
@@ -188,11 +193,141 @@ class FormPlugin extends Plugin
             'onPageInitialized' => ['onPageInitialized', 0],
             'onTwigInitialized' => ['onTwigInitialized', 0],
             'onTwigPageVariables' => ['onTwigVariables', 0],
-            'onTwigSiteVariables' => ['onTwigVariables', 0],
+            'onTwigSiteVariables' => [['onTwigVariables', 0], ['renderPendingFormShortcodes', -1000]],
             'onFormValidationProcessed' => ['onFormValidationProcessed', 0],
+            'onShortcodeHandlers' => ['onShortcodeHandlers', 0],
+            'onPageContent' => ['renderFormShortcodes', 0],
         ]);
 
 
+    }
+
+    /**
+     * The `[form]` shortcode (Shortcode Core): `[form /]` for the page's own form,
+     * `[form name="contact" /]` (or `[form]contact[/form]`) for a named one, and
+     * `route="/forms/contact"` for a form defined on another page. `class` wraps
+     * the form in a box with those classes.
+     *
+     * Page content is cached, and a form can't be: it carries the visitor's
+     * session nonce, and its fields, captcha and XHR submit add their own
+     * JavaScript and CSS. So the shortcode only leaves a placeholder in the
+     * content, and renderFormShortcodes() puts the live form in its place on
+     * every request, after the content has come out of the cache.
+     */
+    public function onShortcodeHandlers(Event $event): void
+    {
+        $this->grav['shortcode']->getHandlers()->add('form', static function (ShortcodeInterface $sc) {
+            // The name can also be given as `form`, or between the tags:
+            // [form]contact[/form], the same as the Forms Pro shortcode.
+            $name = (string) ($sc->getParameter('name') ?? $sc->getParameter('form') ?? strip_tags((string) $sc->getContent()));
+            $args = array_filter([
+                'name' => trim($name),
+                'route' => trim((string) $sc->getParameter('route', '')),
+                'class' => trim((string) preg_replace('/[^A-Za-z0-9_\- ]/', '', (string) $sc->getParameter('class', ''))),
+            ], static fn ($value) => $value !== '');
+
+            return '<!--grav-form:' . base64_encode((string) json_encode($args)) . '-->';
+        });
+    }
+
+    /**
+     * Replace the `[form]` placeholders in a page's content with the live forms.
+     *
+     * `onPageContent` fires after the page-content cache is read or written, so
+     * this changes the copy for this request only. When something reads the
+     * content before Twig has its site variables, the page waits for
+     * renderPendingFormShortcodes().
+     */
+    public function renderFormShortcodes(Event $event): void
+    {
+        $page = $event['page'] ?? null;
+        if (!$page instanceof PageInterface || !method_exists($page, 'getRawContent') || !method_exists($page, 'setRawContent')) {
+            return;
+        }
+        if (!str_contains((string) $page->getRawContent(), '<!--grav-form:')) {
+            return;
+        }
+
+        if (!$this->twig_site_ready) {
+            $this->pending_form_shortcodes[] = $page;
+
+            return;
+        }
+
+        $this->replaceFormShortcodes($page);
+    }
+
+    public function renderPendingFormShortcodes(): void
+    {
+        $this->twig_site_ready = true;
+        $pending = $this->pending_form_shortcodes;
+        $this->pending_form_shortcodes = [];
+        foreach ($pending as $page) {
+            $this->replaceFormShortcodes($page);
+        }
+    }
+
+    protected function replaceFormShortcodes(PageInterface $page): void
+    {
+        $html = (string) $page->getRawContent();
+        $twig = $this->grav['twig'];
+
+        // Standard shortcodes run after Markdown, so one on its own line comes
+        // wrapped in a paragraph, which can't hold a form.
+        $replaced = preg_replace_callback(
+            '~(<p>\s*)?<!--grav-form:([A-Za-z0-9+/=]*)-->(\s*</p>)?~',
+            function (array $match) use ($page, $twig): string {
+                $args = json_decode((string) base64_decode($match[2], true), true);
+                $form = $this->formForShortcode(is_array($args) ? $args : [], $page);
+                $html = $form ? $twig->processTemplate('forms/form.html.twig', ['form' => $form, 'page' => $page]) : '';
+                $class = is_array($args) && is_string($args['class'] ?? null) ? $args['class'] : '';
+                if ($html !== '' && $class !== '') {
+                    $html = '<div class="' . htmlspecialchars($class, ENT_QUOTES) . '">' . $html . '</div>';
+                }
+
+                $open = $match[1] ?? '';
+                $close = $match[3] ?? '';
+                if ($open !== '' && $close !== '') {
+                    return $html;
+                }
+
+                return $open . $html . $close;
+            },
+            $html
+        );
+
+        if (is_string($replaced) && $replaced !== $html) {
+            $page->setRawContent($replaced);
+        }
+    }
+
+    /**
+     * The form a `[form]` shortcode names: with a route, that page's form;
+     * otherwise the page's own form (by name, or its first one), then a form of
+     * that name on any page the visitor may open.
+     *
+     * @param array<string, mixed> $args
+     */
+    protected function formForShortcode(array $args, PageInterface $page): ?FormInterface
+    {
+        $name = is_string($args['name'] ?? null) ? $args['name'] : '';
+        $route = is_string($args['route'] ?? null) ? $args['route'] : '';
+
+        if ($route !== '') {
+            $target = $this->grav['pages']->find($route);
+            if (!$target instanceof PageInterface || !$this->isPageAccessible($target)) {
+                return null;
+            }
+
+            return $this->getForm(['name' => $name, 'route' => $target->route()]);
+        }
+
+        $form = $this->getForm(['name' => $name, 'route' => $page->route()]);
+        if ($form === null && $name !== '') {
+            $form = $this->getForm($name);
+        }
+
+        return $form;
     }
 
     /**
