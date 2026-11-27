@@ -319,7 +319,7 @@ class FormPlugin extends Plugin
                 return null;
             }
 
-            return $this->getForm(['name' => $name, 'route' => $target->route()]);
+            return $this->submittedForm($this->getForm(['name' => $name, 'route' => $target->route()]));
         }
 
         $form = $this->getForm(['name' => $name, 'route' => $page->route()]);
@@ -327,7 +327,31 @@ class FormPlugin extends Plugin
             $form = $this->getForm($name);
         }
 
-        return $form;
+        return $this->submittedForm($form);
+    }
+
+    /**
+     * The form that was just submitted, when it is the one a `[form]` shortcode
+     * shows. getForm() hands back the page's own copy, which knows nothing of
+     * the submission, so without this the success message and the errors of a
+     * submitted shortcode form were never shown.
+     */
+    protected function submittedForm(?FormInterface $form): ?FormInterface
+    {
+        /** @var Forms $forms */
+        $forms = $this->grav['forms'];
+        $active = $forms->getActiveForm();
+        if (!$form || !$active || $active === $form || $active->getName() !== $form->getName()) {
+            return $form;
+        }
+
+        try {
+            $samePage = $active->getPage()->route() === $form->getPage()->route();
+        } catch (\Throwable $e) {
+            $samePage = false;
+        }
+
+        return $samePage ? $active : $form;
     }
 
     /**
