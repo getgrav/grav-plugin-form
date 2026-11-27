@@ -1,3 +1,9 @@
+# v9.2.8
+## 11/27/2026
+
+1. [](#bugfix)
+    * A form placed with the `[form]` shortcode shows its success message and validation errors after it is submitted
+
 # v9.2.7
 ## 11/25/2026
 
